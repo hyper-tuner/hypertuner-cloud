@@ -1,6 +1,10 @@
 # SpeedyTuner Cloud
 
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=speedy-tuner-cloud)
+
 Share your Speeduino tune and logs.
+
+## [https://speedytuner.cloud](https://speedytuner.cloud)
 
 ## Development
 
