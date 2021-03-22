@@ -51,10 +51,6 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
     return generatePath(Routes.DIALOG, { category: firstCategory, dialog: firstDialog });
   }, [config.menus]);
 
-  console.log({
-    firstDialogPath,
-  });
-
   useEffect(() => {
     loadAll();
     // window.addEventListener('beforeunload', beforeUnload);

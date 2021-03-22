@@ -1,5 +1,5 @@
 {
-  "name": "speedy-tuner",
+  "name": "speedy-tuner-cloud",
   "description": "Speeduino Tuning Software",
   "version": "0.1.0",
   "private": true,
@@ -9,7 +9,7 @@
   "scripts": {
     "start": "craco start",
     "dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "web:build": "craco build",
+    "build": "craco build",
     "electron:compile": "tsc -p tsconfig.custom.json",
     "electron:start": "npm run electron:compile && electron-forge start",
     "electron:package": "npm run web:build && npm run electron:compile && electron-forge package",
