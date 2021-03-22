@@ -11,6 +11,7 @@ import {
   Modal,
   Popover,
   Space,
+  Grid,
 } from 'antd';
 import {
   PlusCircleOutlined,
@@ -24,6 +25,7 @@ import {
   isIncrement,
   isReplace,
 } from '../../utils/keyboard/shortcuts';
+import LandscapeNotice from './LandscapeNotice';
 
 type CellsType = boolean[][];
 type DataType = number[][];
@@ -34,6 +36,8 @@ enum Operations {
   REPLACE,
 }
 type HslType = [number, number, number];
+
+const { useBreakpoint } = Grid;
 
 const Map = ({
   name,
@@ -60,6 +64,7 @@ const Map = ({
   xUnits: string,
   yUnits: string,
 }) => {
+  const { sm } = useBreakpoint();
   const titleProps = { disabled: true };
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalValue, setModalValue] = useState<number | undefined>();
@@ -216,6 +221,10 @@ const Map = ({
 
       return result;
     });
+
+  if (!sm) {
+    return <LandscapeNotice />;
+  }
 
   return (
     <>

@@ -1,4 +1,7 @@
-import { Typography } from 'antd';
+import {
+  Typography,
+  Grid,
+} from 'antd';
 import { useState } from 'react';
 import {
   CartesianGrid,
@@ -10,7 +13,10 @@ import {
   ResponsiveContainer,
   Label,
 } from 'recharts';
+import LandscapeNotice from './LandscapeNotice';
 import Table from './Table';
+
+const { useBreakpoint } = Grid;
 
 const Curve = ({
   name,
@@ -46,10 +52,15 @@ const Curve = ({
     y: rawData[0][i],
   }));
   const [data, setData] = useState(mapData([yData, xData]));
+  const { sm } = useBreakpoint();
   const margin = 15;
   const mainColor = '#ccc';
   const tooltipBg = '#2E3338';
   const animationDuration = 500;
+
+  if (!sm) {
+    return <LandscapeNotice />;
+  }
 
   return (
     <>
