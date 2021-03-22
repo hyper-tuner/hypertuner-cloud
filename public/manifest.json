@@ -1,0 +1,20 @@
+{
+  "short_name": "SpeedyTuner",
+  "name": "Speeduino Tuning Software",
+  "icons": [
+    {
+      "src": "/icons/icon.ico",
+      "type": "image/x-icon",
+      "sizes": "256x256"
+    },
+    {
+      "src": "/icons/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#222629",
+  "background_color": "#222629"
+}
