@@ -36,6 +36,8 @@ import {
   LinkOutlined,
   DownOutlined,
   SearchOutlined,
+  ToolOutlined,
+  FundOutlined,
 } from '@ant-design/icons';
 import {
   useEffect,
@@ -137,8 +139,8 @@ const TopBar = () => {
   return (
     <Header className="app-top-bar">
       <Row>
-        <Col span={0} md={8} sm={0} />
-        <Col span={12} md={8} sm={16} style={{ textAlign: 'center' }}>
+        <Col span={0} md={6} sm={0} />
+        <Col span={12} md={10} sm={16} style={{ textAlign: 'center' }}>
           <Radio.Group
             key={pathname}
             defaultValue={matchedTabPath?.url}
@@ -146,9 +148,24 @@ const TopBar = () => {
             buttonStyle="solid"
             onChange={(e) => history.push(e.target.value)}
           >
-            <Radio.Button value={Routes.TUNE}>Tune</Radio.Button>
-            <Radio.Button value={Routes.LOG}>Log</Radio.Button>
-            <Radio.Button value={Routes.DIAGNOSE}>Diagnose</Radio.Button>
+            <Radio.Button value={Routes.TUNE}>
+              <Space>
+                <ToolOutlined />
+                {sm && 'Tune'}
+              </Space>
+            </Radio.Button>
+            <Radio.Button value={Routes.LOG}>
+              <Space>
+                <FundOutlined />
+                {sm && 'Log'}
+              </Space>
+            </Radio.Button>
+            <Radio.Button value={Routes.DIAGNOSE}>
+              <Space>
+                <SettingOutlined />
+                {sm && 'Diagnose'}
+              </Space>
+            </Radio.Button>
           </Radio.Group>
         </Col>
         <Col span={12} md={8} sm={8} style={{ textAlign: 'right' }}>
@@ -159,7 +176,7 @@ const TopBar = () => {
                 <Typography.Text keyboard>P</Typography.Text>
               </>
             }>
-              {sm && <Button icon={<SearchOutlined />} />}
+              <Button icon={<SearchOutlined />} />
             </Tooltip>
             <Dropdown
               overlay={shareMenu}
