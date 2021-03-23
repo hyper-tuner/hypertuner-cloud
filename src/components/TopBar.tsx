@@ -181,6 +181,7 @@ const TopBar = () => {
             <Dropdown
               overlay={shareMenu}
               placement="bottomCenter"
+              trigger={['click']}
             >
               <Button icon={<ShareAltOutlined />}>
                 <DownOutlined />
@@ -189,6 +190,7 @@ const TopBar = () => {
             <Dropdown
               overlay={userMenu}
               placement="bottomCenter"
+              trigger={['click']}
             >
               <Button icon={<UserOutlined />}>
                 <DownOutlined />
