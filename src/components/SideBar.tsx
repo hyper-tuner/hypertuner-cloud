@@ -137,7 +137,7 @@ const SideBar = ({
       <PerfectScrollbar options={{ suppressScrollX: true }}>
         <Menu
           defaultSelectedKeys={[matchedPath.url]}
-          defaultOpenKeys={[`/${matchedPath.params.category}`]}
+          defaultOpenKeys={ui.sidebarCollapsed ? [] : [`/${matchedPath.params.category}`]}
           mode="inline"
           style={{ height: '100%' }}
           key={matchedPath.url}
