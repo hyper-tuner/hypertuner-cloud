@@ -113,9 +113,7 @@ const Dialog = ({
       }
       placement="right"
     >
-      <QuestionCircleOutlined
-        style={{ position: 'sticky', top: 15, zIndex: 1 }}
-      />
+      <QuestionCircleOutlined />
     </Popover>
   );
 
