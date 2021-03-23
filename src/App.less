@@ -5,6 +5,10 @@
 @import './themes/common.less';
 @import './themes/ant.less';
 
+body {
+  overflow: hidden;
+}
+
 .border-right {
   border-right-width: 1px;
   border-right-color: @border-color-split;
@@ -30,9 +34,6 @@
   // border-bottom-style: solid;
   box-shadow: 0px 0px 20px 0px #0000001c, 5px 5px 15px 5px rgb(0 0 0 e('/') 4%);
   z-index: @bars-z-index;
-  position: sticky;
-  top: 0;
-  width: 100%;
 }
 
 .app-sidebar {
@@ -58,6 +59,8 @@
 
 .app-content {
   height: calc(100vh - @layout-header-height - @layout-footer-height);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .table {
