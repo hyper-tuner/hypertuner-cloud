@@ -14,6 +14,13 @@
       "sizes": "512x512"
     }
   ],
+  "screenshots" : [
+    {
+      "src": "/img/screen.png",
+      "sizes": "1200x761",
+      "type": "image/png"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#222629",
