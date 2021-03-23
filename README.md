@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/83204fc5-98b8-483c-ac69-acaa656ba9ee/deploy-status)](https://app.netlify.com/sites/speedytuner/deploys)
+
 # SpeedyTuner Cloud
 
 Share your Speeduino tune and logs.
