@@ -66,7 +66,7 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
         <TopBar />
         <Switch>
           <Route path={Routes.ROOT} exact>
-            <Redirect to="/tune" />
+            <Redirect to={lastDialogPath || Routes.TUNE} />
           </Route>
           <Route path={Routes.TUNE}>
             <Route path={Routes.TUNE} exact>

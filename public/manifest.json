@@ -1,6 +1,7 @@
 {
   "short_name": "SpeedyTuner",
-  "name": "Speeduino Tuning Software",
+  "name": "SpeedyTuner Cloud",
+  "description": "SpeedyTuner Cloud - Share your Speeduino tune and logs",
   "icons": [
     {
       "src": "/icons/icon.ico",

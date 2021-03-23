@@ -1,6 +1,6 @@
 {
   "name": "speedy-tuner-cloud",
-  "description": "Speeduino Tuning Software",
+  "description": "SpeedyTuner Cloud - Share your Speeduino tune and logs",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
