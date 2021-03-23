@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom';
 import { Layout, Result } from 'antd';
 import { connect } from 'react-redux';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import Dialog from './components/Dialog';
 import { loadAll } from './utils/api';
 import SideBar, { DialogMatchedPathType } from './components/SideBar';
@@ -76,13 +75,11 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
               <SideBar matchedPath={dialogMatchedPath} />
               <Layout className="app-content">
                 <Content>
-                  <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    <Dialog
-                      name={dialogMatchedPath.params.dialog}
-                      url={dialogMatchedPath.url}
-                      burnButton={isDesktop && <BurnButton />}
-                    />
-                  </PerfectScrollbar>
+                  <Dialog
+                    name={dialogMatchedPath.params.dialog}
+                    url={dialogMatchedPath.url}
+                    burnButton={isDesktop && <BurnButton />}
+                  />
                 </Content>
               </Layout>
             </Layout>
