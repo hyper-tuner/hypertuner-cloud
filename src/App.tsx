@@ -22,6 +22,7 @@ import './App.less';
 import { Routes } from './routes';
 import { Config as ConfigType } from './types/config';
 import { storageGet } from './utils/storage';
+import Log from './components/Log';
 
 const { Content } = Layout;
 
@@ -82,6 +83,13 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
                   />
                 </Content>
               </Layout>
+            </Layout>
+          </Route>
+          <Route path={Routes.LOG}>
+            <Layout className="app-content">
+              <Content>
+                <Log />
+              </Content>
             </Layout>
           </Route>
           <Route>
