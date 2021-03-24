@@ -76,4 +76,4 @@ export const loadAll = async () => {
   });
 };
 
-export const loadLogs = () => fetch('./logs/short.mlg').then((response) => response.arrayBuffer());
+export const loadLogs = () => fetch('./logs/middle.mlg').then((response) => response.arrayBuffer());
