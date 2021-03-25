@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  MouseEvent,
+  WheelEvent,
+} from 'react';
 
 export interface LogEntry {
   [id: string]: number
@@ -15,23 +22,33 @@ enum Colors {
   WHITE = '#fff',
 }
 
-const Canvas = ({ data }: {  data: LogEntry[] }) => {
-  const [zoomY, setZoomY] = useState(1);
+const Canvas = ({ data }: { data: LogEntry[] }) => {
+  const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState(0);
+  const [indicatorPos, setIndicatorPos] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>();
 
   const plot = useCallback(() => {
     const canvas = canvasRef.current!;
+    const leftBoundary = 0;
     const ctx = canvas.getContext('2d')!;
-    // const start = pan < 0 ? 0 : pan;
-    const start = pan;
+    const lastEntry = data[data.length - 1];
+    const maxTime = lastEntry.Time / (zoom < 1 ? 1 : zoom);
+    const xScale = canvas.width / maxTime;
+    const firstEntry = data[0];
+    let start = pan;
+
+    if (pan > leftBoundary) {
+      start = leftBoundary;
+    }
+
+    // console.log(start, zoom, maxTime, xScale);
+
+    // if (pan < rightBoundary) {
+    //   start = rightBoundary;
+    // }
 
     const plotEntry = (field: string, yScale: number, color: string) => {
-      const lastEntry = data[data.length - 1];
-      const firstEntry = data[0];
-      const maxTime = lastEntry.Time / (zoomY < 1 ? 1 : zoomY);
-      const xScale = canvas.width / maxTime;
-
       ctx.strokeStyle = color;
       ctx.beginPath();
 
@@ -53,9 +70,8 @@ const Canvas = ({ data }: {  data: LogEntry[] }) => {
       ctx.strokeStyle = Colors.WHITE;
       ctx.beginPath();
 
-      const middle = canvas.width / 2;
-      ctx.moveTo(middle, 0);
-      ctx.lineTo(middle, canvas.height);
+      ctx.moveTo(indicatorPos, 0);
+      ctx.lineTo(indicatorPos, canvas.height);
       ctx.stroke();
       ctx.setLineDash([]);
     };
@@ -69,15 +85,32 @@ const Canvas = ({ data }: {  data: LogEntry[] }) => {
     plotEntry('AFR Target', 4, Colors.YELLOW);
     plotEntry('AFR', 4, Colors.GREEN);
     plotEntry('MAP', 5, Colors.GREY);
-  }, [data, zoomY, pan]);
+  }, [data, zoom, pan, indicatorPos]);
 
   const onWheel = (e: WheelEvent) => {
+    const canvas = canvasRef.current!;
+    const leftBoundary = 0;
+
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      setZoomY((current) => current < 1 ? 1 : current - e.deltaY / 100);
+      setZoom((current) => current < 1 ? 1 : current - e.deltaY / 100);
     }
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-     setPan((current) => current - e.deltaX);
+      setPan((current) => {
+        if (current > leftBoundary) {
+          return leftBoundary;
+        }
+
+        // if (current < rightBoundary) {
+        //   return rightBoundary;
+        // }
+
+        return current - e.deltaX;
+      });
     }
+  };
+
+  const onMouseMove = (e: MouseEvent) => {
+    setIndicatorPos(e.nativeEvent.offsetX);
   };
 
   useEffect(() => {
@@ -94,6 +127,7 @@ const Canvas = ({ data }: {  data: LogEntry[] }) => {
         border: 'solid #222',
       }}
       onWheel={onWheel as any}
+      onMouseMove={onMouseMove}
     />
   );
 };
