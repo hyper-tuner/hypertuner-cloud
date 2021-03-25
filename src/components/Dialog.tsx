@@ -33,7 +33,7 @@ import { findOnPage } from '../utils/config/find';
 import { parseXy, parseZ } from '../utils/tune/table';
 import Map from './Dialog/Map';
 import { evaluateExpression, isExpression } from '../utils/tune/expression';
-import { storageSet } from '../utils/storage';
+import useStorage from '../hooks/useStorage';
 
 interface DialogsAndCurves {
   [name: string]: DialogType | CurveType | TableType,
@@ -95,10 +95,10 @@ const Dialog = ({
   burnButton: any
 }) => {
   const isDataReady = Object.keys(tune.constants).length && Object.keys(config.constants).length;
-
+  const { storageSet } = useStorage();
   useEffect(() => {
     storageSet('lastDialog', url);
-  }, [url]);
+  }, [storageSet, url]);
 
   const renderHelp = (link?: string) => (link &&
     <Popover
