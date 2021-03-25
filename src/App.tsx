@@ -86,10 +86,12 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
             </Layout>
           </Route>
           <Route path={Routes.LOG}>
-            <Layout className="app-content">
-              <Content>
-                <Log />
-              </Content>
+            <Layout style={{ marginLeft: margin }}>
+              <Layout className="app-content">
+                <Content>
+                  <Log />
+                </Content>
+              </Layout>
             </Layout>
           </Route>
           <Route>

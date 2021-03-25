@@ -16,7 +16,7 @@ enum Colors {
 }
 
 const Canvas = ({ data }: {  data: LogEntry[] }) => {
-  const [zoomX, setZoomX] = useState(1);
+  const [zoomY, setZoomY] = useState(1);
   const [pan, setPan] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>();
 
@@ -29,7 +29,7 @@ const Canvas = ({ data }: {  data: LogEntry[] }) => {
     const plotEntry = (field: string, yScale: number, color: string) => {
       const lastEntry = data[data.length - 1];
       const firstEntry = data[0];
-      const maxTime = lastEntry.Time / (zoomX < 1 ? 1 : zoomX);
+      const maxTime = lastEntry.Time / (zoomY < 1 ? 1 : zoomY);
       const xScale = canvas.width / maxTime;
 
       ctx.strokeStyle = color;
@@ -69,12 +69,15 @@ const Canvas = ({ data }: {  data: LogEntry[] }) => {
     plotEntry('AFR Target', 4, Colors.YELLOW);
     plotEntry('AFR', 4, Colors.GREEN);
     plotEntry('MAP', 5, Colors.GREY);
-  }, [data, zoomX, pan]);
+  }, [data, zoomY, pan]);
 
   const onWheel = (e: WheelEvent) => {
-    setZoomX((current) => current < 1 ? 1 : current - e.deltaY / 100);
-    // setPan((current) => current < 0 ? 0 : current - e.deltaX);
-    setPan((current) => current - e.deltaX);
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      setZoomY((current) => current < 1 ? 1 : current - e.deltaY / 100);
+    }
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+     setPan((current) => current - e.deltaX);
+    }
   };
 
   useEffect(() => {
