@@ -36,6 +36,7 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
     const maxTime = lastEntry.Time / (zoom < 1 ? 1 : zoom);
     const xScale = canvas.width / maxTime;
     const firstEntry = data[0];
+
     let start = pan;
 
     if (pan > leftBoundary) {
