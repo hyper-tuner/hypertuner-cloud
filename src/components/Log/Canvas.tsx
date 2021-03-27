@@ -25,6 +25,7 @@ enum Colors {
 const Canvas = ({ data }: { data: LogEntry[] }) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState(0);
+  const [isMouseDown, setIsMouseDown] = useState(false);
   const [indicatorPos, setIndicatorPos] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>();
 
@@ -111,7 +112,26 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   };
 
   const onMouseMove = (e: MouseEvent) => {
+    const leftBoundary = 0;
     setIndicatorPos(e.nativeEvent.offsetX);
+
+    if (isMouseDown) {
+      setPan((current) => {
+        if (current > leftBoundary) {
+          return leftBoundary;
+        }
+
+        return current + e.movementX;
+      });
+    }
+  };
+
+  const onMouseDown = (e: MouseEvent) => {
+    setIsMouseDown(true);
+  };
+
+  const onMouseUp = (e: MouseEvent) => {
+    setIsMouseDown(false);
   };
 
   useEffect(() => {
@@ -129,6 +149,8 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
       }}
       onWheel={onWheel as any}
       onMouseMove={onMouseMove}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
     />
   );
 };
