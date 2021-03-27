@@ -90,7 +90,6 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   }, [data, zoom, pan, indicatorPos]);
 
   const onWheel = (e: WheelEvent) => {
-    const canvas = canvasRef.current!;
     const leftBoundary = 0;
 
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
