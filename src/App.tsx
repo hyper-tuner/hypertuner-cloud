@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   useLocation,
   Switch,
@@ -21,7 +21,8 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
 import { Routes } from './routes';
 import { Config as ConfigType } from './types/config';
-import { storageGet } from './utils/storage';
+import Log from './components/Log';
+import useStorage from './hooks/useStorage';
 
 const { Content } = Layout;
 
@@ -33,13 +34,15 @@ const mapStateToProps = (state: AppState) => ({
 
 const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
+  // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   const { pathname } = useLocation();
+  const { storageGetSync } = useStorage();
+  const lastDialogPath = storageGetSync('lastDialog');
   const dialogMatchedPath: DialogMatchedPathType = useMemo(() => matchPath(pathname, {
     path: Routes.DIALOG,
     exact: true,
   }) || { url: '', params: { category: '', dialog: '' } }, [pathname]);
 
-  const lastDialogPath = storageGet('lastDialog');
   const firstDialogPath = useMemo(() => {
     if (!config.menus) {
       return null;
@@ -52,11 +55,15 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
 
   useEffect(() => {
     loadAll();
-    // window.addEventListener('beforeunload', beforeUnload);
+    // storageGet('lastDialog')
+    //   .then((path) => setLastDialogPath(path));
 
+    // window.addEventListener('beforeunload', beforeUnload);
     // return () => {
     //   window.removeEventListener('beforeunload', beforeUnload);
     // };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -80,6 +87,15 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
                     url={dialogMatchedPath.url}
                     burnButton={isDesktop && <BurnButton />}
                   />
+                </Content>
+              </Layout>
+            </Layout>
+          </Route>
+          <Route path={Routes.LOG}>
+            <Layout style={{ marginLeft: margin }}>
+              <Layout className="app-content">
+                <Content>
+                  <Log />
                 </Content>
               </Layout>
             </Layout>
