@@ -50,16 +50,18 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
     const maxTime = lastEntry.Time / (zoom < 1 ? 1 : zoom);
     const xScale = canvas.width / maxTime;
     const firstEntry = data[0];
-    const scaledLength = canvas.width * zoom / 1;
-    setRightBoundary(-(scaledLength - canvas.width));
-    let start = pan;
+    const scaledWidth = canvas.width * zoom / 1;
+    const start = pan;
+    setRightBoundary(-(scaledWidth - canvas.width));
 
-    if (pan > leftBoundary) {
-      start = leftBoundary;
+    if (zoom < 1) {
+      setZoom(1);
+      setPan(0);
+      return;
     }
 
-    if (pan < rightBoundary) {
-      start = rightBoundary;
+    if (pan > leftBoundary || pan < rightBoundary) {
+      return;
     }
 
     const plotEntry = (field: string, yScale: number, color: string) => {
@@ -69,6 +71,7 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
       // initial value
       ctx.moveTo(start + firstEntry.Time, canvas.height - (firstEntry[field] * yScale));
 
+      // TODO: slice array according to the visible part
       data.forEach((entry) => {
         const time = entry.Time * xScale; // scale time to max width
         const value = canvas.height - (entry[field] * yScale); // scale the value
@@ -103,7 +106,13 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
 
   const onWheel = (e: WheelEvent) => {
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-      setZoom((current) => current < 1 ? 1 : current - e.deltaY / 100);
+      setZoom((current) => {
+        if (current < 1) {
+          setPan(0);
+          return 1;
+        }
+        return current - e.deltaY / 100;
+      });
     }
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
       setPan((current) => checkPan(current, current - e.deltaX));
@@ -112,7 +121,6 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
 
   const onMouseMove = (e: MouseEvent) => {
     setIndicatorPos(e.nativeEvent.offsetX);
-
     if (isMouseDown) {
       setPan((current) => checkPan(current, current + e.movementX));
     }
