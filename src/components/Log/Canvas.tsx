@@ -5,6 +5,7 @@ import {
   useState,
   MouseEvent,
   WheelEvent,
+  TouchEvent,
 } from 'react';
 
 export interface LogEntry {
@@ -27,6 +28,7 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   const [pan, setPan] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [indicatorPos, setIndicatorPos] = useState(0);
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement>();
 
   const plot = useCallback(() => {
@@ -119,18 +121,22 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
         if (current > leftBoundary) {
           return leftBoundary;
         }
-
         return current + e.movementX;
       });
     }
   };
 
-  const onMouseDown = (e: MouseEvent) => {
-    setIsMouseDown(true);
-  };
+  const onTouchMove = (e: TouchEvent) => {
+    const leftBoundary = 0;
+    const touch = e.touches[0];
+    const deltaX = touchStart.x - touch.pageX;
 
-  const onMouseUp = (e: MouseEvent) => {
-    setIsMouseDown(false);
+    setPan((current) => {
+      if (current > leftBoundary) {
+        return leftBoundary;
+      }
+      return current - (deltaX / 4);
+    });
   };
 
   useEffect(() => {
@@ -146,10 +152,15 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
       style={{
         border: 'solid #222',
       }}
-      onWheel={onWheel as any}
+      onWheel={onWheel}
       onMouseMove={onMouseMove}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
+      onTouchMove={onTouchMove}
+      onMouseDown={() => setIsMouseDown(true)}
+      onMouseUp={() => setIsMouseDown(false)}
+      onTouchStart={(e: TouchEvent) => setTouchStart({
+        x: e.touches[0].pageX,
+        y: e.touches[0].clientY,
+      })}
     />
   );
 };
