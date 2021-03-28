@@ -6,6 +6,7 @@ import {
   MouseEvent,
   WheelEvent,
   TouchEvent,
+  Touch,
 } from 'react';
 
 export interface LogEntry {
@@ -28,7 +29,7 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   const [pan, setPan] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [indicatorPos, setIndicatorPos] = useState(0);
-  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+  const [previousTouch, setPreviousTouch] = useState<Touch | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>();
 
   const plot = useCallback(() => {
@@ -117,6 +118,8 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
     setIndicatorPos(e.nativeEvent.offsetX);
 
     if (isMouseDown) {
+      console.log(e.movementX);
+
       setPan((current) => {
         if (current > leftBoundary) {
           return leftBoundary;
@@ -127,16 +130,22 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   };
 
   const onTouchMove = (e: TouchEvent) => {
-    const leftBoundary = 0;
     const touch = e.touches[0];
-    const deltaX = touchStart.x - touch.pageX;
+    const leftBoundary = 0;
 
-    setPan((current) => {
-      if (current > leftBoundary) {
-        return leftBoundary;
-      }
-      return current - (deltaX / 4);
-    });
+    if (previousTouch) {
+        (e as any).movementX = touch.pageX - previousTouch.pageX;
+        (e as any).movementY = touch.pageY - previousTouch.pageY;
+
+      setPan((current) => {
+        if (current > leftBoundary) {
+          return leftBoundary;
+        }
+        return current + (e as any).movementX;
+      });
+    };
+
+    setPreviousTouch(touch);
   };
 
   useEffect(() => {
@@ -157,10 +166,7 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
       onTouchMove={onTouchMove}
       onMouseDown={() => setIsMouseDown(true)}
       onMouseUp={() => setIsMouseDown(false)}
-      onTouchStart={(e: TouchEvent) => setTouchStart({
-        x: e.touches[0].pageX,
-        y: e.touches[0].clientY,
-      })}
+      onTouchStart={() => setPreviousTouch(null)}
     />
   );
 };
