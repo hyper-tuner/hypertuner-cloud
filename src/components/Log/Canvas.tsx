@@ -30,28 +30,37 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [indicatorPos, setIndicatorPos] = useState(0);
   const [previousTouch, setPreviousTouch] = useState<Touch | null>(null);
+  const leftBoundary = 0;
+  const [rightBoundary, setRightBoundary] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>();
+  const checkPan = (current: number, value: number) => {
+    if (current > leftBoundary) {
+      return leftBoundary;
+    }
+    if (current < rightBoundary) {
+      return rightBoundary;
+    }
+    return value;
+  };
 
   const plot = useCallback(() => {
     const canvas = canvasRef.current!;
-    const leftBoundary = 0;
     const ctx = canvas.getContext('2d')!;
     const lastEntry = data[data.length - 1];
     const maxTime = lastEntry.Time / (zoom < 1 ? 1 : zoom);
     const xScale = canvas.width / maxTime;
     const firstEntry = data[0];
-
+    const scaledLength = canvas.width * zoom / 1;
+    setRightBoundary(-(scaledLength - canvas.width));
     let start = pan;
 
     if (pan > leftBoundary) {
       start = leftBoundary;
     }
 
-    // console.log(start, zoom, maxTime, xScale);
-
-    // if (pan < rightBoundary) {
-    //   start = rightBoundary;
-    // }
+    if (pan < rightBoundary) {
+      start = rightBoundary;
+    }
 
     const plotEntry = (field: string, yScale: number, color: string) => {
       ctx.strokeStyle = color;
@@ -90,59 +99,31 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
     plotEntry('AFR Target', 4, Colors.YELLOW);
     plotEntry('AFR', 4, Colors.GREEN);
     plotEntry('MAP', 5, Colors.GREY);
-  }, [data, zoom, pan, indicatorPos]);
+  }, [data, zoom, pan, rightBoundary, indicatorPos]);
 
   const onWheel = (e: WheelEvent) => {
-    const leftBoundary = 0;
-
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
       setZoom((current) => current < 1 ? 1 : current - e.deltaY / 100);
     }
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-      setPan((current) => {
-        if (current > leftBoundary) {
-          return leftBoundary;
-        }
-
-        // if (current < rightBoundary) {
-        //   return rightBoundary;
-        // }
-
-        return current - e.deltaX;
-      });
+      setPan((current) => checkPan(current, current - e.deltaX));
     }
   };
 
   const onMouseMove = (e: MouseEvent) => {
-    const leftBoundary = 0;
     setIndicatorPos(e.nativeEvent.offsetX);
 
     if (isMouseDown) {
-      console.log(e.movementX);
-
-      setPan((current) => {
-        if (current > leftBoundary) {
-          return leftBoundary;
-        }
-        return current + e.movementX;
-      });
+      setPan((current) => checkPan(current, current + e.movementX));
     }
   };
 
   const onTouchMove = (e: TouchEvent) => {
     const touch = e.touches[0];
-    const leftBoundary = 0;
-
     if (previousTouch) {
-        (e as any).movementX = touch.pageX - previousTouch.pageX;
-        (e as any).movementY = touch.pageY - previousTouch.pageY;
-
-      setPan((current) => {
-        if (current > leftBoundary) {
-          return leftBoundary;
-        }
-        return current + (e as any).movementX;
-      });
+      (e as any).movementX = touch.pageX - previousTouch.pageX;
+      (e as any).movementY = touch.pageY - previousTouch.pageY;
+      setPan((current) => checkPan(current, current + (e as any).movementX));
     };
 
     setPreviousTouch(touch);
@@ -155,12 +136,9 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   return (
     <canvas
       ref={canvasRef as any}
-      id="plot"
+      className="plot"
       width="1200px"
       height="600px"
-      style={{
-        border: 'solid #222',
-      }}
       onWheel={onWheel}
       onMouseMove={onMouseMove}
       onTouchMove={onTouchMove}
