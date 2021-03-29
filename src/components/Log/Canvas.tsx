@@ -24,7 +24,15 @@ enum Colors {
   WHITE = '#fff',
 }
 
-const Canvas = ({ data }: { data: LogEntry[] }) => {
+const Canvas = ({
+  data,
+  width,
+  height,
+}: {
+  data: LogEntry[],
+  width: number,
+  height: number,
+}) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -32,7 +40,7 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
   const [previousTouch, setPreviousTouch] = useState<Touch | null>(null);
   const leftBoundary = 0;
   const [rightBoundary, setRightBoundary] = useState(0);
-  const canvasRef = useRef<HTMLCanvasElement>();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const checkPan = (current: number, value: number) => {
     if (current > leftBoundary) {
       return leftBoundary;
@@ -139,14 +147,14 @@ const Canvas = ({ data }: { data: LogEntry[] }) => {
 
   useEffect(() => {
     plot();
-  }, [plot]);
+  }, [plot, width, height]);
 
   return (
     <canvas
       ref={canvasRef as any}
       className="plot"
-      width="1200px"
-      height="600px"
+      width={width}
+      height={height}
       onWheel={onWheel}
       onMouseMove={onMouseMove}
       onTouchMove={onTouchMove}
