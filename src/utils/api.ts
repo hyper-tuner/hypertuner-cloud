@@ -14,7 +14,7 @@ export const loadAll = async () => {
   const json: ConfigType = await fetch(`./tunes/${version}.json`)
     .then((response) => response.json());
 
-  const tune = await fetch(`./tunes/${version}.xml`)
+  const tune = await fetch(`./tunes/${version}.msq`)
     .then((response) => response.text());
 
   const xml = (new DOMParser()).parseFromString(tune, 'text/xml');

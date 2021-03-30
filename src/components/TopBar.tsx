@@ -87,7 +87,7 @@ const TopBar = () => {
       <SubMenu title="Download" icon={<CloudDownloadOutlined />}>
         <SubMenu title="Tune" icon={<SlidersOutlined />}>
           <Menu.Item icon={<SaveOutlined />}>
-            <a href="/tunes/202103.xml" target="__blank" rel="noopener noreferrer">
+            <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
               Download
             </a>
           </Menu.Item>
