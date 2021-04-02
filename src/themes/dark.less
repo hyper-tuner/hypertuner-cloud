@@ -91,7 +91,7 @@
 @layout-trigger-color: @text-color;
 
 // Tooltip
-@tooltip-bg: rgb(46, 51, 56, 0.8);
+@tooltip-bg: @main-light;
 @zindex-tooltip: 1;
 
 // Modal
@@ -100,3 +100,21 @@
 
 // Radio buttons
 @radio-solid-checked-color: @white;
+
+// Scrollbar
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: @main;
+}
+
+::-webkit-scrollbar-thumb {
+  background: lighten(@main-light, 15%);
+  border-radius: @border-radius-base;
+
+  &:hover {
+    background: @text-disabled;
+  }
+}
