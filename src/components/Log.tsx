@@ -1,3 +1,4 @@
+/* eslint-disable import/no-webpack-loader-syntax */
 import {
   useCallback,
   useEffect,
@@ -19,16 +20,16 @@ import {
 } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { connect } from 'react-redux';
-import { Parser } from 'mlg-converter';
 import { Field, Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+// eslint-disable-next-line import/no-unresolved
+import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
 import { loadLogs } from '../utils/api';
 import Canvas, { LogEntry } from './Log/Canvas';
 import { AppState, UIState } from '../types/state';
 import { Config } from '../types/config';
 import store from '../store';
 
-// const { SubMenu } = Menu;
 const { TabPane } = Tabs;
 const { Content } = Layout;
 
@@ -67,21 +68,44 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   ]);
 
   useEffect(() => {
-    loadLogs()
-      .then((data) => {
-        setIsLoading(true);
-        const parsed = new Parser(data).parse();
-        setLogs(parsed);
+    const loadData = async () => {
+      const mlg = await import('mlg-parser');
+      const raw = await loadLogs();
+
+      const t0 = performance.now();
+      const worker = new MlgParserWorker();
+      worker.postMessage(raw);
+
+      worker.onmessage = ({ data }) => {
+        console.log(data);
+        setLogs(data);
         setIsLoading(false);
-        setFields(parsed.fields);
+        setFields(data.fields);
+        const t1 = performance.now();
+        console.log(`Parsing took ${Math.round(t1 - t0)} milliseconds.`);
+      };
 
-        console.log(parsed);
-      });
+      // const parsed: any = JSON.parse(mlg.parse(new Uint8Array(raw)));
+      // // const parsed = new Parser(raw).parse((a, b) => {
+      // //   console.log(b / a);
+      // // });
+      // const t1 = performance.now();
+      // console.log(`Parsing took ${Math.round(t1 - t0)} milliseconds.`);
+      // setLogs(parsed);
+      // setIsLoading(false);
+      // setFields(parsed.fields);
+      // console.log(parsed);
 
-    window.addEventListener('resize', calculateCanvasWidth);
+    };
+
+    loadData();
     calculateCanvasWidth();
 
-    return () => window.removeEventListener('resize', calculateCanvasWidth);
+    window.addEventListener('resize', calculateCanvasWidth);
+
+    return () => {
+      window.removeEventListener('resize', calculateCanvasWidth);
+    };
   }, [calculateCanvasWidth]);
 
   return (
@@ -117,7 +141,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {isLoading ?
+            {isLoading || !logs ?
               <Spin size="large" />
               :
               <Canvas
