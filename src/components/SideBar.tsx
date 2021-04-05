@@ -1,4 +1,8 @@
-import { Layout, Menu, Skeleton } from 'antd';
+import {
+  Layout,
+  Menu,
+  Skeleton,
+} from 'antd';
 import { connect } from 'react-redux';
 import {
   generatePath,
@@ -126,7 +130,11 @@ const SideBar = ({
     return (
       <Sider {...siderProps} className="app-sidebar" >
         <div style={{ paddingLeft: 10 }}>
-          <Skeleton /><Skeleton /><Skeleton /><Skeleton /><Skeleton />
+          <Skeleton active />
+          <Skeleton active />
+          <Skeleton active />
+          <Skeleton active />
+          <Skeleton active />
         </div>
       </Sider>
     );

@@ -77,7 +77,8 @@ const containerStyle = {
 };
 
 const skeleton = (<div style={containerStyle}>
-  <Skeleton /><Skeleton />
+  <Skeleton active />
+  <Skeleton active />
 </div>);
 
 // TODO: refactor this
