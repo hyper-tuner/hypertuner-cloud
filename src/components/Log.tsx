@@ -1,3 +1,4 @@
+/* eslint-disable import/no-webpack-loader-syntax */
 import {
   useCallback,
   useEffect,
@@ -5,12 +6,15 @@ import {
   useState,
 } from 'react';
 import {
-  Spin,
   Layout,
   Tabs,
   Checkbox,
   Row,
   Skeleton,
+  Progress,
+  Steps,
+  Space,
+  Divider,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -18,19 +22,22 @@ import {
   DashboardOutlined,
 } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
-import { Parser } from 'mlg-converter';
 import { Field, Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+// eslint-disable-next-line import/no-unresolved
+import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
 import { loadLogs } from '../utils/api';
 import Canvas, { LogEntry } from './Log/Canvas';
 import { AppState, UIState } from '../types/state';
 import { Config } from '../types/config';
 import store from '../store';
+import { formatBytes, msToTime } from '../utils/number';
 
-// const { SubMenu } = Menu;
 const { TabPane } = Tabs;
 const { Content } = Layout;
+const { Step } = Steps;
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -39,7 +46,13 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
+  const { lg } = useBreakpoint();
   const { Sider } = Layout;
+  const [progress, setProgress] = useState(0);
+  const [fileSize, setFileSize] = useState<string>();
+  const [parseElapsed, setParseElapsed] = useState<string>();
+  const [samplesCount, setSamplesCount] = useState();
+  const [step, setStep] = useState(0);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const margin = 30;
   const [canvasWidth, setCanvasWidth] = useState(0);
@@ -55,7 +68,6 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       setTimeout(calculateCanvasWidth, 1);
     },
   } as any;
-  const [isLoading, setIsLoading] = useState(true);
   const [logs, setLogs] = useState<ParserResult>();
   const [fields, setFields] = useState<Field[]>([]);
   const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
@@ -67,28 +79,49 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   ]);
 
   useEffect(() => {
-    loadLogs()
-      .then((data) => {
-        setIsLoading(true);
-        const parsed = new Parser(data).parse();
-        setLogs(parsed);
-        setIsLoading(false);
-        setFields(parsed.fields);
+    const worker = new MlgParserWorker();
+    const loadData = async () => {
+      const raw = await loadLogs();
+      setFileSize(formatBytes(raw.byteLength));
 
-        console.log(parsed);
-      });
+      worker.postMessage(raw);
+      worker.onmessage = ({ data }) => {
+        switch (data.type) {
+          case 'progress':
+            setStep(1);
+            setProgress(data.progress);
+            break;
+          case 'result':
+            setSamplesCount(data.result.records.length);
+            setStep(2);
+            setLogs(data.result);
+            setFields(data.result.fields);
+            break;
+          case 'metrics':
+            setParseElapsed(msToTime(data.metrics.elapsedMs));
+            break;
+          default:
+            break;
+        }
+      };
+    };
 
-    window.addEventListener('resize', calculateCanvasWidth);
+    loadData();
     calculateCanvasWidth();
 
-    return () => window.removeEventListener('resize', calculateCanvasWidth);
+    window.addEventListener('resize', calculateCanvasWidth);
+
+    return () => {
+      window.removeEventListener('resize', calculateCanvasWidth);
+      worker.terminate();
+    };
   }, [calculateCanvasWidth]);
 
   return (
     <>
       <Sider {...siderProps} className="app-sidebar">
-        {isLoading ?
-          <Skeleton />
+        {!logs ?
+          <div style={{ padding: 20 }}><Skeleton active /></div>
           :
           !ui.sidebarCollapsed &&
           <Tabs defaultActiveKey="fields" style={{ marginLeft: 20 }}>
@@ -117,8 +150,36 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {isLoading ?
-              <Spin size="large" />
+            {!logs ?
+              <Space
+                direction="vertical"
+                size="large"
+                style={{ width: '80%', maxWidth: 1000 }}
+              >
+                <Progress
+                  type="circle"
+                  percent={progress}
+                  width={170}
+                />
+                <Divider />
+                <Steps current={step} direction={lg ? 'horizontal' : 'vertical'}>
+                  <Step
+                    title="Downloading"
+                    description="From the closest server"
+                    subTitle={fileSize}
+                  />
+                  <Step
+                    title="Decoding"
+                    description="Reading ones and zeros"
+                    subTitle={parseElapsed}
+                  />
+                  <Step
+                    title="Rendering"
+                    description="Putting pixels on your screen"
+                    subTitle={samplesCount && `${samplesCount} samples`}
+                  />
+                </Steps>
+              </Space>
               :
               <Canvas
                 data={logs!.records as LogEntry[]}
