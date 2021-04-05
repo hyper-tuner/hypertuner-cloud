@@ -6,12 +6,12 @@ import {
   useState,
 } from 'react';
 import {
-  Spin,
   Layout,
   Tabs,
   Checkbox,
   Row,
   Skeleton,
+  Progress,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -41,6 +41,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   const { Sider } = Layout;
+  const [progress, setProgress] = useState(0);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const margin = 30;
   const [canvasWidth, setCanvasWidth] = useState(0);
@@ -56,7 +57,6 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       setTimeout(calculateCanvasWidth, 1);
     },
   } as any;
-  const [isLoading, setIsLoading] = useState(true);
   const [logs, setLogs] = useState<ParserResult>();
   const [fields, setFields] = useState<Field[]>([]);
   const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
@@ -69,33 +69,27 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
 
   useEffect(() => {
     const loadData = async () => {
-      const mlg = await import('mlg-parser');
       const raw = await loadLogs();
-
-      const t0 = performance.now();
       const worker = new MlgParserWorker();
+
+      // TODO: subscribe + cleanup
       worker.postMessage(raw);
-
       worker.onmessage = ({ data }) => {
-        console.log(data);
-        setLogs(data);
-        setIsLoading(false);
-        setFields(data.fields);
-        const t1 = performance.now();
-        console.log(`Parsing took ${Math.round(t1 - t0)} milliseconds.`);
+        switch (data.type) {
+          case 'progress':
+            setProgress(data.progress);
+            break;
+          case 'result':
+            setLogs(data.result);
+            setFields(data.result.fields);
+            break;
+          case 'metrics':
+            console.log(`Log file (${data.metrics.rawSize}) parsed in ${data.metrics.elapsedMs}ms`);
+            break;
+          default:
+            break;
+        }
       };
-
-      // const parsed: any = JSON.parse(mlg.parse(new Uint8Array(raw)));
-      // // const parsed = new Parser(raw).parse((a, b) => {
-      // //   console.log(b / a);
-      // // });
-      // const t1 = performance.now();
-      // console.log(`Parsing took ${Math.round(t1 - t0)} milliseconds.`);
-      // setLogs(parsed);
-      // setIsLoading(false);
-      // setFields(parsed.fields);
-      // console.log(parsed);
-
     };
 
     loadData();
@@ -111,7 +105,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   return (
     <>
       <Sider {...siderProps} className="app-sidebar">
-        {isLoading ?
+        {!logs ?
           <Skeleton />
           :
           !ui.sidebarCollapsed &&
@@ -141,8 +135,12 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {isLoading || !logs ?
-              <Spin size="large" />
+            {!logs ?
+              <Progress
+                type="circle"
+                percent={progress}
+                width={170}
+              />
               :
               <Canvas
                 data={logs!.records as LogEntry[]}
