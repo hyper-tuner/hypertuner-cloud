@@ -68,12 +68,9 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   ]);
 
   useEffect(() => {
+    const worker = new MlgParserWorker();
     const loadData = async () => {
-      const raw = await loadLogs();
-      const worker = new MlgParserWorker();
-
-      // TODO: subscribe + cleanup
-      worker.postMessage(raw);
+      worker.postMessage(await loadLogs());
       worker.onmessage = ({ data }) => {
         switch (data.type) {
           case 'progress':
@@ -99,6 +96,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
 
     return () => {
       window.removeEventListener('resize', calculateCanvasWidth);
+      worker.terminate();
     };
   }, [calculateCanvasWidth]);
 
