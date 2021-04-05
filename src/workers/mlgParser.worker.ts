@@ -1,5 +1,4 @@
 import { Parser } from 'mlg-converter';
-import { formatBytes } from '../utils/number';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
@@ -13,15 +12,11 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
       progress,
     });
   });
-
-  const t1 = performance.now();
-
-  ctx.postMessage({ type: 'result', result });
   ctx.postMessage({
     type: 'metrics',
     metrics: {
-      elapsedMs: Math.round(t1 - t0),
-      rawSize: formatBytes(data.byteLength),
+      elapsedMs: Math.round(performance.now() - t0),
     },
   });
+  ctx.postMessage({ type: 'result', result });
 });

@@ -12,6 +12,9 @@ import {
   Row,
   Skeleton,
   Progress,
+  Steps,
+  Space,
+  Divider,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -19,6 +22,7 @@ import {
   DashboardOutlined,
 } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import { Field, Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -29,9 +33,11 @@ import Canvas, { LogEntry } from './Log/Canvas';
 import { AppState, UIState } from '../types/state';
 import { Config } from '../types/config';
 import store from '../store';
+import { formatBytes, msToTime } from '../utils/number';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
+const { Step } = Steps;
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -40,8 +46,13 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
+  const { lg } = useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
+  const [fileSize, setFileSize] = useState<string>();
+  const [parseElapsed, setParseElapsed] = useState<string>();
+  const [samplesCount, setSamplesCount] = useState();
+  const [step, setStep] = useState(0);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const margin = 30;
   const [canvasWidth, setCanvasWidth] = useState(0);
@@ -70,18 +81,24 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   useEffect(() => {
     const worker = new MlgParserWorker();
     const loadData = async () => {
-      worker.postMessage(await loadLogs());
+      const raw = await loadLogs();
+      setFileSize(formatBytes(raw.byteLength));
+
+      worker.postMessage(raw);
       worker.onmessage = ({ data }) => {
         switch (data.type) {
           case 'progress':
+            setStep(1);
             setProgress(data.progress);
             break;
           case 'result':
+            setSamplesCount(data.result.records.length);
+            setStep(2);
             setLogs(data.result);
             setFields(data.result.fields);
             break;
           case 'metrics':
-            console.log(`Log file (${data.metrics.rawSize}) parsed in ${data.metrics.elapsedMs}ms`);
+            setParseElapsed(msToTime(data.metrics.elapsedMs));
             break;
           default:
             break;
@@ -104,7 +121,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     <>
       <Sider {...siderProps} className="app-sidebar">
         {!logs ?
-          <Skeleton />
+          <div style={{ padding: 20 }}><Skeleton active /></div>
           :
           !ui.sidebarCollapsed &&
           <Tabs defaultActiveKey="fields" style={{ marginLeft: 20 }}>
@@ -134,11 +151,35 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
             {!logs ?
-              <Progress
-                type="circle"
-                percent={progress}
-                width={170}
-              />
+              <Space
+                direction="vertical"
+                size="large"
+                style={{ width: '80%', maxWidth: 1000 }}
+              >
+                <Progress
+                  type="circle"
+                  percent={progress}
+                  width={170}
+                />
+                <Divider />
+                <Steps current={step} direction={lg ? 'horizontal' : 'vertical'}>
+                  <Step
+                    title="Downloading"
+                    description="From the closest server"
+                    subTitle={fileSize}
+                  />
+                  <Step
+                    title="Decoding"
+                    description="Reading ones and zeros"
+                    subTitle={parseElapsed}
+                  />
+                  <Step
+                    title="Rendering"
+                    description="Putting pixels on your screen"
+                    subTitle={samplesCount && `${samplesCount} samples`}
+                  />
+                </Steps>
+              </Space>
               :
               <Canvas
                 data={logs!.records as LogEntry[]}
