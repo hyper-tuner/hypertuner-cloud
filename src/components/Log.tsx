@@ -26,7 +26,7 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import {
   Field,
-  Result as ParserResult, 
+  Result as ParserResult,
 } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
@@ -35,13 +35,13 @@ import { loadLogs } from '../utils/api';
 import Canvas, { LogEntry } from './Log/Canvas';
 import {
   AppState,
-  UIState, 
+  UIState,
 } from '../types/state';
 import { Config } from '../types/config';
 import store from '../store';
 import {
   formatBytes,
-  msToTime, 
+  msToTime,
 } from '../utils/number';
 
 const { TabPane } = Tabs;
@@ -91,6 +91,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     const worker = new MlgParserWorker();
     const loadData = async () => {
       const raw = await loadLogs();
+      // TODO: add fetch with progress
       setFileSize(formatBytes(raw.byteLength));
 
       worker.postMessage(raw);
@@ -101,13 +102,13 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
             setProgress(data.progress);
             break;
           case 'result':
-            setSamplesCount(data.result.records.length);
-            setStep(2);
             setLogs(data.result);
             setFields(data.result.fields);
             break;
           case 'metrics':
             setParseElapsed(msToTime(data.metrics.elapsedMs));
+            setSamplesCount(data.metrics.recordsLength);
+            setStep(2);
             break;
           default:
             break;

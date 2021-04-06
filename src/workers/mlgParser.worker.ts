@@ -16,6 +16,7 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
     type: 'metrics',
     metrics: {
       elapsedMs: Math.round(performance.now() - t0),
+      recordsLength: result.records.length,
     },
   });
   ctx.postMessage({ type: 'result', result });
