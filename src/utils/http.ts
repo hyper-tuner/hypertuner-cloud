@@ -3,9 +3,10 @@ export type onProgress = (percent: number, total: number) => void;
 export const fetchWithProgress = async (url: string, onProgress?: onProgress, signal?: AbortSignal): Promise<ArrayBuffer> => {
   const response = await fetch(url, { signal });
   const contentLength = response.headers.get('Content-Length');
+  const isContentEncoded = !!response.headers.get('Content-Encoding');
 
-  if (!contentLength) {
-    // fallback
+  if (!contentLength || isContentEncoded) {
+    // fallback to full buffer
     return response.arrayBuffer();
   }
 
