@@ -26,7 +26,7 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import {
   Field,
-  Result as ParserResult, 
+  Result as ParserResult,
 } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
@@ -35,13 +35,13 @@ import { loadLogs } from '../utils/api';
 import Canvas, { LogEntry } from './Log/Canvas';
 import {
   AppState,
-  UIState, 
+  UIState,
 } from '../types/state';
 import { Config } from '../types/config';
 import store from '../store';
 import {
   formatBytes,
-  msToTime, 
+  msToTime,
 } from '../utils/number';
 
 const { TabPane } = Tabs;
@@ -89,9 +89,13 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
 
   useEffect(() => {
     const worker = new MlgParserWorker();
+    const controller = new AbortController();
+    const { signal } = controller;
     const loadData = async () => {
-      const raw = await loadLogs();
-      setFileSize(formatBytes(raw.byteLength));
+      const raw = await loadLogs((percent, total) => {
+        setProgress(percent);
+        setFileSize(formatBytes(total));
+      }, signal);
 
       worker.postMessage(raw);
       worker.onmessage = ({ data }) => {
@@ -99,15 +103,17 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
           case 'progress':
             setStep(1);
             setProgress(data.progress);
+            setParseElapsed(msToTime(data.elapsed));
             break;
           case 'result':
-            setSamplesCount(data.result.records.length);
-            setStep(2);
             setLogs(data.result);
             setFields(data.result.fields);
             break;
           case 'metrics':
-            setParseElapsed(msToTime(data.metrics.elapsedMs));
+            console.log(`Log parsed in ${data.elapsed}ms`);
+            setParseElapsed(msToTime(data.elapsed));
+            setSamplesCount(data.records);
+            setStep(2);
             break;
           default:
             break;
@@ -121,8 +127,9 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     window.addEventListener('resize', calculateCanvasWidth);
 
     return () => {
-      window.removeEventListener('resize', calculateCanvasWidth);
+      controller.abort();
       worker.terminate();
+      window.removeEventListener('resize', calculateCanvasWidth);
     };
   }, [calculateCanvasWidth]);
 
