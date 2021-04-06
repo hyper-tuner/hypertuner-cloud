@@ -24,16 +24,25 @@ import {
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
-import { Field, Result as ParserResult } from 'mlg-converter/dist/types';
+import {
+  Field,
+  Result as ParserResult, 
+} from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
 import { loadLogs } from '../utils/api';
 import Canvas, { LogEntry } from './Log/Canvas';
-import { AppState, UIState } from '../types/state';
+import {
+  AppState,
+  UIState, 
+} from '../types/state';
 import { Config } from '../types/config';
 import store from '../store';
-import { formatBytes, msToTime } from '../utils/number';
+import {
+  formatBytes,
+  msToTime, 
+} from '../utils/number';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -139,11 +148,11 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
             <TabPane tab={<FileTextOutlined />} key="files">
               <PerfectScrollbar options={{ suppressScrollX: true }}>
                 Files
-                </PerfectScrollbar>
+              </PerfectScrollbar>
             </TabPane>
             <TabPane tab={<DashboardOutlined />} key="gauges">
               Gauges
-              </TabPane>
+            </TabPane>
           </Tabs>
         }
       </Sider>

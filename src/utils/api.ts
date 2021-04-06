@@ -1,7 +1,5 @@
 import store from '../store';
-import {
-  Config as ConfigType,
-} from '../types/config';
+import { Config as ConfigType } from '../types/config';
 import stdDialogs from '../data/standardDialogs';
 import help from '../data/help';
 import { divider } from '../data/constants';

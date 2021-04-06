@@ -17,7 +17,9 @@ extends:
 plugins:
   - jsx-a11y
   - prettier
+  - modules-newline
 rules:
+  indent: [2, 2, { "SwitchCase": 1 }]
   semi:
     - error
     - always
@@ -35,6 +37,12 @@ rules:
   object-curly-spacing:
     - error
     - always
+  object-curly-newline: [2, {
+    "ImportDeclaration": { "multiline": true, "minProperties": 2 },
+    "ExportDeclaration": { "multiline": true, "minProperties": 1 }
+  }]
+  modules-newline/import-declaration-newline: 2
+  modules-newline/export-declaration-newline: 2
   quotes:
     - error
     - single

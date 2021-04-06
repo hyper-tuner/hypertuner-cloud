@@ -1,4 +1,7 @@
-import { useEffect, useMemo } from 'react';
+import {
+  useEffect,
+  useMemo, 
+} from 'react';
 import {
   useLocation,
   Switch,
@@ -7,12 +10,18 @@ import {
   Redirect,
   generatePath,
 } from 'react-router-dom';
-import { Layout, Result } from 'antd';
+import {
+  Layout,
+  Result, 
+} from 'antd';
 import { connect } from 'react-redux';
 import Dialog from './components/Dialog';
 import { loadAll } from './utils/api';
 import SideBar, { DialogMatchedPathType } from './components/SideBar';
-import { AppState, UIState } from './types/state';
+import {
+  AppState,
+  UIState, 
+} from './types/state';
 import BurnButton from './components/BurnButton';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';

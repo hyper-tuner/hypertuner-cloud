@@ -26,24 +26,24 @@ const SmartSelect = ({
     )
   ) {
     return <Switch
-              defaultChecked={[Switches.ON, Switches.YES].includes(defaultValue as Switches)}
-              checkedChildren={<CheckOutlined />}
-              unCheckedChildren={<CloseOutlined />}
-            />;
+      defaultChecked={[Switches.ON, Switches.YES].includes(defaultValue as Switches)}
+      checkedChildren={<CheckOutlined />}
+      unCheckedChildren={<CloseOutlined />}
+    />;
   }
 
   if (values.length < 3) {
     return (
-       <Radio.Group
+      <Radio.Group
         defaultValue={values.indexOf(defaultValue)}
         optionType="button"
         buttonStyle="solid"
         disabled={disabled}
       >
-         {values.map((val: string, index) =>
+        {values.map((val: string, index) =>
           <Radio key={val} value={index}>{val}</Radio>,
-         )}
-       </Radio.Group>
+        )}
+      </Radio.Group>
     );
   }
 

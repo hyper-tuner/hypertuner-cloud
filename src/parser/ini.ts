@@ -815,7 +815,7 @@ class INI {
       val.startsWith('$')
         ? this.result.defines[val.slice(1)]
         : val
-      )).flat();
+    )).flat();
 
     this.result.defines[result.name] = resolved;
   }
@@ -869,7 +869,7 @@ class INI {
           size: result.size,
           length: Number(result.length),
         };
-      break;
+        break;
       default:
         break;
     }

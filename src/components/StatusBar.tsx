@@ -1,8 +1,20 @@
 
-import { Layout, Space, Row, Col } from 'antd';
-import { CarOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import {
+  Layout,
+  Space,
+  Row,
+  Col, 
+} from 'antd';
+import {
+  CarOutlined,
+  InfoCircleOutlined, 
+} from '@ant-design/icons';
 import { connect } from 'react-redux';
-import { AppState, ConfigState, StatusState } from '../types/state';
+import {
+  AppState,
+  ConfigState,
+  StatusState, 
+} from '../types/state';
 
 const { Footer } = Layout;
 

@@ -26,13 +26,17 @@ import {
   ScalarConstant as ScalarConstantType,
   ConstantTypes,
 } from '../types/config';
-import {
-  Tune as TuneType,
-} from '../types/tune';
+import { Tune as TuneType } from '../types/tune';
 import { findOnPage } from '../utils/config/find';
-import { parseXy, parseZ } from '../utils/tune/table';
+import {
+  parseXy,
+  parseZ, 
+} from '../utils/tune/table';
 import Map from './Dialog/Map';
-import { evaluateExpression, isExpression } from '../utils/tune/expression';
+import {
+  evaluateExpression,
+  isExpression, 
+} from '../utils/tune/expression';
 import useStorage from '../hooks/useStorage';
 
 interface DialogsAndCurves {
@@ -291,7 +295,7 @@ const Dialog = ({
       type = PanelTypes.FIELDS;
       fields = (currentDialog as DialogType)
         .fields
-        .filter((field) => field.title !== '' );
+        .filter((field) => field.title !== '');
     } else if ('zBins' in currentDialog) {
       type = PanelTypes.TABLE;
     }
@@ -352,21 +356,21 @@ const Dialog = ({
             // case ConstantTypes.ARRAY: // TODO: arrays
             case ConstantTypes.BITS:
               input = <SmartSelect
-                        defaultValue={`${tuneField.value}`}
-                        values={constant.values as string[]}
-                        disabled={!enabled}
-                      />;
+                defaultValue={`${tuneField.value}`}
+                values={constant.values as string[]}
+                disabled={!enabled}
+              />;
               break;
 
             case ConstantTypes.SCALAR:
               input = <SmartNumber
-                        defaultValue={Number(tuneField.value)}
-                        digits={(constant as ScalarConstantType).digits}
-                        min={((constant as ScalarConstantType).min as number) || 0}
-                        max={(constant as ScalarConstantType).max as number}
-                        disabled={!enabled}
-                        units={(constant as ScalarConstantType).units}
-                      />;
+                defaultValue={Number(tuneField.value)}
+                digits={(constant as ScalarConstantType).digits}
+                min={((constant as ScalarConstantType).min as number) || 0}
+                max={(constant as ScalarConstantType).max as number}
+                disabled={!enabled}
+                units={(constant as ScalarConstantType).units}
+              />;
               break;
 
             default:

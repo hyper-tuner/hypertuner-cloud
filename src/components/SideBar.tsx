@@ -19,9 +19,7 @@ import {
   Config as ConfigType,
   Menus as MenusType,
 } from '../types/config';
-import {
-  Tune as TuneType,
-} from '../types/tune';
+import { Tune as TuneType } from '../types/tune';
 import Icon from './SideBar/Icon';
 import { evaluateExpression } from '../utils/tune/expression';
 import { Routes } from '../routes';

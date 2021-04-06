@@ -1,6 +1,4 @@
-import {
-  Help as HelpType,
-} from '../types/config';
+import { Help as HelpType } from '../types/config';
 
 export const help: HelpType = {
   reqFuel: 'The base reference pulse width required to achieve stoichiometric at 100% VE and a manifold absolute pressure (MAP) of 100kPa using current settings.',

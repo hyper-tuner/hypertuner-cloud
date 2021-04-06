@@ -1,4 +1,7 @@
-import { app, BrowserWindow } from 'electron';
+import {
+  app,
+  BrowserWindow, 
+} from 'electron';
 import path from 'path';
 
 const isDev = !app.isPackaged;

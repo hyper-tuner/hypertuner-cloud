@@ -1,6 +1,4 @@
-import {
-  Dialogs as DialogsType,
-} from '../types/config';
+import { Dialogs as DialogsType } from '../types/config';
 
 const standardDialogs: DialogsType = {
   std_injection: {

@@ -1,6 +1,4 @@
-import {
-  Constants as TuneConstantsType,
-} from '../../types/tune';
+import { Constants as TuneConstantsType } from '../../types/tune';
 
 import {
   Config as ConfigType,
@@ -19,29 +17,29 @@ export const isNumber = (val: any) => !Number.isNaN(Number(val));
 // ochGetCommand
 export const prepareConstDeclarations = (tuneConstants: TuneConstantsType, configPages: ConfigPageType[]) => (
   Object.keys(tuneConstants).map((constName: string) => {
-      let val = tuneConstants[constName].value;
+    let val = tuneConstants[constName].value;
 
-      // TODO: skip 2D and 3D maps for now
-      if (typeof val === 'string' && val.includes('\n')) {
-        return null;
-      }
+    // TODO: skip 2D and 3D maps for now
+    if (typeof val === 'string' && val.includes('\n')) {
+      return null;
+    }
 
-      // TODO: check whether we can limit this to a single page
-      const constant = configPages
-        .find((page: ConfigPageType) => constName in page.data)
-        ?.data[constName];
+    // TODO: check whether we can limit this to a single page
+    const constant = configPages
+      .find((page: ConfigPageType) => constName in page.data)
+      ?.data[constName];
 
-      // we need array index instead of a display value
-      if (constant?.type === 'bits') {
-        val = (constant.values as string[]).indexOf(`${val}`);
-      }
+    // we need array index instead of a display value
+    if (constant?.type === 'bits') {
+      val = (constant.values as string[]).indexOf(`${val}`);
+    }
 
-      // escape string values
-      if (typeof val === 'string') {
-        val = `'${val}'`;
-      }
+    // escape string values
+    if (typeof val === 'string') {
+      val = `'${val}'`;
+    }
 
-      return `const ${constName} = ${val};`;
+    return `const ${constName} = ${val};`;
   })
 );
 
