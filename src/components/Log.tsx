@@ -96,6 +96,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
         setProgress(percent);
         setFileSize(formatBytes(total));
       }, signal);
+      setFileSize(formatBytes(raw.byteLength));
 
       worker.postMessage(raw);
       worker.onmessage = ({ data }) => {

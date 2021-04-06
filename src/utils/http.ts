@@ -1,11 +1,12 @@
 export type onProgress = (percent: number, total: number) => void;
 
-export const fetchWithProgress = async (url: string, onProgress?: onProgress, signal?: AbortSignal): Promise<Uint8Array> => {
+export const fetchWithProgress = async (url: string, onProgress?: onProgress, signal?: AbortSignal): Promise<ArrayBuffer> => {
   const response = await fetch(url, { signal });
   const contentLength = response.headers.get('Content-Length');
 
   if (!contentLength) {
-    throw new Error('Missing Content-Length while fetching');
+    // fallback
+    return response.arrayBuffer();
   }
 
   const reader = response.body!.getReader();
@@ -30,5 +31,5 @@ export const fetchWithProgress = async (url: string, onProgress?: onProgress, si
     }
   }
 
-  return array;
+  return array.buffer;
 };

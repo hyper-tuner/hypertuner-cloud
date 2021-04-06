@@ -79,4 +79,4 @@ export const loadAll = async () => {
 };
 
 export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) => fetchWithProgress('./logs/long.mlg', onProgress, signal)
-  .then((response) => response.buffer);
+  .then((response) => response);
