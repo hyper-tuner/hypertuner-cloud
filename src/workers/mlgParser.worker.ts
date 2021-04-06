@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import { Parser } from 'mlg-converter';
 
 // eslint-disable-next-line no-restricted-globals
@@ -10,14 +11,13 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
     ctx.postMessage({
       type: 'progress',
       progress,
+      elapsed: ~~(performance.now() - t0),
     });
   });
   ctx.postMessage({
     type: 'metrics',
-    metrics: {
-      elapsedMs: Math.round(performance.now() - t0),
-      recordsLength: result.records.length,
-    },
+    elapsed: ~~(performance.now() - t0),
+    records: result.records.length,
   });
   ctx.postMessage({ type: 'result', result });
 });

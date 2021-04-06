@@ -100,14 +100,16 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
           case 'progress':
             setStep(1);
             setProgress(data.progress);
+            setParseElapsed(msToTime(data.elapsed));
             break;
           case 'result':
             setLogs(data.result);
             setFields(data.result.fields);
             break;
           case 'metrics':
-            setParseElapsed(msToTime(data.metrics.elapsedMs));
-            setSamplesCount(data.metrics.recordsLength);
+            console.log(`Log parsed in ${data.elapsed}ms`);
+            setParseElapsed(msToTime(data.elapsed));
+            setSamplesCount(data.records);
             setStep(2);
             break;
           default:
