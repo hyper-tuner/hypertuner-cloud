@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 export interface LogEntry {
-  [id: string]: number
+  [id: string]: number,
 }
 
 enum Colors {
@@ -60,6 +60,7 @@ const Canvas = ({
     const firstEntry = data[0];
     const scaledWidth = canvas.width * zoom / 1;
     const start = pan;
+    const resolution = Math.round(data.length / 1000 / zoom) || 1; // 1..x where 1 is max
     setRightBoundary(-(scaledWidth - canvas.width));
 
     if (zoom < 1) {
@@ -72,15 +73,25 @@ const Canvas = ({
       return;
     }
 
-    const plotEntry = (field: string, yScale: number, color: string) => {
+    const plotField = (field: string, yScale: number, color: string) => {
       ctx.strokeStyle = color;
       ctx.beginPath();
 
       // initial value
       ctx.moveTo(start + firstEntry.Time, canvas.height - (firstEntry[field] * yScale));
 
-      // TODO: slice array according to the visible part
+      let index = 0;
       data.forEach((entry) => {
+        // TODO: from..to
+        // if (entry.Time >= maxTime) {
+        //   return;
+        // }
+
+        index++;
+        if (index % resolution !== 0) {
+          return;
+        }
+
         const time = entry.Time * xScale; // scale time to max width
         const value = canvas.height - (entry[field] * yScale); // scale the value
 
@@ -105,11 +116,11 @@ const Canvas = ({
     ctx.lineWidth = Math.max(1.25, canvas.height / 400);
 
     plotIndicator();
-    plotEntry('RPM', 0.16, Colors.RED);
-    plotEntry('TPS', 20, Colors.BLUE);
-    plotEntry('AFR Target', 4, Colors.YELLOW);
-    plotEntry('AFR', 4, Colors.GREEN);
-    plotEntry('MAP', 5, Colors.GREY);
+    plotField('RPM', 0.16, Colors.RED);
+    plotField('TPS', 20, Colors.BLUE);
+    plotField('AFR Target', 4, Colors.YELLOW);
+    plotField('AFR', 4, Colors.GREEN);
+    plotField('MAP', 5, Colors.GREY);
   }, [data, zoom, pan, rightBoundary, indicatorPos]);
 
   const onWheel = (e: WheelEvent) => {
