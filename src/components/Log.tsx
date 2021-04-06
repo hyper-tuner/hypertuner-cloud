@@ -89,10 +89,13 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
 
   useEffect(() => {
     const worker = new MlgParserWorker();
+    const controller = new AbortController();
+    const { signal } = controller;
     const loadData = async () => {
-      const raw = await loadLogs();
-      // TODO: add fetch with progress
-      setFileSize(formatBytes(raw.byteLength));
+      const raw = await loadLogs((percent, total) => {
+        setProgress(percent);
+        setFileSize(formatBytes(total));
+      }, signal);
 
       worker.postMessage(raw);
       worker.onmessage = ({ data }) => {
@@ -124,8 +127,9 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     window.addEventListener('resize', calculateCanvasWidth);
 
     return () => {
-      window.removeEventListener('resize', calculateCanvasWidth);
+      controller.abort();
       worker.terminate();
+      window.removeEventListener('resize', calculateCanvasWidth);
     };
   }, [calculateCanvasWidth]);
 

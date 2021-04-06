@@ -3,6 +3,10 @@ import { Config as ConfigType } from '../types/config';
 import stdDialogs from '../data/standardDialogs';
 import help from '../data/help';
 import { divider } from '../data/constants';
+import {
+  fetchWithProgress,
+  onProgress as onProgressType,
+} from './http';
 
 export const loadAll = async () => {
   const started = new Date();
@@ -74,4 +78,5 @@ export const loadAll = async () => {
   });
 };
 
-export const loadLogs = () => fetch('./logs/middle.mlg').then((response) => response.arrayBuffer());
+export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) => fetchWithProgress('./logs/long.mlg', onProgress, signal)
+  .then((response) => response.buffer);
