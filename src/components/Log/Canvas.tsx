@@ -16,7 +16,7 @@ import {
 } from '../../utils/number';
 
 export interface LogEntry {
-  [id: string]: number,
+  [id: string]: number | string,
 }
 
 enum Colors {
@@ -69,7 +69,7 @@ const Canvas = ({
     ];
     const ctx = canvas.getContext('2d')!;
     const lastEntry = data[data.length - 1];
-    const maxTime = lastEntry.Time / (zoom < 1 ? 1 : zoom);
+    const maxTime = (lastEntry.Time as number) / (zoom < 1 ? 1 : zoom);
     const areaWidth = canvas.width;
     const areaHeight = canvas.height - 30; // leave some space in the bottom
     const xScale = areaWidth / maxTime;
@@ -107,12 +107,16 @@ const Canvas = ({
       ctx.fillText(text, left, top);
     };
 
+    const drawMarker = (left: number) => {
+      // TODO
+    };
+
     const plotField = (field: string, yScale: number, color: string) => {
       ctx.strokeStyle = color;
       ctx.beginPath();
 
       // initial value
-      ctx.moveTo(start, areaHeight - (firstEntry[field] * yScale));
+      ctx.moveTo(start, areaHeight - (firstEntry[field] as number * yScale));
 
       let index = 0;
       data.forEach((entry) => {
@@ -121,8 +125,13 @@ const Canvas = ({
           return;
         }
 
-        const time = entry.Time * xScale; // scale time to max width
-        const value = areaHeight - (entry[field] * yScale); // scale the value
+        // draw marker on top of the record
+        if (entry.type === 'marker') {
+          return;
+        }
+
+        const time = (entry.Time as number) * xScale; // scale time to max width
+        const value = areaHeight - (entry[field] as number * yScale); // scale the value
 
         ctx.lineTo(start + time, value);
       });
@@ -130,7 +139,7 @@ const Canvas = ({
       ctx.stroke();
     };
 
-    const plotIndicator = () => {
+    const drawIndicator = () => {
       ctx.setLineDash([5]);
       ctx.strokeStyle = Colors.WHITE;
       ctx.beginPath();
@@ -158,7 +167,12 @@ const Canvas = ({
       });
 
       // draw Time
-      drawText(left, areaHeight + 20, msToTime(Math.round(data[index].Time * 1000)), Colors.GREY, textAlign);
+      drawText(
+        left,
+        areaHeight + 20,
+        msToTime(Math.round(data[index].Time as number * 1000)),
+        Colors.GREY, textAlign,
+      );
 
       ctx.lineTo(indicatorPos, canvas.height);
       ctx.stroke();
@@ -169,7 +183,7 @@ const Canvas = ({
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     fieldsToPlot.forEach(({ name, scale }, fieldIndex) => plotField(name, scale, hsl(fieldIndex)));
-    plotIndicator();
+    drawIndicator();
   }, [data, zoom, pan, rightBoundary, indicatorPos]);
 
   const onWheel = (e: WheelEvent) => {
