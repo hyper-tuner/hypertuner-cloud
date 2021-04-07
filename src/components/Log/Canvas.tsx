@@ -54,7 +54,7 @@ const Canvas = ({
   const leftBoundary = 0;
   const [rightBoundary, setRightBoundary] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const checkPan = (current: number, value: number) => {
+  const checkPan = useCallback((current: number, value: number) => {
     if (current > leftBoundary) {
       return leftBoundary;
     }
@@ -62,7 +62,7 @@ const Canvas = ({
       return rightBoundary;
     }
     return value;
-  };
+  }, [rightBoundary]);
 
   const plot = useCallback(() => {
     const canvas = canvasRef.current!;
@@ -111,10 +111,6 @@ const Canvas = ({
       ctx.fillText(text, left + 2, top + 2);
       ctx.fillStyle = color;
       ctx.fillText(text, left, top);
-    };
-
-    const drawMarker = (left: number) => {
-      // TODO
     };
 
     const plotField = (field: string, yScale: number, color: string) => {
