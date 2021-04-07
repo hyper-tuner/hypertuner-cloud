@@ -78,5 +78,5 @@ export const loadAll = async () => {
   });
 };
 
-export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) => fetchWithProgress('./logs/long.mlg', onProgress, signal)
+export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) => fetchWithProgress('./logs/longest.mlg', onProgress, signal)
   .then((response) => response);

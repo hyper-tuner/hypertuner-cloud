@@ -7,7 +7,7 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / k**i).toFixed(dm))  } ${  sizes[i]}`;
+  return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 };
 
 export const leftPad = (n: number, z = 2) => (`00${n}`).slice(-z);
@@ -22,4 +22,23 @@ export const msToTime = (input: number) => {
   const hrs = (s - mins) / 60;
 
   return `${leftPad(hrs)}:${leftPad(mins)}:${leftPad(secs)}.${ms}`;
+};
+
+export const remap = (x: number, inMin: number, inMax: number, outMin: number, outMax: number) => (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+
+export type HslType = [number, number, number];
+
+export const colorHsl = (min: number, max: number, value: number): HslType => {
+  const saturation = 60;
+  const lightness = 40;
+  const coldDeg = 220;
+  const hotDeg = 0;
+  let hue = remap(value, min, max, coldDeg, hotDeg);
+
+  // fallback to cold temp
+  if (Number.isNaN(hue)) {
+    hue = coldDeg;
+  }
+
+  return [hue, saturation, lightness];
 };

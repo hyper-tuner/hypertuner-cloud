@@ -26,6 +26,7 @@ import {
   isReplace,
 } from '../../utils/keyboard/shortcuts';
 import LandscapeNotice from './LandscapeNotice';
+import { colorHsl } from '../../utils/number';
 
 type CellsType = boolean[][];
 type DataType = number[][];
@@ -35,7 +36,6 @@ enum Operations {
   DEC,
   REPLACE,
 }
-type HslType = [number, number, number];
 
 const { useBreakpoint } = Grid;
 
@@ -174,23 +174,6 @@ const Map = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const colorHsl = (min: number, max: number, value: number): HslType => {
-    const saturation = 60;
-    const lightness = 40;
-    const coldDeg = 220;
-    const hotDeg = 0;
-    const remap = (x: number, inMin: number, inMax: number, outMin: number, outMax: number) => (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-
-    let hue = remap(value, min, max, coldDeg, hotDeg);
-
-    // fallback to cold temp
-    if (Number.isNaN(hue)) {
-      hue = coldDeg;
-    }
-
-    return [hue, saturation, lightness];
-  };
 
   const min = Math.min(...data.map((row) => Math.min(...row)));
   const max = Math.max(...data.map((row) => Math.max(...row)));

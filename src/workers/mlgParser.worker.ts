@@ -1,4 +1,5 @@
 /* eslint-disable no-bitwise */
+
 import { Parser } from 'mlg-converter';
 
 // eslint-disable-next-line no-restricted-globals
