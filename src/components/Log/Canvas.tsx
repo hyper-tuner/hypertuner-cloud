@@ -11,6 +11,12 @@ import {
   Touch,
 } from 'react';
 import {
+  isDown,
+  isLeft,
+  isRight,
+  isUp,
+} from '../../utils/keyboard/shortcuts';
+import {
   colorHsl,
   msToTime,
 } from '../../utils/number';
@@ -219,9 +225,36 @@ const Canvas = ({
     setPreviousTouch(touch);
   };
 
+  const keyboardListener = useCallback((e: KeyboardEvent) => {
+    if (isUp(e)) {
+      setZoom((current) => current + 0.1);
+    }
+    if (isDown(e)) {
+      setZoom((current) => {
+        if (current < 1) {
+          setPan(0);
+          return 1;
+        }
+        return current - 0.1;
+      });
+    }
+    if (isLeft(e)) {
+      setPan((current) => checkPan(current, current + 20));
+    }
+    if (isRight(e)) {
+      setPan((current) => checkPan(current, current - 20));
+    }
+  }, [checkPan]);
+
   useEffect(() => {
     plot();
-  }, [plot, width, height]);
+    document.addEventListener('keydown', keyboardListener);
+
+    // TODO: crate custom hook
+    return () => {
+      document.removeEventListener('keydown', keyboardListener);
+    };
+  }, [plot, width, height, keyboardListener]);
 
   return (
     <canvas
