@@ -1,3 +1,5 @@
+/* eslint-disable no-bitwise */
+
 import {
   useCallback,
   useEffect,
@@ -8,6 +10,7 @@ import {
   TouchEvent,
   Touch,
 } from 'react';
+import { colorHsl } from '../../utils/number';
 
 export interface LogEntry {
   [id: string]: number,
@@ -22,6 +25,7 @@ enum Colors {
   BLUE = '#2fe3ff',
   GREY = '#334455',
   WHITE = '#fff',
+  BG = '#222629',
 }
 
 const Canvas = ({
@@ -53,6 +57,13 @@ const Canvas = ({
 
   const plot = useCallback(() => {
     const canvas = canvasRef.current!;
+    const fieldsToPlot = [
+      { name: 'RPM', scale: 0.1 },
+      { name: 'TPS', scale: 5 },
+      { name: 'AFR Target', scale: 2 },
+      { name: 'AFR', scale: 2 },
+      { name: 'MAP', scale: 5 },
+    ];
     const ctx = canvas.getContext('2d')!;
     const lastEntry = data[data.length - 1];
     const maxTime = lastEntry.Time / (zoom < 1 ? 1 : zoom);
@@ -60,8 +71,18 @@ const Canvas = ({
     const firstEntry = data[0];
     const scaledWidth = canvas.width * zoom / 1;
     const start = pan;
+    // TODO: adjust this based on FPS / preference
     const resolution = Math.round(data.length / 1000 / zoom) || 1; // 1..x where 1 is max
     setRightBoundary(-(scaledWidth - canvas.width));
+
+    const hsl = (fieldIndex: number) => {
+      const [hue] = colorHsl(0, fieldsToPlot.length - 1, fieldIndex);
+      return `hsl(${hue}, 80%, 50%)`;
+    };
+
+    // basic settings
+    ctx.font = '14px Arial';
+    ctx.lineWidth = Math.max(1.25, canvas.height / 400);
 
     if (zoom < 1) {
       setZoom(1);
@@ -78,15 +99,10 @@ const Canvas = ({
       ctx.beginPath();
 
       // initial value
-      ctx.moveTo(start + firstEntry.Time, canvas.height - (firstEntry[field] * yScale));
+      ctx.moveTo(start, canvas.height - (firstEntry[field] * yScale));
 
       let index = 0;
       data.forEach((entry) => {
-        // TODO: from..to
-        // if (entry.Time >= maxTime) {
-        //   return;
-        // }
-
         index++;
         if (index % resolution !== 0) {
           return;
@@ -106,21 +122,35 @@ const Canvas = ({
       ctx.strokeStyle = Colors.WHITE;
       ctx.beginPath();
 
+      // switch to time
+      let index = Math.round(indicatorPos * (data.length - 1) / canvas.width);
+      if (index < 0) {
+        index = 0;
+      }
+
       ctx.moveTo(indicatorPos, 0);
+
+      const left = indicatorPos + 10;
+      let top = 0;
+      fieldsToPlot.forEach(({ name }, fieldIndex) => {
+        top += 20;
+        const text = `${name}: ${data[index][name]}`;
+        ctx.fillStyle = Colors.BG;
+        ctx.fillText(text, left + 2, top + 2);
+        ctx.fillStyle = hsl(fieldIndex);
+        ctx.fillText(text, left, top);
+      });
+
       ctx.lineTo(indicatorPos, canvas.height);
       ctx.stroke();
       ctx.setLineDash([]);
     };
 
+    // clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = Math.max(1.25, canvas.height / 400);
 
+    fieldsToPlot.forEach(({ name, scale }, fieldIndex) => plotField(name, scale, hsl(fieldIndex)));
     plotIndicator();
-    plotField('RPM', 0.16, Colors.RED);
-    plotField('TPS', 20, Colors.BLUE);
-    plotField('AFR Target', 4, Colors.YELLOW);
-    plotField('AFR', 4, Colors.GREEN);
-    plotField('MAP', 5, Colors.GREY);
   }, [data, zoom, pan, rightBoundary, indicatorPos]);
 
   const onWheel = (e: WheelEvent) => {
