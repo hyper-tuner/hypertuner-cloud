@@ -10,7 +10,10 @@ import {
   TouchEvent,
   Touch,
 } from 'react';
-import { colorHsl } from '../../utils/number';
+import {
+  colorHsl,
+  msToTime,
+} from '../../utils/number';
 
 export interface LogEntry {
   [id: string]: number,
@@ -67,13 +70,15 @@ const Canvas = ({
     const ctx = canvas.getContext('2d')!;
     const lastEntry = data[data.length - 1];
     const maxTime = lastEntry.Time / (zoom < 1 ? 1 : zoom);
-    const xScale = canvas.width / maxTime;
+    const areaWidth = canvas.width;
+    const areaHeight = canvas.height - 30; // leave some space in the bottom
+    const xScale = areaWidth / maxTime;
     const firstEntry = data[0];
-    const scaledWidth = canvas.width * zoom / 1;
+    const scaledWidth = areaWidth * zoom / 1;
     const start = pan;
     // TODO: adjust this based on FPS / preference
     const resolution = Math.round(data.length / 1000 / zoom) || 1; // 1..x where 1 is max
-    setRightBoundary(-(scaledWidth - canvas.width));
+    setRightBoundary(-(scaledWidth - areaWidth));
 
     const hsl = (fieldIndex: number) => {
       const [hue] = colorHsl(0, fieldsToPlot.length - 1, fieldIndex);
@@ -82,7 +87,7 @@ const Canvas = ({
 
     // basic settings
     ctx.font = '14px Arial';
-    ctx.lineWidth = Math.max(1.25, canvas.height / 400);
+    ctx.lineWidth = Math.max(1.25, areaHeight / 400);
 
     if (zoom < 1) {
       setZoom(1);
@@ -94,12 +99,20 @@ const Canvas = ({
       return;
     }
 
+    const drawText = (left: number, top: number, text: string, color: string, textAlign = 'left') => {
+      ctx.textAlign = textAlign as any;
+      ctx.fillStyle = Colors.BG;
+      ctx.fillText(text, left + 2, top + 2);
+      ctx.fillStyle = color;
+      ctx.fillText(text, left, top);
+    };
+
     const plotField = (field: string, yScale: number, color: string) => {
       ctx.strokeStyle = color;
       ctx.beginPath();
 
       // initial value
-      ctx.moveTo(start, canvas.height - (firstEntry[field] * yScale));
+      ctx.moveTo(start, areaHeight - (firstEntry[field] * yScale));
 
       let index = 0;
       data.forEach((entry) => {
@@ -109,7 +122,7 @@ const Canvas = ({
         }
 
         const time = entry.Time * xScale; // scale time to max width
-        const value = canvas.height - (entry[field] * yScale); // scale the value
+        const value = areaHeight - (entry[field] * yScale); // scale the value
 
         ctx.lineTo(start + time, value);
       });
@@ -123,23 +136,29 @@ const Canvas = ({
       ctx.beginPath();
 
       // switch to time
-      let index = Math.round(indicatorPos * (data.length - 1) / canvas.width);
+      let index = Math.round(indicatorPos * (data.length - 1) / areaWidth);
       if (index < 0) {
         index = 0;
       }
 
       ctx.moveTo(indicatorPos, 0);
 
-      const left = indicatorPos + 10;
+      let left = indicatorPos + 10;
+      let textAlign = 'left';
+      if (indicatorPos > areaWidth / 2) {
+        // flip text to the left side of the indicator
+        textAlign = 'right';
+        left = indicatorPos - 10;
+      }
+
       let top = 0;
       fieldsToPlot.forEach(({ name }, fieldIndex) => {
         top += 20;
-        const text = `${name}: ${data[index][name]}`;
-        ctx.fillStyle = Colors.BG;
-        ctx.fillText(text, left + 2, top + 2);
-        ctx.fillStyle = hsl(fieldIndex);
-        ctx.fillText(text, left, top);
+        drawText(left, top, `${name}: ${data[index][name]}`, hsl(fieldIndex), textAlign);
       });
+
+      // draw Time
+      drawText(left, areaHeight + 20, msToTime(Math.round(data[index].Time * 1000)), Colors.GREY, textAlign);
 
       ctx.lineTo(indicatorPos, canvas.height);
       ctx.stroke();
