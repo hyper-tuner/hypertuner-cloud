@@ -176,7 +176,7 @@ const TopBar = () => {
                 <Typography.Text keyboard>P</Typography.Text>
               </>
             }>
-              <Button icon={<SearchOutlined />} />
+              <Button icon={<SearchOutlined />} ref={searchInput as any} />
             </Tooltip>
             <Dropdown
               overlay={shareMenu}
