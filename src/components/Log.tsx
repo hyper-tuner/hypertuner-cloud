@@ -38,10 +38,7 @@ import {
   AppState,
   UIState,
 } from '../types/state';
-import {
-  Config,
-  OutputChannel,
-} from '../types/config';
+import { Config } from '../types/config';
 import store from '../store';
 import {
   formatBytes,
