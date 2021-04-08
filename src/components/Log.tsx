@@ -129,6 +129,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
         };
       } catch (error) {
         setFetchError(error);
+        throw error;
       }
     };
 

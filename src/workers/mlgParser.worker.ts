@@ -1,15 +1,16 @@
 /* eslint-disable no-bitwise */
 
 import { Parser } from 'mlg-converter';
+import pako from 'pako';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
 
 ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
-  const t0 = performance.now();
-
   try {
-    const result = new Parser(data).parse((progress) => {
+    const t0 = performance.now();
+    const buff = pako.inflate(new Uint8Array(data)).buffer;
+    const result = new Parser(buff).parse((progress) => {
       ctx.postMessage({
         type: 'progress',
         progress,
@@ -24,5 +25,6 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
     ctx.postMessage({ type: 'result', result });
   } catch (error) {
     ctx.postMessage({ type: 'error', error });
+    throw error;
   }
 });

@@ -78,5 +78,11 @@ export const loadAll = async () => {
   });
 };
 
-export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) => fetchWithProgress('./logs/longest.mlg', onProgress, signal)
-  .then((response) => response);
+export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
+  fetchWithProgress(
+    // 'https://speedytuner-cloud.s3.eu-west-2.amazonaws.com/logs/longest.mlg.gz',
+    'https://d29mjpbgm6k6md.cloudfront.net/logs/longest.mlg.gz',
+    onProgress,
+    signal,
+  )
+    .then((response) => response);
