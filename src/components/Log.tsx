@@ -61,6 +61,8 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   const [fileSize, setFileSize] = useState<string>();
   const [parseElapsed, setParseElapsed] = useState<string>();
   const [samplesCount, setSamplesCount] = useState();
+  const [fetchError, setFetchError] = useState<Error>();
+  const [parseError, setParseError] = useState<Error>();
   const [step, setStep] = useState(0);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const margin = 30;
@@ -92,34 +94,42 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     const controller = new AbortController();
     const { signal } = controller;
     const loadData = async () => {
-      const raw = await loadLogs((percent, total) => {
-        setProgress(percent);
-        setFileSize(formatBytes(total));
-      }, signal);
-      setFileSize(formatBytes(raw.byteLength));
+      try {
+        const raw = await loadLogs((percent, total) => {
+          setProgress(percent);
+          setFileSize(formatBytes(total));
+        }, signal);
 
-      worker.postMessage(raw);
-      worker.onmessage = ({ data }) => {
-        switch (data.type) {
-          case 'progress':
-            setStep(1);
-            setProgress(data.progress);
-            setParseElapsed(msToTime(data.elapsed));
-            break;
-          case 'result':
-            setLogs(data.result);
-            setFields(data.result.fields);
-            break;
-          case 'metrics':
-            console.log(`Log parsed in ${data.elapsed}ms`);
-            setParseElapsed(msToTime(data.elapsed));
-            setSamplesCount(data.records);
-            setStep(2);
-            break;
-          default:
-            break;
-        }
-      };
+        setFileSize(formatBytes(raw.byteLength));
+
+        worker.postMessage(raw);
+        worker.onmessage = ({ data }) => {
+          switch (data.type) {
+            case 'progress':
+              setStep(1);
+              setProgress(data.progress);
+              setParseElapsed(msToTime(data.elapsed));
+              break;
+            case 'result':
+              setLogs(data.result);
+              setFields(data.result.fields);
+              break;
+            case 'metrics':
+              console.log(`Log parsed in ${data.elapsed}ms`);
+              setParseElapsed(msToTime(data.elapsed));
+              setSamplesCount(data.records);
+              setStep(2);
+              break;
+            case 'error':
+              setParseError(data.error);
+              break;
+            default:
+              break;
+          }
+        };
+      } catch (error) {
+        setFetchError(error);
+      }
     };
 
     loadData();
@@ -176,19 +186,22 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
                 <Progress
                   type="circle"
                   percent={progress}
+                  status={(fetchError || parseError) && 'exception'}
                   width={170}
                 />
                 <Divider />
                 <Steps current={step} direction={lg ? 'horizontal' : 'vertical'}>
                   <Step
                     title="Downloading"
-                    description="From the closest server"
                     subTitle={fileSize}
+                    description={fetchError ? fetchError!.message : 'Edge location: FRA53-C1'}
+                    status={fetchError && 'error'}
                   />
                   <Step
                     title="Decoding"
-                    description="Reading ones and zeros"
+                    description={parseError ? parseError!.message : 'Reading ones and zeros'}
                     subTitle={parseElapsed}
+                    status={parseError && 'error'}
                   />
                   <Step
                     title="Rendering"
