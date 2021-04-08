@@ -30,12 +30,12 @@ import { Tune as TuneType } from '../types/tune';
 import { findOnPage } from '../utils/config/find';
 import {
   parseXy,
-  parseZ, 
+  parseZ,
 } from '../utils/tune/table';
 import Map from './Dialog/Map';
 import {
   evaluateExpression,
-  isExpression, 
+  isExpression,
 } from '../utils/tune/expression';
 import useStorage from '../hooks/useStorage';
 
@@ -78,6 +78,8 @@ const mapStateToProps = (state: AppState) => ({
 
 const containerStyle = {
   padding: 20,
+  maxWidth: 1400,
+  margin: '0 auto',
 };
 
 const skeleton = (<div style={containerStyle}>
