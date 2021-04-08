@@ -2,6 +2,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -37,7 +38,10 @@ import {
   AppState,
   UIState,
 } from '../types/state';
-import { Config } from '../types/config';
+import {
+  Config,
+  OutputChannel,
+} from '../types/config';
 import store from '../store';
 import {
   formatBytes,
@@ -88,6 +92,19 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     'AFR',
     'MAP',
   ]);
+
+  const prepareSelectedFields = useMemo(() => selectedFields.map((field) => {
+    const name = field.toString();
+
+    // TODO: parse [Datalog]
+
+    return {
+      name,
+      units: '&', // out.units,
+      scale: 1, // out.scale,
+      transform: 1, // out.transform,
+    };
+  }), [selectedFields]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
@@ -158,7 +175,9 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
                 <Checkbox.Group onChange={setSelectedFields} value={selectedFields}>
                   {fields.map((field) => (
                     <Row key={field.name}>
-                      <Checkbox key={field.name} value={field.name}>{field.name}</Checkbox>
+                      <Checkbox key={field.name} value={field.name}>
+                        {field.name}{field.units && ` (${field.units})`}
+                      </Checkbox>
                     </Row>
                   ))}
                 </Checkbox.Group>
@@ -216,6 +235,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
                 data={logs!.records as LogEntry[]}
                 width={canvasWidth}
                 height={600}
+                selectedFields={prepareSelectedFields}
               />
             }
           </div>

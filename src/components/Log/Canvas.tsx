@@ -19,6 +19,7 @@ import {
 import {
   colorHsl,
   msToTime,
+  remap,
 } from '../../utils/number';
 
 export interface LogEntry {
@@ -37,14 +38,23 @@ enum Colors {
   BG = '#222629',
 }
 
+export interface SelectedField {
+  name: string;
+  units: string;
+  scale: string | number;
+  transform: string | number;
+};
+
 const Canvas = ({
   data,
   width,
   height,
+  selectedFields,
 }: {
   data: LogEntry[],
   width: number,
   height: number,
+  selectedFields: SelectedField[],
 }) => {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState(0);
@@ -66,13 +76,10 @@ const Canvas = ({
 
   const plot = useCallback(() => {
     const canvas = canvasRef.current!;
-    const fieldsToPlot = [
-      { name: 'RPM', scale: 0.1 },
-      { name: 'TPS', scale: 5 },
-      { name: 'AFR Target', scale: 2 },
-      { name: 'AFR', scale: 2 },
-      { name: 'MAP', scale: 5 },
-    ];
+    const hsl = (fieldIndex: number, allFields: number) => {
+      const [hue] = colorHsl(0, allFields - 1, fieldIndex);
+      return `hsl(${hue}, 80%, 50%)`;
+    };
     const ctx = canvas.getContext('2d')!;
     const lastEntry = data[data.length - 1];
     const maxTime = (lastEntry.Time as number) / (zoom < 1 ? 1 : zoom);
@@ -86,10 +93,27 @@ const Canvas = ({
     const resolution = Math.round(data.length / 1000 / zoom) || 1; // 1..x where 1 is max
     setRightBoundary(-(scaledWidth - areaWidth));
 
-    const hsl = (fieldIndex: number) => {
-      const [hue] = colorHsl(0, fieldsToPlot.length - 1, fieldIndex);
-      return `hsl(${hue}, 80%, 50%)`;
-    };
+    // find max values for each selected field so we can calculate scale
+    const fieldsToPlot: { [index: string]: { min: number, max: number, scale: number, transform: number } } = {};
+    data.forEach((record) => {
+      selectedFields.forEach((field) => {
+        const value = record[field.name];
+        if (!fieldsToPlot[field.name]) {
+          fieldsToPlot[field.name] = {
+            min: 0,
+            max: 0,
+            scale: field.scale as number,
+            transform: field.transform as number,
+          };
+        }
+        if (value > fieldsToPlot[field.name].max) {
+          fieldsToPlot[field.name].max = record[field.name] as number;
+        }
+        if (value < fieldsToPlot[field.name].min) {
+          fieldsToPlot[field.name].min = record[field.name] as number;
+        }
+      });
+    });
 
     // basic settings
     ctx.font = '14px Arial';
@@ -113,12 +137,12 @@ const Canvas = ({
       ctx.fillText(text, left, top);
     };
 
-    const plotField = (field: string, yScale: number, color: string) => {
+    const plotField = (field: string, min: number, max: number, color: string) => {
       ctx.strokeStyle = color;
       ctx.beginPath();
 
       // initial value
-      ctx.moveTo(start, areaHeight - (firstEntry[field] as number * yScale));
+      ctx.moveTo(start, areaHeight - remap(firstEntry[field] as number, min, max, 0, areaHeight));
 
       let index = 0;
       data.forEach((entry) => {
@@ -129,11 +153,12 @@ const Canvas = ({
 
         // draw marker on top of the record
         if (entry.type === 'marker') {
+          // TODO: draw actual marker
           return;
         }
 
         const time = (entry.Time as number) * xScale; // scale time to max width
-        const value = areaHeight - (entry[field] as number * yScale); // scale the value
+        const value = areaHeight - remap(entry[field] as number, min, max, 0, areaHeight); // scale the value
 
         ctx.lineTo(start + time, value);
       });
@@ -163,9 +188,15 @@ const Canvas = ({
       }
 
       let top = 0;
-      fieldsToPlot.forEach(({ name }, fieldIndex) => {
+      Object.keys(fieldsToPlot).forEach((name, fieldIndex) => {
         top += 20;
-        drawText(left, top, `${name}: ${data[index][name]}`, hsl(fieldIndex), textAlign);
+        drawText(
+          left,
+          top,
+          `${name}: ${data[index][name]}`,
+          hsl(fieldIndex, Object.keys(fieldsToPlot).length),
+          textAlign,
+        );
       });
 
       // draw Time
@@ -184,9 +215,14 @@ const Canvas = ({
     // clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    fieldsToPlot.forEach(({ name, scale }, fieldIndex) => plotField(name, scale, hsl(fieldIndex)));
+    Object.keys(fieldsToPlot).forEach((name, fieldIndex) => plotField(
+      name,
+      fieldsToPlot[name].min,
+      fieldsToPlot[name].max,
+      hsl(fieldIndex, Object.keys(fieldsToPlot).length)),
+    );
     drawIndicator();
-  }, [data, zoom, pan, rightBoundary, indicatorPos]);
+  }, [data, zoom, pan, rightBoundary, selectedFields, indicatorPos]);
 
   const onWheel = (e: WheelEvent) => {
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
@@ -222,6 +258,8 @@ const Canvas = ({
   };
 
   const keyboardListener = useCallback((e: KeyboardEvent) => {
+    // TODO:
+    // onKeyLeft
     if (isUp(e)) {
       setZoom((current) => current + 0.1);
     }
