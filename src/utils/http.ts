@@ -1,9 +1,19 @@
-export type onProgress = (percent: number, total: number) => void;
+import locations from '../data/s3-edge-locations.json';
+
+type LocationsType = { [index: string]: string };
+
+export type onProgress = (percent: number, total: number, edgeLocation: string | null) => void;
 
 export const fetchWithProgress = async (url: string, onProgress?: onProgress, signal?: AbortSignal): Promise<ArrayBuffer> => {
   const response = await fetch(url, { signal });
   const contentLength = response.headers.get('Content-Length');
-  const isContentEncoded = !!response.headers.get('Content-Encoding');
+  const isContentEncoded = response.headers.has('Content-Encoding');
+  const edgeLocationCode = response.headers.get('x-amz-cf-pop');
+  let edgeLocation = null;
+
+  if (edgeLocationCode) {
+    edgeLocation = (locations as LocationsType)[edgeLocationCode];
+  }
 
   if (!contentLength || isContentEncoded) {
     // fallback to full buffer
@@ -28,7 +38,7 @@ export const fetchWithProgress = async (url: string, onProgress?: onProgress, si
 
     if (onProgress) {
       // eslint-disable-next-line no-bitwise
-      onProgress(~~(at / length * 100), length);
+      onProgress(~~(at / length * 100), length, edgeLocation);
     }
   }
 

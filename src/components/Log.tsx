@@ -21,6 +21,7 @@ import {
   FileTextOutlined,
   EditOutlined,
   DashboardOutlined,
+  GlobalOutlined,
 } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
@@ -48,6 +49,7 @@ import {
 const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Step } = Steps;
+const edgeUnknown = 'Unknown';
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -65,6 +67,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
   const [fetchError, setFetchError] = useState<Error>();
   const [parseError, setParseError] = useState<Error>();
   const [step, setStep] = useState(0);
+  const [edgeLocation, setEdgeLocation] = useState(edgeUnknown);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const margin = 30;
   const [canvasWidth, setCanvasWidth] = useState(0);
@@ -109,9 +112,10 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     const { signal } = controller;
     const loadData = async () => {
       try {
-        const raw = await loadLogs((percent, total) => {
+        const raw = await loadLogs((percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
+          setEdgeLocation(edge || edgeUnknown);
         }, signal);
 
         setFileSize(formatBytes(raw.byteLength));
@@ -211,7 +215,11 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
                   <Step
                     title="Downloading"
                     subTitle={fileSize}
-                    description={fetchError ? fetchError!.message : 'Edge location: FRA53-C1'}
+                    description={
+                      fetchError ? fetchError!.message : <Space>
+                        <GlobalOutlined />{edgeLocation}
+                      </Space>
+                    }
                     status={fetchError && 'error'}
                   />
                   <Step
