@@ -7,7 +7,6 @@ import {
   SimpleConstant,
   DatalogEntry,
 } from '../types/config';
-import { round } from '../utils/number';
 
 const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => {
   const foundPage = config

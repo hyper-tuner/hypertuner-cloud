@@ -6,7 +6,6 @@ import * as P from 'parsimmon';
 import {
   Config as ConfigType,
   Constant,
-  DatalogEntry,
 } from '../types/config';
 
 console.log('------- start --------');
