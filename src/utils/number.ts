@@ -42,3 +42,21 @@ export const colorHsl = (min: number, max: number, value: number): HslType => {
 
   return [hue, saturation, lightness];
 };
+
+// eslint-disable-next-line prefer-template
+export const round = (value: number, digits: number | string) => +(Math.round(value + `e+${digits}` as any)  + `e-${digits}`);
+
+export const formatNumber = (value: number, format: string): string => {
+  if (format === '%d') {
+    return `${Math.round(value)}`;
+  }
+
+  const match = format.match(/%\.(?<digits>\d)f/);
+  if (!match) {
+    throw new Error(`Datalog format [${format}] not supported`);
+  }
+
+  const { digits } = match.groups!;
+
+  return round(value, digits).toFixed(digits as any);
+};

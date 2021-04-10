@@ -18,6 +18,7 @@ import {
 } from '../../utils/keyboard/shortcuts';
 import {
   colorHsl,
+  formatNumber,
   msToTime,
   remap,
 } from '../../utils/number';
@@ -43,6 +44,16 @@ export interface SelectedField {
   units: string;
   scale: string | number;
   transform: string | number;
+  format: string;
+};
+
+export interface PlottableField {
+  min: number;
+  max: number;
+  scale: number;
+  transform: number;
+  units: string;
+  format: string;
 };
 
 const Canvas = ({
@@ -78,7 +89,7 @@ const Canvas = ({
     const canvas = canvasRef.current!;
     const hsl = (fieldIndex: number, allFields: number) => {
       const [hue] = colorHsl(0, allFields - 1, fieldIndex);
-      return `hsl(${hue}, 80%, 50%)`;
+      return `hsl(${hue}, 90%, 50%)`;
     };
     const ctx = canvas.getContext('2d')!;
     const lastEntry = data[data.length - 1];
@@ -91,29 +102,33 @@ const Canvas = ({
     const start = pan;
     // TODO: adjust this based on FPS / preference
     const resolution = Math.round(data.length / 1000 / zoom) || 1; // 1..x where 1 is max
+
     setRightBoundary(-(scaledWidth - areaWidth));
 
     // find max values for each selected field so we can calculate scale
-    const fieldsToPlot: { [index: string]: { min: number, max: number, scale: number, transform: number } } = {};
+    const fieldsToPlot: { [index: string]: PlottableField } = {};
     data.forEach((record) => {
-      selectedFields.forEach((field) => {
-        const value = record[field.name];
-        if (!fieldsToPlot[field.name]) {
-          fieldsToPlot[field.name] = {
+      selectedFields.forEach(({ name, scale, transform, units, format }) => {
+        const value = record[name];
+        if (!fieldsToPlot[name]) {
+          fieldsToPlot[name] = {
             min: 0,
             max: 0,
-            scale: field.scale as number,
-            transform: field.transform as number,
+            scale: scale as number,
+            transform: transform as number,
+            units,
+            format,
           };
         }
-        if (value > fieldsToPlot[field.name].max) {
-          fieldsToPlot[field.name].max = record[field.name] as number;
+        if (value > fieldsToPlot[name].max) {
+          fieldsToPlot[name].max = record[name] as number;
         }
-        if (value < fieldsToPlot[field.name].min) {
-          fieldsToPlot[field.name].min = record[field.name] as number;
+        if (value < fieldsToPlot[name].min) {
+          fieldsToPlot[name].min = record[name] as number;
         }
       });
     });
+    const fieldsKeys = Object.keys(fieldsToPlot);
 
     // basic settings
     ctx.font = '14px Arial';
@@ -188,13 +203,17 @@ const Canvas = ({
       }
 
       let top = 0;
-      Object.keys(fieldsToPlot).forEach((name, fieldIndex) => {
+      fieldsKeys.forEach((name, fieldIndex) => {
+        const field = fieldsToPlot[name];
+        const { units, scale, transform, format } = field;
+        const value = formatNumber((data[index][name] as number * scale) + transform, format);
         top += 20;
+
         drawText(
           left,
           top,
-          `${name}: ${data[index][name]}`,
-          hsl(fieldIndex, Object.keys(fieldsToPlot).length),
+          `${name}: ${value}${units ? ` (${units})` : ''}`,
+          hsl(fieldIndex, fieldsKeys.length),
           textAlign,
         );
       });
@@ -215,11 +234,11 @@ const Canvas = ({
     // clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    Object.keys(fieldsToPlot).forEach((name, fieldIndex) => plotField(
+    fieldsKeys.forEach((name, fieldIndex) => plotField(
       name,
       fieldsToPlot[name].min,
       fieldsToPlot[name].max,
-      hsl(fieldIndex, Object.keys(fieldsToPlot).length)),
+      hsl(fieldIndex, fieldsKeys.length)),
     );
     drawIndicator();
   }, [data, zoom, pan, rightBoundary, selectedFields, indicatorPos]);

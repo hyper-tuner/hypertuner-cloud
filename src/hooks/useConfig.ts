@@ -5,9 +5,11 @@ import {
   Constant,
   OutputChannel,
   SimpleConstant,
+  DatalogEntry,
 } from '../types/config';
+import { round } from '../utils/number';
 
-export const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => {
+const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => {
   const foundPage = config
     .constants
     .pages
@@ -20,9 +22,8 @@ export const findConstantOnPage = (config: ConfigType, fieldName: string): Const
   return foundPage.data[fieldName];
 };
 
-export const findOutputChannel = (config: ConfigType, name: string): OutputChannel | SimpleConstant => {
+const findOutputChannel = (config: ConfigType, name: string): OutputChannel | SimpleConstant => {
   const result = config.outputChannels[name];
-
   if (!result) {
     throw new Error(`Output channel [${name}] not found`);
   }
@@ -30,24 +31,30 @@ export const findOutputChannel = (config: ConfigType, name: string): OutputChann
   return result;
 };
 
-export const findDatalogNameByLabel = (config: ConfigType, label: string): string => {
+const findDatalogNameByLabel = (config: ConfigType, label: string): string => {
   const found = Object.keys(config.datalog).find((name: string) => config.datalog[name].label === label);
-
   if (!found) {
-    throw new Error('Datalog entry not found');
+    throw new Error(`Datalog entry [${label}] not found`);
   }
 
   return found;
 };
 
-export const findOutputChannelByDatalogLabel = (config: ConfigType, label: string): OutputChannel | SimpleConstant =>
-  findOutputChannel(config, findDatalogNameByLabel(config, label));
+const findDatalog = (config: ConfigType, name: string): DatalogEntry => {
+  const result = config.datalog[name];
+  if (!result) {
+    throw new Error(`Datalog entry [${name}] not found`);
+  }
 
+  return result;
+};
 
 const useConfig = (config: ConfigType) => useMemo(() => ({
   isConfigReady: !!config.constants,
-  findOutputChannelByDatalogLabel: (label: string) => findOutputChannelByDatalogLabel(config, label),
+  findOutputChannel: (name: string) => findOutputChannel(config, name),
   findConstantOnPage: (name: string) => findConstantOnPage(config, name),
+  findDatalogNameByLabel: (label: string) => findDatalogNameByLabel(config, label),
+  findDatalog: (name: string) => findDatalog(config, name),
 }), [config]);
 
 export default useConfig;

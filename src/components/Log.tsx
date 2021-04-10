@@ -99,18 +99,27 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     'AFR',
     'MAP',
   ]);
-  const { isConfigReady, findOutputChannelByDatalogLabel } = useConfig(config);
+  const { isConfigReady, findOutputChannel, findDatalogNameByLabel, findDatalog } = useConfig(config);
   const prepareSelectedFields = useMemo<SelectedField[]>(() => isConfigReady ? selectedFields.map((field) => {
     const name = field.toString();
-    const { units, scale, transform } = findOutputChannelByDatalogLabel(name) as OutputChannel;
+    const logName = findDatalogNameByLabel(name);
+    const { format } = findDatalog(logName);
+    const { units, scale, transform } = findOutputChannel(logName) as OutputChannel;
 
     return {
       name,
       units,
       scale,
       transform,
+      format,
     };
-  }).filter((entry) => entry !== null) as [] : [], [isConfigReady, selectedFields, findOutputChannelByDatalogLabel]);
+  }).filter((entry) => entry !== null) as [] : [], [
+    isConfigReady,
+    selectedFields,
+    findDatalogNameByLabel,
+    findDatalog,
+    findOutputChannel,
+  ]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
