@@ -27,7 +27,6 @@ import {
   ConstantTypes,
 } from '../types/config';
 import { Tune as TuneType } from '../types/tune';
-import { findOnPage } from '../utils/config/find';
 import {
   parseXy,
   parseZ,
@@ -38,6 +37,7 @@ import {
   isExpression,
 } from '../utils/tune/expression';
 import useStorage from '../hooks/useStorage';
+import useConfig from '../hooks/useConfig';
 
 interface DialogsAndCurves {
   [name: string]: DialogType | CurveType | TableType,
@@ -103,6 +103,8 @@ const Dialog = ({
 }) => {
   const isDataReady = Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useStorage();
+  const { findConstantOnPage } = useConfig(config);
+
   useEffect(() => {
     storageSet('lastDialog', url);
   }, [storageSet, url]);
@@ -127,8 +129,8 @@ const Dialog = ({
   const renderCurve = (curve: CurveType) => {
     const x = tune.constants[curve.xBins[0]];
     const y = tune.constants[curve.yBins[0]];
-    const xConstant = findOnPage(config, curve.xBins[0]) as ScalarConstantType;
-    const yConstant = findOnPage(config, curve.yBins[0]) as ScalarConstantType;
+    const xConstant = findConstantOnPage(curve.xBins[0]) as ScalarConstantType;
+    const yConstant = findConstantOnPage(curve.yBins[0]) as ScalarConstantType;
 
     return (
       <Curve
@@ -154,7 +156,7 @@ const Dialog = ({
     const x = tune.constants[table.xBins[0]];
     const y = tune.constants[table.yBins[0]];
     const z = tune.constants[table.zBins[0]];
-    const zConstant = findOnPage(config, table.zBins[0]) as ScalarConstantType;
+    const zConstant = findConstantOnPage(table.zBins[0]) as ScalarConstantType;
 
     let max = zConstant.max as number;
     if (isExpression(zConstant.max)) {
@@ -334,7 +336,7 @@ const Dialog = ({
       <Col key={panel.name} {...calculateSpan(panel.type as PanelTypes, panels.length)}>
         <Divider>{panel.title}</Divider>
         {(panel.fields).map((field: FieldType) => {
-          const constant = findOnPage(config, field.name);
+          const constant = findConstantOnPage(field.name);
           const tuneField = tune.constants[field.name];
           const help = config.help[field.name];
           let input;

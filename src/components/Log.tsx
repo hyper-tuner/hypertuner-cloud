@@ -34,17 +34,24 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
 import { loadLogs } from '../utils/api';
-import Canvas, { LogEntry } from './Log/Canvas';
+import Canvas, {
+  LogEntry,
+  SelectedField,
+} from './Log/Canvas';
 import {
   AppState,
   UIState,
 } from '../types/state';
-import { Config } from '../types/config';
+import {
+  Config,
+  OutputChannel,
+} from '../types/config';
 import store from '../store';
 import {
   formatBytes,
   msToTime,
 } from '../utils/number';
+import useConfig from '../hooks/useConfig';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -92,19 +99,27 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     'AFR',
     'MAP',
   ]);
-
-  const prepareSelectedFields = useMemo(() => selectedFields.map((field) => {
+  const { isConfigReady, findOutputChannel, findDatalogNameByLabel, findDatalog } = useConfig(config);
+  const prepareSelectedFields = useMemo<SelectedField[]>(() => isConfigReady ? selectedFields.map((field) => {
     const name = field.toString();
-
-    // TODO: parse [Datalog]
+    const logName = findDatalogNameByLabel(name);
+    const { format } = findDatalog(logName);
+    const { units, scale, transform } = findOutputChannel(logName) as OutputChannel;
 
     return {
       name,
-      units: '&', // out.units,
-      scale: 1, // out.scale,
-      transform: 1, // out.transform,
+      units,
+      scale,
+      transform,
+      format,
     };
-  }), [selectedFields]);
+  }).filter((entry) => entry !== null) as [] : [], [
+    isConfigReady,
+    selectedFields,
+    findDatalogNameByLabel,
+    findDatalog,
+    findOutputChannel,
+  ]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
@@ -198,7 +213,15 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {!logs ?
+            {logs
+              ?
+              <Canvas
+                data={logs!.records as LogEntry[]}
+                width={canvasWidth}
+                height={600}
+                selectedFields={prepareSelectedFields}
+              />
+              :
               <Space
                 direction="vertical"
                 size="large"
@@ -235,13 +258,6 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
                   />
                 </Steps>
               </Space>
-              :
-              <Canvas
-                data={logs!.records as LogEntry[]}
-                width={canvasWidth}
-                height={600}
-                selectedFields={prepareSelectedFields}
-              />
             }
           </div>
         </Content>

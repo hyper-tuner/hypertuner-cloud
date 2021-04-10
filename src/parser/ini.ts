@@ -225,6 +225,7 @@ class INI {
       .tryParse(line);
 
     this.result.datalog[result.name] = {
+      name: result.name,
       label: INI.sanitize(result.label),
       type: result.type,
       format: INI.sanitize(result.format),

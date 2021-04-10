@@ -166,6 +166,7 @@ export interface OutputChannels {
 }
 
 export interface DatalogEntry {
+  name: string;
   label: string;
   type: 'int' | 'float';
   format: string;

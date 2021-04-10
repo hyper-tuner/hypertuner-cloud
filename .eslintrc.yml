@@ -37,12 +37,12 @@ rules:
   object-curly-spacing:
     - error
     - always
-  object-curly-newline: [2, {
+  object-curly-newline: [1, {
     "ImportDeclaration": { "multiline": true, "minProperties": 2 },
     "ExportDeclaration": { "multiline": true, "minProperties": 1 }
   }]
-  modules-newline/import-declaration-newline: 2
-  modules-newline/export-declaration-newline: 2
+  modules-newline/import-declaration-newline: 1
+  modules-newline/export-declaration-newline: 1
   quotes:
     - error
     - single
