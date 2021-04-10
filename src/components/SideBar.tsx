@@ -23,6 +23,7 @@ import { Tune as TuneType } from '../types/tune';
 import Icon from './SideBar/Icon';
 import { evaluateExpression } from '../utils/tune/expression';
 import { Routes } from '../routes';
+import useConfig from '../hooks/useConfig';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -74,6 +75,7 @@ const SideBar = ({
     collapsed: ui.sidebarCollapsed,
     onCollapse: (collapsed: boolean) => store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed }),
   } as any;
+  const { isConfigReady } = useConfig(config);
   const checkCondition = useCallback((condition: string) => evaluateExpression(condition, tune.constants, config), [tune.constants, config]);
   const buildLink = useCallback((main: string, sub: string) => generatePath(Routes.DIALOG, {
     category: main,
@@ -124,7 +126,7 @@ const SideBar = ({
     })
   ), [buildLink, checkCondition]);
 
-  if (!config || !config.constants) {
+  if (!isConfigReady) {
     return (
       <Sider {...siderProps} className="app-sidebar" >
         <div style={{ paddingLeft: 10 }}>

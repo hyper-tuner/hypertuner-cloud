@@ -1,6 +1,6 @@
 import {
   useEffect,
-  useMemo, 
+  useMemo,
 } from 'react';
 import {
   useLocation,
@@ -12,7 +12,7 @@ import {
 } from 'react-router-dom';
 import {
   Layout,
-  Result, 
+  Result,
 } from 'antd';
 import { connect } from 'react-redux';
 import Dialog from './components/Dialog';
@@ -20,7 +20,7 @@ import { loadAll } from './utils/api';
 import SideBar, { DialogMatchedPathType } from './components/SideBar';
 import {
   AppState,
-  UIState, 
+  UIState,
 } from './types/state';
 import BurnButton from './components/BurnButton';
 import TopBar from './components/TopBar';
@@ -32,6 +32,7 @@ import { Routes } from './routes';
 import { Config as ConfigType } from './types/config';
 import Log from './components/Log';
 import useStorage from './hooks/useStorage';
+import useConfig from './hooks/useConfig';
 
 const { Content } = Layout;
 
@@ -46,6 +47,7 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   const { pathname } = useLocation();
   const { storageGetSync } = useStorage();
+  const { isConfigReady } = useConfig(config);
   const lastDialogPath = storageGetSync('lastDialog');
   const dialogMatchedPath: DialogMatchedPathType = useMemo(() => matchPath(pathname, {
     path: Routes.DIALOG,
@@ -53,14 +55,14 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
   }) || { url: '', params: { category: '', dialog: '' } }, [pathname]);
 
   const firstDialogPath = useMemo(() => {
-    if (!config.menus) {
+    if (!isConfigReady) {
       return null;
     }
 
     const firstCategory = Object.keys(config.menus)[0];
     const firstDialog = Object.keys(config.menus[firstCategory].subMenus)[0];
     return generatePath(Routes.DIALOG, { category: firstCategory, dialog: firstDialog });
-  }, [config.menus]);
+  }, [config.menus, isConfigReady]);
 
   useEffect(() => {
     loadAll();
