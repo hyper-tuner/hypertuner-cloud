@@ -165,6 +165,13 @@ export interface OutputChannels {
   [name: string]: OutputChannel | SimpleConstant;
 }
 
+export interface DatalogEntry {
+  label: string;
+  type: 'int' | 'float';
+  format: string;
+  condition: string;
+}
+
 export interface Config {
   [key: string]: any;
   megaTune: {
@@ -197,4 +204,7 @@ export interface Config {
     [name: string]: Table;
   };
   outputChannels: OutputChannels;
+  datalog: {
+    [name: string]: DatalogEntry;
+  };
 }

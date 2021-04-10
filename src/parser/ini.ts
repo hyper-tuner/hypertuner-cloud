@@ -6,6 +6,7 @@ import * as P from 'parsimmon';
 import {
   Config as ConfigType,
   Constant,
+  DatalogEntry,
 } from '../types/config';
 
 console.log('------- start --------');
@@ -100,6 +101,7 @@ class INI {
       curves: {},
       tables: {},
       outputChannels: {},
+      datalog: {},
       help: {},
     };
   }
@@ -170,9 +172,64 @@ class INI {
       case 'OutputChannels':
         this.parseOutputChannels(line);
         break;
+      case 'Datalog':
+        this.parseDatalog(line);
+        break;
       default:
         break;
     }
+  }
+
+  private parseDatalog(line: string) {
+    const base: any = [
+      P.string('entry'),
+      this.space, this.equal, this.space,
+      ['name', this.name],
+      ...this.delimiter,
+    ];
+    const type: any = [
+      ...this.delimiter,
+      ['type', P.regexp(/float|int/)],
+    ];
+    const format: any = [
+      ...this.delimiter,
+      ['format', this.notQuote.wrap(...this.quotes)],
+    ];
+    const noConditions = [
+      ...base,
+      ['label', this.notQuote.wrap(...this.quotes)],
+      ...type,
+      ...format,
+    ];
+    const withConditions = [
+      ...noConditions,
+      ...this.delimiter,
+      ['condition', this.expression],
+    ];
+    const labelExpression = [
+      ...base,
+      ['label', this.expression],
+      ...type,
+      ...format,
+    ];
+    const labelExpressionWithCondition = [
+      ...labelExpression,
+      ...this.delimiter,
+      ['condition', this.expression],
+    ];
+
+    const result: any = P.seqObj(...labelExpressionWithCondition, P.all)
+      .or(P.seqObj(...withConditions, P.all))
+      .or(P.seqObj(...labelExpression, P.all))
+      .or(P.seqObj(...noConditions, P.all))
+      .tryParse(line);
+
+    this.result.datalog[result.name] = {
+      label: INI.sanitize(result.label),
+      type: result.type,
+      format: INI.sanitize(result.format),
+      condition: result.condition ? INI.sanitize(result.condition) : '',
+    };
   }
 
   private parseOutputChannels(line: string) {

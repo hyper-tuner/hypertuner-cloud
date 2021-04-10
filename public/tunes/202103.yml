@@ -65287,6 +65287,446 @@ outputChannels:
     value: '{ boostType == 0 ? 100 : 511 }'
   CLIdleDelta:
     value: '{ CLIdleTarget - rpm }'
+datalog:
+  time:
+    label: Time
+    type: float
+    format: '%.3f'
+    condition: ''
+  secl:
+    label: SecL
+    type: int
+    format: '%d'
+    condition: ''
+  rpm:
+    label: RPM
+    type: int
+    format: '%d'
+    condition: ''
+  map:
+    label: MAP
+    type: int
+    format: '%d'
+    condition: ''
+  MAPxRPM:
+    label: MAPxRPM
+    type: int
+    format: '%d'
+    condition: ''
+  tps:
+    label: TPS
+    type: int
+    format: '%d'
+    condition: ''
+  afr:
+    label: AFR
+    type: float
+    format: '%.3f'
+    condition: ''
+  lambda:
+    label: Lambda
+    type: float
+    format: '%.3f'
+    condition: ''
+  iat:
+    label: IAT
+    type: int
+    format: '%d'
+    condition: ''
+  coolant:
+    label: CLT
+    type: int
+    format: '%d'
+    condition: ''
+  engine:
+    label: Engine
+    type: int
+    format: '%d'
+    condition: ''
+  DFCOOn:
+    label: DFCO
+    type: int
+    format: '%d'
+    condition: ''
+  egoCorrection:
+    label: Gego
+    type: int
+    format: '%d'
+    condition: ''
+  airCorrection:
+    label: Gair
+    type: int
+    format: '%d'
+    condition: ''
+  bat_correction:
+    label: Gbattery
+    type: int
+    format: '%d'
+    condition: ''
+  warmupEnrich:
+    label: Gwarm
+    type: int
+    format: '%d'
+    condition: ''
+  baroCorrection:
+    label: Gbaro
+    type: int
+    format: '%d'
+    condition: ''
+  gammaEnrich:
+    label: Gammae
+    type: int
+    format: '%d'
+    condition: ''
+  accelEnrich:
+    label: Accel Enrich
+    type: int
+    format: '%d'
+    condition: ''
+  veCurr:
+    label: Current VE
+    type: int
+    format: '%d'
+    condition: ''
+  VE1:
+    label: VE1
+    type: int
+    format: '%d'
+    condition: ''
+  VE2:
+    label: VE2
+    type: int
+    format: '%d'
+    condition: ''
+  pulseWidth:
+    label: PW2
+    type: float
+    format: '%.3f'
+    condition: ''
+  afrTarget:
+    label: AFR Target
+    type: float
+    format: '%.3f'
+    condition: ''
+  lambdaTarget:
+    label: Lambda Target
+    type: float
+    format: '%.3f'
+    condition: ''
+  dutyCycle:
+    label: DutyCycle2
+    type: float
+    format: '%.1f'
+    condition: ''
+  TPSdot:
+    label: TPS DOT
+    type: int
+    format: '%d'
+    condition: ''
+  advance:
+    label: Advance
+    type: int
+    format: '%d'
+    condition: ''
+  dwell:
+    label: Dwell
+    type: float
+    format: '%.1f'
+    condition: ''
+  batteryVoltage:
+    label: Battery V
+    type: float
+    format: '%.1f'
+    condition: ''
+  rpmDOT:
+    label: rpm/s
+    type: int
+    format: '%d'
+    condition: ''
+  flex:
+    label: Eth %
+    type: int
+    format: '%d'
+    condition: '{ flexEnabled }'
+  flexFuelCor:
+    label: GflexFuel
+    type: int
+    format: '%d'
+    condition: '{ flexEnabled }'
+  fuelTemp:
+    label: Fuel Temp
+    type: int
+    format: '%d'
+    condition: '{ flexEnabled }'
+  fuelTempCor:
+    label: GfuelTemp
+    type: int
+    format: '%d'
+    condition: '{ flexEnabled }'
+  errorNum:
+    label: 'Error #'
+    type: int
+    format: '%d'
+    condition: '{ errorNum }'
+  currentError:
+    label: Error ID
+    type: int
+    format: '%d'
+    condition: '{ errorNum }'
+  map_psi:
+    label: Boost PSI
+    type: float
+    format: '%.1f'
+    condition: ''
+  boostTarget:
+    label: Boost Target
+    type: int
+    format: '%d'
+    condition: '{ boostEnabled }'
+  boostDuty:
+    label: Boost Duty
+    type: int
+    format: '%d'
+    condition: '{ boostEnabled }'
+  boostCutOut:
+    label: Boost cut
+    type: int
+    format: '%d'
+    condition: ''
+  launchHard:
+    label: Hard Launch
+    type: int
+    format: '%d'
+    condition: ''
+  hardLimitOn:
+    label: Hard Limiter
+    type: int
+    format: '%d'
+    condition: ''
+  idleControlOn:
+    label: Idle Control
+    type: int
+    format: '%d'
+    condition: ''
+  idleLoad:
+    label: IAC value
+    type: int
+    format: '%d'
+    condition: ''
+  CLIdleTarget:
+    label: Idle Target RPM
+    type: int
+    format: '%%d'
+    condition: >-
+      { iacAlgorithm == 3 || iacAlgorithm == 5 || iacAlgorithm == 6 ||
+      idleAdvEnabled >= 1 }
+  CLIdleDelta:
+    label: Idle RPM Delta
+    type: int
+    format: '%d'
+    condition: >-
+      { iacAlgorithm == 3 || iacAlgorithm == 5 || iacAlgorithm == 6 ||
+      idleAdvEnabled >= 1 }
+  baro:
+    label: Baro Pressure
+    type: int
+    format: '%d'
+    condition: ''
+  nitrousOn:
+    label: Nitrous
+    type: int
+    format: '%d'
+    condition: '{ n2o_enable > 0 }'
+  syncLossCounter:
+    label: 'Sync Loss #'
+    type: int
+    format: '%d'
+    condition: ''
+  vvt1Angle:
+    label: VVT Angle
+    type: int
+    format: '%d'
+    condition: '{ vvtMode == 2 }'
+  vvt1Target:
+    label: VVT Target Angle
+    type: int
+    format: '%d'
+    condition: '{ vvtMode == 2 }'
+  vvt1Duty:
+    label: VVT Duty
+    type: int
+    format: '%d'
+    condition: '{ vvtEnabled > 0 }'
+  vss:
+    label: Wheel Speed (kph)
+    type: int
+    format: '%d'
+    condition: '{ vssMode > 1 }'
+  vssMPH:
+    label: Wheel Speed (mph)
+    type: int
+    format: '%d'
+    condition: '{ vssMode > 1 }'
+  gear:
+    label: Gear
+    type: int
+    format: '%d'
+    condition: '{ vssMode > 1 }'
+  fuelPressure:
+    label: Fuel Pressure
+    type: int
+    format: '%d'
+    condition: '{ fuelPressureEnable > 0 }'
+  oilPressure:
+    label: Oil Pressure
+    type: int
+    format: '%d'
+    condition: '{ oilPressureEnable > 0 }'
+  vvt2Angle:
+    label: VVT Angle
+    type: int
+    format: '%d'
+    condition: '{ vvtMode == 2 }'
+  vvt2Target:
+    label: VVT Target Angle
+    type: int
+    format: '%d'
+    condition: '{ vvtMode == 2 }'
+  vvt2Duty:
+    label: VVT Duty
+    type: int
+    format: '%d'
+    condition: '{ vvtEnabled > 0 }'
+  auxin_gauge0:
+    label: '{ stringValue(AUXin00Alias) }'
+    type: int
+    format: '%d'
+    condition: '{(caninput_sel0b != 0)}'
+  auxin_gauge1:
+    label: '{ stringValue(AUXin01Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel1b != 0)}'
+  auxin_gauge2:
+    label: '{ stringValue(AUXin02Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel2b != 0)}'
+  auxin_gauge3:
+    label: '{ stringValue(AUXin03Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel3b != 0)}'
+  auxin_gauge4:
+    label: '{ stringValue(AUXin04Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel4b != 0)}'
+  auxin_gauge5:
+    label: '{ stringValue(AUXin05Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel5b != 0)}'
+  auxin_gauge6:
+    label: '{ stringValue(AUXin06Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel6b != 0)}'
+  auxin_gauge7:
+    label: '{ stringValue(AUXin07Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel7b != 0)}'
+  auxin_gauge8:
+    label: '{ stringValue(AUXin08Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel8b != 0)}'
+  auxin_gauge9:
+    label: '{ stringValue(AUXin09Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel9b != 0)}'
+  auxin_gauge10:
+    label: '{ stringValue(AUXin10Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel10b != 0)}'
+  auxin_gauge11:
+    label: '{ stringValue(AUXin11Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel11b != 0)}'
+  auxin_gauge12:
+    label: '{ stringValue(AUXin12Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel12b != 0)}'
+  auxin_gauge13:
+    label: '{ stringValue(AUXin13Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel13b != 0)}'
+  auxin_gauge14:
+    label: '{ stringValue(AUXin14Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel14b != 0)}'
+  auxin_gauge15:
+    label: '{ stringValue(AUXin15Alias) }'
+    type: int
+    format: '%d'
+    condition: '{ (caninput_sel15b != 0)}'
+  outputsStatus0:
+    label: '{ stringValue(prgm_out00Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[0] != 0)}'
+  outputsStatus1:
+    label: '{ stringValue(prgm_out01Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[1] != 0)}'
+  outputsStatus2:
+    label: '{ stringValue(prgm_out02Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[2] != 0)}'
+  outputsStatus3:
+    label: '{ stringValue(prgm_out03Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[3] != 0)}'
+  outputsStatus4:
+    label: '{ stringValue(prgm_out04Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[4] != 0)}'
+  outputsStatus5:
+    label: '{ stringValue(prgm_out05Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[5] != 0)}'
+  outputsStatus6:
+    label: '{ stringValue(prgm_out06Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[6] != 0)}'
+  outputsStatus7:
+    label: '{ stringValue(prgm_out07Alias)}'
+    type: int
+    format: '%d'
+    condition: '{ (outputPin[7] != 0)}'
+  advance1:
+    label: Advance 1
+    type: int
+    format: '%d'
+    condition: ''
+  advance2:
+    label: Advance 2
+    type: int
+    format: '%d'
+    condition: ''
 help:
   nCylinders: Cylinder count
   alternate: >-
