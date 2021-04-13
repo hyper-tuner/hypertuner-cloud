@@ -91,7 +91,7 @@ const Canvas = ({
       const [hue] = colorHsl(0, allFields - 1, fieldIndex);
       return `hsl(${hue}, 90%, 50%)`;
     };
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext('2d', { alpha: false })!;
     const lastEntry = data[data.length - 1];
     const maxTime = (lastEntry.Time as number) / (zoom < 1 ? 1 : zoom);
     const areaWidth = canvas.width;
@@ -175,7 +175,7 @@ const Canvas = ({
         const time = (entry.Time as number) * xScale; // scale time to max width
         const value = areaHeight - remap(entry[field] as number, min, max, 0, areaHeight); // scale the value
 
-        ctx.lineTo(start + time, value);
+        ctx.lineTo(Math.round(start + time), Math.round(value));
       });
 
       ctx.stroke();
