@@ -1,6 +1,6 @@
 import { Help as HelpType } from '../types/config';
 
-export const help: HelpType = {
+const help: HelpType = {
   reqFuel: 'The base reference pulse width required to achieve stoichiometric at 100% VE and a manifold absolute pressure (MAP) of 100kPa using current settings.',
   algorithm: 'Fueling calculation algorithm',
   alternate: 'Whether or not the injectors should be fired at the same time.\nThis setting is ignored when Sequential is selected below, however it will still affect req_fuel value.',

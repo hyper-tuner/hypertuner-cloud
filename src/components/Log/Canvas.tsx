@@ -9,6 +9,7 @@ import {
   WheelEvent,
   TouchEvent,
   Touch,
+  useMemo,
 } from 'react';
 import {
   isDown,
@@ -85,33 +86,15 @@ const Canvas = ({
     return value;
   }, [rightBoundary]);
 
-  const plot = useCallback(() => {
-    const canvas = canvasRef.current!;
-    const hsl = (fieldIndex: number, allFields: number) => {
-      const [hue] = colorHsl(0, allFields - 1, fieldIndex);
-      return `hsl(${hue}, 90%, 50%)`;
-    };
-    const ctx = canvas.getContext('2d', { alpha: false })!;
-    const lastEntry = data[data.length - 1];
-    const maxTime = (lastEntry.Time as number) / (zoom < 1 ? 1 : zoom);
-    const areaWidth = canvas.width;
-    const areaHeight = canvas.height - 30; // leave some space in the bottom
-    const xScale = areaWidth / maxTime;
-    const firstEntry = data[0];
-    const scaledWidth = areaWidth * zoom / 1;
-    const start = pan;
-    // TODO: adjust this based on FPS / preference
-    const resolution = Math.round(data.length / 1000 / zoom) || 1; // 1..x where 1 is max
+  // find max values for each selected field so we can calculate scale
+  const fieldsToPlot = useMemo(() => {
+    const temp: { [index: string]: PlottableField } = {};
 
-    setRightBoundary(-(scaledWidth - areaWidth));
-
-    // find max values for each selected field so we can calculate scale
-    const fieldsToPlot: { [index: string]: PlottableField } = {};
     data.forEach((record) => {
       selectedFields.forEach(({ name, scale, transform, units, format }) => {
         const value = record[name];
-        if (!fieldsToPlot[name]) {
-          fieldsToPlot[name] = {
+        if (!temp[name]) {
+          temp[name] = {
             min: 0,
             max: 0,
             scale: scale as number,
@@ -120,15 +103,51 @@ const Canvas = ({
             format,
           };
         }
-        if (value > fieldsToPlot[name].max) {
-          fieldsToPlot[name].max = record[name] as number;
+        if (value > temp[name].max) {
+          temp[name].max = record[name] as number;
         }
-        if (value < fieldsToPlot[name].min) {
-          fieldsToPlot[name].min = record[name] as number;
+        if (value < temp[name].min) {
+          temp[name].min = record[name] as number;
         }
       });
     });
-    const fieldsKeys = Object.keys(fieldsToPlot);
+
+    return temp;
+  }, [data, selectedFields]);
+
+  const fieldsKeys = useMemo(() => Object.keys(fieldsToPlot), [fieldsToPlot]);
+
+  const plot = useCallback(() => {
+    const canvas = canvasRef.current!;
+    const hsl = (fieldIndex: number, allFields: number) => {
+      const [hue] = colorHsl(0, allFields - 1, fieldIndex);
+      return `hsl(${hue}, 90%, 50%)`;
+    };
+    const ctx = canvas.getContext('2d', { alpha: false })!;
+    const lastIndex = data.length - 1;
+    const lastEntry = data[lastIndex];
+    const maxTime = (lastEntry.Time as number) / (zoom < 1 ? 1 : zoom);
+    const maxIndex = Math.round(lastIndex / (zoom < 1 ? 1 : zoom));
+    const areaWidth = canvas.width;
+    const areaHeight = canvas.height - 30; // leave some space in the bottom
+    const timeScale = areaWidth / maxTime;
+    const indexScale = areaWidth / maxIndex;
+    const firstEntry = data[0];
+    const scaledWidth = areaWidth * zoom / 1;
+    const start = pan;
+    // TODO: adjust this based on FPS / preference
+    const resolution = Math.round(data.length / 1000 / zoom) || 1; // 1..x where 1 is max
+
+    const dataWindow = data.slice(0, maxIndex);
+
+    console.log({
+      timeScale,
+      indexScale,
+      maxTime,
+      maxIndex,
+    });
+
+    setRightBoundary(-(scaledWidth - areaWidth));
 
     // basic settings
     ctx.font = '14px Arial';
@@ -160,7 +179,7 @@ const Canvas = ({
       ctx.moveTo(start, areaHeight - remap(firstEntry[field] as number, min, max, 0, areaHeight));
 
       let index = 0;
-      data.forEach((entry) => {
+      dataWindow.forEach((entry) => {
         index++;
         if (index % resolution !== 0) {
           return;
@@ -172,7 +191,7 @@ const Canvas = ({
           return;
         }
 
-        const time = (entry.Time as number) * xScale; // scale time to max width
+        const time = (entry.Time as number) * timeScale; // scale time to max width
         const value = areaHeight - remap(entry[field] as number, min, max, 0, areaHeight); // scale the value
 
         ctx.lineTo(Math.round(start + time), Math.round(value));
@@ -192,6 +211,8 @@ const Canvas = ({
         index = 0;
       }
 
+      const currentData = data[index];
+
       ctx.moveTo(indicatorPos, 0);
 
       let left = indicatorPos + 10;
@@ -206,7 +227,7 @@ const Canvas = ({
       fieldsKeys.forEach((name, fieldIndex) => {
         const field = fieldsToPlot[name];
         const { units, scale, transform, format } = field;
-        const value = formatNumber((data[index][name] as number * scale) + transform, format);
+        const value = formatNumber((currentData[name] as number * scale) + transform, format);
         top += 20;
 
         drawText(
@@ -222,7 +243,7 @@ const Canvas = ({
       drawText(
         left,
         areaHeight + 20,
-        msToTime(Math.round(data[index].Time as number * 1000)),
+        msToTime(Math.round(currentData.Time as number * 1000)),
         Colors.GREY, textAlign,
       );
 
