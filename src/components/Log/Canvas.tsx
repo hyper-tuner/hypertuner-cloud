@@ -92,7 +92,7 @@ const Canvas = ({
   }, []);
 
   const canvas = canvasRef.current!;
-  const ctx = useMemo(() => canvas && canvas.getContext('2d', { alpha: false })!, [canvas]);
+  const ctx = useMemo(() => canvas && canvas.getContext('2d', { alpha: true })!, [canvas]);
   const canvasWidth = canvas ? canvas.width : 0;
   const canvasHeight = canvas ? canvas.height : 0;
   const areaWidth = canvas ? canvasWidth : 0;
