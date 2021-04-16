@@ -10,10 +10,14 @@ settings:
         - ".ts"
         - ".tsx"
 extends:
+  - eslint:recommended
   - react-app
   - airbnb
   - plugin:jsx-a11y/recommended
   - prettier
+  - plugin:import/errors
+  - plugin:import/warnings
+  - plugin:import/typescript
 plugins:
   - jsx-a11y
   - prettier

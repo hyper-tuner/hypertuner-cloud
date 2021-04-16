@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-} from 'react';
+
 import {
   useLocation,
   Switch,
@@ -15,6 +12,10 @@ import {
   Result,
 } from 'antd';
 import { connect } from 'react-redux';
+import {
+  useEffect,
+  useMemo,
+} from 'react';
 import Dialog from './components/Dialog';
 import { loadAll } from './utils/api';
 import SideBar, { DialogMatchedPathType } from './components/SideBar';
