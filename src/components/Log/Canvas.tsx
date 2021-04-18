@@ -144,7 +144,7 @@ const Canvas = ({
 
   // 1..x where 1 is max
   const resolution = useMemo(() =>
-    Math.round(data.length / 1_000 / zoom) || 1, [data.length, zoom]);
+    Math.round(maxIndex / 5_000 / zoom) || 1, [maxIndex, zoom]);
 
   const dataWindow = useMemo(
     () => data
