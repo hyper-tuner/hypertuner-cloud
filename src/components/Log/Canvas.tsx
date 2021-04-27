@@ -100,14 +100,14 @@ const Canvas = ({
   const lastIndex = data.length - 1;
   const lastEntry = useMemo(() => data[lastIndex], [data, lastIndex]);
   const maxTime = useMemo(() => (lastEntry.Time as number) / (zoom < 1 ? 1 : zoom), [lastEntry.Time, zoom]);
-  const maxIndex = useMemo(() => Math.round(lastIndex / (zoom < 1 ? 1 : zoom)), [lastIndex, zoom]);
-  const timeScale = areaWidth / maxTime;
+  const maxIndex = useMemo(() => lastIndex / (zoom < 1 ? 1 : zoom), [lastIndex, zoom]);
+  const timeScale = useMemo(() => areaWidth / maxTime, [areaWidth, maxTime]);
   // const indexScale = areaWidth / maxIndex;
   const firstEntry = data[0];
   const scaledWidth = useMemo(() => areaWidth * zoom / 1, [areaWidth, zoom]);
   const startTime = pan;
   const startIndex = useMemo(
-    () => Math.round(startTime >= 0 ? 0 : -(startTime * maxIndex / areaWidth)),
+    () => startTime >= 0 ? 0 : -(startTime * maxIndex / areaWidth),
     [areaWidth, maxIndex, startTime],
   );
 
@@ -142,28 +142,33 @@ const Canvas = ({
 
   const fieldsKeys = useMemo(() => Object.keys(fieldsToPlot), [fieldsToPlot]);
 
-  // 1..x where 1 is max
-  const resolution = useMemo(() =>
-    Math.round(maxIndex / 5_000 / zoom) || 1, [maxIndex, zoom]);
+  const dataWindow = useMemo(() => {
+    const pixels = (maxIndex - startIndex) / areaWidth;
+    // map available pixels to the number of data entries
+    const resolution = pixels < 1 ? 1 : Math.round(pixels);
+    const sliced = data.slice(startIndex, startIndex + maxIndex); // slice data
 
-  const dataWindow = useMemo(
-    () => data
-      .slice(startIndex, startIndex + maxIndex) // slice the data array
-      .filter((_, index) => index % resolution === 0),
-    [data, maxIndex, resolution, startIndex],
-  );
+    // skip n-th element to reduce number of data points
+    if (resolution > 1) {
+      return sliced.filter((_, index) => index % resolution === 0);
+    }
+
+    return sliced;
+  }, [areaWidth, data, maxIndex, startIndex]);
 
   const plotField = useCallback((field: string, min: number, max: number, color: string) => {
     ctx.strokeStyle = color;
     ctx.beginPath();
 
-    // initial value
-    ctx.moveTo(startTime, areaHeight - remap(firstEntry[field] as number, min, max, 0, areaHeight));
+    // initial position
+    const initialValue = areaHeight - remap(firstEntry[field] as number, min, max, 0, areaHeight);
+    ctx.moveTo(startTime, initialValue);
 
-    dataWindow.forEach((entry) => {
+    dataWindow.forEach((entry, index) => {
       // draw marker on top of the record
       if (entry.type === 'marker') {
         // TODO: draw actual marker
+        // console.log('Marker', entry);
         return;
       }
 
@@ -189,8 +194,9 @@ const Canvas = ({
     ctx.strokeStyle = Colors.WHITE;
     ctx.beginPath();
 
-    // switch to time
-    let index = Math.round(indicatorPos * (data.length - 1) / areaWidth);
+    // remap indicator position to index in the data array
+    let index = Math.floor(remap(indicatorPos, 0, areaWidth, startIndex, maxIndex));
+
     if (index < 0) {
       index = 0;
     }
@@ -266,23 +272,9 @@ const Canvas = ({
       fieldsToPlot[name].max,
       hsl(fieldIndex, fieldsKeys.length)),
     );
+
     drawIndicator();
-  }, [
-    ctx,
-    scaledWidth,
-    areaWidth,
-    areaHeight,
-    zoom,
-    pan,
-    rightBoundary,
-    canvasWidth,
-    canvasHeight,
-    fieldsKeys,
-    drawIndicator,
-    plotField,
-    fieldsToPlot,
-    hsl,
-  ]);
+  }, [ctx, scaledWidth, areaWidth, areaHeight, zoom, pan, rightBoundary, canvasWidth, canvasHeight, fieldsKeys, drawIndicator, plotField, fieldsToPlot, hsl]);
 
   const onWheel = (e: WheelEvent) => {
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
@@ -318,8 +310,6 @@ const Canvas = ({
   };
 
   const keyboardListener = useCallback((e: KeyboardEvent) => {
-    // TODO:
-    // onKeyLeft
     if (isUp(e)) {
       setZoom((current) => current + 0.1);
     }
