@@ -21,6 +21,7 @@ import {
   colorHsl,
   formatNumber,
   msToTime,
+  round,
   remap,
 } from '../../utils/number';
 
@@ -110,6 +111,9 @@ const Canvas = ({
     () => startTime >= 0 ? 0 : -(startTime * maxIndex / areaWidth),
     [areaWidth, maxIndex, startTime],
   );
+  const pixelsOnScreen = (maxIndex - startIndex) / areaWidth;
+  // map available pixels to the number of data entries
+  const resolution = pixelsOnScreen < 1 ? 1 : Math.round(pixelsOnScreen);
 
   // find max values for each selected field so we can calculate scale
   const fieldsToPlot = useMemo(() => {
@@ -143,18 +147,34 @@ const Canvas = ({
   const fieldsKeys = useMemo(() => Object.keys(fieldsToPlot), [fieldsToPlot]);
 
   const dataWindow = useMemo(() => {
-    const pixels = (maxIndex - startIndex) / areaWidth;
-    // map available pixels to the number of data entries
-    const resolution = pixels < 1 ? 1 : Math.round(pixels);
     const sliced = data.slice(startIndex, startIndex + maxIndex); // slice data
-
     // skip n-th element to reduce number of data points
     if (resolution > 1) {
       return sliced.filter((_, index) => index % resolution === 0);
     }
 
     return sliced;
-  }, [areaWidth, data, maxIndex, startIndex]);
+  }, [data, maxIndex, resolution, startIndex]);
+
+  const drawText = useCallback((left: number, top: number, text: string, color: string, textAlign = 'left') => {
+    ctx.textAlign = textAlign as any;
+    ctx.fillStyle = Colors.BG;
+    ctx.fillText(text, left + 2, top + 2);
+    ctx.fillStyle = color;
+    ctx.fillText(text, left, top);
+  }, [ctx]);
+
+  const drawMarker = useCallback((position: number) => {
+    const prevStyle = ctx.strokeStyle;
+    ctx.strokeStyle = Colors.RED;
+    ctx.setLineDash([5]);
+    ctx.beginPath();
+    ctx.moveTo(position, 0);
+    ctx.lineTo(position, canvasHeight);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = prevStyle;
+  }, [canvasHeight, ctx]);
 
   const plotField = useCallback((field: string, min: number, max: number, color: string) => {
     ctx.strokeStyle = color;
@@ -165,29 +185,28 @@ const Canvas = ({
     ctx.moveTo(startTime, initialValue);
 
     dataWindow.forEach((entry, index) => {
-      // draw marker on top of the record
-      if (entry.type === 'marker') {
-        // TODO: draw actual marker
-        // console.log('Marker', entry);
-        return;
+      const lastRecord: LogEntry = dataWindow[index - 1] ?? { Time: 0 };
+      // scale time to max width
+      const time = (entry.Time ? entry.Time : lastRecord.Time) as number * timeScale;
+      // scale the value
+      const value = areaHeight - remap(entry[field] as number, min, max, 0, areaHeight);
+      const position = Math.round(startTime + time);
+
+      switch (entry.type) {
+        case 'field':
+          ctx.lineTo(position, Math.round(value));
+          break;
+        case 'marker':
+          drawText(position, areaHeight / 2, `Marker at: ${lastRecord.Time}`, Colors.GREEN);
+          // drawMarker(position); // TODO: fix moveTo
+          break;
+        default:
+          break;
       }
-
-      const time = (entry.Time as number) * timeScale; // scale time to max width
-      const value = areaHeight - remap(entry[field] as number, min, max, 0, areaHeight); // scale the value
-
-      ctx.lineTo(Math.round(startTime + time), Math.round(value));
     });
 
     ctx.stroke();
-  }, [areaHeight, ctx, dataWindow, firstEntry, startTime, timeScale]);
-
-  const drawText = useCallback((left: number, top: number, text: string, color: string, textAlign = 'left') => {
-    ctx.textAlign = textAlign as any;
-    ctx.fillStyle = Colors.BG;
-    ctx.fillText(text, left + 2, top + 2);
-    ctx.fillStyle = color;
-    ctx.fillText(text, left, top);
-  }, [ctx]);
+  }, [areaHeight, ctx, dataWindow, drawText, firstEntry, startTime, timeScale]);
 
   const drawIndicator = useCallback(() => {
     ctx.setLineDash([5]);
@@ -195,12 +214,15 @@ const Canvas = ({
     ctx.beginPath();
 
     // remap indicator position to index in the data array
+    // FIXME: this is bad
     let index = Math.floor(remap(indicatorPos, 0, areaWidth, startIndex, maxIndex));
-
     if (index < 0) {
       index = 0;
     }
 
+    // TODO:
+    // 1px = 1 index % resolution
+    // index = indicatorPos || 0;
     const currentData = data[index];
 
     ctx.moveTo(indicatorPos, 0);
@@ -233,14 +255,24 @@ const Canvas = ({
     drawText(
       left,
       areaHeight + 20,
-      msToTime(Math.round(currentData.Time as number * 1000)),
+      `${round(currentData.Time as number, 3)}s`,
+      // msToTime(Math.round(currentData.Time as number * 1000)),
       Colors.GREY, textAlign,
+    );
+
+    // TODO: DEBUG
+    // 1px = 1 index % resolution
+    drawText(
+      left,
+      areaHeight - 20,
+      `${index} - ${indicatorPos}`,
+      Colors.RED, textAlign,
     );
 
     ctx.lineTo(indicatorPos, canvasHeight);
     ctx.stroke();
     ctx.setLineDash([]);
-  }, [areaHeight, areaWidth, canvasHeight, ctx, data, drawText, fieldsKeys, fieldsToPlot, hsl, indicatorPos]);
+  }, [areaHeight, areaWidth, canvasHeight, ctx, data, drawText, fieldsKeys, fieldsToPlot, hsl, indicatorPos, maxIndex, startIndex]);
 
   const plot = useCallback(() => {
     if (!ctx) {
