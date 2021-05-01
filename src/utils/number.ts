@@ -1,3 +1,5 @@
+export type HslType = [number, number, number];
+
 export const formatBytes = (bytes: number, decimals = 2): string => {
   if (bytes === 0) return '0 Bytes';
 
@@ -10,6 +12,7 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
   return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 };
 
+// fix this pad
 export const leftPad = (n: number, z = 2) => (`00${n}`).slice(-z);
 
 export const msToTime = (input: number) => {
@@ -25,8 +28,6 @@ export const msToTime = (input: number) => {
 };
 
 export const remap = (x: number, inMin: number, inMax: number, outMin: number, outMax: number) => (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-
-export type HslType = [number, number, number];
 
 export const colorHsl = (min: number, max: number, value: number): HslType => {
   const saturation = 60;
@@ -46,6 +47,7 @@ export const colorHsl = (min: number, max: number, value: number): HslType => {
 // eslint-disable-next-line prefer-template
 export const round = (value: number, digits: number | string) => +(Math.round(value + `e+${digits}` as any)  + `e-${digits}`);
 
+// TODO: move this or rename to MS
 export const formatNumber = (value: number, format: string): string => {
   if (format === '%d') {
     return `${Math.round(value)}`;
