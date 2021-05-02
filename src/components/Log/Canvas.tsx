@@ -20,7 +20,6 @@ import {
 import {
   colorHsl,
   formatNumber,
-  msToTime,
   round,
   remap,
 } from '../../utils/number';
@@ -164,17 +163,17 @@ const Canvas = ({
     ctx.fillText(text, left, top);
   }, [ctx]);
 
-  const drawMarker = useCallback((position: number) => {
-    const prevStyle = ctx.strokeStyle;
-    ctx.strokeStyle = Colors.RED;
-    ctx.setLineDash([5]);
-    ctx.beginPath();
-    ctx.moveTo(position, 0);
-    ctx.lineTo(position, canvasHeight);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.strokeStyle = prevStyle;
-  }, [canvasHeight, ctx]);
+  // const drawMarker = useCallback((position: number) => {
+  //   const prevStyle = ctx.strokeStyle;
+  //   ctx.strokeStyle = Colors.RED;
+  //   ctx.setLineDash([5]);
+  //   ctx.beginPath();
+  //   ctx.moveTo(position, 0);
+  //   ctx.lineTo(position, canvasHeight);
+  //   ctx.stroke();
+  //   ctx.setLineDash([]);
+  //   ctx.strokeStyle = prevStyle;
+  // }, [canvasHeight, ctx]);
 
   const plotField = useCallback((field: string, min: number, max: number, color: string) => {
     ctx.strokeStyle = color;
