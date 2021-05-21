@@ -70,7 +70,7 @@
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
     "concurrently": "^6.0.2",
-    "electron": "^13.0.0-beta.18",
+    "electron": "^13.0.0-beta.28",
     "eslint": "^7.25.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-base": "^14.2.1",
