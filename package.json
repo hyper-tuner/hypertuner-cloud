@@ -37,7 +37,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.5.1",
     "@sentry/react": "^6.3.5",
-    "@sentry/tracing": "^6.3.5",
+    "@sentry/tracing": "^6.6.0",
     "antd": "^4.15.3",
     "electron-squirrel-startup": "^1.0.0",
     "js-yaml": "^4.1.0 ",
