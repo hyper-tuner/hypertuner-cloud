@@ -1,6 +1,8 @@
 # SpeedyTuner Cloud
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/83204fc5-98b8-483c-ac69-acaa656ba9ee/deploy-status)](https://app.netlify.com/sites/speedytuner/deploys) ![master](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability)](https://codeclimate.com/github/speedy-tuner/speedy-tuner-cloud/maintainability)
+![License](https://img.shields.io/github/license/karniv00l/mlg-converter)
 
 Share your [Speeduino](https://speeduino.com/) tune and logs.
 
