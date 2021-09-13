@@ -54,7 +54,7 @@
     "recharts": "^2.0.8"
   },
   "devDependencies": {
-    "@craco/craco": "^6.1.1",
+    "@craco/craco": "^6.3.0",
     "@electron-forge/cli": "^6.0.0-beta.54",
     "@electron-forge/maker-deb": "^6.0.0-beta.54",
     "@electron-forge/maker-dmg": "^6.0.0-beta.54",
