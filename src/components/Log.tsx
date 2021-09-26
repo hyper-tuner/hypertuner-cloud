@@ -40,10 +40,10 @@ import {
   OutputChannel,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
-import Canvas, {
+import LogCanvas, {
   LogEntry,
   SelectedField,
-} from './Log/Canvas';
+} from './Log/LogCanvas';
 import store from '../store';
 import {
   formatBytes,
@@ -213,7 +213,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
             {logs
               ?
-              <Canvas
+              <LogCanvas
                 data={logs!.records as LogEntry[]}
                 width={canvasWidth}
                 height={600}
