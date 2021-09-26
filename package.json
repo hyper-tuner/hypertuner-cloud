@@ -34,7 +34,7 @@
     ]
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.5.1",
+    "@reduxjs/toolkit": "^1.6.1",
     "@sentry/react": "^6.13.2",
     "@sentry/tracing": "^6.13.2",
     "antd": "^4.15.3",
