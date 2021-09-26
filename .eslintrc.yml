@@ -1,4 +1,8 @@
 ---
+parser: '@typescript-eslint/parser'
+env:
+  node: true
+  es6: true
 settings:
   import/core-modules:
     - electron
@@ -19,6 +23,7 @@ extends:
   - plugin:import/warnings
   - plugin:import/typescript
 plugins:
+  - '@typescript-eslint'
   - jsx-a11y
   - prettier
   - modules-newline
@@ -59,3 +64,6 @@ rules:
   '@typescript-eslint/no-unused-vars': 1
   no-shadow: 0
   '@typescript-eslint/no-shadow': 2
+  arrow-body-style:
+    - warn
+    - as-needed

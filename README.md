@@ -40,7 +40,7 @@ There are many ways in which you can participate in the project and every bit of
 
 Recommended dev environment:
 
-- [Node LTS](https://nodejs.org/) 14.x.x
+- [Node](https://nodejs.org/) 16.x.x
 
 ```bash
 # install packages

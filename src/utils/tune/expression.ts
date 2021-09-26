@@ -103,7 +103,7 @@ export const evaluateExpression = (expression: string, tuneConstants: TuneConsta
       ${stripExpression(expression)};
     `);
   } catch (error) {
-    console.info('Condition evaluation failed with:', error.message);
+    console.info('Condition evaluation failed with:', (error as Error).message);
   }
 
   return undefined;
