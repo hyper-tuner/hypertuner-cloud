@@ -10,16 +10,14 @@ import {
 } from 'react-router-dom';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useCallback } from 'react';
-import store from '../store';
-import {
-  AppState,
-  UIState,
-} from '../types/state';
 import {
   Config as ConfigType,
   Menus as MenusType,
-} from '../types/config';
-import { Tune as TuneType } from '../types/tune';
+  AppState,
+  UIState,
+  Tune as TuneType,
+} from '@speedy-tuner/types';
+import store from '../store';
 import Icon from './SideBar/Icon';
 import { evaluateExpression } from '../utils/tune/expression';
 import { Routes } from '../routes';

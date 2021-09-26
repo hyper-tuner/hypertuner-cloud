@@ -1,4 +1,4 @@
-import { Dialogs as DialogsType } from '../types/config';
+import { Dialogs as DialogsType } from '@speedy-tuner/types';
 
 const standardDialogs: DialogsType = {
   std_injection: {
