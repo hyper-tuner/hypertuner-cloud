@@ -12,7 +12,8 @@ export const fetchWithProgress = async (url: string, onProgress?: onProgress, si
   let edgeLocation = null;
 
   if (edgeLocationCode) {
-    edgeLocation = (locations as LocationsType)[edgeLocationCode];
+    // simplify location code (`MEL50-C1` => `MEL`)
+    edgeLocation = (locations as LocationsType)[edgeLocationCode.slice(0, 3)];
   }
 
   if (!contentLength || isContentEncoded) {
