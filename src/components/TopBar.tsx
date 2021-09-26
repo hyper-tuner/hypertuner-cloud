@@ -64,16 +64,16 @@ const TopBar = () => {
 
   const userMenu = (
     <Menu>
-      <Menu.Item disabled icon={<LoginOutlined />}>
+      <Menu.Item key="login" disabled icon={<LoginOutlined />}>
         Login / Sign-up
       </Menu.Item>
-      <Menu.Item icon={<GithubOutlined />}>
+      <Menu.Item key="gh" icon={<GithubOutlined />}>
         <a href="https://github.com/speedy-tuner/speedy-tuner-cloud" target="__blank" rel="noopener noreferrer">
           GitHub
         </a>
       </Menu.Item>
       <Menu.Divider />
-      <Menu.Item disabled icon={<SettingOutlined />}>
+      <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
         Preferences
       </Menu.Item>
     </Menu>
@@ -81,36 +81,36 @@ const TopBar = () => {
 
   const shareMenu = (
     <Menu>
-      <Menu.Item disabled icon={<CloudUploadOutlined />}>
+      <Menu.Item key="upload" disabled icon={<CloudUploadOutlined />}>
         Upload
       </Menu.Item>
-      <SubMenu title="Download" icon={<CloudDownloadOutlined />}>
-        <SubMenu title="Tune" icon={<SlidersOutlined />}>
-          <Menu.Item icon={<SaveOutlined />}>
+      <SubMenu key="download-sub" title="Download" icon={<CloudDownloadOutlined />}>
+        <SubMenu key="tune-sub" title="Tune" icon={<SlidersOutlined />}>
+          <Menu.Item key="download" icon={<SaveOutlined />}>
             <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
               Download
             </a>
           </Menu.Item>
-          <Menu.Item disabled icon={<DesktopOutlined />}>
+          <Menu.Item key="open" disabled icon={<DesktopOutlined />}>
             Open in app
           </Menu.Item>
         </SubMenu>
-        <SubMenu title="Logs" icon={<LineChartOutlined />}>
-          <Menu.Item disabled icon={<FileZipOutlined />}>
+        <SubMenu key="logs-sub" title="Logs" icon={<LineChartOutlined />}>
+          <Menu.Item key="mlg" disabled icon={<FileZipOutlined />}>
             MLG
           </Menu.Item>
-          <Menu.Item disabled icon={<FileTextOutlined />}>
+          <Menu.Item key="msl" disabled icon={<FileTextOutlined />}>
             MSL
           </Menu.Item>
-          <Menu.Item disabled icon={<FileExcelOutlined />}>
+          <Menu.Item key="csv" disabled icon={<FileExcelOutlined />}>
             CSV
           </Menu.Item>
         </SubMenu>
       </SubMenu>
-      <Menu.Item disabled icon={<LinkOutlined />}>
+      <Menu.Item key="link" disabled icon={<LinkOutlined />}>
         Create link
       </Menu.Item>
-      <Menu.Item disabled icon={<GlobalOutlined />}>
+      <Menu.Item key="publish" disabled icon={<GlobalOutlined />}>
         Publish to Hub
       </Menu.Item>
     </Menu>
