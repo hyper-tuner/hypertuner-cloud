@@ -1,11 +1,10 @@
-import { Constants as TuneConstantsType } from '../../types/tune';
-
 import {
   Config as ConfigType,
   OutputChannels as OutputChannelsType,
   Page as ConfigPageType,
   SimpleConstant as SimpleConstantType,
-} from '../../types/config';
+  TuneConstants as TuneConstantsType,
+} from '@speedy-tuner/types';
 
 export const isExpression = (val: any) => `${val}`.startsWith('{') && `${val}`.endsWith('}');
 

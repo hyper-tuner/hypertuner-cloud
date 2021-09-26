@@ -3,18 +3,18 @@ import {
   Layout,
   Space,
   Row,
-  Col, 
+  Col,
 } from 'antd';
 import {
   CarOutlined,
-  InfoCircleOutlined, 
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {
   AppState,
   ConfigState,
-  StatusState, 
-} from '../types/state';
+  StatusState,
+} from '@speedy-tuner/types';
 
 const { Footer } = Layout;
 

@@ -11,12 +11,8 @@ import {
   Result,
 } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { AppState } from '../types/state';
-import SmartSelect from './Dialog/SmartSelect';
-import SmartNumber from './Dialog/SmartNumber';
-import TextField from './Dialog/TextField';
-import Curve from './Dialog/Curve';
 import {
+  AppState,
   Dialogs as DialogsType,
   Dialog as DialogType,
   Config as ConfigType,
@@ -25,8 +21,12 @@ import {
   Table as TableType,
   ScalarConstant as ScalarConstantType,
   ConstantTypes,
-} from '../types/config';
-import { Tune as TuneType } from '../types/tune';
+  Tune as TuneType,
+} from '@speedy-tuner/types';
+import SmartSelect from './Dialog/SmartSelect';
+import SmartNumber from './Dialog/SmartNumber';
+import TextField from './Dialog/TextField';
+import Curve from './Dialog/Curve';
 import {
   parseXy,
   parseZ,

@@ -16,13 +16,14 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import Dialog from './components/Dialog';
-import { loadAll } from './utils/api';
-import SideBar, { DialogMatchedPathType } from './components/SideBar';
 import {
   AppState,
   UIState,
-} from './types/state';
+  Config as ConfigType,
+} from '@speedy-tuner/types';
+import Dialog from './components/Dialog';
+import { loadAll } from './utils/api';
+import SideBar, { DialogMatchedPathType } from './components/SideBar';
 import BurnButton from './components/BurnButton';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
@@ -30,7 +31,6 @@ import { isDesktop } from './utils/env';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
 import { Routes } from './routes';
-import { Config as ConfigType } from './types/config';
 import Log from './components/Log';
 import useStorage from './hooks/useStorage';
 import useConfig from './hooks/useConfig';

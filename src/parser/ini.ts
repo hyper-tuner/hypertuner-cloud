@@ -6,7 +6,7 @@ import * as P from 'parsimmon';
 import {
   Config as ConfigType,
   Constant,
-} from '../types/config';
+} from '@speedy-tuner/types';
 
 console.log('------- start --------');
 

@@ -38,9 +38,17 @@ There are many ways in which you can participate in the project and every bit of
 
 ## Development
 
-Recommended dev environment:
+### Recommended dev environment
 
 - [Node](https://nodejs.org/) 16.x.x
+
+### Authenticate to GitHub Packages
+
+Project uses shared packages (`@speedy-tuner/...`).
+
+They are hosted using `GitHub Packages`, to install them you need to [authenticate to GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) first.
+
+### Install and run
 
 ```bash
 # install packages

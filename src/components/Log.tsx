@@ -33,19 +33,17 @@ import {
 import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
+import {
+  AppState,
+  UIState,
+  Config,
+  OutputChannel,
+} from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
 import Canvas, {
   LogEntry,
   SelectedField,
 } from './Log/Canvas';
-import {
-  AppState,
-  UIState,
-} from '../types/state';
-import {
-  Config,
-  OutputChannel,
-} from '../types/config';
 import store from '../store';
 import {
   formatBytes,

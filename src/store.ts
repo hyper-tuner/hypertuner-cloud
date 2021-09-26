@@ -3,9 +3,9 @@
 import {
   configureStore,
   createAction,
-  createReducer, 
+  createReducer,
 } from '@reduxjs/toolkit';
-import * as Types from './types/state';
+import * as Types from '@speedy-tuner/types';
 
 // tune and config
 const updateTune = createAction<Types.UpdateTunePayload>('tune/update');

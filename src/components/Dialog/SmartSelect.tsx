@@ -7,7 +7,7 @@ import {
   CheckOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import { Switches } from '../../types/config';
+import { Switches } from '@speedy-tuner/types';
 
 const SmartSelect = ({
   values,
