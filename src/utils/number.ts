@@ -47,6 +47,8 @@ export const colorHsl = (min: number, max: number, value: number): HslType => {
 // eslint-disable-next-line prefer-template
 export const round = (value: number, digits: number | string = 0) => +(Math.round(value + `e+${digits}` as any) + `e-${digits}`);
 
+export const round2 = (value: number, digits: number | string = 0) => +(Math.round(value + `e+${digits}` as any) + `e-${digits}`);
+
 // TODO: move this or rename to MS
 export const formatNumber = (value: number, format: string): string => {
   if (format === '%d') {
