@@ -1,5 +1,3 @@
-/* eslint-disable no-bitwise */
-
 import {
   useCallback,
   useEffect,
