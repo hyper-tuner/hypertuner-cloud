@@ -17,7 +17,6 @@
     "electron:start": "npm run electron:compile && electron-forge start",
     "electron:package": "npm run build && npm run electron:compile && electron-forge package",
     "electron:make": "npm run build && npm run electron:compile && electron-forge make",
-    "ini:compile": "tsc -p tsconfig.custom.json",
     "test": "craco test",
     "lint": "tsc && eslint --max-warnings=0 src",
     "lint-fix": "eslint --fix src",
