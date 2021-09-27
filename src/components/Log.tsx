@@ -147,7 +147,11 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
               break;
             case 'result':
               setLogs(data.result);
-              setFields(data.result.fields);
+              // setFields(data.result.fields);
+              // setFields(config.datalog);
+              // console.log(data.result.fields);
+              // console.log('outputChannels', config.outputChannels);
+              store.dispatch({ type: 'logs/load', payload: data.result.records });
               break;
             case 'metrics':
               console.log(`Log parsed in ${data.elapsed}ms`);
@@ -168,7 +172,10 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       }
     };
 
-    loadData();
+    if (!loadedLogs.length) {
+      loadData();
+    }
+
     calculateCanvasWidth();
 
     window.addEventListener('resize', calculateCanvasWidth);
@@ -178,12 +185,12 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasWidth);
     };
-  }, [calculateCanvasWidth]);
+  }, [calculateCanvasWidth, config.outputChannels, loadedLogs]);
 
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs ?
+        {!logs && !loadedLogs.length ?
           <div style={{ padding: 20 }}><Skeleton active /></div>
           :
           !ui.sidebarCollapsed &&
@@ -215,10 +222,10 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {logs
+            {logs || !!loadedLogs.length
               ?
               <LogCanvas
-                data={logs!.records as Logs}
+                data={loadedLogs || (logs!.records as Logs)}
                 width={canvasWidth}
                 height={600}
                 selectedFields={prepareSelectedFields}
