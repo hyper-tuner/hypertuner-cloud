@@ -26,10 +26,7 @@ import {
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
-import {
-  Field,
-  Result as ParserResult,
-} from 'mlg-converter/dist/types';
+import { Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
@@ -39,6 +36,7 @@ import {
   Config,
   OutputChannel,
   Logs,
+  DatalogEntry,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
 import LogCanvas, { SelectedField } from './Log/LogCanvas';
@@ -88,40 +86,43 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
     },
   };
   const [logs, setLogs] = useState<ParserResult>();
-  const [fields, setFields] = useState<Field[]>([]);
+  const [fields, setFields] = useState<DatalogEntry[]>([]);
   const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
-    'RPM',
-    'TPS',
-    'AFR Target',
-    'AFR',
-    'MAP',
+    'rpm',
+    'tps',
+    'afrTarget',
+    'afr',
+    'map',
   ]);
   const {
     isConfigReady,
     findOutputChannel,
-    findDatalogNameByLabel,
-    findDatalog,
   } = useConfig(config);
-  const prepareSelectedFields = useMemo<SelectedField[]>(() => isConfigReady ? selectedFields.map((field) => {
-    const name = field.toString();
-    const logName = findDatalogNameByLabel(name);
-    const { format } = findDatalog(logName);
-    const { units, scale, transform } = findOutputChannel(logName) as OutputChannel;
+  const prepareSelectedFields = useMemo<SelectedField[]>(() => {
+    if (!isConfigReady) {
+      return [];
+    }
 
-    return {
-      name,
-      units,
-      scale,
-      transform,
-      format,
-    };
-  }).filter((entry) => entry !== null) as [] : [], [
-    isConfigReady,
-    selectedFields,
-    findDatalogNameByLabel,
-    findDatalog,
-    findOutputChannel,
-  ]);
+    return Object.values(config.datalog).map((entry: DatalogEntry) => {
+      const { units, scale, transform } = findOutputChannel(entry.name) as OutputChannel;
+      const { name, label, format } = entry;
+
+      if (!selectedFields.includes(name)) {
+        return null as any;
+      }
+
+      // TODO: evaluate condition
+      return {
+        name,
+        label,
+        units,
+        scale,
+        transform,
+        format,
+      };
+    }).filter((val) => !!val);
+
+  }, [config.datalog, findOutputChannel, isConfigReady, selectedFields]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
@@ -147,10 +148,6 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
               break;
             case 'result':
               setLogs(data.result);
-              // setFields(data.result.fields);
-              // setFields(config.datalog);
-              // console.log(data.result.fields);
-              // console.log('outputChannels', config.outputChannels);
               store.dispatch({ type: 'logs/load', payload: data.result.records });
               break;
             case 'metrics':
@@ -176,6 +173,10 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       loadData();
     }
 
+    if (config.outputChannels) {
+      setFields(Object.values(config.datalog));
+    }
+
     calculateCanvasWidth();
 
     window.addEventListener('resize', calculateCanvasWidth);
@@ -185,7 +186,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasWidth);
     };
-  }, [calculateCanvasWidth, config.outputChannels, loadedLogs]);
+  }, [calculateCanvasWidth, config.datalog, config.outputChannels, loadedLogs]);
 
   return (
     <>
@@ -201,7 +202,8 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
                   {fields.map((field) => (
                     <Row key={field.name}>
                       <Checkbox key={field.name} value={field.name}>
-                        {field.name}{field.units && ` (${field.units})`}
+                        {field.label}
+                        {/* {field.units && ` (${field.units})`} */}
                       </Checkbox>
                     </Row>
                   ))}

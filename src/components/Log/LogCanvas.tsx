@@ -11,6 +11,7 @@ import {
 
 export interface SelectedField {
   name: string;
+  label: string;
   units: string;
   scale: string | number;
   transform: string | number;
@@ -37,7 +38,7 @@ interface Props {
 };
 
 const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
-  const selectedField = selectedFields[0].name;
+  const selectedField = selectedFields[0].label;
 
   const xValue = (entry: LogEntry): number => entry.Time as number;
   const yValue = (entry: LogEntry): number => entry[selectedField] as number;
