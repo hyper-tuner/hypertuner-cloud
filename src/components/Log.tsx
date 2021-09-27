@@ -38,12 +38,10 @@ import {
   UIState,
   Config,
   OutputChannel,
+  Logs,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
-import LogCanvas, {
-  LogEntry,
-  SelectedField,
-} from './Log/LogCanvas';
+import LogCanvas, { SelectedField } from './Log/LogCanvas';
 import store from '../store';
 import {
   formatBytes,
@@ -60,9 +58,10 @@ const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
   config: state.config,
+  loadedLogs: state.logs,
 });
 
-const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
+const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLogs: Logs }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
@@ -87,7 +86,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
       setTimeout(calculateCanvasWidth, 1);
     },
-  } as any;
+  };
   const [logs, setLogs] = useState<ParserResult>();
   const [fields, setFields] = useState<Field[]>([]);
   const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
@@ -97,7 +96,12 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
     'AFR',
     'MAP',
   ]);
-  const { isConfigReady, findOutputChannel, findDatalogNameByLabel, findDatalog } = useConfig(config);
+  const {
+    isConfigReady,
+    findOutputChannel,
+    findDatalogNameByLabel,
+    findDatalog,
+  } = useConfig(config);
   const prepareSelectedFields = useMemo<SelectedField[]>(() => isConfigReady ? selectedFields.map((field) => {
     const name = field.toString();
     const logName = findDatalogNameByLabel(name);
@@ -178,7 +182,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
 
   return (
     <>
-      <Sider {...siderProps} className="app-sidebar">
+      <Sider {...(siderProps as any)} className="app-sidebar">
         {!logs ?
           <div style={{ padding: 20 }}><Skeleton active /></div>
           :
@@ -214,7 +218,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
             {logs
               ?
               <LogCanvas
-                data={logs!.records as LogEntry[]}
+                data={logs!.records as Logs}
                 width={canvasWidth}
                 height={600}
                 selectedFields={prepareSelectedFields}

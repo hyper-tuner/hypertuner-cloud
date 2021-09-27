@@ -1,4 +1,8 @@
 import {
+  Logs,
+  LogEntry,
+} from '@speedy-tuner/types';
+import {
   scaleLinear,
   max,
   extent,
@@ -13,10 +17,6 @@ export interface SelectedField {
   format: string;
 };
 
-export interface LogEntry {
-  [id: string]: number | string,
-}
-
 enum Colors {
   RED = '#f32450',
   CYAN = '#8dd3c7',
@@ -30,7 +30,7 @@ enum Colors {
 }
 
 interface Props {
-  data: LogEntry[];
+  data: Logs;
   width: number;
   height: number;
   selectedFields: SelectedField[];
