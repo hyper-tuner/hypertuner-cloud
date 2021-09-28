@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     env:
       NPM_GITHUB_TOKEN: ${{ secrets.NPM_GITHUB_PAT }}
