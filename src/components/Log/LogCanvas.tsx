@@ -5,9 +5,13 @@ import {
 import {
   scaleLinear,
   max,
-  extent,
   line,
 } from 'd3';
+import {
+  useCallback,
+  useMemo,
+} from 'react';
+import { colorHsl } from '../../utils/number';
 
 export interface SelectedField {
   name: string;
@@ -18,18 +22,6 @@ export interface SelectedField {
   format: string;
 };
 
-enum Colors {
-  RED = '#f32450',
-  CYAN = '#8dd3c7',
-  YELLOW = '#ffff00',
-  PURPLE = '#bebada',
-  GREEN = '#77de3c',
-  BLUE = '#2fe3ff',
-  GREY = '#334455',
-  WHITE = '#fff',
-  BG = '#222629',
-}
-
 interface Props {
   data: Logs;
   width: number;
@@ -37,35 +29,98 @@ interface Props {
   selectedFields: SelectedField[];
 };
 
+export interface PlottableField {
+  min: number;
+  max: number;
+  scale: number;
+  transform: number;
+  units: string;
+  format: string;
+  color: string;
+};
+
+const MAX_FIELDS = 5;
+
 const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
-  const selectedField = selectedFields[0].label;
+  const hsl = useCallback((fieldIndex: number, allFields: number) => {
+    const [hue] = colorHsl(0, allFields - 1, fieldIndex);
+    return `hsl(${hue}, 90%, 50%)`;
+  }, []);
 
-  const xValue = (entry: LogEntry): number => entry.Time as number;
-  const yValue = (entry: LogEntry): number => entry[selectedField] as number;
+  const xValue = (entry: LogEntry): number => (entry.Time || 0) as number;
+  const yValue = (entry: LogEntry, field: SelectedField): number => {
+    if (!(field.label in entry)) {
+      console.error(`Field [${field.label}] doesn't exist in this log file.`);
+      return 0;
+    }
 
-  const xScale = scaleLinear()
+    return entry[field.label] as number;
+  };
+
+  const xScale = useMemo(() => scaleLinear()
     .domain([0, max(data, xValue) as number])
-    .range([0, width]);
+    .range([0, width]), [data, width]);
 
-  const yScale = scaleLinear()
-    .domain(extent(data, yValue) as [number, number])
-    .range([height, 0])
-    .nice();
+  const fieldsOnly = (entry: LogEntry) => entry.type === 'field';
 
-  const onlyFields = (entry: LogEntry) => entry.type === 'field';
+  const filtered = useMemo(() => data.filter(fieldsOnly), [data]);;
 
-  const flatData: [number, number][] = data
-    .filter(onlyFields)
-    .map((entry) => [xValue(entry), yValue(entry)]);
+  // find max values for each selected field so we can calculate scale
+  const fieldsToPlot = useMemo(() => {
+    const temp: { [index: string]: PlottableField } = {};
 
-  const field1 = line()
-    .x((entry) => xScale(entry[0]))
-    .y((entry) => yScale(entry[1]))(flatData);
+    filtered.forEach((entry) => {
+      selectedFields.forEach(({ label, scale, transform, units, format }, index) => {
+        const value = entry[label];
+
+        if (!temp[label]) {
+          temp[label] = {
+            min: 0,
+            max: 0,
+            scale: (scale || 1) as number,
+            transform: (transform || 0) as number,
+            units: units || '',
+            format: format || '',
+            color: hsl(index, MAX_FIELDS),
+          };
+        }
+
+        if (value > temp[label].max) {
+          temp[label].max = entry[label] as number;
+        }
+
+        if (value < temp[label].min) {
+          temp[label].min = entry[label] as number;
+        }
+      });
+    });
+
+    return temp;
+  }, [filtered, hsl, selectedFields]);
+
+
+  const lines = useCallback(() => selectedFields.map((field) => {
+    const yField = fieldsToPlot[field.label];
+
+    const yScale = scaleLinear()
+      .domain([yField.min, yField.max])
+      .range([height, 0]);
+
+    return line()
+      .x((entry) => xScale(xValue(entry as any)))
+      .y((entry) => yScale(yValue(entry as any, field)))(filtered as any) as string;
+  }), [fieldsToPlot, filtered, height, selectedFields, xScale]);
 
   return (
     <svg width={width} height={height}>
       <g>
-        <path d={field1 as string} fill="none" stroke={Colors.RED} />
+        {data.length && lines().map((field, index) => (
+          <path
+            key={selectedFields[index].name}
+            d={field}
+            fill="none"
+            stroke={fieldsToPlot[selectedFields[index].label].color}
+          />))}
       </g>
     </svg>
   );

@@ -88,8 +88,8 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
   const [logs, setLogs] = useState<ParserResult>();
   const [fields, setFields] = useState<DatalogEntry[]>([]);
   const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
-    'rpm',
-    'tps',
+    // 'rpm',
+    // 'tps',
     'afrTarget',
     'afr',
     'map',
