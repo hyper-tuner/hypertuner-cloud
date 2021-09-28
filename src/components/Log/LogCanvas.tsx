@@ -1,4 +1,11 @@
 import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
   Logs,
   LogEntry,
 } from '@speedy-tuner/types';
@@ -6,11 +13,11 @@ import {
   scaleLinear,
   max,
   line,
+  zoom,
+  zoomTransform,
+  select,
+  ZoomTransform,
 } from 'd3';
-import {
-  useCallback,
-  useMemo,
-} from 'react';
 import { colorHsl } from '../../utils/number';
 
 export interface SelectedField {
@@ -42,85 +49,113 @@ export interface PlottableField {
 const MAX_FIELDS = 5;
 
 const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [zoomState, setZoomState] = useState<ZoomTransform | null>(null);
+  const [lines, setLines] = useState<string[]>([]);
+  const [fieldsToPlot, setFieldsToPlot] = useState<{ [index: string]: PlottableField } | null>(null);
+
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
     return `hsl(${hue}, 90%, 50%)`;
   }, []);
 
-  const xValue = (entry: LogEntry): number => (entry.Time || 0) as number;
-  const yValue = (entry: LogEntry, field: SelectedField): number => {
-    if (!(field.label in entry)) {
-      console.error(`Field [${field.label}] doesn't exist in this log file.`);
-      return 0;
+  useEffect(() => {
+    const xValue = (entry: LogEntry): number => (entry.Time || 0) as number;
+    const yValue = (entry: LogEntry, field: SelectedField): number => {
+      if (!(field.label in entry)) {
+        console.error(`Field [${field.label}] doesn't exist in this log file.`);
+        return 0;
+      }
+
+      return entry[field.label] as number;
+    };
+
+    const xScale = scaleLinear()
+      .domain([0, max(data, xValue) as number])
+      .range([0, width]);
+
+    if (zoomState) {
+      const newXScale = zoomState.rescaleX(xScale);
+      xScale.domain(newXScale.domain());
     }
 
-    return entry[field.label] as number;
-  };
+    const fieldsOnly = (entry: LogEntry) => entry.type === 'field';
 
-  const xScale = useMemo(() => scaleLinear()
-    .domain([0, max(data, xValue) as number])
-    .range([0, width]), [data, width]);
+    const filtered = data.filter(fieldsOnly);
 
-  const fieldsOnly = (entry: LogEntry) => entry.type === 'field';
+    // find max values for each selected field so we can calculate scale
+    setFieldsToPlot(() => {
+      const temp: { [index: string]: PlottableField } = {};
 
-  const filtered = useMemo(() => data.filter(fieldsOnly), [data]);;
+      filtered.forEach((entry) => {
+        selectedFields.forEach(({ label, scale, transform, units, format }, index) => {
+          const value = entry[label];
 
-  // find max values for each selected field so we can calculate scale
-  const fieldsToPlot = useMemo(() => {
-    const temp: { [index: string]: PlottableField } = {};
+          if (!temp[label]) {
+            temp[label] = {
+              min: 0,
+              max: 0,
+              scale: (scale || 1) as number,
+              transform: (transform || 0) as number,
+              units: units || '',
+              format: format || '',
+              color: hsl(index, MAX_FIELDS),
+            };
+          }
 
-    filtered.forEach((entry) => {
-      selectedFields.forEach(({ label, scale, transform, units, format }, index) => {
-        const value = entry[label];
+          if (value > temp[label].max) {
+            temp[label].max = entry[label] as number;
+          }
 
-        if (!temp[label]) {
-          temp[label] = {
-            min: 0,
-            max: 0,
-            scale: (scale || 1) as number,
-            transform: (transform || 0) as number,
-            units: units || '',
-            format: format || '',
-            color: hsl(index, MAX_FIELDS),
-          };
-        }
-
-        if (value > temp[label].max) {
-          temp[label].max = entry[label] as number;
-        }
-
-        if (value < temp[label].min) {
-          temp[label].min = entry[label] as number;
-        }
+          if (value < temp[label].min) {
+            temp[label].min = entry[label] as number;
+          }
+        });
       });
+
+      return temp;
     });
 
-    return temp;
-  }, [filtered, hsl, selectedFields]);
+    const linesRaw = () => selectedFields.map((field) => {
+      const yField = (fieldsToPlot || {})[field.label] || { min:0, max: 0 };
 
+      const yScale = scaleLinear()
+        .domain([yField.min, yField.max])
+        .range([height, 0]);
 
-  const lines = useCallback(() => selectedFields.map((field) => {
-    const yField = fieldsToPlot[field.label];
+      return line()
+        .x((entry) => xScale(xValue(entry as any)))
+        .y((entry) => yScale(yValue(entry as any, field)))(filtered as any) as string;
+    });
 
-    const yScale = scaleLinear()
-      .domain([yField.min, yField.max])
-      .range([height, 0]);
+    setLines(linesRaw);
 
-    return line()
-      .x((entry) => xScale(xValue(entry as any)))
-      .y((entry) => yScale(yValue(entry as any, field)))(filtered as any) as string;
-  }), [fieldsToPlot, filtered, height, selectedFields, xScale]);
+    const svg = select(svgRef.current);
+
+    const zoomed = () => {
+      setZoomState(zoomTransform(svg.node() as any));
+    };
+
+    const zoomBehavior = zoom()
+      .scaleExtent([1, 1000])  // zoom boundaries
+      .translateExtent([[0, 0], [width, height]]) // pan boundaries
+      .extent([[0, 0], [width, height]])
+      .on('zoom', zoomed);
+
+    svg.call(zoomBehavior as any);
+  }, [data, fieldsToPlot, height, hsl, selectedFields, width, zoomState]);
 
   return (
-    <svg width={width} height={height}>
+    <svg width={width} height={height} ref={svgRef}>
       <g>
-        {data.length && lines().map((field, index) => (
+        {data.length && fieldsToPlot ? lines.map((field, index) => (
           <path
             key={selectedFields[index].name}
             d={field}
             fill="none"
-            stroke={fieldsToPlot[selectedFields[index].label].color}
-          />))}
+            stroke={(fieldsToPlot[selectedFields[index].label] || {}).color}
+            strokeWidth={2}
+          />)) : null}
       </g>
     </svg>
   );
