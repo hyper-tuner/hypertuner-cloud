@@ -20,6 +20,18 @@ import {
 } from 'd3';
 import { colorHsl } from '../../utils/number';
 
+enum Colors {
+  RED = '#f32450',
+  CYAN = '#8dd3c7',
+  YELLOW = '#ffff00',
+  PURPLE = '#bebada',
+  GREEN = '#77de3c',
+  BLUE = '#2fe3ff',
+  GREY = '#334455',
+  WHITE = '#fff',
+  BG = '#222629',
+}
+
 export interface SelectedField {
   name: string;
   label: string;
@@ -65,8 +77,6 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
 
   // find max values for each selected field so we can calculate scale
   const fieldsToPlot = useMemo(() => {
-    console.log('calc!');
-
     const temp: { [index: string]: PlottableField } = {};
 
     filtered.forEach((entry) => {
@@ -98,28 +108,31 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
     return temp;
   }, [filtered, hsl, selectedFields]);
 
-  const xValue = (entry: LogEntry): number => (entry.Time || 0) as number;
-  const yValue = (entry: LogEntry, field: SelectedField): number => {
+  const xValue = useCallback((entry: LogEntry): number => (entry.Time || 0) as number, []);
+  const yValue = useCallback((entry: LogEntry, field: SelectedField): number => {
     if (!(field.label in entry)) {
       console.error(`Field [${field.label}] doesn't exist in this log file.`);
       return 0;
     }
 
     return entry[field.label] as number;
-  };
+  }, []);
 
-  useEffect(() => {
-    console.log('render :(');
-
-    const xScale = scaleLinear()
+  const xScale = useMemo(() => {
+    const tempXScale = scaleLinear()
       .domain([0, max(filtered, xValue) as number])
       .range([0, width]);
+    let newXScale = tempXScale;
 
     if (zoomState) {
-      const newXScale = zoomState.rescaleX(xScale);
-      xScale.domain(newXScale.domain());
+      newXScale = zoomState.rescaleX(tempXScale);
+      tempXScale.domain(newXScale.domain());
     }
 
+    return newXScale;
+  }, [filtered, width, xValue, zoomState]);
+
+  useEffect(() => {
     const linesRaw = () => selectedFields.map((field) => {
       const yField = (fieldsToPlot || {})[field.label] || { min: 0, max: 0 };
 
@@ -145,18 +158,17 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
     svg.call(zoomBehavior as any);
 
     setLines(linesRaw());
-  }, [data, fieldsToPlot, filtered, height, hsl, selectedFields, width, zoomState]);
+  }, [fieldsToPlot, filtered, height, selectedFields, width, xScale, xValue, yValue]);
 
   return (
     <svg width={width} height={height} ref={svgRef}>
       <g>
-        {data.length ? lines.map((field, index) => (
+        {data.length && fieldsToPlot && selectedFields ? lines.map((field, index) => (
           <path
             key={(selectedFields[index] || {}).name}
             d={field}
             fill="none"
-            // stroke={(fieldsToPlot[selectedFields[index].label] || {}).color}
-            stroke="red"
+            stroke={(fieldsToPlot[selectedFields[index]?.label] || { color: Colors.RED }).color}
             strokeWidth={2}
           />)) : null}
       </g>
