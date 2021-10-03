@@ -12,12 +12,12 @@ import {
 import {
   scaleLinear,
   max,
-  line,
   zoom,
   zoomTransform,
   select,
   ZoomTransform,
 } from 'd3';
+import { seriesCanvasLine } from 'd3fc';
 import { colorHsl } from '../../utils/number';
 
 enum Colors {
@@ -61,9 +61,8 @@ export interface PlottableField {
 const MAX_FIELDS = 5;
 
 const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
-  const svgRef = useRef<SVGSVGElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [zoomState, setZoomState] = useState<ZoomTransform | null>(null);
-  const [lines, setLines] = useState<string[]>([]);
   // const [fieldsToPlot, setFieldsToPlot] = useState<{ [index: string]: PlottableField } | null>(null);
 
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
@@ -133,7 +132,11 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
   }, [filtered, width, xValue, zoomState]);
 
   useEffect(() => {
-    const linesRaw = () => selectedFields.map((field) => {
+    const canvas = select(canvasRef.current);
+    const context = canvas.node()?.getContext('2d');
+    context?.clearRect(0, 0, width, height);
+
+    const linesRaw = () => selectedFields.forEach((field) => {
       const yScale = (() => {
         const yField = (fieldsToPlot || {})[field.label] || { min: 0, max: 0 };
 
@@ -142,14 +145,15 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
           .range([height, 0]);
       })();
 
-      return line()
-        .x((entry) => xScale(xValue(entry as any)))
-        .y((entry) => yScale(yValue(entry as any, field)))(filtered as any) as string;
+      seriesCanvasLine()
+        .xScale(xScale)
+        .yScale(yScale)
+        .crossValue((entry: LogEntry) => xValue(entry))
+        .mainValue((entry: LogEntry) => yValue(entry, field))
+        .context(context)(filtered);
     });
 
-    const svg = select(svgRef.current);
-
-    const zoomed = () => setZoomState(zoomTransform(svg.node() as any));
+    const zoomed = () => setZoomState(zoomTransform(canvas.node() as any));
 
     const zoomBehavior = zoom()
       .scaleExtent([1, 1000])  // zoom boundaries
@@ -157,24 +161,17 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
       .extent([[0, 0], [width, height]])
       .on('zoom', zoomed);
 
-    svg.call(zoomBehavior as any);
+    canvas.call(zoomBehavior as any);
 
-    setLines(linesRaw());
-  }, [fieldsToPlot, filtered, height, selectedFields, width, xScale, xValue, yValue]);
+    linesRaw();
+  }, [data, fieldsToPlot, filtered, height, selectedFields, width, xScale, xValue, yValue]);
 
   return (
-    <svg width={width} height={height} ref={svgRef}>
-      <g>
-        {data.length && fieldsToPlot && selectedFields ? lines.map((field, index) => (
-          <path
-            key={(selectedFields[index] || {}).name}
-            d={field}
-            fill="none"
-            stroke={(fieldsToPlot[selectedFields[index]?.label] || { color: Colors.RED }).color}
-            strokeWidth={2}
-          />)) : null}
-      </g>
-    </svg>
+    <canvas
+      width={width}
+      height={height}
+      ref={canvasRef}
+    />
   );
 };
 
