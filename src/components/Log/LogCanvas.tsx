@@ -55,15 +55,11 @@ export interface PlottableField {
   transform: number;
   units: string;
   format: string;
-  color: string;
 };
-
-const MAX_FIELDS = 5;
 
 const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [zoomState, setZoomState] = useState<ZoomTransform | null>(null);
-  // const [fieldsToPlot, setFieldsToPlot] = useState<{ [index: string]: PlottableField } | null>(null);
 
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
@@ -90,7 +86,6 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
             transform: (transform || 0) as number,
             units: units || '',
             format: format || '',
-            color: hsl(index, MAX_FIELDS),
           };
         }
 
@@ -105,7 +100,7 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
     });
 
     return temp;
-  }, [filtered, hsl, selectedFields]);
+  }, [filtered, selectedFields]);
 
   const xValue = useCallback((entry: LogEntry): number => (entry.Time || 0) as number, []);
   const yValue = useCallback((entry: LogEntry, field: SelectedField): number => {
@@ -133,10 +128,11 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
 
   useEffect(() => {
     const canvas = select(canvasRef.current);
-    const context = canvas.node()?.getContext('2d');
-    context?.clearRect(0, 0, width, height);
+    const context = (canvas.node() as HTMLCanvasElement).getContext('2d') as CanvasRenderingContext2D;
+    context.clearRect(0, 0, width, height);
+    context.lineWidth = 2;
 
-    const linesRaw = () => selectedFields.forEach((field) => {
+    const linesRaw = () => selectedFields.forEach((field, index) => {
       const yScale = (() => {
         const yField = (fieldsToPlot || {})[field.label] || { min: 0, max: 0 };
 
@@ -150,7 +146,11 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
         .yScale(yScale)
         .crossValue((entry: LogEntry) => xValue(entry))
         .mainValue((entry: LogEntry) => yValue(entry, field))
-        .context(context)(filtered);
+        .context(context)
+        // eslint-disable-next-line no-return-assign
+        .decorate((ctx: CanvasRenderingContext2D) => {
+          ctx.strokeStyle = hsl(index, selectedFields.length);
+        })(filtered);
     });
 
     const zoomed = () => setZoomState(zoomTransform(canvas.node() as any));
@@ -164,7 +164,7 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
     canvas.call(zoomBehavior as any);
 
     linesRaw();
-  }, [data, fieldsToPlot, filtered, height, selectedFields, width, xScale, xValue, yValue]);
+  }, [data, fieldsToPlot, filtered, height, hsl, selectedFields, width, xScale, xValue, yValue]);
 
   return (
     <canvas
