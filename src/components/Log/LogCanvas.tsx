@@ -134,11 +134,13 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
 
   useEffect(() => {
     const linesRaw = () => selectedFields.map((field) => {
-      const yField = (fieldsToPlot || {})[field.label] || { min: 0, max: 0 };
+      const yScale = (() => {
+        const yField = (fieldsToPlot || {})[field.label] || { min: 0, max: 0 };
 
-      const yScale = scaleLinear()
-        .domain([yField.min, yField.max])
-        .range([height, 0]);
+        return scaleLinear()
+          .domain([yField.min, yField.max])
+          .range([height, 0]);
+      })();
 
       return line()
         .x((entry) => xScale(xValue(entry as any)))
