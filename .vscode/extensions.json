@@ -4,7 +4,6 @@
   "recommendations": [
     "editorconfig.editorconfig",
     "dbaeumer.vscode-eslint",
-    "sonarsource.sonarlint-vscode",
     "davidanson.vscode-markdownlint"
   ]
 }
