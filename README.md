@@ -2,6 +2,7 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/83204fc5-98b8-483c-ac69-acaa656ba9ee/deploy-status)](https://app.netlify.com/sites/speedytuner/deploys)
 ![master](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master)
+[![CodeQL](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/codeql-analysis.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability)](https://codeclimate.com/github/speedy-tuner/speedy-tuner-cloud/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/test_coverage)](https://codeclimate.com/github/speedy-tuner/speedy-tuner-cloud/test_coverage)
 ![License](https://img.shields.io/github/license/speedy-tuner/speedy-tuner-cloud)
