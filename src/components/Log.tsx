@@ -26,10 +26,7 @@ import {
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
-import {
-  Field,
-  Result as ParserResult,
-} from 'mlg-converter/dist/types';
+import { Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
@@ -38,12 +35,11 @@ import {
   UIState,
   Config,
   OutputChannel,
+  Logs,
+  DatalogEntry,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
-import Canvas, {
-  LogEntry,
-  SelectedField,
-} from './Log/Canvas';
+import LogCanvas, { SelectedField } from './Log/LogCanvas';
 import store from '../store';
 import {
   formatBytes,
@@ -60,9 +56,10 @@ const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
   config: state.config,
+  loadedLogs: state.logs,
 });
 
-const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
+const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLogs: Logs }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
@@ -87,37 +84,45 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
       setTimeout(calculateCanvasWidth, 1);
     },
-  } as any;
+  };
   const [logs, setLogs] = useState<ParserResult>();
-  const [fields, setFields] = useState<Field[]>([]);
+  const [fields, setFields] = useState<DatalogEntry[]>([]);
   const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
-    'RPM',
-    'TPS',
-    'AFR Target',
-    'AFR',
-    'MAP',
+    'rpm',
+    'tps',
+    'afrTarget',
+    'afr',
+    'map',
   ]);
-  const { isConfigReady, findOutputChannel, findDatalogNameByLabel, findDatalog } = useConfig(config);
-  const prepareSelectedFields = useMemo<SelectedField[]>(() => isConfigReady ? selectedFields.map((field) => {
-    const name = field.toString();
-    const logName = findDatalogNameByLabel(name);
-    const { format } = findDatalog(logName);
-    const { units, scale, transform } = findOutputChannel(logName) as OutputChannel;
-
-    return {
-      name,
-      units,
-      scale,
-      transform,
-      format,
-    };
-  }).filter((entry) => entry !== null) as [] : [], [
+  const {
     isConfigReady,
-    selectedFields,
-    findDatalogNameByLabel,
-    findDatalog,
     findOutputChannel,
-  ]);
+  } = useConfig(config);
+  const prepareSelectedFields = useMemo<SelectedField[]>(() => {
+    if (!isConfigReady) {
+      return [];
+    }
+
+    return Object.values(config.datalog).map((entry: DatalogEntry) => {
+      const { units, scale, transform } = findOutputChannel(entry.name) as OutputChannel;
+      const { name, label, format } = entry;
+
+      if (!selectedFields.includes(name)) {
+        return null as any;
+      }
+
+      // TODO: evaluate condition
+      return {
+        name,
+        label,
+        units,
+        scale,
+        transform,
+        format,
+      };
+    }).filter((val) => !!val);
+
+  }, [config.datalog, findOutputChannel, isConfigReady, selectedFields]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
@@ -143,7 +148,7 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
               break;
             case 'result':
               setLogs(data.result);
-              setFields(data.result.fields);
+              store.dispatch({ type: 'logs/load', payload: data.result.records });
               break;
             case 'metrics':
               console.log(`Log parsed in ${data.elapsed}ms`);
@@ -164,7 +169,14 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       }
     };
 
-    loadData();
+    if (!loadedLogs.length) {
+      loadData();
+    }
+
+    if (config.outputChannels) {
+      setFields(Object.values(config.datalog));
+    }
+
     calculateCanvasWidth();
 
     window.addEventListener('resize', calculateCanvasWidth);
@@ -174,12 +186,12 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasWidth);
     };
-  }, [calculateCanvasWidth]);
+  }, [calculateCanvasWidth, config.datalog, config.outputChannels, loadedLogs]);
 
   return (
     <>
-      <Sider {...siderProps} className="app-sidebar">
-        {!logs ?
+      <Sider {...(siderProps as any)} className="app-sidebar">
+        {!logs && !loadedLogs.length ?
           <div style={{ padding: 20 }}><Skeleton active /></div>
           :
           !ui.sidebarCollapsed &&
@@ -190,7 +202,8 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
                   {fields.map((field) => (
                     <Row key={field.name}>
                       <Checkbox key={field.name} value={field.name}>
-                        {field.name}{field.units && ` (${field.units})`}
+                        {field.label}
+                        {/* {field.units && ` (${field.units})`} */}
                       </Checkbox>
                     </Row>
                   ))}
@@ -211,10 +224,10 @@ const Log = ({ ui, config }: { ui: UIState, config: Config }) => {
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {logs
+            {logs || !!loadedLogs.length
               ?
-              <Canvas
-                data={logs!.records as LogEntry[]}
+              <LogCanvas
+                data={loadedLogs || (logs!.records as Logs)}
                 width={canvasWidth}
                 height={600}
                 selectedFields={prepareSelectedFields}
