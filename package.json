@@ -52,7 +52,7 @@
     "react-router-dom": "^5.3.0",
     "react-scripts": "^4.0.3",
     "react-table-drag-select": "^0.3.1",
-    "recharts": "^2.1.4"
+    "recharts": "^2.1.6"
   },
   "devDependencies": {
     "@craco/craco": "^6.3.0",
