@@ -169,7 +169,7 @@ const TopBar = () => {
           </Radio.Group>
         </Col>
         <Col span={12} md={8} sm={8} style={{ textAlign: 'right' }}>
-          <Space className="electron-not-draggable">
+          <Space>
             <Tooltip title={
               <>
                 <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
