@@ -9,18 +9,12 @@
     "type": "git",
     "url": "https://github.com/speedy-tuner/speedy-tuner-cloud"
   },
-  "main": "src/electron.js",
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "electron:compile": "tsc -p tsconfig.custom.json",
-    "electron:start": "npm run electron:compile && electron-forge start",
-    "electron:package": "npm run build && npm run electron:compile && electron-forge package",
-    "electron:make": "npm run build && npm run electron:compile && electron-forge make",
     "test": "craco test",
     "lint": "tsc && eslint --max-warnings=0 src",
-    "lint-fix": "eslint --fix src",
-    "eject": "react-scripts eject"
+    "lint-fix": "eslint --fix src"
   },
   "browserslist": {
     "production": [
@@ -35,77 +29,39 @@
     ]
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.6.1",
-    "@sentry/react": "^6.13.2",
-    "@sentry/tracing": "^6.13.2",
+    "@reduxjs/toolkit": "^1.7.0",
+    "@sentry/react": "^6.16.1",
+    "@sentry/tracing": "^6.16.1",
     "@speedy-tuner/types": "^0.2.0",
-    "antd": "^4.16.13",
+    "antd": "^4.17.3",
     "d3": "^7.0.4",
     "d3fc": "^15.2.4",
-    "electron-squirrel-startup": "^1.0.0",
     "mlg-converter": "^0.5.1",
     "pako": "^2.0.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.2",
     "react-perfect-scrollbar": "^1.5.8",
-    "react-redux": "^7.2.5",
-    "react-router-dom": "^5.3.0",
+    "react-redux": "^7.2.6",
+    "react-router-dom": "^5.2.1",
     "react-scripts": "^4.0.3",
     "react-table-drag-select": "^0.3.1",
-    "recharts": "^2.1.4"
+    "recharts": "^2.1.6"
   },
   "devDependencies": {
-    "@craco/craco": "^6.3.0",
-    "@electron-forge/cli": "^6.0.0-beta.61",
-    "@electron-forge/maker-deb": "^6.0.0-beta.61",
-    "@electron-forge/maker-dmg": "^6.0.0-beta.61",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.61",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.61",
-    "@electron-forge/maker-zip": "^6.0.0-beta.61",
+    "@craco/craco": "^6.4.3",
     "@speedy-tuner/eslint-config": "^0.1.1",
     "@types/d3": "^7.0.0",
-    "@types/node": "^16.9.6",
+    "@types/node": "^16.11.12",
     "@types/pako": "^1.0.2",
-    "@types/react": "^17.0.24",
-    "@types/react-dom": "^17.0.9",
-    "@types/react-redux": "^7.1.18",
-    "@types/react-router-dom": "^5.3.0",
-    "electron": "^15.0.0",
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.11",
+    "@types/react-redux": "^7.1.20",
+    "@types/react-router-dom": "^5.3.2",
     "eslint-plugin-modules-newline": "^0.0.6",
     "eslint-plugin-prettier": "^4.0.0",
     "less-loader": "^6.1.0",
-    "prettier": "^2.4.1",
-    "typescript": "^4.4.3",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.3",
     "worker-loader": "^3.0.8"
-  },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "name": "SpeedyTuner",
-        "icon": "./public/icons/icon"
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "SpeedyTuner"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
   }
 }
