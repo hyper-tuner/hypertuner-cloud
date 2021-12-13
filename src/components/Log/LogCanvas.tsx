@@ -20,17 +20,17 @@ import {
 import { seriesCanvasLine } from 'd3fc';
 import { colorHsl } from '../../utils/number';
 
-enum Colors {
-  RED = '#f32450',
-  CYAN = '#8dd3c7',
-  YELLOW = '#ffff00',
-  PURPLE = '#bebada',
-  GREEN = '#77de3c',
-  BLUE = '#2fe3ff',
-  GREY = '#334455',
-  WHITE = '#fff',
-  BG = '#222629',
-}
+// enum Colors {
+//   RED = '#f32450',
+//   CYAN = '#8dd3c7',
+//   YELLOW = '#ffff00',
+//   PURPLE = '#bebada',
+//   GREEN = '#77de3c',
+//   BLUE = '#2fe3ff',
+//   GREY = '#334455',
+//   WHITE = '#fff',
+//   BG = '#222629',
+// }
 
 export interface SelectedField {
   name: string;
@@ -129,6 +129,7 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
   useEffect(() => {
     const canvas = select(canvasRef.current);
     const context = (canvas.node() as HTMLCanvasElement).getContext('2d') as CanvasRenderingContext2D;
+
     context.clearRect(0, 0, width, height);
     context.lineWidth = 2;
 
@@ -168,9 +169,9 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
 
   return (
     <canvas
+      ref={canvasRef}
       width={width}
       height={height}
-      ref={canvasRef}
     />
   );
 };
