@@ -94,35 +94,27 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
   }, [filtered, selectedFields]);
 
   useEffect(() => {
-    let chart: TimeChart;
+    const series = selectedFields.map((field) => ({
+      name: field.label,
+      color: hsl(selectedFields.indexOf(field), selectedFields.length),
+      data: data.map((entry) => ({
+        x: entry.Time as number,
+        y: entry[field.label] as number,
+      })).filter((entry) => entry.x !== undefined || entry.y !== undefined),
+    }));
 
-    if (canvasRef.current) {
-      const series = selectedFields.map((field) => ({
-        name: field.label,
-        color: hsl(selectedFields.indexOf(field), selectedFields.length),
-        data: data.map((entry) => ({
-          x: entry.Time as number,
-          y: entry[field.label] as number,
-        })).filter((entry) => entry.x !== undefined || entry.y !== undefined),
-      }));
+    const chart = new TimeChart(canvasRef.current!, {
+      series,
+      lineWidth: 2,
+      tooltip: true,
+      legend: false,
+      zoom: {
+        x: { autoRange: true },
+        y: { autoRange: true },
+      },
+    });
 
-      chart = new TimeChart(canvasRef.current as HTMLDivElement, {
-        series,
-        lineWidth: 2,
-        tooltip: true,
-        legend: false,
-        zoom: {
-          x: { autoRange: true },
-          y: { autoRange: true },
-        },
-      });
-    }
-
-    return () => {
-      if (chart) {
-        chart.dispose();
-      }
-    };
+    return () => chart.dispose();
   }, [data, fieldsToPlot, filtered, hsl, selectedFields, width, height]);
 
   return (
