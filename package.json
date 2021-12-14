@@ -34,8 +34,6 @@
     "@sentry/tracing": "^6.16.1",
     "@speedy-tuner/types": "^0.2.1",
     "antd": "^4.17.3",
-    "d3": "^7.0.4",
-    "d3fc": "^15.2.4",
     "mlg-converter": "^0.5.1",
     "pako": "^2.0.4",
     "react": "^17.0.1",
@@ -45,7 +43,8 @@
     "react-router-dom": "^5.2.1",
     "react-scripts": "^4.0.3",
     "react-table-drag-select": "^0.3.1",
-    "recharts": "^2.1.6"
+    "recharts": "^2.1.8",
+    "timechart": "^1.0.0-beta.4"
   },
   "devDependencies": {
     "@craco/craco": "^6.4.3",
