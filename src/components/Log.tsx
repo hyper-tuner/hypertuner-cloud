@@ -88,7 +88,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
   const [logs, setLogs] = useState<ParserResult>();
   const [fields, setFields] = useState<DatalogEntry[]>([]);
   const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
-    'rpm',
+    // 'rpm',
     'tps',
     'afrTarget',
     'afr',
@@ -229,7 +229,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
               <LogCanvas
                 data={loadedLogs || (logs!.records as Logs)}
                 width={canvasWidth}
-                height={600}
+                height={800}
                 selectedFields={prepareSelectedFields}
               />
               :
