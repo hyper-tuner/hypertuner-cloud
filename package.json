@@ -12,6 +12,7 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build:stats": "craco build --stats",
     "test": "craco test",
     "lint": "tsc && eslint --max-warnings=0 src",
     "lint:fix": "eslint --fix src"

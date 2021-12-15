@@ -8,8 +8,16 @@ import {
   Logs,
   LogEntry,
 } from '@speedy-tuner/types';
+import {
+  Popover,
+  Space,
+  Typography,
+  Grid,
+} from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeChart from 'timechart';
 import { colorHsl } from '../../utils/number';
+import LandscapeNotice from '../Dialog/LandscapeNotice';
 
 // enum Colors {
 //   RED = '#f32450',
@@ -22,6 +30,9 @@ import { colorHsl } from '../../utils/number';
 //   WHITE = '#fff',
 //   BG = '#222629',
 // }
+
+const { Text } = Typography;
+const { useBreakpoint } = Grid;
 
 export interface SelectedField {
   name: string;
@@ -49,8 +60,8 @@ export interface PlottableField {
 };
 
 const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
+  const { sm } = useBreakpoint();
   const canvasRef = useRef<HTMLDivElement | null>(null);
-
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
     return `hsl(${hue}, 90%, 50%)`;
@@ -60,8 +71,6 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
 
   const filtered = useMemo(() => data.filter(fieldsOnly), [data]);
 
-  // find max values for each selected field so we can calculate scale
-  // TODO: unused
   const fieldsToPlot = useMemo(() => {
     const temp: { [index: string]: PlottableField } = {};
 
@@ -94,35 +103,60 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
   }, [filtered, selectedFields]);
 
   useEffect(() => {
-    const series = selectedFields.map((field) => ({
-      name: field.label,
-      color: hsl(selectedFields.indexOf(field), selectedFields.length),
+    const series = Object.keys(fieldsToPlot).map((label, index) => ({
+      name: fieldsToPlot[label].units ? `${label} (${fieldsToPlot[label].units})` : label,
+      color: hsl(index, selectedFields.length),
       data: data.map((entry) => ({
         x: entry.Time as number,
-        y: entry[field.label] as number,
+        y: entry[label] as number,
       })).filter((entry) => entry.x !== undefined || entry.y !== undefined),
     }));
+    let chart: TimeChart;
 
-    const chart = new TimeChart(canvasRef.current!, {
-      series,
-      lineWidth: 2,
-      tooltip: true,
-      legend: false,
-      zoom: {
-        x: { autoRange: true },
-        y: { autoRange: true },
-      },
-    });
+    if (canvasRef.current) {
+      chart = new TimeChart(canvasRef.current, {
+        series,
+        lineWidth: 2,
+        tooltip: true,
+        legend: false,
+        zoom: {
+          x: { autoRange: true },
+        },
+        tooltipXLabel: 'Time (s)',
+      });
+    }
 
-    return () => chart.dispose();
+    return () => chart && chart.dispose();
   }, [data, fieldsToPlot, filtered, hsl, selectedFields, width, height]);
 
+  if (!sm) {
+    return <LandscapeNotice />;
+  }
+
   return (
-    <div
-      ref={canvasRef}
-      style={{ width, height }}
-      className="log-canvas"
-    />
+    <>
+      <div style={{ marginTop: -20, marginBottom: 10, textAlign: 'left', marginLeft: 20 }}>
+        <Popover
+          placement="bottom"
+          content={
+            <Space direction="vertical">
+              <Typography.Title level={5}>Navigation</Typography.Title>
+              <Text>Pinch to zoom</Text>
+              <Text>Drag to pan</Text>
+              <Text>Ctrl + wheel scroll to zoom X axis</Text>
+              <Text>Hold Shift to speed up zoom 5 times</Text>
+            </Space>
+          }
+        >
+          <QuestionCircleOutlined />
+        </Popover>
+      </div>
+      <div
+        ref={canvasRef}
+        style={{ width, height }}
+        className="log-canvas"
+      />
+    </>
   );
 };
 

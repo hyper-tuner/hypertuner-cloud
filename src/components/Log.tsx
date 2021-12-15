@@ -215,9 +215,6 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
                 Files
               </PerfectScrollbar>
             </TabPane>
-            <TabPane tab={<DashboardOutlined />} key="gauges">
-              Gauges
-            </TabPane>
           </Tabs>
         }
       </Sider>
@@ -229,7 +226,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
               <LogCanvas
                 data={loadedLogs || (logs!.records as Logs)}
                 width={canvasWidth}
-                height={800}
+                height={canvasWidth * 0.45}
                 selectedFields={prepareSelectedFields}
               />
               :
