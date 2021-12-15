@@ -20,7 +20,6 @@ import {
 import {
   FileTextOutlined,
   EditOutlined,
-  DashboardOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
