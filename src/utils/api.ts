@@ -83,6 +83,7 @@ export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
     // 'https://speedytuner-cloud.s3.eu-west-2.amazonaws.com/logs/longest.mlg.gz',
     // 'https://d29mjpbgm6k6md.cloudfront.net/logs/longest.mlg.gz',
     'https://d29mjpbgm6k6md.cloudfront.net/logs/middle.mlg.gz',
+    // 'https://d29mjpbgm6k6md.cloudfront.net/logs/markers.mlg.gz',
     onProgress,
     signal,
   )
