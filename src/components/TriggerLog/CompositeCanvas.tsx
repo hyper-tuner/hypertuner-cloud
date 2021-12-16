@@ -127,13 +127,13 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
     });
 
     const series = [{
-      name: 'Primary',
-      color: Colors.BLUE,
-      data: primary,
-    }, {
       name: 'Secondary',
       color: Colors.GREEN,
       data: secondary,
+    }, {
+      name: 'Primary',
+      color: Colors.BLUE,
+      data: primary,
     }, {
       name: 'Sync',
       color: Colors.RED,
@@ -148,7 +148,6 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
         legend: false,
         zoom: {
           x: { autoRange: true },
-          y: { autoRange: true },
         },
         yRange: { min: -1, max: 9 },
         tooltipXLabel: 'Event',

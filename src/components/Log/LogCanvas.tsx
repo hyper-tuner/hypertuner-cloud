@@ -138,7 +138,6 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
         legend: false,
         zoom: {
           x: { autoRange: true },
-          y: { autoRange: true },
         },
         tooltipXLabel: 'Time (s)',
         plugins: {
