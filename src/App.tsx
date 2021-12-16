@@ -7,10 +7,7 @@ import {
   Redirect,
   generatePath,
 } from 'react-router-dom';
-import {
-  Layout,
-  Result,
-} from 'antd';
+import { Layout } from 'antd';
 import { connect } from 'react-redux';
 import {
   useEffect,
@@ -32,6 +29,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
 import { Routes } from './routes';
 import Log from './components/Log';
+import Diagnose from './components/Diagnose';
 import useStorage from './hooks/useStorage';
 import useConfig from './hooks/useConfig';
 
@@ -113,11 +111,13 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
             </Layout>
           </Route>
           <Route>
-            <Result
-              status="warning"
-              title="There is nothing here"
-              style={{ marginTop: 50 }}
-            />
+            <Layout style={{ marginLeft: margin }}>
+              <Layout className="app-content">
+                <Content>
+                  <Diagnose />
+                </Content>
+              </Layout>
+            </Layout>
           </Route>
         </Switch>
       </Layout>

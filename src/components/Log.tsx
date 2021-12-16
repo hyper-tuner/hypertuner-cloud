@@ -211,7 +211,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
             </TabPane>
             <TabPane tab={<FileTextOutlined />} key="files">
               <PerfectScrollbar options={{ suppressScrollX: true }}>
-                Files
+                some_tune.mlg
               </PerfectScrollbar>
             </TabPane>
           </Tabs>
@@ -225,7 +225,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
               <LogCanvas
                 data={loadedLogs || (logs!.records as Logs)}
                 width={canvasWidth}
-                height={canvasWidth * 0.45}
+                height={canvasWidth * 0.4}
                 selectedFields={prepareSelectedFields}
               />
               :
