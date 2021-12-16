@@ -130,7 +130,7 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
     });
     let chart: TimeChart;
 
-    if (canvasRef.current) {
+    if (canvasRef.current && sm) {
       chart = new TimeChart(canvasRef.current, {
         series,
         lineWidth: 2,
@@ -148,7 +148,7 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
     }
 
     return () => chart && chart.dispose();
-  }, [data, fieldsToPlot, hsl, selectedFields, width, height]);
+  }, [data, fieldsToPlot, hsl, selectedFields, width, height, sm]);
 
   if (!sm) {
     return <LandscapeNotice />;

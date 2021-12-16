@@ -1,4 +1,4 @@
-#
+#Firmware: Speeduino 2021.09-dev
 PriLevel,SecLevel,Trigger,Sync,RefTime,MaxTime,ToothTime,Time
 Flag,Flag,Flag,Flag,ms,ms,ms,ms
 0.0,1.0,1.0,1.0,560535.4,560535.4,2274.308,560535.4

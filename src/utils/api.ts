@@ -86,5 +86,12 @@ export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
     // 'https://d29mjpbgm6k6md.cloudfront.net/logs/markers.mlg.gz',
     onProgress,
     signal,
-  )
-    .then((response) => response);
+  ).then((response) => response);
+
+export const loadCompositeLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
+  fetchWithProgress(
+    'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/composite_1.csv.gz',
+    // 'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/2.csv.gz',
+    onProgress,
+    signal,
+  ).then((response) => response);
