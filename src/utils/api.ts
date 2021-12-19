@@ -90,8 +90,15 @@ export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
 
 export const loadCompositeLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
   fetchWithProgress(
-    'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/composite_1.csv.gz',
+    'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/composite_1_2.csv.gz',
     // 'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/2.csv.gz',
+    onProgress,
+    signal,
+  ).then((response) => response);
+
+export const loadToothLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
+  fetchWithProgress(
+    'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/tooth_3.csv.gz',
     onProgress,
     signal,
   ).then((response) => response);

@@ -2,53 +2,18 @@ import {
   useEffect,
   useRef,
 } from 'react';
-import {
-  Popover,
-  Space,
-  Typography,
-  Grid,
-} from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Grid } from 'antd';
 import TimeChart from 'timechart';
 import { EventsPlugin } from 'timechart/dist/lib/plugins_extra/events';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
+import {
+  CompositeLogEntry,
+  EntryType,
+} from '../../utils/logs/TriggerLogsParser';
+import CanvasHelp from '../CanvasHelp';
+import { Colors } from '../../utils/colors';
 
-enum Colors {
-  RED = '#f32450',
-  CYAN = '#8dd3c7',
-  YELLOW = '#ffff00',
-  PURPLE = '#bebada',
-  GREEN = '#77de3c',
-  BLUE = '#2fe3ff',
-  GREY = '#334455',
-  WHITE = '#fff',
-  BG = '#222629',
-}
-
-const { Text } = Typography;
 const { useBreakpoint } = Grid;
-
-export interface SelectedField {
-  name: string;
-  label: string;
-  units: string;
-  scale: string | number;
-  transform: string | number;
-  format: string;
-};
-
-// TODO: extract this to types package
-interface CompositeLogEntry {
-  type: 'trigger' | 'marker';
-  primaryLevel: number;
-  secondaryLevel: number;
-  trigger: number;
-  sync: number;
-  refTime: number;
-  maxTime: number;
-  toothTime: number;
-  time: number;
-}
 
 interface Props {
   data: CompositeLogEntry[];
@@ -73,14 +38,14 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
     const sync: DataPoint[] = [];
 
     data.forEach((entry, index) => {
-      if (entry.type === 'marker') {
+      if (entry.type === EntryType.MARKER) {
         markers.push({
           x: index,
           name: '',
         });
       }
 
-      if (entry.type === 'trigger') {
+      if (entry.type === EntryType.TRIGGER) {
         const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
         const currentSecondary = (entry.secondaryLevel + 3) * 2; // apply scale
 
@@ -166,22 +131,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
 
   return (
     <>
-      <div style={{ marginTop: -20, marginBottom: 10, textAlign: 'left', marginLeft: 20 }}>
-        <Popover
-          placement="bottom"
-          content={
-            <Space direction="vertical">
-              <Typography.Title level={5}>Navigation</Typography.Title>
-              <Text>Pinch to zoom</Text>
-              <Text>Drag to pan</Text>
-              <Text>Ctrl + wheel scroll to zoom X axis</Text>
-              <Text>Hold Shift to speed up zoom 5 times</Text>
-            </Space>
-          }
-        >
-          <QuestionCircleOutlined />
-        </Popover>
-      </div>
+      <CanvasHelp />
       <div
         ref={canvasRef}
         style={{ width, height }}

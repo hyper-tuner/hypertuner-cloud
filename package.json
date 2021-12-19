@@ -45,7 +45,9 @@
     "react-scripts": "^4.0.3",
     "react-table-drag-select": "^0.3.1",
     "recharts": "^2.1.8",
-    "timechart": "^1.0.0-beta.4"
+    "timechart": "^1.0.0-beta.4",
+    "uplot": "^1.6.18",
+    "uplot-react": "^1.1.1"
   },
   "devDependencies": {
     "@craco/craco": "^6.4.3",

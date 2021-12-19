@@ -13,6 +13,7 @@ import {
   Steps,
   Space,
   Divider,
+  Typography,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -28,15 +29,23 @@ import {
   Config,
   Logs,
 } from '@speedy-tuner/types';
-import { loadCompositeLogs } from '../utils/api';
+import {
+  loadCompositeLogs,
+  loadToothLogs,
+} from '../utils/api';
 import store from '../store';
 import { formatBytes } from '../utils/number';
 import CompositeCanvas from './TriggerLog/CompositeCanvas';
-import { isNumber } from '../utils/tune/expression';
+import TriggerLogsParser, {
+  CompositeLogEntry,
+  ToothLogEntry,
+} from '../utils/logs/TriggerLogsParser';
+import ToothCanvas from './TriggerLog/ToothCanvas';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Step } = Steps;
+
 const edgeUnknown = 'Unknown';
 
 const mapStateToProps = (state: AppState) => ({
@@ -45,19 +54,6 @@ const mapStateToProps = (state: AppState) => ({
   config: state.config,
   loadedLogs: state.logs,
 });
-
-// TODO: extract this to types package
-interface CompositeLogEntry {
-  type: 'trigger' | 'marker';
-  primaryLevel: number;
-  secondaryLevel: number;
-  trigger: number;
-  sync: number;
-  refTime: number;
-  maxTime: number;
-  toothTime: number;
-  time: number;
-}
 
 const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLogs: Logs }) => {
   const { lg } = useBreakpoint();
@@ -83,6 +79,7 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
     },
   };
   const [logs, setLogs] = useState<CompositeLogEntry[]>();
+  const [toothLogs, setToothLogs] = useState<ToothLogEntry[]>();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -90,79 +87,24 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
 
     const loadData = async () => {
       try {
-        const raw = await loadCompositeLogs((percent, total, edge) => {
+        const compositeRaw = await loadCompositeLogs((percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
         }, signal);
 
-        setFileSize(formatBytes(raw.byteLength));
+        const toothRaw = await loadToothLogs(undefined, signal);
 
-        const buff = pako.inflate(new Uint8Array(raw));
-        const string = (new TextDecoder()).decode(buff);
-        const result: CompositeLogEntry[] = [];
-
+        setFileSize(formatBytes(compositeRaw.byteLength));
         setStep(1);
 
-        // TODO: extract this, make a parser class
-        string.split('\n').forEach((line, index) => {
-          const trimmed = line.trim();
+        const parser = new TriggerLogsParser();
+        const resultComposite = parser.parse(pako.inflate(new Uint8Array(compositeRaw))).getCompositeLogs();
+        const resultTooth = parser.parse(pako.inflate(new Uint8Array(toothRaw))).getToothLogs();
 
-          // skip comments
-          if (trimmed.startsWith('#')) {
-            return;
-          }
+        setLogs(resultComposite);
+        setToothLogs(resultTooth);
 
-          // markers
-          if (trimmed.startsWith('MARK')) {
-            const previous = result[result.length - 1] || {
-              primaryLevel: 0,
-              secondaryLevel: 0,
-              trigger: 0,
-              sync: 0,
-              refTime: 0,
-              maxTime: 0,
-              toothTime: 0,
-              time: 0,
-            };
-
-            result.push({
-              type: 'marker',
-              primaryLevel: previous.primaryLevel,
-              secondaryLevel: previous.secondaryLevel,
-              trigger: previous.trigger,
-              sync: previous.sync,
-              refTime: previous.refTime,
-              maxTime: previous.maxTime,
-              toothTime: previous.toothTime,
-              time: previous.time,
-            });
-          }
-
-          const split = trimmed.split(',');
-          if (!isNumber(split[0])) {
-            return;
-          }
-
-          const time = Number(split[7]);
-          if (!time) {
-            return;
-          }
-
-          result.push({
-            type: 'trigger',
-            primaryLevel: Number(split[0]),
-            secondaryLevel: Number(split[1]),
-            trigger: Number(split[2]),
-            sync: Number(split[3]),
-            refTime: Number(split[4]),
-            maxTime: Number(split[5]),
-            toothTime: Number(split[6]),
-            time,
-          });
-        });
-
-        setLogs(result);
         setStep(2);
       } catch (error) {
         setFetchError(error as Error);
@@ -191,7 +133,8 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
           <Tabs defaultActiveKey="files" style={{ marginLeft: 20 }}>
             <TabPane tab={<FileTextOutlined />} key="files">
               <PerfectScrollbar options={{ suppressScrollX: true }}>
-                composite.csv
+                <Typography.Paragraph>tooth.csv</Typography.Paragraph>
+                <Typography.Paragraph>composite.csv</Typography.Paragraph>
               </PerfectScrollbar>
             </TabPane>
           </Tabs>
@@ -200,13 +143,22 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {logs
+            {toothLogs && logs
               ?
-              <CompositeCanvas
-                data={logs!}
-                width={canvasWidth}
-                height={canvasWidth * 0.4}
-              />
+              (
+                <>
+                  <ToothCanvas
+                    data={toothLogs!}
+                    width={canvasWidth}
+                    height={canvasWidth * 0.3}
+                  />
+                  <CompositeCanvas
+                    data={logs!}
+                    width={canvasWidth}
+                    height={canvasWidth * 0.3}
+                  />
+                </>
+              )
               :
               <Space
                 direction="vertical"
