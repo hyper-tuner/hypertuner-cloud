@@ -12,6 +12,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import TimeChart from 'timechart';
 import { EventsPlugin } from 'timechart/dist/lib/plugins_extra/events';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
+import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
 
 enum Colors {
   RED = '#f32450',
@@ -36,19 +37,6 @@ export interface SelectedField {
   transform: string | number;
   format: string;
 };
-
-// TODO: extract this to types package
-interface CompositeLogEntry {
-  type: 'trigger' | 'marker';
-  primaryLevel: number;
-  secondaryLevel: number;
-  trigger: number;
-  sync: number;
-  refTime: number;
-  maxTime: number;
-  toothTime: number;
-  time: number;
-}
 
 interface Props {
   data: CompositeLogEntry[];

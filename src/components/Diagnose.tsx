@@ -33,6 +33,7 @@ import store from '../store';
 import { formatBytes } from '../utils/number';
 import CompositeCanvas from './TriggerLog/CompositeCanvas';
 import { isNumber } from '../utils/tune/expression';
+import TriggerLogsParser, { CompositeLogEntry } from '../utils/logs/TriggerLogsParser';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -45,19 +46,6 @@ const mapStateToProps = (state: AppState) => ({
   config: state.config,
   loadedLogs: state.logs,
 });
-
-// TODO: extract this to types package
-interface CompositeLogEntry {
-  type: 'trigger' | 'marker';
-  primaryLevel: number;
-  secondaryLevel: number;
-  trigger: number;
-  sync: number;
-  refTime: number;
-  maxTime: number;
-  toothTime: number;
-  time: number;
-}
 
 const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLogs: Logs }) => {
   const { lg } = useBreakpoint();
@@ -97,70 +85,10 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
         }, signal);
 
         setFileSize(formatBytes(raw.byteLength));
-
-        const buff = pako.inflate(new Uint8Array(raw));
-        const string = (new TextDecoder()).decode(buff);
-        const result: CompositeLogEntry[] = [];
-
         setStep(1);
 
-        // TODO: extract this, make a parser class
-        string.split('\n').forEach((line, index) => {
-          const trimmed = line.trim();
-
-          // skip comments
-          if (trimmed.startsWith('#')) {
-            return;
-          }
-
-          // markers
-          if (trimmed.startsWith('MARK')) {
-            const previous = result[result.length - 1] || {
-              primaryLevel: 0,
-              secondaryLevel: 0,
-              trigger: 0,
-              sync: 0,
-              refTime: 0,
-              maxTime: 0,
-              toothTime: 0,
-              time: 0,
-            };
-
-            result.push({
-              type: 'marker',
-              primaryLevel: previous.primaryLevel,
-              secondaryLevel: previous.secondaryLevel,
-              trigger: previous.trigger,
-              sync: previous.sync,
-              refTime: previous.refTime,
-              maxTime: previous.maxTime,
-              toothTime: previous.toothTime,
-              time: previous.time,
-            });
-          }
-
-          const split = trimmed.split(',');
-          if (!isNumber(split[0])) {
-            return;
-          }
-
-          const time = Number(split[7]);
-          if (!time) {
-            return;
-          }
-
-          result.push({
-            type: 'trigger',
-            primaryLevel: Number(split[0]),
-            secondaryLevel: Number(split[1]),
-            trigger: Number(split[2]),
-            sync: Number(split[3]),
-            refTime: Number(split[4]),
-            maxTime: Number(split[5]),
-            toothTime: Number(split[6]),
-            time,
-          });
-        });
+        const parser = new TriggerLogsParser(pako.inflate(new Uint8Array(raw))).parse();
+        const result = parser.getCompositeLogs();
 
         setLogs(result);
         setStep(2);
