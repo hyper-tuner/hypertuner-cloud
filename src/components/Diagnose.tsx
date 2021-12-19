@@ -13,6 +13,7 @@ import {
   Steps,
   Space,
   Divider,
+  Typography,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -28,16 +29,23 @@ import {
   Config,
   Logs,
 } from '@speedy-tuner/types';
-import { loadCompositeLogs, loadToothLogs } from '../utils/api';
+import {
+  loadCompositeLogs,
+  loadToothLogs,
+} from '../utils/api';
 import store from '../store';
 import { formatBytes } from '../utils/number';
 import CompositeCanvas from './TriggerLog/CompositeCanvas';
-import { isNumber } from '../utils/tune/expression';
-import TriggerLogsParser, { CompositeLogEntry, ToothLogEntry } from '../utils/logs/TriggerLogsParser';
+import TriggerLogsParser, {
+  CompositeLogEntry,
+  ToothLogEntry,
+} from '../utils/logs/TriggerLogsParser';
+import ToothCanvas from './TriggerLog/ToothCanvas';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Step } = Steps;
+
 const edgeUnknown = 'Unknown';
 
 const mapStateToProps = (state: AppState) => ({
@@ -125,7 +133,8 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
           <Tabs defaultActiveKey="files" style={{ marginLeft: 20 }}>
             <TabPane tab={<FileTextOutlined />} key="files">
               <PerfectScrollbar options={{ suppressScrollX: true }}>
-                composite.csv
+                <Typography.Paragraph>tooth.csv</Typography.Paragraph>
+                <Typography.Paragraph>composite.csv</Typography.Paragraph>
               </PerfectScrollbar>
             </TabPane>
           </Tabs>
@@ -134,13 +143,22 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {logs
+            {toothLogs && logs
               ?
-              <CompositeCanvas
-                data={logs!}
-                width={canvasWidth}
-                height={canvasWidth * 0.4}
-              />
+              (
+                <>
+                  <ToothCanvas
+                    data={toothLogs!}
+                    width={canvasWidth}
+                    height={canvasWidth * 0.3}
+                  />
+                  <CompositeCanvas
+                    data={logs!}
+                    width={canvasWidth}
+                    height={canvasWidth * 0.3}
+                  />
+                </>
+              )
               :
               <Space
                 direction="vertical"

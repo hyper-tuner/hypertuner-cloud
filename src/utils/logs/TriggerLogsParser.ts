@@ -1,9 +1,12 @@
 import { isNumber } from '../tune/expression';
 
-export type LogEntryType = 'trigger' | 'marker';
+export enum EntryType {
+  TRIGGER = 'trigger',
+  MARKER = 'marker',
+}
 
 export interface CompositeLogEntry {
-  type: LogEntryType;
+  type: EntryType;
   primaryLevel: number;
   secondaryLevel: number;
   trigger: number;
@@ -15,7 +18,7 @@ export interface CompositeLogEntry {
 }
 
 export interface ToothLogEntry {
-  type: LogEntryType;
+  type: EntryType;
   toothTime: number;
   time: number;
 }
@@ -50,6 +53,8 @@ class TriggerLogsParser {
   }
 
   private parseToothLogs(raw: string): void {
+    this.resultTooth = [];
+
     raw.split('\n').forEach((line) => {
       const trimmed = line.trim();
 
@@ -64,10 +69,12 @@ class TriggerLogsParser {
         };
 
         this.resultTooth.push({
-          type: 'marker',
+          type: EntryType.MARKER,
           toothTime: previous.toothTime,
           time: previous.time,
         });
+
+        return;
       }
 
       const split = trimmed.split(',');
@@ -81,7 +88,7 @@ class TriggerLogsParser {
       }
 
       this.resultTooth.push({
-        type: 'trigger',
+        type: EntryType.TRIGGER,
         toothTime: Number(split[0]),
         time,
       });
@@ -89,6 +96,8 @@ class TriggerLogsParser {
   }
 
   private parseCompositeLogs(raw: string): void {
+    this.resultComposite = [];
+
     raw.split('\n').forEach((line) => {
       const trimmed = line.trim();
 
@@ -109,7 +118,7 @@ class TriggerLogsParser {
         };
 
         this.resultComposite.push({
-          type: 'marker',
+          type: EntryType.MARKER,
           primaryLevel: previous.primaryLevel,
           secondaryLevel: previous.secondaryLevel,
           trigger: previous.trigger,
@@ -119,6 +128,8 @@ class TriggerLogsParser {
           toothTime: previous.toothTime,
           time: previous.time,
         });
+
+        return;
       }
 
       const split = trimmed.split(',');
@@ -132,7 +143,7 @@ class TriggerLogsParser {
       }
 
       this.resultComposite.push({
-        type: 'trigger',
+        type: EntryType.TRIGGER,
         primaryLevel: Number(split[0]),
         secondaryLevel: Number(split[1]),
         trigger: Number(split[2]),

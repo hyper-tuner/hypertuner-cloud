@@ -6,20 +6,12 @@ import { Grid } from 'antd';
 import TimeChart from 'timechart';
 import { EventsPlugin } from 'timechart/dist/lib/plugins_extra/events';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
-import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
+import {
+  CompositeLogEntry,
+  EntryType,
+} from '../../utils/logs/TriggerLogsParser';
 import CanvasHelp from '../CanvasHelp';
-
-enum Colors {
-  RED = '#f32450',
-  CYAN = '#8dd3c7',
-  YELLOW = '#ffff00',
-  PURPLE = '#bebada',
-  GREEN = '#77de3c',
-  BLUE = '#2fe3ff',
-  GREY = '#334455',
-  WHITE = '#fff',
-  BG = '#222629',
-}
+import { Colors } from '../../utils/colors';
 
 const { useBreakpoint } = Grid;
 
@@ -46,14 +38,14 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
     const sync: DataPoint[] = [];
 
     data.forEach((entry, index) => {
-      if (entry.type === 'marker') {
+      if (entry.type === EntryType.MARKER) {
         markers.push({
           x: index,
           name: '',
         });
       }
 
-      if (entry.type === 'trigger') {
+      if (entry.type === EntryType.TRIGGER) {
         const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
         const currentSecondary = (entry.secondaryLevel + 3) * 2; // apply scale
 

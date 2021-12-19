@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
   Label,
 } from 'recharts';
+import { Colors } from '../../utils/colors';
 import LandscapeNotice from './LandscapeNotice';
 import Table from './Table';
 
@@ -54,8 +55,6 @@ const Curve = ({
   const [data, setData] = useState(mapData([yData, xData]));
   const { sm } = useBreakpoint();
   const margin = 15;
-  const mainColor = '#ccc';
-  const tooltipBg = '#2E3338';
   const animationDuration = 500;
 
   if (!sm) {
@@ -85,7 +84,7 @@ const Curve = ({
             <Label
               value={`${xLabel} (${xUnits})`}
               position="bottom"
-              style={{ fill: mainColor }}
+              style={{ fill: Colors.TEXT }}
             />
           </XAxis>
           <YAxis domain={['auto', 'auto']}>
@@ -93,14 +92,14 @@ const Curve = ({
               value={`${yLabel} (${yUnits})`}
               position="left"
               angle={-90}
-              style={{ fill: mainColor }}
+              style={{ fill: Colors.TEXT }}
             />
           </YAxis>
           <Tooltip
             labelFormatter={(value) => `${xLabel} : ${value} ${xUnits}`}
             formatter={(value: number) => [`${value} ${yUnits}`, yLabel]}
             contentStyle={{
-              backgroundColor: tooltipBg,
+              backgroundColor: Colors.MAIN,
               border: 0,
               boxShadow: '0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%)',
               borderRadius: 5,
@@ -111,7 +110,7 @@ const Curve = ({
             strokeWidth={3}
             type="linear"
             dataKey="y"
-            stroke="#1e88ea"
+            stroke={Colors.ACCENT}
             animationDuration={animationDuration}
           />
         </LineChart>
