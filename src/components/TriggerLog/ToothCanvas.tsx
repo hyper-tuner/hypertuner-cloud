@@ -5,6 +5,7 @@ import {
 import { Grid } from 'antd';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
 import {
   ToothLogEntry,
@@ -12,7 +13,6 @@ import {
 } from '../../utils/logs/TriggerLogsParser';
 import CanvasHelp from '../CanvasHelp';
 import { Colors } from '../../utils/colors';
-import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 
 import 'uplot/dist/uPlot.min.css';
 
@@ -63,7 +63,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
           stroke: Colors.ACCENT,
           fill: Colors.ACCENT,
           scale: 'toothTime',
-          value: (self, rawValue) => `${rawValue.toLocaleString()}μs`,
+          value: (_self, rawValue) => `${rawValue.toLocaleString()}μs`,
           paths: bars!({ size: [0.6, 100] }),
         },
       ],

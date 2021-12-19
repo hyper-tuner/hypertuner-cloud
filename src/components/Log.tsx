@@ -2,7 +2,6 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -38,7 +37,7 @@ import {
   DatalogEntry,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
-import LogCanvas, { SelectedField } from './Log/LogCanvas';
+import LogCanvas2 from './Log/LogCanvas2';
 import store from '../store';
 import {
   formatBytes,
@@ -72,8 +71,16 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
   const contentRef = useRef<HTMLDivElement | null>(null);
   const margin = 30;
   const [canvasWidth, setCanvasWidth] = useState(0);
+  const [canvasHeight, setCanvasHeight] = useState(0);
   const sidebarWidth = 250;
-  const calculateCanvasWidth = useCallback(() => setCanvasWidth((contentRef.current?.clientWidth || 0) - margin), []);
+  const calculateCanvasSize = useCallback(() => {
+    setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
+
+    if (window.innerHeight > 600) {
+      setCanvasHeight(Math.round((window.innerHeight - 250) / 2));
+    }
+  }, []);
+
   const siderProps = {
     width: sidebarWidth,
     collapsible: true,
@@ -81,23 +88,26 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
     collapsed: ui.sidebarCollapsed,
     onCollapse: (collapsed: boolean) => {
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
-      setTimeout(calculateCanvasWidth, 1);
+      setTimeout(calculateCanvasSize, 1);
     },
   };
   const [logs, setLogs] = useState<ParserResult>();
   const [fields, setFields] = useState<DatalogEntry[]>([]);
-  const [selectedFields, setSelectedFields] = useState<CheckboxValueType[]>([
-    // 'rpm',
+  const [selectedFields1, setSelectedFields1] = useState<CheckboxValueType[]>([
+    'rpm',
     'tps',
+    'map',
+  ]);
+  const [selectedFields2, setSelectedFields2] = useState<CheckboxValueType[]>([
     'afrTarget',
     'afr',
-    'map',
+    'dwell',
   ]);
   const {
     isConfigReady,
     findOutputChannel,
   } = useConfig(config);
-  const prepareSelectedFields = useMemo<SelectedField[]>(() => {
+  const prepareSelectedFields = useCallback((selectedFields: CheckboxValueType[]) => {
     if (!isConfigReady) {
       return [];
     }
@@ -121,7 +131,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       };
     }).filter((val) => !!val);
 
-  }, [config.datalog, findOutputChannel, isConfigReady, selectedFields]);
+  }, [config.datalog, findOutputChannel, isConfigReady]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
@@ -176,16 +186,16 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       setFields(Object.values(config.datalog));
     }
 
-    calculateCanvasWidth();
+    calculateCanvasSize();
 
-    window.addEventListener('resize', calculateCanvasWidth);
+    window.addEventListener('resize', calculateCanvasSize);
 
     return () => {
       controller.abort();
       worker.terminate();
-      window.removeEventListener('resize', calculateCanvasWidth);
+      window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [calculateCanvasWidth, config.datalog, config.outputChannels, loadedLogs]);
+  }, [calculateCanvasSize, config.datalog, config.outputChannels, loadedLogs]);
 
   return (
     <>
@@ -196,18 +206,35 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
           !ui.sidebarCollapsed &&
           <Tabs defaultActiveKey="fields" style={{ marginLeft: 20 }}>
             <TabPane tab={<EditOutlined />} key="fields">
-              <PerfectScrollbar options={{ suppressScrollX: true }}>
-                <Checkbox.Group onChange={setSelectedFields} value={selectedFields}>
-                  {fields.map((field) => (
-                    <Row key={field.name}>
-                      <Checkbox key={field.name} value={field.name}>
-                        {field.label}
-                        {/* {field.units && ` (${field.units})`} */}
-                      </Checkbox>
-                    </Row>
-                  ))}
-                </Checkbox.Group>
-              </PerfectScrollbar>
+              <div style={{ height: '45%' }}>
+                <PerfectScrollbar options={{ suppressScrollX: true }}>
+                  <Checkbox.Group onChange={setSelectedFields1} value={selectedFields1}>
+                    {fields.map((field) => (
+                      <Row key={field.name}>
+                        <Checkbox key={field.name} value={field.name}>
+                          {field.label}
+                          {/* {field.units && ` (${field.units})`} */}
+                        </Checkbox>
+                      </Row>
+                    ))}
+                  </Checkbox.Group>
+                </PerfectScrollbar>
+              </div>
+              <Divider />
+              <div style={{ height: '45%' }}>
+                <PerfectScrollbar options={{ suppressScrollX: true }}>
+                  <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
+                    {fields.map((field) => (
+                      <Row key={field.name}>
+                        <Checkbox key={field.name} value={field.name}>
+                          {field.label}
+                          {/* {field.units && ` (${field.units})`} */}
+                        </Checkbox>
+                      </Row>
+                    ))}
+                  </Checkbox.Group>
+                </PerfectScrollbar>
+              </div>
             </TabPane>
             <TabPane tab={<FileTextOutlined />} key="files">
               <PerfectScrollbar options={{ suppressScrollX: true }}>
@@ -222,11 +249,12 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
             {logs || !!loadedLogs.length
               ?
-              <LogCanvas
+              <LogCanvas2
                 data={loadedLogs || (logs!.records as Logs)}
                 width={canvasWidth}
-                height={canvasWidth * 0.4}
-                selectedFields={prepareSelectedFields}
+                height={canvasHeight}
+                selectedFields1={prepareSelectedFields(selectedFields1)}
+                selectedFields2={prepareSelectedFields(selectedFields2)}
               />
               :
               <Space
