@@ -47,8 +47,8 @@ const touchZoomPlugin = () => {
         const yMax = Math.max(t0y, t1y);
 
         // mid points
-        t.y = (yMin+yMax)/2;
-        t.x = (xMin+xMax)/2;
+        t.y = (yMin + yMax) / 2;
+        t.x = (xMin + xMax) / 2;
 
         t.dx = xMax - xMin;
         t.dy = yMax - yMin;
@@ -74,8 +74,8 @@ const touchZoomPlugin = () => {
       const xFactor = fr.d! / to.d!;
       const yFactor = fr.d! / to.d!;
 
-      const leftPct = left/rect.width;
-      const btmPct = 1 - top/rect.height;
+      const leftPct = left / rect.width;
+      const btmPct = 1 - top / rect.height;
 
       const nxRange = oxRange * xFactor;
       const nxMin = xVal - leftPct * nxRange;
