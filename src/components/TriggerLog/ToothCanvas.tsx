@@ -51,7 +51,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
       width,
       height,
       scales: {
-        x: { time: true },
+        x: { time: false },
       },
       series: [
         {
