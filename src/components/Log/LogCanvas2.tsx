@@ -1,16 +1,17 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { Logs } from '@speedy-tuner/types';
-import { Grid } from 'antd';
+import {
+  Grid,
+  Space,
+} from 'antd';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import { colorHsl } from '../../utils/number';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
-import CanvasHelp from '../CanvasHelp';
 import { Colors } from '../../utils/colors';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 
@@ -32,7 +33,8 @@ interface Props {
   data: Logs;
   width: number;
   height: number;
-  selectedFields: SelectedField[];
+  selectedFields1: SelectedField[];
+  selectedFields2: SelectedField[];
 };
 
 export interface PlottableField {
@@ -44,16 +46,18 @@ export interface PlottableField {
   format: string;
 };
 
-const LogCanvas2 = ({ data, width, height, selectedFields }: Props) => {
+const LogCanvas2 = ({ data, width, height, selectedFields1, selectedFields2 }: Props) => {
   const { sm } = useBreakpoint();
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
     return `hsl(${hue}, 90%, 50%)`;
   }, []);
-  const [options, setOptions] = useState<uPlot.Options>();
-  const [plotData, setPlotData] = useState<uPlot.AlignedData>();
+  const [options1, setOptions1] = useState<uPlot.Options>();
+  const [plotData1, setPlotData1] = useState<uPlot.AlignedData>();
+  const [options2, setOptions2] = useState<uPlot.Options>();
+  const [plotData2, setPlotData2] = useState<uPlot.AlignedData>();
 
-  const fieldsToPlot = useMemo(() => {
+  const generateFieldsToPlot = useCallback((selectedFields: SelectedField[]) => {
     const temp: { [index: string]: PlottableField } = {};
 
     data.forEach((entry) => {
@@ -82,9 +86,9 @@ const LogCanvas2 = ({ data, width, height, selectedFields }: Props) => {
     });
 
     return temp;
-  }, [data, selectedFields]);
+  }, [data]);
 
-  useEffect(() => {
+  const generatePlotConfig = useCallback((fieldsToPlot: { [index: string]: PlottableField }, selectedFieldsLength: number, plotSyncKey: string) => {
     const dataSeries: uPlot.Series[] = [];
     const xData: number[] = [];
     const yData: (number | null)[][] = [];
@@ -95,7 +99,7 @@ const LogCanvas2 = ({ data, width, height, selectedFields }: Props) => {
       dataSeries.push({
         label: field.units ? `${label} (${field.units})` : label,
         points: { show: false },
-        stroke: hsl(index, selectedFields.length),
+        stroke: hsl(index, selectedFieldsLength),
         scale: field.units,
         width: 2,
         value: (_self, val) => isNumber(val) ? val.toFixed(2) : 0,
@@ -120,47 +124,62 @@ const LogCanvas2 = ({ data, width, height, selectedFields }: Props) => {
       });
     });
 
-    setPlotData([
+    return {
       xData,
-      ...yData,
-    ]);
-
-    setOptions({
-      width,
-      height,
-      scales: {
-        x: { time: false },
-      },
-      series: [
-        { label: 'Time (s)' },
-        ...dataSeries,
-      ],
-      axes: [
-        {
-          stroke: Colors.TEXT,
-          grid: { stroke: Colors.MAIN_LIGHT },
+      yData,
+      options: {
+        width,
+        height,
+        scales: { x: { time: false } },
+        series: [
+          { label: 'Time (s)' },
+          ...dataSeries,
+        ],
+        axes: [
+          {
+            stroke: Colors.TEXT,
+            grid: { stroke: Colors.MAIN_LIGHT },
+          },
+        ],
+        cursor: {
+          drag: { y: false },
+          sync: {
+            key: plotSyncKey,
+          },
         },
-      ],
-      cursor: {
-        drag: { y: false },
+        plugins: [touchZoomPlugin()],
       },
-      plugins: [touchZoomPlugin()],
-    });
+    };
+  }, [data, height, hsl, width]);
 
-  }, [data, fieldsToPlot, hsl, selectedFields, width, height, sm]);
+  useEffect(() => {
+    const plotSync = uPlot.sync('logs');
+
+    const result1 = generatePlotConfig(generateFieldsToPlot(selectedFields1), selectedFields1.length, plotSync.key);
+    setOptions1(result1.options);
+    setPlotData1([result1.xData, ...result1.yData]);
+
+    const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
+    setOptions2(result2.options);
+    setPlotData2([result2.xData, ...result2.yData]);
+
+  }, [data, hsl, width, height, sm, generatePlotConfig, generateFieldsToPlot, selectedFields1, selectedFields2]);
 
   if (!sm) {
     return <LandscapeNotice />;
   }
 
   return (
-    <>
-      <CanvasHelp />
+    <Space direction="vertical" size="large">
       <UplotReact
-        options={options!}
-        data={plotData!}
+        options={options1!}
+        data={plotData1!}
       />
-    </>
+      <UplotReact
+        options={options2!}
+        data={plotData2!}
+      />
+    </Space>
   );
 };
 
