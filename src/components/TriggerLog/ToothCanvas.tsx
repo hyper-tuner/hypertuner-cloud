@@ -11,9 +11,10 @@ import {
   EntryType,
 } from '../../utils/logs/TriggerLogsParser';
 import CanvasHelp from '../CanvasHelp';
+import { Colors } from '../../utils/colors';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 
 import 'uplot/dist/uPlot.min.css';
-import { Colors } from '../../utils/colors';
 
 const { useBreakpoint } = Grid;
 const { bars } = uPlot.paths;
@@ -81,6 +82,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
       cursor: {
         drag: { y: false },
       },
+      plugins: [touchZoomPlugin()],
     });
   }, [data, width, height, sm]);
 
