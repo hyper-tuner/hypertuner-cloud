@@ -5,31 +5,13 @@ import {
   useRef,
 } from 'react';
 import { Logs } from '@speedy-tuner/types';
-import {
-  Popover,
-  Space,
-  Typography,
-  Grid,
-} from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Grid } from 'antd';
 import TimeChart from 'timechart';
 import { EventsPlugin } from 'timechart/dist/lib/plugins_extra/events';
 import { colorHsl } from '../../utils/number';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
+import CanvasHelp from '../CanvasHelp';
 
-// enum Colors {
-//   RED = '#f32450',
-//   CYAN = '#8dd3c7',
-//   YELLOW = '#ffff00',
-//   PURPLE = '#bebada',
-//   GREEN = '#77de3c',
-//   BLUE = '#2fe3ff',
-//   GREY = '#334455',
-//   WHITE = '#fff',
-//   BG = '#222629',
-// }
-
-const { Text } = Typography;
 const { useBreakpoint } = Grid;
 
 export interface SelectedField {
@@ -155,22 +137,7 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
 
   return (
     <>
-      <div style={{ marginTop: -20, marginBottom: 10, textAlign: 'left', marginLeft: 20 }}>
-        <Popover
-          placement="bottom"
-          content={
-            <Space direction="vertical">
-              <Typography.Title level={5}>Navigation</Typography.Title>
-              <Text>Pinch to zoom</Text>
-              <Text>Drag to pan</Text>
-              <Text>Ctrl + wheel scroll to zoom X axis</Text>
-              <Text>Hold Shift to speed up zoom 5 times</Text>
-            </Space>
-          }
-        >
-          <QuestionCircleOutlined />
-        </Popover>
-      </div>
+      <CanvasHelp />
       <div
         ref={canvasRef}
         style={{ width, height }}

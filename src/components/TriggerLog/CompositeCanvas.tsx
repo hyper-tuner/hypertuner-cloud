@@ -2,17 +2,12 @@ import {
   useEffect,
   useRef,
 } from 'react';
-import {
-  Popover,
-  Space,
-  Typography,
-  Grid,
-} from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Grid } from 'antd';
 import TimeChart from 'timechart';
 import { EventsPlugin } from 'timechart/dist/lib/plugins_extra/events';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
 import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
+import CanvasHelp from '../CanvasHelp';
 
 enum Colors {
   RED = '#f32450',
@@ -26,17 +21,7 @@ enum Colors {
   BG = '#222629',
 }
 
-const { Text } = Typography;
 const { useBreakpoint } = Grid;
-
-export interface SelectedField {
-  name: string;
-  label: string;
-  units: string;
-  scale: string | number;
-  transform: string | number;
-  format: string;
-};
 
 interface Props {
   data: CompositeLogEntry[];
@@ -154,22 +139,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
 
   return (
     <>
-      <div style={{ marginTop: -20, marginBottom: 10, textAlign: 'left', marginLeft: 20 }}>
-        <Popover
-          placement="bottom"
-          content={
-            <Space direction="vertical">
-              <Typography.Title level={5}>Navigation</Typography.Title>
-              <Text>Pinch to zoom</Text>
-              <Text>Drag to pan</Text>
-              <Text>Ctrl + wheel scroll to zoom X axis</Text>
-              <Text>Hold Shift to speed up zoom 5 times</Text>
-            </Space>
-          }
-        >
-          <QuestionCircleOutlined />
-        </Popover>
-      </div>
+      <CanvasHelp />
       <div
         ref={canvasRef}
         style={{ width, height }}

@@ -1,7 +1,9 @@
 import { isNumber } from '../tune/expression';
 
+export type LogEntryType = 'trigger' | 'marker';
+
 export interface CompositeLogEntry {
-  type: 'trigger' | 'marker';
+  type: LogEntryType;
   primaryLevel: number;
   secondaryLevel: number;
   trigger: number;
@@ -12,8 +14,16 @@ export interface CompositeLogEntry {
   time: number;
 }
 
+export interface ToothLogEntry {
+  type: LogEntryType;
+  toothTime: number;
+  time: number;
+}
+
 class TriggerLogsParser {
-  raw: string;
+  COMMENT_PREFIX = '#';
+
+  MARKER_PREFIX = 'MARK';
 
   isTooth: boolean = false;
 
@@ -21,31 +31,72 @@ class TriggerLogsParser {
 
   resultComposite: CompositeLogEntry[] = [];
 
-  constructor(buffer: ArrayBuffer) {
-    this.raw = (new TextDecoder()).decode(buffer);
-  }
+  resultTooth: ToothLogEntry[] = [];
 
-  parse() {
-    this.parseCompositeLogs();
+  parse(buffer: ArrayBuffer): TriggerLogsParser {
+    const raw = (new TextDecoder()).decode(buffer);
+    this.parseCompositeLogs(raw);
+    this.parseToothLogs(raw);
 
     return this;
   }
 
-  getCompositeLogs() {
+  getCompositeLogs(): CompositeLogEntry[] {
     return this.resultComposite;
   }
 
-  private parseCompositeLogs() {
-    this.raw.split('\n').forEach((line) => {
+  getToothLogs(): ToothLogEntry[] {
+    return this.resultTooth;
+  }
+
+  private parseToothLogs(raw: string): void {
+    raw.split('\n').forEach((line) => {
       const trimmed = line.trim();
 
-      // skip comments
-      if (trimmed.startsWith('#')) {
+      if (trimmed.startsWith(this.COMMENT_PREFIX)) {
         return;
       }
 
-      // markers
-      if (trimmed.startsWith('MARK')) {
+      if (trimmed.startsWith(this.MARKER_PREFIX)) {
+        const previous = this.resultTooth[this.resultTooth.length - 1] || {
+          toothTime: 0,
+          time: 0,
+        };
+
+        this.resultTooth.push({
+          type: 'marker',
+          toothTime: previous.toothTime,
+          time: previous.time,
+        });
+      }
+
+      const split = trimmed.split(',');
+      if (!isNumber(split[0])) {
+        return;
+      }
+
+      const time = Number(split[1]);
+      if (!time) {
+        return;
+      }
+
+      this.resultTooth.push({
+        type: 'trigger',
+        toothTime: Number(split[0]),
+        time,
+      });
+    });
+  }
+
+  private parseCompositeLogs(raw: string): void {
+    raw.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith(this.COMMENT_PREFIX)) {
+        return;
+      }
+
+      if (trimmed.startsWith(this.MARKER_PREFIX)) {
         const previous = this.resultComposite[this.resultComposite.length - 1] || {
           primaryLevel: 0,
           secondaryLevel: 0,

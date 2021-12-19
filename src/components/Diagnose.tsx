@@ -28,12 +28,12 @@ import {
   Config,
   Logs,
 } from '@speedy-tuner/types';
-import { loadCompositeLogs } from '../utils/api';
+import { loadCompositeLogs, loadToothLogs } from '../utils/api';
 import store from '../store';
 import { formatBytes } from '../utils/number';
 import CompositeCanvas from './TriggerLog/CompositeCanvas';
 import { isNumber } from '../utils/tune/expression';
-import TriggerLogsParser, { CompositeLogEntry } from '../utils/logs/TriggerLogsParser';
+import TriggerLogsParser, { CompositeLogEntry, ToothLogEntry } from '../utils/logs/TriggerLogsParser';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -71,6 +71,7 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
     },
   };
   const [logs, setLogs] = useState<CompositeLogEntry[]>();
+  const [toothLogs, setToothLogs] = useState<ToothLogEntry[]>();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -78,19 +79,24 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
 
     const loadData = async () => {
       try {
-        const raw = await loadCompositeLogs((percent, total, edge) => {
+        const compositeRaw = await loadCompositeLogs((percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
         }, signal);
 
-        setFileSize(formatBytes(raw.byteLength));
+        const toothRaw = await loadToothLogs(undefined, signal);
+
+        setFileSize(formatBytes(compositeRaw.byteLength));
         setStep(1);
 
-        const parser = new TriggerLogsParser(pako.inflate(new Uint8Array(raw))).parse();
-        const result = parser.getCompositeLogs();
+        const parser = new TriggerLogsParser();
+        const resultComposite = parser.parse(pako.inflate(new Uint8Array(compositeRaw))).getCompositeLogs();
+        const resultTooth = parser.parse(pako.inflate(new Uint8Array(toothRaw))).getToothLogs();
 
-        setLogs(result);
+        setLogs(resultComposite);
+        setToothLogs(resultTooth);
+
         setStep(2);
       } catch (error) {
         setFetchError(error as Error);
