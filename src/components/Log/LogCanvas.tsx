@@ -10,7 +10,10 @@ import {
 } from 'antd';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
-import { colorHsl } from '../../utils/number';
+import {
+  colorHsl,
+  formatNumber,
+} from '../../utils/number';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
 import { Colors } from '../../utils/colors';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
@@ -62,8 +65,6 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
 
     data.forEach((entry) => {
       selectedFields.forEach(({ label, scale, transform, units, format }) => {
-        const value = entry[label];
-
         if (!temp[label]) {
           temp[label] = {
             min: 0,
@@ -75,13 +76,14 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
           };
         }
 
-        if (value > temp[label].max) {
-          temp[label].max = entry[label] as number;
-        }
+        // const value = entry[label];
+        // if (value > temp[label].max) {
+        //   temp[label].max = entry[label] as number;
+        // }
 
-        if (value < temp[label].min) {
-          temp[label].min = entry[label] as number;
-        }
+        // if (value < temp[label].min) {
+        //   temp[label].min = entry[label] as number;
+        // }
       });
     });
 
@@ -102,15 +104,18 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
         stroke: hsl(index, selectedFieldsLength),
         scale: field.units,
         width: 2,
-        value: (_self, val) => isNumber(val) ? val.toFixed(2) : 0,
+        value: (_self, val) => isNumber(val) ? formatNumber(val, field.format) : 0,
       });
 
       data.forEach((entry) => {
+        // TODO: add type in MlgConverter
         if (entry.type === 'field') {
-          xData.push(entry.Time as number);
+          // we only need to collect Time data once
+          if (index === 0) {
+            xData.push(entry.Time as number);
+          }
 
           let value = entry[label];
-
           if (value !== undefined) {
             value = (value as number * field.scale) + field.transform;
           }
