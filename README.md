@@ -4,7 +4,6 @@
 ![master](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master)
 [![CodeQL](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/codeql-analysis.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability)](https://codeclimate.com/github/speedy-tuner/speedy-tuner-cloud/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/test_coverage)](https://codeclimate.com/github/speedy-tuner/speedy-tuner-cloud/test_coverage)
 ![License](https://img.shields.io/github/license/speedy-tuner/speedy-tuner-cloud)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fspeedy-tuner%2Fspeedy-tuner-cloud.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fspeedy-tuner%2Fspeedy-tuner-cloud?ref=badge_shield)
 
