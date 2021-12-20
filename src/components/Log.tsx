@@ -37,7 +37,7 @@ import {
   DatalogEntry,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
-import LogCanvas2 from './Log/LogCanvas2';
+import LogCanvas from './Log/LogCanvas';
 import store from '../store';
 import {
   formatBytes,
@@ -88,7 +88,6 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
     collapsed: ui.sidebarCollapsed,
     onCollapse: (collapsed: boolean) => {
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
-      setTimeout(calculateCanvasSize, 1);
     },
   };
   const [logs, setLogs] = useState<ParserResult>();
@@ -195,7 +194,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [calculateCanvasSize, config.datalog, config.outputChannels, loadedLogs]);
+  }, [calculateCanvasSize, config.datalog, config.outputChannels, loadedLogs, ui.sidebarCollapsed]);
 
   return (
     <>
@@ -249,7 +248,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
             {logs || !!loadedLogs.length
               ?
-              <LogCanvas2
+              <LogCanvas
                 data={loadedLogs || (logs!.records as Logs)}
                 width={canvasWidth}
                 height={canvasHeight}

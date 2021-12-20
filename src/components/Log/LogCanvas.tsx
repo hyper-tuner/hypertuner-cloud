@@ -1,16 +1,22 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
-  useRef,
+  useState,
 } from 'react';
 import { Logs } from '@speedy-tuner/types';
-import { Grid } from 'antd';
-import TimeChart from 'timechart';
-import { EventsPlugin } from 'timechart/dist/lib/plugins_extra/events';
+import {
+  Grid,
+  Space,
+} from 'antd';
+import UplotReact from 'uplot-react';
+import uPlot from 'uplot';
 import { colorHsl } from '../../utils/number';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
-import CanvasHelp from '../CanvasHelp';
+import { Colors } from '../../utils/colors';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
+
+import 'uplot/dist/uPlot.min.css';
+import { isNumber } from '../../utils/tune/expression';
 
 const { useBreakpoint } = Grid;
 
@@ -27,7 +33,8 @@ interface Props {
   data: Logs;
   width: number;
   height: number;
-  selectedFields: SelectedField[];
+  selectedFields1: SelectedField[];
+  selectedFields2: SelectedField[];
 };
 
 export interface PlottableField {
@@ -39,15 +46,18 @@ export interface PlottableField {
   format: string;
 };
 
-const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
+const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Props) => {
   const { sm } = useBreakpoint();
-  const canvasRef = useRef<HTMLDivElement | null>(null);
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
     return `hsl(${hue}, 90%, 50%)`;
   }, []);
+  const [options1, setOptions1] = useState<uPlot.Options>();
+  const [plotData1, setPlotData1] = useState<uPlot.AlignedData>();
+  const [options2, setOptions2] = useState<uPlot.Options>();
+  const [plotData2, setPlotData2] = useState<uPlot.AlignedData>();
 
-  const fieldsToPlot = useMemo(() => {
+  const generateFieldsToPlot = useCallback((selectedFields: SelectedField[]) => {
     const temp: { [index: string]: PlottableField } = {};
 
     data.forEach((entry) => {
@@ -76,74 +86,100 @@ const LogCanvas = ({ data, width, height, selectedFields }: Props) => {
     });
 
     return temp;
-  }, [data, selectedFields]);
+  }, [data]);
 
-  useEffect(() => {
-    const markers: { x: number, name: string }[] = [];
-    const series = Object.keys(fieldsToPlot).map((label, index) => {
+  const generatePlotConfig = useCallback((fieldsToPlot: { [index: string]: PlottableField }, selectedFieldsLength: number, plotSyncKey: string) => {
+    const dataSeries: uPlot.Series[] = [];
+    const xData: number[] = [];
+    const yData: (number | null)[][] = [];
+
+    Object.keys(fieldsToPlot).forEach((label, index) => {
       const field = fieldsToPlot[label];
 
-      return {
-        name: field.units ? `${label} (${field.units})` : label,
-        color: hsl(index, selectedFields.length),
-        data: data.map((entry, entryIndex) => {
+      dataSeries.push({
+        label: field.units ? `${label} (${field.units})` : label,
+        points: { show: false },
+        stroke: hsl(index, selectedFieldsLength),
+        scale: field.units,
+        width: 2,
+        value: (_self, val) => isNumber(val) ? val.toFixed(2) : 0,
+      });
+
+      data.forEach((entry) => {
+        if (entry.type === 'field') {
+          xData.push(entry.Time as number);
+
           let value = entry[label];
 
           if (value !== undefined) {
             value = (value as number * field.scale) + field.transform;
           }
 
-          if (entry.type === 'marker') {
-            const previousEntry = data[entryIndex - 1];
-            if (previousEntry && previousEntry.Time !== undefined) {
-              markers.push({
-                x: previousEntry.Time as number,
-                name: '',
-              });
-            }
+          if (!yData[index]) {
+            yData[index] = [];
           }
 
-          return {
-            x: entry.Time,
-            y: value,
-          } as { x: number, y: number };
-        }).filter((entry) => entry.x !== undefined && entry.y !== undefined),
-      };
-    });
-    let chart: TimeChart;
-
-    if (canvasRef.current && sm) {
-      chart = new TimeChart(canvasRef.current, {
-        series,
-        lineWidth: 2,
-        tooltip: true,
-        legend: false,
-        zoom: {
-          x: { autoRange: true },
-        },
-        tooltipXLabel: 'Time (s)',
-        plugins: {
-          events: new EventsPlugin(markers),
-        },
+          yData[index].push(value);
+        }
       });
-    }
+    });
 
-    return () => chart && chart.dispose();
-  }, [data, fieldsToPlot, hsl, selectedFields, width, height, sm]);
+    return {
+      xData,
+      yData,
+      options: {
+        width,
+        height,
+        scales: { x: { time: false } },
+        series: [
+          { label: 'Time (s)' },
+          ...dataSeries,
+        ],
+        axes: [
+          {
+            stroke: Colors.TEXT,
+            grid: { stroke: Colors.MAIN_LIGHT },
+          },
+        ],
+        cursor: {
+          drag: { y: false },
+          sync: {
+            key: plotSyncKey,
+          },
+        },
+        plugins: [touchZoomPlugin()],
+      },
+    };
+  }, [data, height, hsl, width]);
+
+  useEffect(() => {
+    const plotSync = uPlot.sync('logs');
+
+    const result1 = generatePlotConfig(generateFieldsToPlot(selectedFields1), selectedFields1.length, plotSync.key);
+    setOptions1(result1.options);
+    setPlotData1([result1.xData, ...result1.yData]);
+
+    const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
+    setOptions2(result2.options);
+    setPlotData2([result2.xData, ...result2.yData]);
+
+  }, [data, hsl, width, height, sm, generatePlotConfig, generateFieldsToPlot, selectedFields1, selectedFields2]);
 
   if (!sm) {
     return <LandscapeNotice />;
   }
 
   return (
-    <>
-      <CanvasHelp />
-      <div
-        ref={canvasRef}
-        style={{ width, height }}
-        className="log-canvas"
+    <Space direction="vertical" size="large">
+      <UplotReact
+        options={options1!}
+        data={plotData1!}
       />
-    </>
+      <UplotReact
+        options={options2!}
+        data={plotData2!}
+      />
+    </Space>
   );
 };
 
