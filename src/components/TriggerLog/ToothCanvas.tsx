@@ -11,7 +11,6 @@ import {
   ToothLogEntry,
   EntryType,
 } from '../../utils/logs/TriggerLogsParser';
-import CanvasHelp from '../CanvasHelp';
 import { Colors } from '../../utils/colors';
 
 import 'uplot/dist/uPlot.min.css';
@@ -47,7 +46,6 @@ const ToothCanvas = ({ data, width, height }: Props) => {
     ]);
 
     setOptions({
-      title: 'Tooth logs',
       width,
       height,
       scales: {
@@ -91,13 +89,10 @@ const ToothCanvas = ({ data, width, height }: Props) => {
   }
 
   return (
-    <>
-      <CanvasHelp />
-      <UplotReact
-        options={options!}
-        data={plotData!}
-      />
-    </>
+    <UplotReact
+      options={options!}
+      data={plotData!}
+    />
   );
 };
 

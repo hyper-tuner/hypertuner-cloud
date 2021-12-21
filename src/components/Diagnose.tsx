@@ -66,8 +66,15 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
   const contentRef = useRef<HTMLDivElement | null>(null);
   const margin = 30;
   const [canvasWidth, setCanvasWidth] = useState(0);
+  const [canvasHeight, setCanvasHeight] = useState(0);
   const sidebarWidth = 250;
-  const calculateCanvasWidth = useCallback(() => setCanvasWidth((contentRef.current?.clientWidth || 0) - margin), []);
+  const calculateCanvasSize = useCallback(() => {
+    setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
+
+    if (window.innerHeight > 600) {
+      setCanvasHeight(Math.round((window.innerHeight - 250) / 2));
+    }
+  }, []);
   const siderProps = {
     width: sidebarWidth,
     collapsible: true,
@@ -75,7 +82,6 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
     collapsed: ui.sidebarCollapsed,
     onCollapse: (collapsed: boolean) => {
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
-      setTimeout(calculateCanvasWidth, 1);
     },
   };
   const [logs, setLogs] = useState<CompositeLogEntry[]>();
@@ -113,15 +119,15 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
     };
 
     loadData();
-    calculateCanvasWidth();
+    calculateCanvasSize();
 
-    window.addEventListener('resize', calculateCanvasWidth);
+    window.addEventListener('resize', calculateCanvasSize);
 
     return () => {
       controller.abort();
-      window.removeEventListener('resize', calculateCanvasWidth);
+      window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [calculateCanvasWidth, loadedLogs]);
+  }, [calculateCanvasSize, loadedLogs, ui.sidebarCollapsed]);
 
   return (
     <>
@@ -146,18 +152,18 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
             {toothLogs && logs
               ?
               (
-                <>
+                <Space direction="vertical" size="large">
                   <ToothCanvas
                     data={toothLogs!}
                     width={canvasWidth}
-                    height={canvasWidth * 0.3}
+                    height={canvasHeight}
                   />
                   <CompositeCanvas
                     data={logs!}
                     width={canvasWidth}
-                    height={canvasWidth * 0.3}
+                    height={canvasHeight}
                   />
-                </>
+                </Space>
               )
               :
               <Space
