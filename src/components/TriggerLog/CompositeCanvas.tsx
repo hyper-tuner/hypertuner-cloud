@@ -1,16 +1,13 @@
 import {
   useEffect,
-  useRef,
+  useState,
 } from 'react';
 import { Grid } from 'antd';
-import TimeChart from 'timechart';
-import { EventsPlugin } from 'timechart/dist/lib/plugins_extra/events';
+import UplotReact from 'uplot-react';
+import uPlot from 'uplot';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import LandscapeNotice from '../Dialog/LandscapeNotice';
-import {
-  CompositeLogEntry,
-  EntryType,
-} from '../../utils/logs/TriggerLogsParser';
-import CanvasHelp from '../CanvasHelp';
+import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
 import { Colors } from '../../utils/colors';
 
 const { useBreakpoint } = Grid;
@@ -21,108 +18,94 @@ interface Props {
   height: number;
 };
 
-interface DataPoint {
-  x: number;
-  y: number;
-}
-
 const CompositeCanvas = ({ data, width, height }: Props) => {
   const { sm } = useBreakpoint();
-  const canvasRef = useRef<HTMLDivElement | null>(null);
+  const [options, setOptions] = useState<uPlot.Options>();
+  const [plotData, setPlotData] = useState<uPlot.AlignedData>();
 
   useEffect(() => {
-    let chart: TimeChart;
-    const markers: { x: number, name: string }[] = [];
-    const primary: DataPoint[] = [];
-    const secondary: DataPoint[] = [];
-    const sync: DataPoint[] = [];
+    const xData: number[] = [];
+    const secondary: (number | null)[] = [];
+    const primary: (number | null)[] = [];
+    const sync: (number | null)[] = [];
 
     data.forEach((entry, index) => {
-      if (entry.type === EntryType.MARKER) {
-        markers.push({
-          x: index,
-          name: '',
-        });
-      }
+      const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
+      const currentSecondary = (entry.secondaryLevel + 3) * 2; // apply scale
 
-      if (entry.type === EntryType.TRIGGER) {
-        const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
-        const currentSecondary = (entry.secondaryLevel + 3) * 2; // apply scale
+      const prevPrimary = data[index - 1] ? data[index - 1].primaryLevel : 0;
+      const currentPrimary = (entry.primaryLevel + 1) * 2;
 
-        const prevPrimary = data[index - 1] ? data[index - 1].primaryLevel : 0;
-        const currentPrimary = (entry.primaryLevel + 1) * 2; // apply scale
+      const prevSync = data[index - 1] ? data[index - 1].sync : 0;
+      const currentSync = entry.sync;
 
-        const prevSync = data[index - 1] ? data[index - 1].sync : 0;
-        const currentSync = entry.sync;
+      // base data
+      xData.push(index);
+      secondary.push(currentSecondary);
+      primary.push(currentPrimary);
+      sync.push(currentSync);
 
-        // make it square
-        if (prevSecondary !== currentSecondary) {
-          secondary.push({
-            x: index - 1,
-            y: currentSecondary,
-          });
-        }
-        secondary.push({
-          x: index,
-          y: currentSecondary,
-        });
-
-        if (prevPrimary !== currentPrimary) {
-          primary.push({
-            x: index - 1,
-            y: currentPrimary,
-          });
-        }
-        primary.push({
-          x: index,
-          y: currentPrimary,
-        });
-
-        if (prevSync !== currentSync) {
-          sync.push({
-            x: index - 1,
-            y: currentSync,
-          });
-        }
-        sync.push({
-          x: index,
-          y: currentSync,
-        });
+      // make it square
+      if (prevSecondary !== currentSecondary || prevPrimary !== currentPrimary || prevSync !== currentSync) {
+        secondary.push(currentSecondary);
+        primary.push(currentPrimary);
+        sync.push(currentSync);
+        xData.push(index + 1);
       }
     });
 
-    const series = [{
-      name: 'Secondary',
-      color: Colors.GREEN,
-      data: secondary,
-    }, {
-      name: 'Primary',
-      color: Colors.BLUE,
-      data: primary,
-    }, {
-      name: 'Sync',
-      color: Colors.RED,
-      data: sync,
-    }];
+    setPlotData([
+      xData,
+      [...secondary],
+      [...primary],
+      [...sync],
+    ]);
 
-    if (canvasRef.current && sm) {
-      chart = new TimeChart(canvasRef.current, {
-        series,
-        lineWidth: 2,
-        tooltip: true,
-        legend: false,
-        zoom: {
-          x: { autoRange: true },
+    setOptions({
+      width,
+      height,
+      scales: {
+        x: { time: false },
+      },
+      series: [
+        {
+          label: 'Event',
         },
-        yRange: { min: -1, max: 9 },
-        tooltipXLabel: 'Event',
-        plugins: {
-          events: new EventsPlugin(markers),
+        {
+          label: 'Secondary',
+          points: { show: false },
+          stroke: Colors.GREEN,
+          scale: '',
+          value: (_self, rawValue) => (rawValue / 2) - 3,
+          width: 2,
         },
-      });
-    }
-
-    return () => chart && chart.dispose();
+        {
+          label: 'Primary',
+          points: { show: false },
+          stroke: Colors.ACCENT,
+          scale: '',
+          value: (_self, rawValue) => (rawValue / 2) - 1,
+          width: 2,
+        },
+        {
+          label: 'Sync',
+          points: { show: false },
+          stroke: Colors.RED,
+          scale: '',
+          width: 2,
+        },
+      ],
+      axes: [
+        {
+          stroke: Colors.TEXT,
+          grid: { stroke: Colors.MAIN_LIGHT },
+        },
+      ],
+      cursor: {
+        drag: { y: false },
+      },
+      plugins: [touchZoomPlugin()],
+    });
   }, [data, width, height, sm]);
 
   if (!sm) {
@@ -130,14 +113,10 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
   }
 
   return (
-    <>
-      <CanvasHelp />
-      <div
-        ref={canvasRef}
-        style={{ width, height }}
-        className="log-canvas"
-      />
-    </>
+    <UplotReact
+      options={options!}
+      data={plotData!}
+    />
   );
 };
 
