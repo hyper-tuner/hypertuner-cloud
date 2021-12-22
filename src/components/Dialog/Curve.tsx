@@ -8,7 +8,6 @@ import {
 } from 'react';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
-import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import { Colors } from '../../utils/colors';
 import LandscapeNotice from './LandscapeNotice';
 import Table from './Table';
@@ -86,7 +85,6 @@ const Curve = ({
         drag: { y: false },
         points: { size: 9 },
       },
-      plugins: [touchZoomPlugin()],
     });
   }, [width, xData, xLabel, xUnits, yData, yLabel, yUnits]);
 
