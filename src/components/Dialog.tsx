@@ -1,4 +1,9 @@
-import { useEffect } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
@@ -22,6 +27,7 @@ import {
   ScalarConstant as ScalarConstantType,
   ConstantTypes,
   Tune as TuneType,
+  UIState,
 } from '@speedy-tuner/types';
 import SmartSelect from './Dialog/SmartSelect';
 import SmartNumber from './Dialog/SmartNumber';
@@ -74,6 +80,7 @@ enum PanelTypes {
 const mapStateToProps = (state: AppState) => ({
   config: state.config,
   tune: state.tune,
+  ui: state.ui,
 });
 
 const containerStyle = {
@@ -89,12 +96,14 @@ const skeleton = (<div style={containerStyle}>
 
 // TODO: refactor this
 const Dialog = ({
+  ui,
   config,
   tune,
   url,
   name,
   burnButton,
 }: {
+  ui: UIState,
   config: ConfigType,
   tune: TuneType,
   name: string,
@@ -104,10 +113,19 @@ const Dialog = ({
   const isDataReady = Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useStorage();
   const { findConstantOnPage } = useConfig(config);
+  const [canvasWidth, setCanvasWidth] = useState(0);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const calculateCanvasWidth = useCallback(() => {
+    setCanvasWidth((contentRef.current?.clientWidth || 0) - 20);
+  }, []);
 
   useEffect(() => {
     storageSet('lastDialog', url);
-  }, [storageSet, url]);
+    calculateCanvasWidth();
+    window.addEventListener('resize', calculateCanvasWidth);
+
+    return () => window.removeEventListener('resize', calculateCanvasWidth);
+  }, [calculateCanvasWidth, storageSet, url, ui.sidebarCollapsed]);
 
   const renderHelp = (link?: string) => (link &&
     <Popover
@@ -135,6 +153,7 @@ const Dialog = ({
     return (
       <Curve
         name={curve.yBins[0]}
+        width={canvasWidth}
         key={curve.yBins[0]}
         disabled={false} // TODO: evaluate condition
         help={config.help[curve.yBins[0]]}
@@ -401,14 +420,13 @@ const Dialog = ({
         })}
 
         {panel.type === PanelTypes.CURVE && renderCurve(panel)}
-
         {panel.type === PanelTypes.TABLE && renderTable(panel)}
       </Col>
     );
   });
 
   return (
-    <div style={containerStyle}>
+    <div ref={contentRef} style={containerStyle}>
       {renderHelp(dialogConfig?.help)}
       <Form
         labelCol={{ span: 10 }}

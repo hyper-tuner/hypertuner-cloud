@@ -2,17 +2,13 @@ import {
   Typography,
   Grid,
 } from 'antd';
-import { useState } from 'react';
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Label,
-} from 'recharts';
+  useEffect,
+  useState,
+} from 'react';
+import UplotReact from 'uplot-react';
+import uPlot from 'uplot';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import { Colors } from '../../utils/colors';
 import LandscapeNotice from './LandscapeNotice';
 import Table from './Table';
@@ -21,6 +17,7 @@ const { useBreakpoint } = Grid;
 
 const Curve = ({
   name,
+  width,
   xLabel,
   yLabel,
   xData,
@@ -35,6 +32,7 @@ const Curve = ({
   yUnits = '',
 }: {
   name: string,
+  width: number,
   xLabel: string,
   yLabel: string,
   xData: number[],
@@ -48,14 +46,49 @@ const Curve = ({
   xUnits?: string,
   yUnits?: string,
 }) => {
-  const mapData = (rawData: number[][]) => rawData[1].map((val, i) => ({
-    x: val,
-    y: rawData[0][i],
-  }));
-  const [data, setData] = useState(mapData([yData, xData]));
   const { sm } = useBreakpoint();
-  const margin = 15;
-  const animationDuration = 500;
+  const [options, setOptions] = useState<uPlot.Options>();
+  const [plotData, setPlotData] = useState<uPlot.AlignedData>();
+
+  useEffect(() => {
+    setPlotData([xData, yData]);
+    setOptions({
+      width,
+      height: 350,
+      scales: {
+        x: { time: false },
+      },
+      series: [
+        {
+          label: xLabel,
+          value: (_self, val) => `${val.toLocaleString()}${xUnits}`,
+        },
+        {
+          label: yLabel,
+          value: (_self, val) => `${val.toLocaleString()}${yUnits}`,
+          points: { show: false },
+          stroke: Colors.ACCENT,
+          width: 2,
+        },
+      ],
+      axes: [
+        {
+          stroke: Colors.TEXT,
+          grid: { stroke: Colors.MAIN_LIGHT },
+        },
+        {
+          label: `${yLabel} (${yUnits})`,
+          stroke: Colors.TEXT,
+          grid: { stroke: Colors.MAIN_LIGHT },
+        },
+      ],
+      cursor: {
+        drag: { y: false },
+        points: { size: 9 },
+      },
+      plugins: [touchZoomPlugin()],
+    });
+  }, [width, xData, xLabel, xUnits, yData, yLabel, yUnits]);
 
   if (!sm) {
     return <LandscapeNotice />;
@@ -66,55 +99,7 @@ const Curve = ({
       <Typography.Paragraph>
         <Typography.Text type="secondary">{help}</Typography.Text>
       </Typography.Paragraph>
-      <ResponsiveContainer height={450}>
-        <LineChart
-          data={data}
-          margin={{
-            top: margin,
-            right: margin,
-            left: margin,
-            bottom: margin + 5,
-          }}
-        >
-          <CartesianGrid
-            strokeDasharray="4 4"
-            strokeOpacity={0.1}
-          />
-          <XAxis dataKey="x">
-            <Label
-              value={`${xLabel} (${xUnits})`}
-              position="bottom"
-              style={{ fill: Colors.TEXT }}
-            />
-          </XAxis>
-          <YAxis domain={['auto', 'auto']}>
-            <Label
-              value={`${yLabel} (${yUnits})`}
-              position="left"
-              angle={-90}
-              style={{ fill: Colors.TEXT }}
-            />
-          </YAxis>
-          <Tooltip
-            labelFormatter={(value) => `${xLabel} : ${value} ${xUnits}`}
-            formatter={(value: number) => [`${value} ${yUnits}`, yLabel]}
-            contentStyle={{
-              backgroundColor: Colors.MAIN,
-              border: 0,
-              boxShadow: '0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%)',
-              borderRadius: 5,
-            }}
-            animationDuration={animationDuration}
-          />
-          <Line
-            strokeWidth={3}
-            type="linear"
-            dataKey="y"
-            stroke={Colors.ACCENT}
-            animationDuration={animationDuration}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <UplotReact options={options!} data={plotData!} />
       <Table
         name={name}
         key={name}
@@ -129,7 +114,6 @@ const Curve = ({
         yMax={yMax}
         xUnits={xUnits}
         yUnits={yUnits}
-        onChange={(newData: number[][]) => setData(mapData(newData))}
       />
     </>
   );

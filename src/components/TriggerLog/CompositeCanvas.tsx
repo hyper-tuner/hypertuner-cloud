@@ -68,9 +68,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
         x: { time: false },
       },
       series: [
-        {
-          label: 'Event',
-        },
+        { label: 'Event' },
         {
           label: 'Secondary',
           points: { show: false },
@@ -82,7 +80,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
         {
           label: 'Primary',
           points: { show: false },
-          stroke: Colors.ACCENT,
+          stroke: Colors.BLUE,
           scale: '',
           value: (_self, rawValue) => (rawValue / 2) - 1,
           width: 2,
@@ -103,6 +101,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
       ],
       cursor: {
         drag: { y: false },
+        points: { size: 7 },
       },
       plugins: [touchZoomPlugin()],
     });
@@ -113,10 +112,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
   }
 
   return (
-    <UplotReact
-      options={options!}
-      data={plotData!}
-    />
+    <UplotReact options={options!} data={plotData!} />
   );
 };
 
