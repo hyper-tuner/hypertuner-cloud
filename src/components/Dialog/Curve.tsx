@@ -86,7 +86,7 @@ const Curve = ({
         points: { size: 9 },
       },
     });
-  }, [width, xData, xLabel, xUnits, yData, yLabel, yUnits]);
+  }, [width, xData, xLabel, xUnits, yData, yLabel, yUnits, sm]);
 
   if (!sm) {
     return <LandscapeNotice />;
