@@ -99,12 +99,12 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
       const field = fieldsToPlot[label];
 
       dataSeries.push({
-        label: field.units ? `${label} (${field.units})` : label,
+        label,
         points: { show: false },
         stroke: hsl(index, selectedFieldsLength),
         scale: field.units,
         width: 2,
-        value: (_self, val) => isNumber(val) ? formatNumber(val, field.format) : 0,
+        value: (_self, val) => `${(isNumber(val) ? formatNumber(val, field.format) : 0)}${field.units}`,
       });
 
       data.forEach((entry) => {
@@ -137,7 +137,10 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
         height,
         scales: { x: { time: false } },
         series: [
-          { label: 'Time (s)' },
+          {
+            label: 'Time',
+            value: (_self: uPlot, val: number) => `${val.toLocaleString()}s`,
+          },
           ...dataSeries,
         ],
         axes: [
@@ -148,9 +151,8 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
         ],
         cursor: {
           drag: { y: false },
-          sync: {
-            key: plotSyncKey,
-          },
+          sync: { key: plotSyncKey },
+          points: { size: 7 },
         },
         plugins: [touchZoomPlugin()],
       },
@@ -176,14 +178,8 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
 
   return (
     <Space direction="vertical" size="large">
-      <UplotReact
-        options={options1!}
-        data={plotData1!}
-      />
-      <UplotReact
-        options={options2!}
-        data={plotData2!}
-      />
+      <UplotReact options={options1!} data={plotData1!} />
+      <UplotReact options={options2!} data={plotData2!} />
     </Space>
   );
 };

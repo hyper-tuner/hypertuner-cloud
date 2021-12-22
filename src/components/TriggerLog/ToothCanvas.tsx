@@ -40,10 +40,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
       }
     });
 
-    setPlotData([
-      xData,
-      yData,
-    ]);
+    setPlotData([xData, yData]);
 
     setOptions({
       width,
@@ -52,15 +49,12 @@ const ToothCanvas = ({ data, width, height }: Props) => {
         x: { time: false },
       },
       series: [
-        {
-          label: 'Event',
-        },
+        { label: 'Event' },
         {
           label: 'Tooth time',
           points: { show: false },
           stroke: Colors.ACCENT,
           fill: Colors.ACCENT,
-          scale: 'toothTime',
           value: (_self, rawValue) => `${rawValue.toLocaleString()}μs`,
           paths: bars!({ size: [0.6, 100] }),
         },
@@ -71,7 +65,6 @@ const ToothCanvas = ({ data, width, height }: Props) => {
           grid: { stroke: Colors.MAIN_LIGHT },
         },
         {
-          scale: 'toothTime',
           label: '',
           stroke: Colors.TEXT,
           grid: { stroke: Colors.MAIN_LIGHT },
@@ -79,6 +72,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
       ],
       cursor: {
         drag: { y: false },
+        points: { size: 7 },
       },
       plugins: [touchZoomPlugin()],
     });
@@ -89,10 +83,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
   }
 
   return (
-    <UplotReact
-      options={options!}
-      data={plotData!}
-    />
+    <UplotReact options={options!} data={plotData!} />
   );
 };
 
