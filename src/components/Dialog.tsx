@@ -86,6 +86,7 @@ const mapStateToProps = (state: AppState) => ({
 const containerStyle = {
   padding: 20,
   maxWidth: 1400,
+  width: '100%',
   margin: '0 auto',
 };
 
@@ -114,9 +115,9 @@ const Dialog = ({
   const { storageSet } = useStorage();
   const { findConstantOnPage } = useConfig(config);
   const [canvasWidth, setCanvasWidth] = useState(0);
-  const contentRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const calculateCanvasWidth = useCallback(() => {
-    setCanvasWidth((contentRef.current?.clientWidth || 0) - 20);
+    setCanvasWidth((containerRef.current?.clientWidth || 0) - 20);
   }, []);
 
   useEffect(() => {
@@ -217,7 +218,7 @@ const Dialog = ({
   if (!dialogConfig) {
     if (curveConfig) {
       return (
-        <div style={containerStyle}>
+        <div ref={containerRef} style={containerStyle}>
           <Divider>{curveConfig.title}</Divider>
           {renderCurve(curveConfig)}
         </div>
@@ -226,7 +227,7 @@ const Dialog = ({
 
     if (tableConfig) {
       return (
-        <div style={containerStyle}>
+        <div ref={containerRef} style={containerStyle}>
           {renderHelp(tableConfig.help)}
           <Divider>{tableConfig.title}</Divider>
           {renderTable(tableConfig)}
@@ -426,7 +427,7 @@ const Dialog = ({
   });
 
   return (
-    <div ref={contentRef} style={containerStyle}>
+    <div ref={containerRef} style={containerStyle}>
       {renderHelp(dialogConfig?.help)}
       <Form
         labelCol={{ span: 10 }}
