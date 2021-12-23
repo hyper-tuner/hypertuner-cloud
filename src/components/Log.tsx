@@ -57,6 +57,10 @@ const mapStateToProps = (state: AppState) => ({
   loadedLogs: state.logs,
 });
 
+const margin = 30;
+const sidebarWidth = 250;
+const minCanvasHeightInner = 600;
+
 const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLogs: Logs }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -69,15 +73,15 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
   const [step, setStep] = useState(0);
   const [edgeLocation, setEdgeLocation] = useState(edgeUnknown);
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const margin = 30;
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
-  const sidebarWidth = 250;
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
-    if (window.innerHeight > 600) {
+    if (window.innerHeight > minCanvasHeightInner) {
       setCanvasHeight(Math.round((window.innerHeight - 250) / 2));
+    } else {
+      setCanvasHeight(minCanvasHeightInner / 2);
     }
   }, []);
 
