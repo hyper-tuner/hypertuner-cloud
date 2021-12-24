@@ -57,6 +57,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
           fill: Colors.ACCENT,
           value: (_self, rawValue) => `${rawValue.toLocaleString()}μs`,
           paths: bars!({ size: [0.6, 100] }),
+          scale: 'toothTime',
         },
       ],
       axes: [
@@ -68,6 +69,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
           label: '',
           stroke: Colors.TEXT,
           grid: { stroke: Colors.MAIN_LIGHT },
+          scale: 'toothTime',
         },
       ],
       cursor: {
