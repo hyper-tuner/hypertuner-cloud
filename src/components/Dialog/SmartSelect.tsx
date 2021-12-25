@@ -50,7 +50,6 @@ const SmartSelect = ({
   return (
     <Select
       defaultValue={values.indexOf(defaultValue)}
-      showSearch
       optionFilterProp="label"
       disabled={disabled}
       style={{ maxWidth: 250 }}

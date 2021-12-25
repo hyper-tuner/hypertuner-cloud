@@ -38,10 +38,7 @@ import {
   parseZ,
 } from '../utils/tune/table';
 import Map from './Dialog/Map';
-import {
-  evaluateExpression,
-  isExpression,
-} from '../utils/tune/expression';
+import { evaluateExpression } from '../utils/tune/expression';
 import useStorage from '../hooks/useStorage';
 import useConfig from '../hooks/useConfig';
 
@@ -153,7 +150,6 @@ const Dialog = ({
 
     return (
       <Curve
-        name={curve.yBins[0]}
         width={canvasWidth}
         key={curve.yBins[0]}
         disabled={false} // TODO: evaluate condition
@@ -162,10 +158,6 @@ const Dialog = ({
         yLabel={curve.labels[1]}
         xUnits={xConstant.units}
         yUnits={yConstant.units}
-        xMin={xConstant.min as number}
-        xMax={xConstant.max as number}
-        yMin={yConstant.min as number}
-        yMax={yConstant.max as number}
         xData={parseXy(x.value as string)}
         yData={parseXy(y.value as string)}
       />
@@ -176,30 +168,15 @@ const Dialog = ({
     const x = tune.constants[table.xBins[0]];
     const y = tune.constants[table.yBins[0]];
     const z = tune.constants[table.zBins[0]];
-    const zConstant = findConstantOnPage(table.zBins[0]) as ScalarConstantType;
-
-    let max = zConstant.max as number;
-    if (isExpression(zConstant.max)) {
-      max = evaluateExpression(zConstant.max as string, tune.constants, config);
-    }
-
-    let min = zConstant.min as number;
-    if (isExpression(zConstant.min)) {
-      min = evaluateExpression(zConstant.min as string, tune.constants, config);
-    }
 
     return <div>
       {renderHelp(table.help)}
       <Map
-        name={table.map}
         key={table.map}
         xData={parseXy(x.value as string)}
         yData={parseXy(y.value as string).reverse()}
         zData={parseZ(z.value as string)}
         disabled={false}
-        zMin={min}
-        zMax={max}
-        digits={zConstant.digits as number}
         xUnits={x.units as string}
         yUnits={y.units as string}
       />

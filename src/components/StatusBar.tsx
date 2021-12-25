@@ -5,10 +5,7 @@ import {
   Row,
   Col,
 } from 'antd';
-import {
-  CarOutlined,
-  InfoCircleOutlined,
-} from '@ant-design/icons';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {
   AppState,
@@ -32,12 +29,7 @@ const firmware = (signature: string) => (
 const StatusBar = ({ status, config }: { status: StatusState, config: ConfigState }) => (
   <Footer className="app-status-bar">
     <Row>
-      <Col span={8}>
-        <Space>
-          <CarOutlined />
-          default
-        </Space>
-      </Col>
+      <Col span={8} />
       <Col span={8} style={{ textAlign: 'center' }}>
         {config.megaTune && firmware(config.megaTune.signature)}
       </Col>
