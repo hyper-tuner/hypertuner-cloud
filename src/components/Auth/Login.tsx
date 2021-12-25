@@ -29,7 +29,7 @@ const Login = () => {
     } catch (err) {
       console.warn(err);
       notification.error({
-        message: 'Failed to create an account',
+        message: 'Login failed',
         description: (err as Error).message,
       });
     }
