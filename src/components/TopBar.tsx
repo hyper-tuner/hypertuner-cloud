@@ -3,6 +3,7 @@ import {
   useLocation,
   useHistory,
 } from 'react-router';
+import { Link } from 'react-router-dom';
 import {
   Layout,
   Space,
@@ -64,11 +65,15 @@ const TopBar = () => {
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="login" disabled icon={<LoginOutlined />}>
-        Login / Sign-up
+      <Menu.Item key="login" icon={<LoginOutlined />}>
+        <Link to={Routes.LOGIN}>Login / Sign-up</Link>
       </Menu.Item>
       <Menu.Item key="gh" icon={<GithubOutlined />}>
-        <a href="https://github.com/speedy-tuner/speedy-tuner-cloud" target="__blank" rel="noopener noreferrer">
+        <a
+          href="https://github.com/speedy-tuner/speedy-tuner-cloud"
+          target="__blank"
+          rel="noopener noreferrer"
+        >
           GitHub
         </a>
       </Menu.Item>

@@ -6,4 +6,5 @@ export enum Routes {
   DIALOG = '/tune/:category/:dialog',
   LOG = '/log',
   DIAGNOSE = '/diagnose',
+  LOGIN = '/login',
 }
