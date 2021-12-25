@@ -11,29 +11,21 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { Routes } from '../routes';
+import { useAuth } from '../../contexts/AuthContext';
+import { Routes } from '../../routes';
+import validateMessages from './validateMessages';
 
 const { Item } = Form;
 
-const validateMessages = {
-  required: 'This field is required!',
-  types: {
-    email: 'This is not a valid email!',
-  },
-};
-
-const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
-
-const SignUp = () => {
+const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { login } = useAuth();
 
   const onFinish = async ({ email, password }: { email: string, password: string }) => {
     setIsLoading(true);
 
     try {
-      await signUp(email, password);
+      await login(email, password);
     } catch (err) {
       console.warn(err);
       notification.error({
@@ -45,21 +37,16 @@ const SignUp = () => {
     setIsLoading(false);
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
-
   return (
     <div style={{
       padding: 20,
       maxWidth: 350,
       margin: '0 auto',
     }}>
-      <Divider>Sign Up</Divider>
+      <Divider>Login</Divider>
       <Form
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         validateMessages={validateMessages}
         autoComplete="off"
       >
@@ -75,35 +62,11 @@ const SignUp = () => {
         </Item>
         <Item
           name="password"
-          rules={[
-            { required: true },
-            { pattern: strongPassword, message: 'Password is too weak!' },
-          ]}
+          rules={[{ required: true }]}
           hasFeedback
         >
           <Input.Password
             placeholder="Password"
-            prefix={<LockOutlined />}
-          />
-        </Item>
-        <Item
-          name="passwordConfirmation"
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-
-                return Promise.reject(new Error('Passwords don\'t match!'));
-              },
-            }),
-          ]}
-          hasFeedback
-        >
-          <Input.Password
-            placeholder="Password confirmation"
             prefix={<LockOutlined />}
           />
         </Item>
@@ -114,13 +77,16 @@ const SignUp = () => {
             style={{ width: '100%' }}
             loading={isLoading}
           >
-            Sign up
+            Log in
           </Button>
         </Item>
-        Or <Link to={Routes.LOGIN}>login</Link> if you already have an account!
+        Or <Link to={Routes.SIGN_UP}>sign-up now!</Link>
+        <Link to="/" style={{ float: 'right' }}>
+          Forgot password?
+        </Link>
       </Form>
     </div>
   );
 };
 
-export default SignUp;
+export default Login;

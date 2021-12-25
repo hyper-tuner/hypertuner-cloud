@@ -34,8 +34,8 @@ import Log from './components/Log';
 import Diagnose from './components/Diagnose';
 import useStorage from './hooks/useStorage';
 import useConfig from './hooks/useConfig';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
+import Login from './components/Auth/Login';
+import SignUp from './components/Auth/SignUp';
 
 const { Content } = Layout;
 

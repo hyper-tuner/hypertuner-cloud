@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -25,5 +26,6 @@ const auth = getAuth(firebase);
 export {
   auth,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   analytics,
 };
