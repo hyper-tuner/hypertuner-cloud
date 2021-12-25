@@ -12,6 +12,10 @@ import { Colors } from '../../utils/colors';
 
 const { useBreakpoint } = Grid;
 
+const scale = 2;
+const secondaryTranslate = 2.6;
+const primaryTranslate = 1;
+
 interface Props {
   data: CompositeLogEntry[];
   width: number;
@@ -31,10 +35,10 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
 
     data.forEach((entry, index) => {
       const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
-      const currentSecondary = (entry.secondaryLevel + 3) * 2; // apply scale
+      const currentSecondary = (entry.secondaryLevel + secondaryTranslate) * scale;
 
       const prevPrimary = data[index - 1] ? data[index - 1].primaryLevel : 0;
-      const currentPrimary = (entry.primaryLevel + 1) * 2;
+      const currentPrimary = (entry.primaryLevel + primaryTranslate) * scale;
 
       const prevSync = data[index - 1] ? data[index - 1].sync : 0;
       const currentSync = entry.sync;
@@ -74,7 +78,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
           points: { show: false },
           stroke: Colors.GREEN,
           scale: '',
-          value: (_self, rawValue) => (rawValue / 2) - 3,
+          value: (_self, rawValue) => (rawValue / scale) - secondaryTranslate,
           width: 2,
         },
         {
@@ -82,7 +86,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
           points: { show: false },
           stroke: Colors.BLUE,
           scale: '',
-          value: (_self, rawValue) => (rawValue / 2) - 1,
+          value: (_self, rawValue) => (rawValue / scale) - primaryTranslate,
           width: 2,
         },
         {
