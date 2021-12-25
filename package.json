@@ -35,6 +35,7 @@
     "@sentry/tracing": "^6.16.1",
     "@speedy-tuner/types": "^0.2.1",
     "antd": "^4.17.4",
+    "firebase": "^9.6.1",
     "mlg-converter": "^0.5.1",
     "pako": "^2.0.4",
     "react": "^17.0.1",
