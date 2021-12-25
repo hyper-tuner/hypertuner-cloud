@@ -35,6 +35,7 @@ import Diagnose from './components/Diagnose';
 import useStorage from './hooks/useStorage';
 import useConfig from './hooks/useConfig';
 import Login from './components/Login';
+import SignUp from './components/SignUp';
 
 const { Content } = Layout;
 
@@ -131,6 +132,11 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
           <Route path={Routes.LOGIN}>
             <ContentFor>
               <Login />
+            </ContentFor>
+          </Route>
+          <Route path={Routes.SIGN_UP}>
+            <ContentFor>
+              <SignUp />
             </ContentFor>
           </Route>
         </Switch>

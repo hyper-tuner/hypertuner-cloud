@@ -10,6 +10,7 @@ import {
   isProduction,
   sentryDsn,
 } from './utils/env';
+import { AuthProvider } from './contexts/AuthContext';
 
 if (isProduction) {
   Sentry.init({
@@ -21,10 +22,12 @@ if (isProduction) {
 }
 
 ReactDOM.render(
-  <HashRouter>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </HashRouter>,
+  <AuthProvider>
+    <HashRouter>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </HashRouter>
+  </AuthProvider>,
   document.getElementById('root'),
 );

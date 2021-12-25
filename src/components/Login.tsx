@@ -3,20 +3,16 @@ import {
   Input,
   Button,
   Checkbox,
+  Divider,
 } from 'antd';
 import {
   MailOutlined,
   LockOutlined,
 } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import { Routes } from '../routes';
 
 const { Item } = Form;
-
-const containerStyle = {
-  padding: 20,
-  maxWidth: 350,
-  width: '100%',
-  margin: '30px auto 0 auto',
-};
 
 const Login = () => {
   const onFinish = (values: any) => {
@@ -28,9 +24,13 @@ const Login = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div style={{
+      padding: 20,
+      maxWidth: 350,
+      margin: '0 auto',
+    }}>
+      <Divider>Login</Divider>
       <Form
-        name="basic"
         initialValues={{ remember: true }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
@@ -54,18 +54,18 @@ const Login = () => {
             prefix={<LockOutlined />}
           />
         </Item>
-        <Item name="remember" valuePropName="checked">
+        <Item valuePropName="checked">
           <Checkbox>Remember me</Checkbox>
-          <a className="login-form-forgot" href="/" style={{ float: 'right' }}>
-            Forgot password
-          </a>
+          <Link to="/" style={{ float: 'right' }}>
+            Forgot password?
+          </Link>
         </Item>
         <Item>
           <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
             Log in
           </Button>
         </Item>
-        Or <a href="/">register now!</a>
+        Or <Link to={Routes.SIGN_UP}>sign-up now!</Link>
       </Form>
     </div>
   );
