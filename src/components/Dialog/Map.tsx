@@ -1,182 +1,31 @@
 /* eslint-disable react/no-array-index-key */
 
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Button,
-  InputNumber,
-  Modal,
-  Popover,
-  Space,
-  Grid,
-} from 'antd';
-import {
-  PlusCircleOutlined,
-  MinusCircleOutlined,
-  EditOutlined,
-} from '@ant-design/icons';
-import TableDragSelect from 'react-table-drag-select';
-import {
-  isDecrement,
-  isEscape,
-  isIncrement,
-  isReplace,
-} from '../../utils/keyboard/shortcuts';
+import { Grid } from 'antd';
 import LandscapeNotice from './LandscapeNotice';
 import { colorHsl } from '../../utils/number';
-
-type CellsType = boolean[][];
-type DataType = number[][];
-type OnChangeType = (data: DataType) => void;
-enum Operations {
-  INC,
-  DEC,
-  REPLACE,
-}
 
 const { useBreakpoint } = Grid;
 
 const Map = ({
-  name,
   xData,
   yData,
   zData,
   disabled,
-  onChange,
-  zMin,
-  zMax,
-  digits,
   xUnits,
   yUnits,
 }: {
-  name: string,
   xData: number[],
   yData: number[],
   zData: number[][],
   disabled: boolean,
-  onChange?: OnChangeType,
-  zMin: number,
-  zMax: number,
-  digits: number,
   xUnits: string,
   yUnits: string,
 }) => {
   const { sm } = useBreakpoint();
   const titleProps = { disabled: true };
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalValue, setModalValue] = useState<number | undefined>();
-  const [data, _setData] = useState<DataType>(zData);
-  const generateCells = () => Array.from(
-    Array(yData.length + 1).fill(false),
-    () => new Array(xData.length + 1).fill(false),
-  );
-  const [cells, _setCells] = useState<CellsType>(generateCells());
-  const cellsRef = useRef(cells);
-  const dataRef = useRef(data);
-  const modalInputRef = useRef<HTMLInputElement | null>(null);
-  const setCells = (currentCells: CellsType) => {
-    cellsRef.current = currentCells;
-    _setCells(currentCells);
-  };
-  const setData = (currentData: DataType) => {
-    dataRef.current = currentData;
-    _setData(currentData);
-    if (onChange) {
-      onChange(currentData);
-    }
-  };
-  const modifyData = (operation: Operations, currentCells: CellsType, currentData: DataType, value = 0): DataType => {
-    const newData = [...currentData.map((row) => [...row])];
-    currentCells.forEach((_, rowIndex) => {
-      currentCells[rowIndex].forEach((selected, valueIndex) => {
-        if (!selected) {
-          return;
-        }
 
-        const current = newData[rowIndex][valueIndex - 1];
-        switch (operation) {
-          case Operations.INC:
-            if (current < zMax) {
-              newData[rowIndex][valueIndex - 1] = Number((newData[rowIndex][valueIndex - 1] + 10**-digits).toFixed(digits));
-            }
-            break;
-          case Operations.DEC:
-            if (current > zMin) {
-              newData[rowIndex][valueIndex - 1] = Number((newData[rowIndex][valueIndex - 1] - 10**-digits).toFixed(digits));
-            }
-            break;
-          case Operations.REPLACE:
-            if (value > zMax) {
-              newData[rowIndex][valueIndex - 1] = zMax;
-              break;
-            }
-            if (value < zMin) {
-              newData[rowIndex][valueIndex - 1] = zMin;
-              break;
-            }
-            newData[rowIndex][valueIndex - 1] = value;
-            break;
-          default:
-            break;
-        }
-      });
-    });
-
-    return [...newData];
-  };
-
-  const oneModalOk = () => {
-    setData(modifyData(Operations.REPLACE, cellsRef.current, dataRef.current, modalValue));
-    setIsModalVisible(false);
-    setModalValue(undefined);
-  };
-  const onModalCancel = () => {
-    setIsModalVisible(false);
-    setModalValue(undefined);
-  };
-  const resetCells = () => setCells(generateCells());
-  const increment = () => setData(modifyData(Operations.INC, cellsRef.current, dataRef.current));
-  const decrement = () => setData(modifyData(Operations.DEC, cellsRef.current, dataRef.current));
-  const replace = () => {
-    // don't show modal when no cell is selected
-    if (cellsRef.current.flat().find((val) => val === true)) {
-      setModalValue(undefined);
-      setIsModalVisible(true);
-      setInterval(() => modalInputRef.current?.focus(), 1);
-    }
-  };
-
-  useEffect(() => {
-    const keyboardListener = (e: KeyboardEvent) => {
-
-      if (isIncrement(e)) {
-        increment();
-      }
-      if (isDecrement(e)) {
-        decrement();
-      }
-      if (isReplace(e)) {
-        e.preventDefault();
-        replace();
-      }
-      if (isEscape(e)) {
-        resetCells();
-      }
-    };
-
-    document.addEventListener('keydown', keyboardListener);
-
-    return () => {
-      document.removeEventListener('keydown', keyboardListener);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const min = Math.min(...data.map((row) => Math.min(...row)));
-  const max = Math.max(...data.map((row) => Math.max(...row)));
+  const min = Math.min(...zData.map((row) => Math.min(...row)));
+  const max = Math.max(...zData.map((row) => Math.max(...row)));
 
   const renderRow = (rowIndex: number, input: number[]) => input
     .map((value, index) => {
@@ -210,58 +59,27 @@ const Map = ({
   }
 
   return (
-    <>
-      <div className="table">
-        <Popover
-          visible={cells.flat().find((val) => val === true) === true}
-          content={
-            <Space>
-              <Button onClick={decrement} icon={<MinusCircleOutlined />} />
-              <Button onClick={increment} icon={<PlusCircleOutlined />} />
-              <Button onClick={replace} icon={<EditOutlined />} />
-            </Space>
-          }
-        >
-          <TableDragSelect
-            key={name}
-            value={cells}
-            onChange={setCells}
-          >
-            {data.map((row, i) => (
-              <tr key={`row-${i}`}>
-                {renderRow(i, row)}
-              </tr>
-            ))}
-            <tr>
-              <td {...titleProps} className="title-map">
-                {yUnits} / {xUnits}
-              </td>
-              {xData.map((xValue) => (
-                <td {...titleProps} key={`x-${xValue}`}>
-                  {`${xValue}`}
-                </td>
-              ))}
+    <div className="table">
+      <table>
+        <tbody>
+          {zData.map((row, i) => (
+            <tr key={`row-${i}`}>
+              {renderRow(i, row)}
             </tr>
-          </TableDragSelect>
-        </Popover>
-      </div>
-      <Modal
-        title="Set cell values"
-        visible={isModalVisible}
-        onOk={oneModalOk}
-        onCancel={onModalCancel}
-        centered
-        forceRender
-      >
-        <InputNumber
-          ref={modalInputRef}
-          value={modalValue}
-          onChange={(val) => setModalValue(Number(val))}
-          onPressEnter={oneModalOk}
-          style={{ width: '20%' }}
-        />
-      </Modal>
-    </>
+          ))}
+          <tr>
+            <td {...titleProps} className="title-map">
+              {yUnits} / {xUnits}
+            </td>
+            {xData.map((xValue, l) => (
+              <td {...titleProps} key={`x-${l}-${xValue}`}>
+                {`${xValue}`}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 };
 

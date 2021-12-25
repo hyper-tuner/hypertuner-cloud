@@ -38,10 +38,7 @@ import {
   parseZ,
 } from '../utils/tune/table';
 import Map from './Dialog/Map';
-import {
-  evaluateExpression,
-  isExpression,
-} from '../utils/tune/expression';
+import { evaluateExpression } from '../utils/tune/expression';
 import useStorage from '../hooks/useStorage';
 import useConfig from '../hooks/useConfig';
 
@@ -171,30 +168,15 @@ const Dialog = ({
     const x = tune.constants[table.xBins[0]];
     const y = tune.constants[table.yBins[0]];
     const z = tune.constants[table.zBins[0]];
-    const zConstant = findConstantOnPage(table.zBins[0]) as ScalarConstantType;
-
-    let max = zConstant.max as number;
-    if (isExpression(zConstant.max)) {
-      max = evaluateExpression(zConstant.max as string, tune.constants, config);
-    }
-
-    let min = zConstant.min as number;
-    if (isExpression(zConstant.min)) {
-      min = evaluateExpression(zConstant.min as string, tune.constants, config);
-    }
 
     return <div>
       {renderHelp(table.help)}
       <Map
-        name={table.map}
         key={table.map}
         xData={parseXy(x.value as string)}
         yData={parseXy(y.value as string).reverse()}
         zData={parseZ(z.value as string)}
         disabled={false}
-        zMin={min}
-        zMax={max}
-        digits={zConstant.digits as number}
         xUnits={x.units as string}
         yUnits={y.units as string}
       />
