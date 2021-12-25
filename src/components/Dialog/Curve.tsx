@@ -10,12 +10,11 @@ import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import { Colors } from '../../utils/colors';
 import LandscapeNotice from './LandscapeNotice';
-import Table from './Table';
+import Table from './Curve/Table';
 
 const { useBreakpoint } = Grid;
 
 const Curve = ({
-  name,
   width,
   xLabel,
   yLabel,
@@ -23,14 +22,9 @@ const Curve = ({
   yData,
   disabled,
   help,
-  xMin,
-  xMax,
-  yMin,
-  yMax,
   xUnits = '',
   yUnits = '',
 }: {
-  name: string,
   width: number,
   xLabel: string,
   yLabel: string,
@@ -38,10 +32,6 @@ const Curve = ({
   yData: number[],
   disabled: boolean,
   help: string,
-  xMin: number,
-  xMax: number,
-  yMin: number,
-  yMax: number,
   xUnits?: string,
   yUnits?: string,
 }) => {
@@ -99,17 +89,11 @@ const Curve = ({
       </Typography.Paragraph>
       <UplotReact options={options!} data={plotData!} />
       <Table
-        name={name}
-        key={name}
         xLabel={xLabel}
         yLabel={yLabel}
         xData={xData}
         yData={yData}
         disabled={disabled}
-        xMin={xMin}
-        xMax={xMax}
-        yMin={yMin}
-        yMax={yMax}
         xUnits={xUnits}
         yUnits={yUnits}
       />

@@ -153,7 +153,6 @@ const Dialog = ({
 
     return (
       <Curve
-        name={curve.yBins[0]}
         width={canvasWidth}
         key={curve.yBins[0]}
         disabled={false} // TODO: evaluate condition
@@ -162,10 +161,6 @@ const Dialog = ({
         yLabel={curve.labels[1]}
         xUnits={xConstant.units}
         yUnits={yConstant.units}
-        xMin={xConstant.min as number}
-        xMax={xConstant.max as number}
-        yMin={yConstant.min as number}
-        yMax={yConstant.max as number}
         xData={parseXy(x.value as string)}
         yData={parseXy(y.value as string)}
       />
