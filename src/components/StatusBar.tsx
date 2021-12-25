@@ -5,7 +5,10 @@ import {
   Row,
   Col,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import {
+  InfoCircleOutlined,
+  FieldTimeOutlined,
+} from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {
   AppState,
@@ -22,19 +25,22 @@ const mapStateToProps = (state: AppState) => ({
 
 const firmware = (signature: string) => (
   <Space>
-    <InfoCircleOutlined />{signature}
+    <InfoCircleOutlined />
+    {signature}
   </Space>
 );
 
 const StatusBar = ({ status, config }: { status: StatusState, config: ConfigState }) => (
   <Footer className="app-status-bar">
     <Row>
-      <Col span={8} />
-      <Col span={8} style={{ textAlign: 'center' }}>
+      <Col span={12}>
         {config.megaTune && firmware(config.megaTune.signature)}
       </Col>
-      <Col span={8} style={{ textAlign: 'right' }}>
-        {status.text}
+      <Col span={12} style={{ textAlign: 'right' }}>
+        <Space>
+          <FieldTimeOutlined />
+          {status.text}
+        </Space>
       </Col>
     </Row>
   </Footer>

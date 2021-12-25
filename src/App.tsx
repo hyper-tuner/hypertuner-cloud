@@ -10,6 +10,8 @@ import {
 import { Layout } from 'antd';
 import { connect } from 'react-redux';
 import {
+  ReactNode,
+  useCallback,
   useEffect,
   useMemo,
 } from 'react';
@@ -32,6 +34,8 @@ import Log from './components/Log';
 import Diagnose from './components/Diagnose';
 import useStorage from './hooks/useStorage';
 import useConfig from './hooks/useConfig';
+import Login from './components/Auth/Login';
+import SignUp from './components/Auth/SignUp';
 
 const { Content } = Layout;
 
@@ -73,7 +77,21 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
     //   window.removeEventListener('beforeunload', beforeUnload);
     // };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const ContentFor = useCallback((props: { children: ReactNode, marginLeft?: number }) => {
+    const { children, marginLeft } = props;
+
+    return (
+      <Layout style={{ marginLeft }}>
+        <Layout className="app-content">
+          <Content>
+            {children}
+          </Content>
+        </Layout>
+      </Layout>
+    );
   }, []);
 
   return (
@@ -102,22 +120,24 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
             </Layout>
           </Route>
           <Route path={Routes.LOG}>
-            <Layout style={{ marginLeft: margin }}>
-              <Layout className="app-content">
-                <Content>
-                  <Log />
-                </Content>
-              </Layout>
-            </Layout>
+            <ContentFor marginLeft={margin}>
+              <Log />
+            </ContentFor>
           </Route>
-          <Route>
-            <Layout style={{ marginLeft: margin }}>
-              <Layout className="app-content">
-                <Content>
-                  <Diagnose />
-                </Content>
-              </Layout>
-            </Layout>
+          <Route path={Routes.DIAGNOSE}>
+            <ContentFor marginLeft={margin}>
+              <Diagnose />
+            </ContentFor>
+          </Route>
+          <Route path={Routes.LOGIN}>
+            <ContentFor>
+              <Login />
+            </ContentFor>
+          </Route>
+          <Route path={Routes.SIGN_UP}>
+            <ContentFor>
+              <SignUp />
+            </ContentFor>
           </Route>
         </Switch>
       </Layout>

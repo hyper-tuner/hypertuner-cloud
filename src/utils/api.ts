@@ -91,6 +91,7 @@ export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
 export const loadCompositeLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
   fetchWithProgress(
     'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/composite_1_2.csv.gz',
+    // 'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/composite_miata.csv.gz',
     // 'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/2.csv.gz',
     onProgress,
     signal,
