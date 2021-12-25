@@ -22,12 +22,12 @@ if (isProduction) {
 }
 
 ReactDOM.render(
-  <AuthProvider>
-    <HashRouter>
+  <HashRouter>
+    <AuthProvider>
       <Provider store={store}>
         <App />
       </Provider>
-    </HashRouter>
-  </AuthProvider>,
+    </AuthProvider>
+  </HashRouter>,
   document.getElementById('root'),
 );

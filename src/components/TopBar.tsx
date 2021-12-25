@@ -39,6 +39,8 @@ import {
   SearchOutlined,
   ToolOutlined,
   FundOutlined,
+  UserAddOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 import {
   useEffect,
@@ -52,6 +54,7 @@ import {
   isToggleSidebar,
 } from '../utils/keyboard/shortcuts';
 import { Routes } from '../routes';
+import { useAuth } from '../contexts/AuthContext';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -60,14 +63,26 @@ const { SubMenu } = Menu;
 const TopBar = () => {
   const { sm } = useBreakpoint();
   const { pathname } = useLocation();
+  const { currentUser, logout } = useAuth();
   const history = useHistory();
   const matchedTabPath = useMemo(() => matchPath(pathname, { path: Routes.TAB }), [pathname]);
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="login" icon={<LoginOutlined />}>
-        <Link to={Routes.LOGIN}>Login / Sign-up</Link>
-      </Menu.Item>
+      {currentUser ? (
+        <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>
+          Logout
+        </Menu.Item>
+      ) : (
+        <>
+          <Menu.Item key="login" icon={<LoginOutlined />}>
+            <Link to={Routes.LOGIN}>Login</Link>
+          </Menu.Item>
+          <Menu.Item key="sign-up" icon={<UserAddOutlined />}>
+            <Link to={Routes.SIGN_UP}>Sign Up</Link>
+          </Menu.Item>
+        </>
+      )}
       <Menu.Item key="gh" icon={<GithubOutlined />}>
         <a
           href="https://github.com/speedy-tuner/speedy-tuner-cloud"

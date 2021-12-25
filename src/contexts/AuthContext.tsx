@@ -11,30 +11,30 @@ import {
   auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from '../firebase';
 
 const AuthContext = createContext<any>(null);
 
-interface Value {
+interface AuthValue {
   currentUser?: UserCredential,
   signUp: (email: string, password: string) => Promise<UserCredential>,
   login: (email: string, password: string) => Promise<UserCredential>,
+  logout: () => Promise<void>,
 }
 
-const useAuth = () => useContext<Value>(AuthContext);
+const useAuth = () => useContext<AuthValue>(AuthContext);
 
 const AuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const signUp = (email: string, password: string) => createUserWithEmailAndPassword(auth, email, password);
-  const login = (email: string, password: string) => signInWithEmailAndPassword(auth, email, password);
-
   const value = useMemo(() => ({
     currentUser,
-    signUp,
-    login,
+    signUp: (email: string, password: string) => createUserWithEmailAndPassword(auth, email, password),
+    login: (email: string, password: string) => signInWithEmailAndPassword(auth, email, password),
+    logout: () => signOut(auth),
   }), [currentUser]);
 
   useEffect(() => {

@@ -80,7 +80,7 @@ const Login = () => {
             Log in
           </Button>
         </Item>
-        Or <Link to={Routes.SIGN_UP}>sign-up now!</Link>
+        <Link to={Routes.SIGN_UP}>Sign Up now!</Link>
         <Link to="/" style={{ float: 'right' }}>
           Forgot password?
         </Link>

@@ -7,6 +7,7 @@ export enum Routes {
   LOG = '/log',
   DIAGNOSE = '/diagnose',
   LOGIN = '/login',
+  LOGOUT = '/logout',
   SIGN_UP = '/sign-up',
   FORGOT_PASSWORD = '/forgot-password',
 }
