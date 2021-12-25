@@ -40,7 +40,7 @@ const Table = ({
     }), []);
 
   return (
-    <div className="table table-2d">
+    <div className="table">
       <table>
         <tbody>
           <tr>
