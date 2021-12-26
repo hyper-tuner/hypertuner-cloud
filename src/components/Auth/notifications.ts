@@ -6,7 +6,7 @@ const baseOptions = {
   duration,
 };
 
-const emailNotVerified = () => notification.success({
+const emailNotVerified = () => notification.warning({
   message: 'Check your email',
   description: 'Your email address has to be verified before you can upload files!',
   ...baseOptions,
@@ -40,7 +40,7 @@ const restrictedPage = () => notification.error({
   ...baseOptions,
 });
 
-const logOutSuccessful = () => notification.warning({
+const logOutSuccessful = () => notification.success({
   message: 'Log out successful',
   description: 'See you next time!',
   ...baseOptions,
