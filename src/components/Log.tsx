@@ -35,6 +35,7 @@ import {
   OutputChannel,
   Logs,
   DatalogEntry,
+  Tune as TuneType,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
 import LogCanvas from './Log/LogCanvas';
@@ -44,24 +45,38 @@ import {
   msToTime,
 } from '../utils/number';
 import useConfig from '../hooks/useConfig';
+import {
+  isExpression,
+  stripExpression,
+} from '../utils/tune/expression';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Step } = Steps;
 const edgeUnknown = 'Unknown';
+const margin = 30;
+const sidebarWidth = 250;
+const minCanvasHeightInner = 600;
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
+  tune: state.tune,
   status: state.status,
   config: state.config,
   loadedLogs: state.logs,
 });
 
-const margin = 30;
-const sidebarWidth = 250;
-const minCanvasHeightInner = 600;
-
-const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLogs: Logs }) => {
+const Log = ({
+  ui,
+  config,
+  tune,
+  loadedLogs,
+}: {
+  ui: UIState,
+  tune: TuneType,
+  config: Config,
+  loadedLogs: Logs,
+}) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
@@ -215,8 +230,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
                     {fields.map((field) => (
                       <Row key={field.name}>
                         <Checkbox key={field.name} value={field.name}>
-                          {field.label}
-                          {/* {field.units && ` (${field.units})`} */}
+                          {isExpression(field.label) ? stripExpression(field.label) : field.label}
                         </Checkbox>
                       </Row>
                     ))}
@@ -230,8 +244,7 @@ const Log = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLo
                     {fields.map((field) => (
                       <Row key={field.name}>
                         <Checkbox key={field.name} value={field.name}>
-                          {field.label}
-                          {/* {field.units && ` (${field.units})`} */}
+                          {isExpression(field.label) ? stripExpression(field.label) : field.label}
                         </Checkbox>
                       </Row>
                     ))}

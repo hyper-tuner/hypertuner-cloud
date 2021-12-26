@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import {
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import UplotReact from 'uplot-react';
@@ -15,7 +16,6 @@ import Table from './Curve/Table';
 const { useBreakpoint } = Grid;
 
 const Curve = ({
-  width,
   xLabel,
   yLabel,
   xData,
@@ -25,7 +25,6 @@ const Curve = ({
   xUnits = '',
   yUnits = '',
 }: {
-  width: number,
   xLabel: string,
   yLabel: string,
   xData: number[],
@@ -35,6 +34,7 @@ const Curve = ({
   xUnits?: string,
   yUnits?: string,
 }) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const { sm } = useBreakpoint();
   const [options, setOptions] = useState<uPlot.Options>();
   const [plotData, setPlotData] = useState<uPlot.AlignedData>();
@@ -42,7 +42,7 @@ const Curve = ({
   useEffect(() => {
     setPlotData([xData, yData]);
     setOptions({
-      width,
+      width: containerRef.current?.clientWidth || 0,
       height: 350,
       scales: {
         x: { time: false },
@@ -76,7 +76,7 @@ const Curve = ({
         points: { size: 9 },
       },
     });
-  }, [width, xData, xLabel, xUnits, yData, yLabel, yUnits, sm]);
+  }, [xData, xLabel, xUnits, yData, yLabel, yUnits, sm]);
 
   if (!sm) {
     return <LandscapeNotice />;
@@ -88,15 +88,17 @@ const Curve = ({
         <Typography.Text type="secondary">{help}</Typography.Text>
       </Typography.Paragraph>
       <UplotReact options={options!} data={plotData!} />
-      <Table
-        xLabel={xLabel}
-        yLabel={yLabel}
-        xData={xData}
-        yData={yData}
-        disabled={disabled}
-        xUnits={xUnits}
-        yUnits={yUnits}
-      />
+      <div ref={containerRef}>
+        <Table
+          xLabel={xLabel}
+          yLabel={yLabel}
+          xData={xData}
+          yData={yData}
+          disabled={disabled}
+          xUnits={xUnits}
+          yUnits={yUnits}
+        />
+      </div>
     </>
   );
 };

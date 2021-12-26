@@ -9,7 +9,11 @@ import {
   Link,
 } from 'react-router-dom';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useCallback } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {
   Config as ConfigType,
   Menus as MenusType,
@@ -79,9 +83,10 @@ const SideBar = ({
     category: main,
     dialog: sub,
   }), []);
+  const [menus, setMenus] = useState<any[]>([]);
 
-  const menusList = useCallback((menus: MenusType) => (
-    Object.keys(menus).map((menuName: string) => {
+  const menusList = useCallback((types: MenusType) => (
+    Object.keys(types).map((menuName: string) => {
       if (SKIP_MENUS.includes(menuName)) {
         return null;
       }
@@ -90,9 +95,9 @@ const SideBar = ({
         <SubMenu
           key={`/${menuName}`}
           icon={<Icon name={menuName} />}
-          title={menus[menuName].title}
+          title={types[menuName].title}
         >
-          {Object.keys(menus[menuName].subMenus).map((subMenuName: string) => {
+          {Object.keys(types[menuName].subMenus).map((subMenuName: string) => {
             if (subMenuName === 'std_separator') {
               return <Menu.Divider key={buildLink(menuName, subMenuName)} />;
             }
@@ -101,10 +106,9 @@ const SideBar = ({
               return null;
             }
 
-            const subMenu = menus[menuName].subMenus[subMenuName];
+            const subMenu = types[menuName].subMenus[subMenuName];
             let enabled = true;
 
-            // TODO: optimize this!
             if (subMenu.condition) {
               enabled = checkCondition(subMenu.condition);
             }
@@ -123,6 +127,12 @@ const SideBar = ({
       );
     })
   ), [buildLink, checkCondition]);
+
+  useEffect(() => {
+    if (Object.keys(tune.constants).length) {
+      setMenus(menusList(config.menus));
+    }
+  }, [config.menus, menusList, tune.constants]);
 
   if (!isConfigReady) {
     return (
@@ -148,7 +158,7 @@ const SideBar = ({
           style={{ height: '100%' }}
           key={matchedPath.url}
         >
-          {Object.keys(tune.constants).length && menusList(config.menus)}
+          {menus}
         </Menu>
       </PerfectScrollbar>
     </Sider>

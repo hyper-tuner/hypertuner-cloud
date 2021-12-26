@@ -111,19 +111,8 @@ const Dialog = ({
   const isDataReady = Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useStorage();
   const { findConstantOnPage } = useConfig(config);
-  const [canvasWidth, setCanvasWidth] = useState(0);
+  const [panelsComponents, setPanelsComponents] = useState<any[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const calculateCanvasWidth = useCallback(() => {
-    setCanvasWidth((containerRef.current?.clientWidth || 0) - 20);
-  }, []);
-
-  useEffect(() => {
-    storageSet('lastDialog', url);
-    calculateCanvasWidth();
-    window.addEventListener('resize', calculateCanvasWidth);
-
-    return () => window.removeEventListener('resize', calculateCanvasWidth);
-  }, [calculateCanvasWidth, storageSet, url, ui.sidebarCollapsed]);
 
   const renderHelp = (link?: string) => (link &&
     <Popover
@@ -142,7 +131,7 @@ const Dialog = ({
     </Popover>
   );
 
-  const renderCurve = (curve: CurveType) => {
+  const renderCurve = useCallback((curve: CurveType) => {
     const x = tune.constants[curve.xBins[0]];
     const y = tune.constants[curve.yBins[0]];
     const xConstant = findConstantOnPage(curve.xBins[0]) as ScalarConstantType;
@@ -150,7 +139,6 @@ const Dialog = ({
 
     return (
       <Curve
-        width={canvasWidth}
         key={curve.yBins[0]}
         disabled={false} // TODO: evaluate condition
         help={config.help[curve.yBins[0]]}
@@ -162,9 +150,9 @@ const Dialog = ({
         yData={parseXy(y.value as string)}
       />
     );
-  };
+  }, [config.help, findConstantOnPage, tune.constants]);
 
-  const renderTable = (table: TableType | RenderedPanel) => {
+  const renderTable = useCallback((table: TableType | RenderedPanel) => {
     const x = tune.constants[table.xBins[0]];
     const y = tune.constants[table.yBins[0]];
     const z = tune.constants[table.zBins[0]];
@@ -181,45 +169,7 @@ const Dialog = ({
         yUnits={y.units as string}
       />
     </div>;
-  };
-
-  if (!isDataReady) {
-    return skeleton;
-  }
-
-  const dialogConfig = config.dialogs[name];
-  const curveConfig = config.curves[name];
-  const tableConfig = config.tables[name];
-
-  // standalone dialog / page
-  if (!dialogConfig) {
-    if (curveConfig) {
-      return (
-        <div ref={containerRef} style={containerStyle}>
-          <Divider>{curveConfig.title}</Divider>
-          {renderCurve(curveConfig)}
-        </div>
-      );
-    }
-
-    if (tableConfig) {
-      return (
-        <div ref={containerRef} style={containerStyle}>
-          {renderHelp(tableConfig.help)}
-          <Divider>{tableConfig.title}</Divider>
-          {renderTable(tableConfig)}
-        </div>
-      );
-    }
-
-    return (
-      <Result
-        status="warning"
-        title="Dialog not found"
-        style={{ marginTop: 50 }}
-      />
-    );
-  }
+  }, [tune.constants]);
 
   const calculateSpan = (type: PanelTypes, dialogsCount: number) => {
     let xxl = 24;
@@ -283,8 +233,9 @@ const Dialog = ({
     });
   };
 
-  // TODO: refactor this
-  resolveDialogs(config.dialogs, name);
+  if (config.dialogs) {
+    resolveDialogs(config.dialogs, name);
+  }
 
   // remove dummy dialogs and flatten to array
   const panels = Object.keys(resolvedDialogs).map((dialogName: string): RenderedPanel => {
@@ -324,7 +275,7 @@ const Dialog = ({
     };
   });
 
-  const panelsComponents = () => panels.map((panel: RenderedPanel) => {
+  const generatePanelsComponents = useCallback(() => panels.map((panel: RenderedPanel) => {
     if (panel.type === PanelTypes.FIELDS && panel.fields.length === 0) {
       return null;
     }
@@ -401,7 +352,54 @@ const Dialog = ({
         {panel.type === PanelTypes.TABLE && renderTable(panel)}
       </Col>
     );
-  });
+  }), [config, findConstantOnPage, panels, renderCurve, renderTable, tune.constants]);
+
+  useEffect(() => {
+    storageSet('lastDialog', url);
+
+    if (isDataReady) {
+      setPanelsComponents(generatePanelsComponents());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDataReady, url, ui.sidebarCollapsed]);
+
+  if (!isDataReady) {
+    return skeleton;
+  }
+
+  const dialogConfig = config.dialogs[name];
+  const curveConfig = config.curves[name];
+  const tableConfig = config.tables[name];
+
+  // standalone dialog / page
+  if (!dialogConfig) {
+    if (curveConfig) {
+      return (
+        <div ref={containerRef} style={containerStyle}>
+          <Divider>{curveConfig.title}</Divider>
+          {renderCurve(curveConfig)}
+        </div>
+      );
+    }
+
+    if (tableConfig) {
+      return (
+        <div ref={containerRef} style={containerStyle}>
+          {renderHelp(tableConfig.help)}
+          <Divider>{tableConfig.title}</Divider>
+          {renderTable(tableConfig)}
+        </div>
+      );
+    }
+
+    return (
+      <Result
+        status="warning"
+        title="Dialog not found"
+        style={{ marginTop: 50 }}
+      />
+    );
+  }
 
   return (
     <div ref={containerRef} style={containerStyle}>
@@ -411,7 +409,7 @@ const Dialog = ({
         wrapperCol={{ span: 10 }}
       >
         <Row gutter={20}>
-          {isDataReady && panelsComponents()}
+          {panelsComponents}
         </Row>
         <Form.Item>
           {burnButton}
