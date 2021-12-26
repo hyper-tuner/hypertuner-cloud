@@ -27,7 +27,7 @@ const ResetPassword = () => {
   const { resetPassword } = useAuth();
   const history = useHistory();
 
-  const onFinish = async ({ email, password }: { form: any, email: string, password: string }) => {
+  const onFinish = async ({ email }: { form: any, email: string }) => {
     setIsLoading(true);
     try {
       await resetPassword(email);
@@ -71,7 +71,7 @@ const ResetPassword = () => {
             Reset password
           </Button>
         </Item>
-        <Link to={Routes.SIGN_UP}>Sign Up now</Link>
+        <Link to={Routes.SIGN_UP}>Sign Up</Link>
         <Link to={Routes.LOGIN} style={{ float: 'right' }}>
           Log In
         </Link>

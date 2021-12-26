@@ -97,6 +97,7 @@ const TopBar = () => {
           </Menu.Item>
         </>
       )}
+      <Menu.Divider />
       <Menu.Item key="gh" icon={<GithubOutlined />}>
         <a
           href="https://github.com/speedy-tuner/speedy-tuner-cloud"
@@ -106,7 +107,6 @@ const TopBar = () => {
           GitHub
         </a>
       </Menu.Item>
-      <Menu.Divider />
       <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
         Preferences
       </Menu.Item>

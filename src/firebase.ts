@@ -6,6 +6,9 @@ import {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -31,4 +34,7 @@ export {
   sendEmailVerification,
   signOut,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signInWithPopup,
 };

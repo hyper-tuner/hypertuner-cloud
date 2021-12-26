@@ -1,13 +1,19 @@
-import { useState } from 'react';
+import {
+  useCallback,
+  useState,
+} from 'react';
 import {
   Form,
   Input,
   Button,
   Divider,
+  Space,
 } from 'antd';
 import {
   MailOutlined,
   LockOutlined,
+  GoogleOutlined,
+  GithubOutlined,
 } from '@ant-design/icons';
 import {
   Link,
@@ -27,12 +33,39 @@ const { Item } = Form;
 
 const Login = () => {
   const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const { login, googleAuth, githubAuth } = useAuth();
   const history = useHistory();
+  const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading;
 
-  const onFinish = async ({ email, password }: { form: any, email: string, password: string }) => {
-    setIsLoading(true);
+  const googleLogin = useCallback(async () => {
+    setIsGoogleLoading(true);
+    try {
+      await googleAuth();
+      logInSuccessful();
+      history.push(Routes.ROOT);
+    } catch (error) {
+      logInFailed(error as Error);
+      setIsGoogleLoading(false);
+    }
+  }, [googleAuth, history]);
+
+  const githubLogin = useCallback(async () => {
+    setIsGithubLoading(true);
+    try {
+      await githubAuth();
+      logInSuccessful();
+      history.push(Routes.ROOT);
+    } catch (error) {
+      logInFailed(error as Error);
+      setIsGithubLoading(false);
+    }
+  }, [githubAuth, history]);
+
+  const emailLogin = async ({ email, password }: { form: any, email: string, password: string }) => {
+    setIsEmailLoading(true);
     try {
       const userCredentials = await login(email, password);
       logInSuccessful();
@@ -46,16 +79,16 @@ const Login = () => {
       form.resetFields();
       console.warn(error);
       logInFailed(error as Error);
-      setIsLoading(false);
+      setIsEmailLoading(false);
     }
   };
 
   return (
     <div style={containerStyle}>
-      <Divider>Log In</Divider>
+      <Divider>Log In using email</Divider>
       <Form
         initialValues={{ remember: true }}
-        onFinish={onFinish}
+        onFinish={emailLogin}
         validateMessages={validateMessages}
         autoComplete="off"
         form={form}
@@ -68,6 +101,7 @@ const Login = () => {
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
+            disabled={isAnythingLoading}
           />
         </Item>
         <Item
@@ -78,6 +112,7 @@ const Login = () => {
           <Input.Password
             placeholder="Password"
             prefix={<LockOutlined />}
+            disabled={isAnythingLoading}
           />
         </Item>
         <Item>
@@ -85,16 +120,41 @@ const Login = () => {
             type="primary"
             htmlType="submit"
             style={{ width: '100%' }}
-            loading={isLoading}
+            loading={isEmailLoading}
+            disabled={isAnythingLoading}
           >
             Log In
           </Button>
         </Item>
-        <Link to={Routes.SIGN_UP}>Sign Up now</Link>
-        <Link to={Routes.RESET_PASSWORD} style={{ float: 'right' }}>
+      </Form>
+      <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
+        <Item>
+          <Button
+            loading={isGoogleLoading}
+            onClick={googleLogin}
+            disabled={isAnythingLoading}
+          >
+            <GoogleOutlined />Google
+          </Button>
+        </Item>
+        <Item>
+          <Button
+            loading={isGithubLoading}
+            onClick={githubLogin}
+            disabled={isAnythingLoading}
+          >
+            <GithubOutlined />GitHub
+          </Button>
+        </Item>
+      </Space>
+      <Button type="link">
+        <Link to={Routes.SIGN_UP}>Sign Up</Link>
+      </Button>
+      <Button type="link" style={{ float: 'right' }}>
+        <Link to={Routes.RESET_PASSWORD}>
           Forgot password?
         </Link>
-      </Form>
+      </Button>
     </div>
   );
 };
