@@ -4,7 +4,6 @@ import {
   Input,
   Button,
   Divider,
-  notification,
 } from 'antd';
 import {
   MailOutlined,
@@ -17,7 +16,11 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
-import emailNotVerifiedWarning from './emailNotVerifiedWarning';
+import {
+  emailNotVerified,
+  logInFailed,
+  logInSuccessful,
+} from './notifications';
 
 const { Item } = Form;
 
@@ -31,23 +34,17 @@ const Login = () => {
     setIsLoading(true);
     try {
       const userCredentials = await login(email, password);
-      notification.success({
-        message: 'Login successful',
-        description: 'Welcome back!',
-      });
+      logInSuccessful();
 
       if (!userCredentials.user.emailVerified) {
-        emailNotVerifiedWarning();
+        emailNotVerified();
       }
 
       history.push(Routes.ROOT);
-    } catch (err) {
+    } catch (error) {
       form.resetFields();
-      console.warn(err);
-      notification.error({
-        message: 'Login failed',
-        description: (err as Error).message,
-      });
+      console.warn(error);
+      logInFailed(error as Error);
       setIsLoading(false);
     }
   };

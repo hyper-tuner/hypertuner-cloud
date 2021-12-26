@@ -17,7 +17,6 @@ import {
   Dropdown,
   Typography,
   Radio,
-  notification,
 } from 'antd';
 import {
   UserOutlined,
@@ -57,6 +56,10 @@ import {
 } from '../utils/keyboard/shortcuts';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  logOutFailed,
+  logOutSuccessful,
+} from './Auth/notifications';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -71,16 +74,10 @@ const TopBar = () => {
   const logoutClick = useCallback(async () => {
     try {
       await logout();
-      notification.warning({
-        message: 'Logout successful',
-        description: 'See you again!',
-      });
-    } catch (err) {
-      console.warn(err);
-      notification.error({
-        message: 'Login failed',
-        description: (err as Error).message,
-      });
+      logOutSuccessful();
+    } catch (error) {
+      console.warn(error);
+      logOutFailed(error as Error);
     }
   }, [logout]);
 

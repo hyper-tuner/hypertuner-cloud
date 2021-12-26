@@ -4,7 +4,6 @@ import {
   Input,
   Button,
   Divider,
-  notification,
 } from 'antd';
 import {
   MailOutlined,
@@ -17,7 +16,10 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
-import emailNotVerifiedWarning from './emailNotVerifiedWarning';
+import {
+  emailNotVerified,
+  signUpSuccessful,
+} from './notifications';
 
 const { Item } = Form;
 
@@ -33,20 +35,12 @@ const SignUp = () => {
     setIsLoading(true);
     try {
       await signUp(email, password);
-      notification.success({
-        message: 'Sign Up successful',
-        description: 'Welcome on board!',
-      });
-      emailNotVerifiedWarning();
-
+      signUpSuccessful();
+      emailNotVerified();
       history.push(Routes.ROOT);
     } catch (err) {
       form.resetFields();
       console.warn(err);
-      notification.error({
-        message: 'Failed to create an account',
-        description: (err as Error).message,
-      });
       setIsLoading(false);
     }
   };
