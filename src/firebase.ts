@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -26,5 +27,6 @@ export {
   analytics,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendEmailVerification,
   signOut,
 };

@@ -11,6 +11,7 @@ import {
   auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendEmailVerification,
   signOut,
 } from '../firebase';
 
@@ -32,7 +33,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
 
   const value = useMemo(() => ({
     currentUser,
-    signUp: (email: string, password: string) => createUserWithEmailAndPassword(auth, email, password),
+    signUp: (email: string, password: string) => createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => sendEmailVerification(userCredential.user)),
     login: (email: string, password: string) => signInWithEmailAndPassword(auth, email, password),
     logout: () => signOut(auth),
   }), [currentUser]);

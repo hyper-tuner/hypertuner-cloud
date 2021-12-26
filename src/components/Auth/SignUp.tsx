@@ -17,10 +17,11 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
+import emailNotVerifiedWarning from './emailNotVerifiedWarning';
 
 const { Item } = Form;
 
-const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
 
 const SignUp = () => {
   const [form] = Form.useForm();
@@ -36,7 +37,8 @@ const SignUp = () => {
         message: 'Sign Up successful',
         description: 'Welcome on board!',
       });
-      setIsLoading(false);
+      emailNotVerifiedWarning();
+
       history.push(Routes.ROOT);
     } catch (err) {
       form.resetFields();
@@ -45,8 +47,8 @@ const SignUp = () => {
         message: 'Failed to create an account',
         description: (err as Error).message,
       });
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -77,7 +79,7 @@ const SignUp = () => {
           name="password"
           rules={[
             { required: true },
-            { pattern: strongPassword, message: 'Password is too weak!' },
+            { pattern: passwordPattern, message: 'Password is too weak!' },
           ]}
           hasFeedback
         >

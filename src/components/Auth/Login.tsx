@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
+import emailNotVerifiedWarning from './emailNotVerifiedWarning';
 
 const { Item } = Form;
 
@@ -29,12 +30,16 @@ const Login = () => {
   const onFinish = async ({ email, password }: { form: any, email: string, password: string }) => {
     setIsLoading(true);
     try {
-      await login(email, password);
+      const userCredentials = await login(email, password);
       notification.success({
         message: 'Login successful',
         description: 'Welcome back!',
       });
-      setIsLoading(false);
+
+      if (!userCredentials.user.emailVerified) {
+        emailNotVerifiedWarning();
+      }
+
       history.push(Routes.ROOT);
     } catch (err) {
       form.resetFields();
@@ -43,8 +48,8 @@ const Login = () => {
         message: 'Login failed',
         description: (err as Error).message,
       });
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
