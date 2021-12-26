@@ -6,8 +6,9 @@ export enum Routes {
   DIALOG = '/tune/:category/:dialog',
   LOG = '/log',
   DIAGNOSE = '/diagnose',
-  LOGIN = '/login',
-  LOGOUT = '/logout',
-  SIGN_UP = '/sign-up',
-  FORGOT_PASSWORD = '/forgot-password',
+  LOGIN = '/auth/login',
+  LOGOUT = '/auth/logout',
+  SIGN_UP = '/auth/sign-up',
+  FORGOT_PASSWORD = '/auth/forgot-password',
+  RESET_PASSWORD = '/auth/reset-password',
 }

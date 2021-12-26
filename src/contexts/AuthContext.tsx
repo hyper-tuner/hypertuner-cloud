@@ -13,6 +13,7 @@ import {
   signInWithEmailAndPassword,
   sendEmailVerification,
   signOut,
+  sendPasswordResetEmail,
 } from '../firebase';
 
 const AuthContext = createContext<any>(null);
@@ -22,6 +23,7 @@ interface AuthValue {
   signUp: (email: string, password: string) => Promise<UserCredential>,
   login: (email: string, password: string) => Promise<UserCredential>,
   logout: () => Promise<void>,
+  resetPassword: (email: string) => Promise<UserCredential>,
 }
 
 const useAuth = () => useContext<AuthValue>(AuthContext);
@@ -37,6 +39,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
       .then((userCredential) => sendEmailVerification(userCredential.user)),
     login: (email: string, password: string) => signInWithEmailAndPassword(auth, email, password),
     logout: () => signOut(auth),
+    resetPassword: (email: string) => sendPasswordResetEmail(auth, email),
   }), [currentUser]);
 
   useEffect(() => {

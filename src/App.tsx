@@ -7,7 +7,10 @@ import {
   Redirect,
   generatePath,
 } from 'react-router-dom';
-import { Layout } from 'antd';
+import {
+  Layout,
+  Result,
+} from 'antd';
 import { connect } from 'react-redux';
 import {
   ReactNode,
@@ -36,6 +39,7 @@ import useStorage from './hooks/useStorage';
 import useConfig from './hooks/useConfig';
 import Login from './components/Auth/Login';
 import SignUp from './components/Auth/SignUp';
+import ResetPassword from './components/Auth/ResetPassword';
 
 const { Content } = Layout;
 
@@ -139,7 +143,17 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
               <SignUp />
             </ContentFor>
           </Route>
+          <Route path={Routes.RESET_PASSWORD}>
+            <ContentFor>
+              <ResetPassword />
+            </ContentFor>
+          </Route>
         </Switch>
+        <Result
+          status="warning"
+          title="Page not found"
+          style={{ marginTop: 50 }}
+        />
       </Layout>
       <StatusBar />
     </>

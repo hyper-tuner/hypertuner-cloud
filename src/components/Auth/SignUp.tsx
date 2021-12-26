@@ -18,8 +18,10 @@ import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
 import {
   emailNotVerified,
+  signUpFailed,
   signUpSuccessful,
 } from './notifications';
+import { containerStyle } from './common';
 
 const { Item } = Form;
 
@@ -38,19 +40,16 @@ const SignUp = () => {
       signUpSuccessful();
       emailNotVerified();
       history.push(Routes.ROOT);
-    } catch (err) {
+    } catch (error) {
       form.resetFields();
-      console.warn(err);
+      console.warn(error);
+      signUpFailed(error as Error);
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{
-      padding: 20,
-      maxWidth: 350,
-      margin: '0 auto',
-    }}>
+    <div style={containerStyle}>
       <Divider>Sign Up</Divider>
       <Form
         initialValues={{ remember: true }}
