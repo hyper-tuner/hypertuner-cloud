@@ -10,7 +10,10 @@ import {
   MailOutlined,
   LockOutlined,
 } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import {
+  Link,
+  useHistory,
+} from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
@@ -18,22 +21,29 @@ import validateMessages from './validateMessages';
 const { Item } = Form;
 
 const Login = () => {
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const history = useHistory();
 
-  const onFinish = async ({ email, password }: { email: string, password: string }) => {
+  const onFinish = async ({ email, password }: { form: any, email: string, password: string }) => {
     setIsLoading(true);
-
     try {
       await login(email, password);
+      notification.success({
+        message: 'Login successful',
+        description: 'Welcome back!',
+      });
+      setIsLoading(false);
+      history.push(Routes.ROOT);
     } catch (err) {
+      form.resetFields();
       console.warn(err);
       notification.error({
         message: 'Login failed',
         description: (err as Error).message,
       });
     }
-
     setIsLoading(false);
   };
 
@@ -49,6 +59,7 @@ const Login = () => {
         onFinish={onFinish}
         validateMessages={validateMessages}
         autoComplete="off"
+        form={form}
       >
         <Item
           name="email"

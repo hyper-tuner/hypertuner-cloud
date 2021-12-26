@@ -10,7 +10,10 @@ import {
   MailOutlined,
   LockOutlined,
 } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import {
+  Link,
+  useHistory,
+} from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
@@ -20,22 +23,29 @@ const { Item } = Form;
 const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
 
 const SignUp = () => {
+  const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuth();
+  const history = useHistory();
 
   const onFinish = async ({ email, password }: { email: string, password: string }) => {
     setIsLoading(true);
-
     try {
       await signUp(email, password);
+      notification.success({
+        message: 'Sign Up successful',
+        description: 'Welcome on board!',
+      });
+      setIsLoading(false);
+      history.push(Routes.ROOT);
     } catch (err) {
+      form.resetFields();
       console.warn(err);
       notification.error({
         message: 'Failed to create an account',
         description: (err as Error).message,
       });
     }
-
     setIsLoading(false);
   };
 
@@ -51,6 +61,7 @@ const SignUp = () => {
         onFinish={onFinish}
         validateMessages={validateMessages}
         autoComplete="off"
+        form={form}
       >
         <Item
           name="email"
@@ -103,7 +114,7 @@ const SignUp = () => {
             style={{ width: '100%' }}
             loading={isLoading}
           >
-            Sign up
+            Sign Up
           </Button>
         </Item>
         Or <Link to={Routes.LOGIN}>login</Link> if you already have an account!

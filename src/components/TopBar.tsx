@@ -17,6 +17,7 @@ import {
   Dropdown,
   Typography,
   Radio,
+  notification,
 } from 'antd';
 import {
   UserOutlined,
@@ -43,6 +44,7 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -66,11 +68,26 @@ const TopBar = () => {
   const { currentUser, logout } = useAuth();
   const history = useHistory();
   const matchedTabPath = useMemo(() => matchPath(pathname, { path: Routes.TAB }), [pathname]);
+  const logoutClick = useCallback(async () => {
+    try {
+      await logout();
+      notification.warning({
+        message: 'Logout successful',
+        description: 'See you again!',
+      });
+    } catch (err) {
+      console.warn(err);
+      notification.error({
+        message: 'Login failed',
+        description: (err as Error).message,
+      });
+    }
+  }, [logout]);
 
   const userMenu = (
     <Menu>
       {currentUser ? (
-        <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logout}>
+        <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
           Logout
         </Menu.Item>
       ) : (
