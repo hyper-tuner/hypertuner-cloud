@@ -1,4 +1,7 @@
-import { UserCredential } from 'firebase/auth';
+import {
+  User,
+  UserCredential,
+} from 'firebase/auth';
 import {
   createContext,
   ReactNode,
@@ -14,23 +17,28 @@ import {
   sendEmailVerification,
   signOut,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signInWithPopup,
 } from '../firebase';
 
-const AuthContext = createContext<any>(null);
-
 interface AuthValue {
-  currentUser?: UserCredential,
-  signUp: (email: string, password: string) => Promise<UserCredential>,
+  currentUser: User | null,
+  signUp: (email: string, password: string) => Promise<void>,
   login: (email: string, password: string) => Promise<UserCredential>,
   logout: () => Promise<void>,
-  resetPassword: (email: string) => Promise<UserCredential>,
+  resetPassword: (email: string) => Promise<void>,
+  googleAuth: () => Promise<void>,
+  githubAuth: () => Promise<void>,
 }
 
-const useAuth = () => useContext<AuthValue>(AuthContext);
+const AuthContext = createContext<AuthValue | null>(null);
+
+const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const AuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const value = useMemo(() => ({
@@ -40,6 +48,16 @@ const AuthProvider = (props: { children: ReactNode }) => {
     login: (email: string, password: string) => signInWithEmailAndPassword(auth, email, password),
     logout: () => signOut(auth),
     resetPassword: (email: string) => sendPasswordResetEmail(auth, email),
+    googleAuth: async () => {
+      const provider = new GoogleAuthProvider().addScope('https://www.googleapis.com/auth/userinfo.email');
+      const credentials = await signInWithPopup(auth, provider);
+      setCurrentUser(credentials.user);
+    },
+    githubAuth: async () => {
+      const provider = new GithubAuthProvider().addScope('user:email');
+      const credentials = await signInWithPopup(auth, provider);
+      setCurrentUser(credentials.user);
+    },
   }), [currentUser]);
 
   useEffect(() => {

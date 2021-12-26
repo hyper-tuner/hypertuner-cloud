@@ -112,8 +112,10 @@ const SignUp = () => {
             Sign Up
           </Button>
         </Item>
-        Or <Link to={Routes.LOGIN}>login</Link> if you already have an account!
       </Form>
+      <Link to={Routes.LOGIN} style={{ float: 'right' }}>
+        Log In
+      </Link>
     </div>
   );
 };
