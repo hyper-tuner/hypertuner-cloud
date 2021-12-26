@@ -83,7 +83,7 @@ const SideBar = ({
     category: main,
     dialog: sub,
   }), []);
-  const [menus, setMenus] = useState<any>([]);
+  const [menus, setMenus] = useState<any[]>([]);
 
   const menusList = useCallback((types: MenusType) => (
     Object.keys(types).map((menuName: string) => {
