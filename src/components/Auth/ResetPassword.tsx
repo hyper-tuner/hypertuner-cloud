@@ -5,10 +5,7 @@ import {
   Button,
   Divider,
 } from 'antd';
-import {
-  MailOutlined,
-  LockOutlined,
-} from '@ant-design/icons';
+import { MailOutlined } from '@ant-design/icons';
 import {
   Link,
   useHistory,
@@ -17,42 +14,36 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
 import {
-  emailNotVerified,
-  logInFailed,
-  logInSuccessful,
+  resetFailed,
+  resetSuccessful,
 } from './notifications';
 import { containerStyle } from './common';
 
 const { Item } = Form;
 
-const Login = () => {
+const ResetPassword = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { resetPassword } = useAuth();
   const history = useHistory();
 
   const onFinish = async ({ email, password }: { form: any, email: string, password: string }) => {
     setIsLoading(true);
     try {
-      const userCredentials = await login(email, password);
-      logInSuccessful();
-
-      if (!userCredentials.user.emailVerified) {
-        emailNotVerified();
-      }
-
-      history.push(Routes.ROOT);
+      await resetPassword(email);
+      resetSuccessful();
+      history.push(Routes.LOGIN);
     } catch (error) {
       form.resetFields();
       console.warn(error);
-      logInFailed(error as Error);
+      resetFailed(error as Error);
       setIsLoading(false);
     }
   };
 
   return (
     <div style={containerStyle}>
-      <Divider>Log In</Divider>
+      <Divider>Reset password</Divider>
       <Form
         initialValues={{ remember: true }}
         onFinish={onFinish}
@@ -70,16 +61,6 @@ const Login = () => {
             placeholder="Email"
           />
         </Item>
-        <Item
-          name="password"
-          rules={[{ required: true }]}
-          hasFeedback
-        >
-          <Input.Password
-            placeholder="Password"
-            prefix={<LockOutlined />}
-          />
-        </Item>
         <Item>
           <Button
             type="primary"
@@ -87,16 +68,16 @@ const Login = () => {
             style={{ width: '100%' }}
             loading={isLoading}
           >
-            Log In
+            Reset password
           </Button>
         </Item>
         <Link to={Routes.SIGN_UP}>Sign Up now</Link>
-        <Link to={Routes.RESET_PASSWORD} style={{ float: 'right' }}>
-          Forgot password?
+        <Link to={Routes.LOGIN} style={{ float: 'right' }}>
+          Log In
         </Link>
       </Form>
     </div>
   );
 };
 
-export default Login;
+export default ResetPassword;
