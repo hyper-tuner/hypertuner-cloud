@@ -2,6 +2,7 @@
   "name": "speedy-tuner-cloud",
   "description": "SpeedyTuner Cloud - Share your Speeduino tune and logs",
   "version": "0.1.0",
+  "author": "Piotr Rogowski <piotr.rogowski0@gmail.com>",
   "private": true,
   "license": "MIT",
   "homepage": "./",
