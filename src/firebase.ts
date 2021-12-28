@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { getPerformance } from 'firebase/performance';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -22,13 +23,15 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-const firebase = initializeApp(firebaseConfig);
-const analytics = getAnalytics(firebase);
-const auth = getAuth(firebase);
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const performance = getPerformance(app);
+const auth = getAuth(app);
 
 export {
   auth,
   analytics,
+  performance,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
