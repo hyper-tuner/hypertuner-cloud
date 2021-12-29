@@ -3,6 +3,7 @@ import {
   Grid,
 } from 'antd';
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -38,11 +39,14 @@ const Curve = ({
   const { sm } = useBreakpoint();
   const [options, setOptions] = useState<uPlot.Options>();
   const [plotData, setPlotData] = useState<uPlot.AlignedData>();
+  const [canvasWidth, setCanvasWidth] = useState(0);
+
+  const calculateWidth = useCallback(() => setCanvasWidth(containerRef.current?.clientWidth || 0), []);
 
   useEffect(() => {
     setPlotData([xData, yData]);
     setOptions({
-      width: containerRef.current?.clientWidth || 0,
+      width: canvasWidth,
       height: 350,
       scales: {
         x: { time: false },
@@ -76,7 +80,12 @@ const Curve = ({
         points: { size: 9 },
       },
     });
-  }, [xData, xLabel, xUnits, yData, yLabel, yUnits, sm]);
+
+    calculateWidth();
+    window.addEventListener('resize', calculateWidth);
+
+    return () => window.removeEventListener('resize', calculateWidth);
+  }, [xData, xLabel, xUnits, yData, yLabel, yUnits, sm, canvasWidth, calculateWidth]);
 
   if (!sm) {
     return <LandscapeNotice />;
