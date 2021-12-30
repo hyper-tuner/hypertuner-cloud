@@ -8,7 +8,6 @@ import {
   Layout,
   Space,
   Button,
-  Input,
   Row,
   Col,
   Tooltip,
@@ -63,7 +62,7 @@ const { useBreakpoint } = Grid;
 const { SubMenu } = Menu;
 
 const TopBar = () => {
-  const { sm, md } = useBreakpoint();
+  const { sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const history = useHistory();
@@ -78,7 +77,7 @@ const TopBar = () => {
     }
   }, [logout]);
 
-  const searchInput = useRef<Input | null>(null);
+  const searchInput = useRef<HTMLElement | null>(null);
   const handleGlobalKeyboard = (e: KeyboardEvent) => {
     if (isCommand(e)) {
       if (searchInput) {
@@ -132,18 +131,18 @@ const TopBar = () => {
         </Col>
         <Col span={12} md={8} sm={8} style={{ textAlign: 'right' }}>
           <Space>
-            <Tooltip title={
+            <Tooltip visible={false} title={
               <>
                 <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
                 <Typography.Text keyboard>SHIFT</Typography.Text>
                 <Typography.Text keyboard>P</Typography.Text>
               </>
             }>
-              <Button icon={<SearchOutlined />} ref={searchInput as any} />
+              <Button disabled icon={<SearchOutlined />} ref={searchInput} />
             </Tooltip>
             <Link to={Routes.UPLOAD}>
               <Button icon={<CloudUploadOutlined />}>
-                {md && 'Upload'}
+                {lg && 'Upload'}
               </Button>
             </Link>
             <Dropdown
@@ -176,7 +175,7 @@ const TopBar = () => {
               trigger={['click']}
             >
               <Button icon={<CloudDownloadOutlined />}>
-                {md && 'Download'}
+                {lg && 'Download'}
                 <DownOutlined />
               </Button>
             </Dropdown>
@@ -197,16 +196,6 @@ const TopBar = () => {
                       </Menu.Item>
                     </>
                   )}
-                  <Menu.Divider />
-                  <Menu.Item key="gh" icon={<GithubOutlined />}>
-                    <a
-                      href="https://github.com/speedy-tuner/speedy-tuner-cloud"
-                      target="__blank"
-                      rel="noopener noreferrer"
-                    >
-                      GitHub
-                    </a>
-                  </Menu.Item>
                   <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
                     Preferences
                   </Menu.Item>
