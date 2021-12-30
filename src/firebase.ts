@@ -15,6 +15,8 @@ import { getAnalytics } from 'firebase/analytics';
 import {
   getStorage,
   ref,
+  uploadBytes,
+  uploadBytesResumable,
 } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -44,6 +46,8 @@ export {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
-  ref as fileRef,
+  ref as storageRef,
   getStorage,
+  uploadBytes,
+  uploadBytesResumable,
 };

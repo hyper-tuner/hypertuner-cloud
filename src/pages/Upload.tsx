@@ -4,6 +4,7 @@ import {
 } from 'react';
 import {
   Divider,
+  notification,
   Skeleton,
   Space,
   Typography,
@@ -15,14 +16,22 @@ import {
   FundOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
+import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { useHistory } from 'react-router-dom';
 import { UploadFile } from 'antd/lib/upload/interface';
+import pako from 'pako';
+import { nanoid } from 'nanoid';
 import {
   emailNotVerified,
   restrictedPage,
 } from './auth/notifications';
 import { useAuth } from '../contexts/AuthContext';
 import { Routes } from '../routes';
+import {
+  getStorage,
+  storageRef,
+  uploadBytesResumable,
+} from '../firebase';
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -40,6 +49,8 @@ const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
 
+const storage = getStorage();
+
 const UploadPage = () => {
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const { currentUser, refreshToken } = useAuth();
@@ -52,13 +63,46 @@ const UploadPage = () => {
     setTuneFiles(newFileList);
   };
 
-  const onLogFilesChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
+  const onLogFilesChange = ({ file, fileList: newFileList }: { file: any, fileList: UploadFile[] }) => {
     setLogFiles(newFileList);
   };
 
   const onToothLogFilesChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
     setToothLogFiles(newFileList);
   };
+
+  const uploadTune = async ({ onError, onSuccess, onProgress, file }: UploadRequestOption) => {
+    try {
+      const buffer = await (file as File).arrayBuffer();
+      const name = nanoid(10);
+      const ref = storageRef(storage, `tunes/${currentUser!.uid}/${name}.msq.gz`);
+      const compressed = pako.deflate(new Uint8Array(buffer));
+      const uploadTask = uploadBytesResumable(ref, compressed, {
+        customMetadata: {
+          name: (file as File).name,
+          size: `${(file as File).size}`,
+        },
+      });
+
+      uploadTask.on(
+        'state_changed',
+        (snap) => onProgress!({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
+        (err) => onError!(err),
+        () => onSuccess!(file),
+      );
+    } catch (error) {
+      console.error('Upload error:', error);
+      notification.error({
+        message: 'Upload error',
+        description: (error as Error).message,
+      });
+      onError!(error as Error);
+    }
+
+    return true;
+  };
+
+  // TODO: validate size
 
   useEffect(() => {
     if (!currentUser) {
@@ -99,6 +143,7 @@ const UploadPage = () => {
       </Divider>
       <Upload
         listType="picture-card"
+        customRequest={uploadTune}
         iconRender={tuneIcon}
         fileList={tuneFiles}
         onChange={onTuneFilesChange}
