@@ -40,6 +40,7 @@ import useConfig from './hooks/useConfig';
 import Login from './components/Auth/Login';
 import SignUp from './components/Auth/SignUp';
 import ResetPassword from './components/Auth/ResetPassword';
+import Upload from './components/Upload';
 
 const { Content } = Layout;
 
@@ -146,6 +147,11 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
           <Route path={Routes.RESET_PASSWORD}>
             <ContentFor>
               <ResetPassword />
+            </ContentFor>
+          </Route>
+          <Route path={Routes.UPLOAD}>
+            <ContentFor>
+              <Upload />
             </ContentFor>
           </Route>
         </Switch>

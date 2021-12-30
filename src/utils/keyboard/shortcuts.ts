@@ -8,6 +8,6 @@ enum Keys {
   ESCAPE = 'Escape',
 }
 
-export const isCommand = (e: KeyEvent) => (e.metaKey || e.ctrlKey) && e.key === Keys.COMMAND;
+export const isCommand = (e: KeyEvent) => (e.metaKey || e.ctrlKey) && e.shiftKey && e.key === Keys.COMMAND;
 export const isToggleSidebar = (e: KeyEvent) => (e.metaKey || e.ctrlKey) && e.key === Keys.SIDEBAR;
 export const isEscape = (e: KeyEvent) => e.key === Keys.ESCAPE;

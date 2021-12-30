@@ -20,7 +20,6 @@ import {
 } from 'antd';
 import {
   UserOutlined,
-  ShareAltOutlined,
   CloudUploadOutlined,
   CloudDownloadOutlined,
   SettingOutlined,
@@ -33,8 +32,6 @@ import {
   FileZipOutlined,
   SaveOutlined,
   DesktopOutlined,
-  GlobalOutlined,
-  LinkOutlined,
   DownOutlined,
   SearchOutlined,
   ToolOutlined,
@@ -66,7 +63,7 @@ const { useBreakpoint } = Grid;
 const { SubMenu } = Menu;
 
 const TopBar = () => {
-  const { sm } = useBreakpoint();
+  const { sm, md } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const history = useHistory();
@@ -80,75 +77,6 @@ const TopBar = () => {
       logOutFailed(error as Error);
     }
   }, [logout]);
-
-  const userMenu = (
-    <Menu>
-      {currentUser ? (
-        <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
-          Logout
-        </Menu.Item>
-      ) : (
-        <>
-          <Menu.Item key="login" icon={<LoginOutlined />}>
-            <Link to={Routes.LOGIN}>Login</Link>
-          </Menu.Item>
-          <Menu.Item key="sign-up" icon={<UserAddOutlined />}>
-            <Link to={Routes.SIGN_UP}>Sign Up</Link>
-          </Menu.Item>
-        </>
-      )}
-      <Menu.Divider />
-      <Menu.Item key="gh" icon={<GithubOutlined />}>
-        <a
-          href="https://github.com/speedy-tuner/speedy-tuner-cloud"
-          target="__blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </a>
-      </Menu.Item>
-      <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
-        Preferences
-      </Menu.Item>
-    </Menu>
-  );
-
-  const shareMenu = (
-    <Menu>
-      <Menu.Item key="upload" disabled icon={<CloudUploadOutlined />}>
-        Upload
-      </Menu.Item>
-      <SubMenu key="download-sub" title="Download" icon={<CloudDownloadOutlined />}>
-        <SubMenu key="tune-sub" title="Tune" icon={<SlidersOutlined />}>
-          <Menu.Item key="download" icon={<SaveOutlined />}>
-            <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
-              Download
-            </a>
-          </Menu.Item>
-          <Menu.Item key="open" disabled icon={<DesktopOutlined />}>
-            Open in app
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu key="logs-sub" title="Logs" icon={<LineChartOutlined />}>
-          <Menu.Item key="mlg" disabled icon={<FileZipOutlined />}>
-            MLG
-          </Menu.Item>
-          <Menu.Item key="msl" disabled icon={<FileTextOutlined />}>
-            MSL
-          </Menu.Item>
-          <Menu.Item key="csv" disabled icon={<FileExcelOutlined />}>
-            CSV
-          </Menu.Item>
-        </SubMenu>
-      </SubMenu>
-      <Menu.Item key="link" disabled icon={<LinkOutlined />}>
-        Create link
-      </Menu.Item>
-      <Menu.Item key="publish" disabled icon={<GlobalOutlined />}>
-        Publish to Hub
-      </Menu.Item>
-    </Menu>
-  );
 
   const searchInput = useRef<Input | null>(null);
   const handleGlobalKeyboard = (e: KeyboardEvent) => {
@@ -207,22 +135,83 @@ const TopBar = () => {
             <Tooltip title={
               <>
                 <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
+                <Typography.Text keyboard>SHIFT</Typography.Text>
                 <Typography.Text keyboard>P</Typography.Text>
               </>
             }>
               <Button icon={<SearchOutlined />} ref={searchInput as any} />
             </Tooltip>
+            <Link to={Routes.UPLOAD}>
+              <Button icon={<CloudUploadOutlined />}>
+                {md && 'Upload'}
+              </Button>
+            </Link>
             <Dropdown
-              overlay={shareMenu}
+              overlay={
+                <Menu>
+                  <SubMenu key="tune-sub" title="Tune" icon={<SlidersOutlined />}>
+                    <Menu.Item key="download" icon={<SaveOutlined />}>
+                      <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
+                        Download
+                      </a>
+                    </Menu.Item>
+                    <Menu.Item key="open" disabled icon={<DesktopOutlined />}>
+                      Open in app
+                    </Menu.Item>
+                  </SubMenu>
+                  <SubMenu key="logs-sub" title="Logs" icon={<LineChartOutlined />}>
+                    <Menu.Item key="mlg" disabled icon={<FileZipOutlined />}>
+                      MLG
+                    </Menu.Item>
+                    <Menu.Item key="msl" disabled icon={<FileTextOutlined />}>
+                      MSL
+                    </Menu.Item>
+                    <Menu.Item key="csv" disabled icon={<FileExcelOutlined />}>
+                      CSV
+                    </Menu.Item>
+                  </SubMenu>
+                </Menu>
+              }
               placement="bottomCenter"
               trigger={['click']}
             >
-              <Button icon={<ShareAltOutlined />}>
+              <Button icon={<CloudDownloadOutlined />}>
+                {md && 'Download'}
                 <DownOutlined />
               </Button>
             </Dropdown>
             <Dropdown
-              overlay={userMenu}
+              overlay={
+                <Menu>
+                  {currentUser ? (
+                    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
+                      Logout
+                    </Menu.Item>
+                  ) : (
+                    <>
+                      <Menu.Item key="login" icon={<LoginOutlined />}>
+                        <Link to={Routes.LOGIN}>Login</Link>
+                      </Menu.Item>
+                      <Menu.Item key="sign-up" icon={<UserAddOutlined />}>
+                        <Link to={Routes.SIGN_UP}>Sign Up</Link>
+                      </Menu.Item>
+                    </>
+                  )}
+                  <Menu.Divider />
+                  <Menu.Item key="gh" icon={<GithubOutlined />}>
+                    <a
+                      href="https://github.com/speedy-tuner/speedy-tuner-cloud"
+                      target="__blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub
+                    </a>
+                  </Menu.Item>
+                  <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
+                    Preferences
+                  </Menu.Item>
+                </Menu>
+              }
               placement="bottomCenter"
               trigger={['click']}
             >
