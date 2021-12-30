@@ -30,6 +30,7 @@ interface AuthValue {
   resetPassword: (email: string) => Promise<void>,
   googleAuth: () => Promise<void>,
   githubAuth: () => Promise<void>,
+  refreshToken: () => Promise<string> | undefined,
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -58,6 +59,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
       const credentials = await signInWithPopup(auth, provider);
       setCurrentUser(credentials.user);
     },
+    refreshToken: () => auth.currentUser?.getIdToken(true),
   }), [currentUser]);
 
   useEffect(() => {

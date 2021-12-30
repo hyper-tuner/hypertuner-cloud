@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 import {
   Divider,
+  Skeleton,
   Space,
   Typography,
   Upload,
@@ -11,7 +15,14 @@ import {
   FundOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 import { UploadFile } from 'antd/lib/upload/interface';
+import {
+  emailNotVerified,
+  restrictedPage,
+} from './auth/notifications';
+import { useAuth } from '../contexts/AuthContext';
+import { Routes } from '../routes';
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -19,12 +30,20 @@ enum MaxFiles {
   TOOTH_LOG_FILES = 5,
 }
 
+const containerStyle = {
+  padding: 20,
+  maxWidth: 600,
+  margin: '0 auto',
+};
 const uploadButton = <Space direction="vertical"><PlusOutlined />Upload</Space>;
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
 
 const UploadPage = () => {
+  const [isUserAuthorized, setIsUserAuthorized] = useState(false);
+  const { currentUser, refreshToken } = useAuth();
+  const history = useHistory();
   const [tuneFiles, setTuneFiles] = useState<UploadFile[]>([]);
   const [logFiles, setLogFiles] = useState<UploadFile[]>([]);
   const [toothLogFiles, setToothLogFiles] = useState<UploadFile[]>([]);
@@ -41,12 +60,37 @@ const UploadPage = () => {
     setToothLogFiles(newFileList);
   };
 
+  useEffect(() => {
+    if (!currentUser) {
+      restrictedPage();
+      history.push(Routes.LOGIN);
+
+      return;
+    }
+
+    refreshToken()?.then(() => {
+      if (!currentUser.emailVerified) {
+        emailNotVerified();
+        history.push(Routes.LOGIN);
+
+        return;
+      }
+
+      setIsUserAuthorized(true);
+    });
+
+  }, [currentUser, history, refreshToken]);
+
+  if (!isUserAuthorized) {
+    return (
+      <div style={containerStyle}>
+        <Skeleton active />
+      </div>
+    );
+  }
+
   return (
-    <div style={{
-      padding: 20,
-      maxWidth: 600,
-      margin: '0 auto',
-    }}>
+    <div style={containerStyle}>
       <Divider>
         <Space>
           Upload Tune

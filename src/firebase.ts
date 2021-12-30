@@ -12,6 +12,10 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
+import {
+  getStorage,
+  ref,
+} from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -40,4 +44,6 @@ export {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
+  ref as fileRef,
+  getStorage,
 };
