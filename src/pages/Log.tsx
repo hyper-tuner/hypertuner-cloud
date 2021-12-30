@@ -38,7 +38,7 @@ import {
   Tune as TuneType,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
-import LogCanvas from './Log/LogCanvas';
+import LogCanvas from '../components/Log/LogCanvas';
 import store from '../store';
 import {
   formatBytes,

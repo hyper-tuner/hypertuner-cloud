@@ -56,7 +56,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   logOutFailed,
   logOutSuccessful,
-} from './Auth/notifications';
+} from '../pages/auth/notifications';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;

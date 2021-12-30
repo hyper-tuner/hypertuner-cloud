@@ -26,21 +26,19 @@ import {
 import Dialog from './components/Dialog';
 import { loadAll } from './utils/api';
 import SideBar, { DialogMatchedPathType } from './components/SideBar';
-import BurnButton from './components/BurnButton';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
-import { isDesktop } from './utils/env';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
 import { Routes } from './routes';
-import Log from './components/Log';
-import Diagnose from './components/Diagnose';
+import Log from './pages/Log';
+import Diagnose from './pages/Diagnose';
 import useStorage from './hooks/useStorage';
 import useConfig from './hooks/useConfig';
-import Login from './components/Auth/Login';
-import SignUp from './components/Auth/SignUp';
-import ResetPassword from './components/Auth/ResetPassword';
-import Upload from './components/Upload';
+import Login from './pages/auth/Login';
+import SignUp from './pages/auth/SignUp';
+import ResetPassword from './pages/auth/ResetPassword';
+import Upload from './pages/Upload';
 
 const { Content } = Layout;
 
@@ -118,7 +116,6 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
                   <Dialog
                     name={dialogMatchedPath.params.dialog}
                     url={dialogMatchedPath.url}
-                    burnButton={isDesktop && <BurnButton />}
                   />
                 </Content>
               </Layout>
