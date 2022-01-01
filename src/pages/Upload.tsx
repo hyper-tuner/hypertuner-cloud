@@ -93,6 +93,7 @@ const UploadPage = () => {
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [isListed, setIsListed] = useState(true);
@@ -112,13 +113,15 @@ const UploadPage = () => {
     }
   };
 
-  const updateDbData = (dbData: TuneDbData) => setDoc(fireStoreDoc(db, 'tunes', newTuneId!), dbData, { merge: true });
+  const updateDbData = (tuneId: string, dbData: TuneDbData) => setDoc(fireStoreDoc(db, 'tunes', tuneId), dbData, { merge: true });
 
-  const getDbData = () => getDoc(fireStoreDoc(db, 'tunes', newTuneId!));
+  const getDbData = (tuneId: string) => getDoc(fireStoreDoc(db, 'tunes', tuneId));
 
   const publish = async () => {
-    await updateDbData({ isPublished: true });
+    setIsLoading(true);
+    await updateDbData(newTuneId!, { isPublished: true });
     setIsPublished(true);
+    setIsLoading(false);
   };
 
   const onTuneFilesChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
@@ -137,7 +140,7 @@ const UploadPage = () => {
     setCustomIniFiles(newFileList);
   };
 
-  const upload = async (path: string, options: UploadRequestOption, dbData: TuneDbData) => {
+  const upload = async (path: string, options: UploadRequestOption, tuneId: string, dbData: TuneDbData) => {
     const { onError, onSuccess, onProgress, file } = options;
 
     if ((file as File).size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
@@ -165,7 +168,7 @@ const UploadPage = () => {
         (snap) => onProgress!({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
         (err) => onError!(err),
         async () => {
-          await updateDbData(dbData);
+          await updateDbData(tuneId, dbData);
           onSuccess!(file);
         },
       );
@@ -182,37 +185,56 @@ const UploadPage = () => {
   };
 
   const uploadTune = async (options: UploadRequestOption) => {
-    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`;
-    upload(path, options, { tuneFile: path });
+    if (tuneFiles.length) {
+      let newTuneIdTemp = await storageGet(NEW_TUNE_ID_KEY);
+      if (!newTuneIdTemp) {
+        newTuneIdTemp = nanoidCustom();
+        await storageSet(NEW_TUNE_ID_KEY, newTuneIdTemp);
+      }
+      setNewTuneId(newTuneIdTemp);
+      const found = await getDbData(newTuneIdTemp);
+
+      if (!found.exists()) {
+        const tuneData: TuneDbData = {
+          userUid: currentUser!.uid,
+          createdAt: new Date(),
+          isPublished: false,
+          isPublic,
+          isListed,
+          tuneFile: '',
+          logFiles: [],
+          toothLogFiles: [],
+          customIniFile: null,
+        };
+        await updateDbData(newTuneIdTemp, tuneData);
+      }
+      setShareUrl(`https://speedytuner.cloud/#/t/${newTuneIdTemp}`);
+
+      const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`;
+      await upload(path, options, newTuneIdTemp, { tuneFile: path });
+    }
   };
 
   const uploadLogs = async (options: UploadRequestOption) => {
     const filename = (options.file as File).name;
     const extension = filename.split('.').pop();
     const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`;
-    const tune = await getDbData();
-    upload(path, options, { logFiles: [...tune.data()!.logFiles, path] });
+    const tune = await getDbData(newTuneId!);
+    upload(path, options, newTuneId!, { logFiles: [...tune.data()!.logFiles, path] });
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
     const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`;
-    const tune = await getDbData();
-    upload(path, options, { toothLogFiles: [...tune.data()!.toothLogFiles, path] });
+    const tune = await getDbData(newTuneId!);
+    upload(path, options, newTuneId!, { toothLogFiles: [...tune.data()!.toothLogFiles, path] });
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
     const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.ini.gz`;
-    upload(path, options, { customIniFile: path });
+    upload(path, options, newTuneId!, { customIniFile: path });
   };
 
   const prepareData = useCallback(async () => {
-    let newTuneIdTemp = await storageGet(NEW_TUNE_ID_KEY);
-    if (!newTuneIdTemp) {
-      newTuneIdTemp = nanoidCustom();
-      await storageSet(NEW_TUNE_ID_KEY, newTuneIdTemp);
-    }
-    setNewTuneId(newTuneIdTemp);
-
     if (!currentUser) {
       restrictedPage();
       history.push(Routes.LOGIN);
@@ -229,23 +251,6 @@ const UploadPage = () => {
 
         return;
       }
-
-      const found = await getDoc(fireStoreDoc(db, 'tunes', newTuneIdTemp));
-      if (!found.exists()) {
-        const tuneData: TuneDbData = {
-          userUid: currentUser.uid,
-          createdAt: new Date(),
-          isPublished: false,
-          isPublic,
-          isListed,
-          tuneFile: '',
-          logFiles: [],
-          toothLogFiles: [],
-          customIniFile: null,
-        };
-        await setDoc(fireStoreDoc(db, 'tunes', newTuneIdTemp), tuneData);
-      }
-      setShareUrl(`https://speedytuner.cloud/#/t/${newTuneIdTemp}`);
       setIsUserAuthorized(true);
     } catch (error) {
       storageDelete(NEW_TUNE_ID_KEY);
@@ -256,7 +261,7 @@ const UploadPage = () => {
       });
     }
 
-  }, [currentUser, history, isListed, isPublic, refreshToken, storageDelete, storageGet, storageSet]);
+  }, [currentUser, history, refreshToken, storageDelete]);
 
   useEffect(() => {
     prepareData();
@@ -289,40 +294,16 @@ const UploadPage = () => {
       <Button
         type="primary"
         style={{ float: 'right' }}
-        disabled={isPublished}
+        disabled={isPublished || isLoading}
         onClick={publish}
       >
-        {isPublished ? 'Published' : 'Publish'}
+        {isPublished && !isLoading ? 'Published' : 'Publish'}
       </Button>
     </>
   );
 
-  if (!isUserAuthorized || !newTuneId) {
-    return (
-      <div style={containerStyle}>
-        <Skeleton active />
-      </div>
-    );
-  }
-
-  return (
-    <div style={containerStyle}>
-      <Divider>
-        <Space>
-          Upload Tune
-          <Typography.Text type="secondary">required (.msq)</Typography.Text>
-        </Space>
-      </Divider>
-      <Upload
-        listType="picture-card"
-        customRequest={uploadTune}
-        iconRender={tuneIcon}
-        fileList={tuneFiles}
-        onChange={onTuneFilesChange}
-        accept=".msq"
-      >
-        {tuneFiles.length < MaxFiles.TUNE_FILES && uploadButton}
-      </Upload>
+  const optionalSection = (
+    <>
       <Divider>
         <Space>
           Upload Logs
@@ -337,6 +318,7 @@ const UploadPage = () => {
         onChange={onLogFilesChange}
         multiple
         maxCount={MaxFiles.LOG_FILES}
+        disabled={isPublished}
         accept=".mlg,.csv,.msl"
       >
         {logFiles.length < MaxFiles.LOG_FILES && uploadButton}
@@ -376,6 +358,7 @@ const UploadPage = () => {
           iconRender={iniIcon}
           fileList={customIniFiles}
           onChange={onCustomIniFilesChange}
+          disabled={isPublished}
           accept=".ini"
         >
           {customIniFiles.length < MaxFiles.CUSTOM_INI_FILES && uploadButton}
@@ -393,6 +376,37 @@ const UploadPage = () => {
         </Space>
       </>}
       {shareUrl && tuneFiles.length > 0 && shareSection}
+    </>
+  );
+
+  if (!isUserAuthorized) {
+    return (
+      <div style={containerStyle}>
+        <Skeleton active />
+      </div>
+    );
+  }
+
+  return (
+    <div style={containerStyle}>
+      <Divider>
+        <Space>
+          Upload Tune
+          <Typography.Text type="secondary">(.msq)</Typography.Text>
+        </Space>
+      </Divider>
+      <Upload
+        listType="picture-card"
+        customRequest={uploadTune}
+        iconRender={tuneIcon}
+        fileList={tuneFiles}
+        onChange={onTuneFilesChange}
+        disabled={isPublished}
+        accept=".msq"
+      >
+        {tuneFiles.length < MaxFiles.TUNE_FILES && uploadButton}
+      </Upload>
+      {tuneFiles.length > 0 && optionalSection}
     </div>
   );
 };
