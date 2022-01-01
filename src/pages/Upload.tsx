@@ -64,6 +64,8 @@ const containerStyle = {
 
 const NEW_TUNE_ID_KEY = 'newTuneId';
 
+const MAX_FILE_SIZE_MB = 10;
+
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
@@ -104,6 +106,14 @@ const UploadPage = () => {
   };
 
   const uploadTune = async ({ onError, onSuccess, onProgress, file }: UploadRequestOption) => {
+    if ((file as File).size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
+      const errorName = 'File too large';
+      const errorMessage = `File should not be larger than ${MAX_FILE_SIZE_MB}MB!`;
+      notification.error({ message: errorName, description: errorMessage });
+      onError!({ name: errorName, message: errorMessage });
+      return false;
+    }
+
     try {
       const buffer = await (file as File).arrayBuffer();
       const name = nanoid();
@@ -124,7 +134,7 @@ const UploadPage = () => {
         (err) => onError!(err),
         async () => {
           await setDoc(fireStoreDoc(db, 'tunes', newTuneId!), {
-            tuneFiles: [path],
+            tuneFile: path,
           }, {
             merge: true,
           });
@@ -143,9 +153,6 @@ const UploadPage = () => {
 
     return true;
   };
-
-  // TODO: validate size
-  // TODO: make sure yuo can't override someone elses files (make a directory for each user)
 
   const prepareData = useCallback(async () => {
     let newTuneId = await storageGet(NEW_TUNE_ID_KEY);
@@ -221,12 +228,8 @@ const UploadPage = () => {
           />
         </Tooltip>
       )}
-      <a
-        href={shareUrl!}
-        target="__blank"
-        rel="noopener noreferrer"
-      >
-        <Tooltip title="Open in new tab">
+      <a href={shareUrl!}>
+        <Tooltip title="Open">
           <Button icon={<SendOutlined />} />
         </Tooltip>
       </a>
