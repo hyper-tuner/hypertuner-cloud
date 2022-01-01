@@ -10,6 +10,7 @@ import {
   notification,
   Skeleton,
   Space,
+  Switch,
   Tooltip,
   Typography,
   Upload,
@@ -22,6 +23,7 @@ import {
   CopyOutlined,
   ShareAltOutlined,
   SendOutlined,
+  FileUnknownOutlined,
 } from '@ant-design/icons';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { useHistory } from 'react-router-dom';
@@ -54,6 +56,18 @@ enum MaxFiles {
   TUNE_FILES = 1,
   LOG_FILES = 5,
   TOOTH_LOG_FILES = 5,
+  CUSTOM_INI_FILES = 1,
+}
+
+interface TuneDataType {
+  userUid: string;
+  createdAt: Date;
+  isListed: boolean;
+  isPublic: boolean;
+  tuneFile: string;
+  logFiles: string[];
+  toothLogFiles: string[];
+  customIniFile: string | null;
 }
 
 const containerStyle = {
@@ -63,12 +77,12 @@ const containerStyle = {
 };
 
 const NEW_TUNE_ID_KEY = 'newTuneId';
-
 const MAX_FILE_SIZE_MB = 10;
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
+const iniIcon = () => <FileUnknownOutlined />;
 
 const storage = getStorage();
 const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
@@ -78,12 +92,16 @@ const UploadPage = () => {
   const hasNavigatorShare = navigator.share !== undefined;
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
+  const [isListed, setIsListed] = useState(true);
   const { currentUser, refreshToken } = useAuth();
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useStorage();
   const [tuneFiles, setTuneFiles] = useState<UploadFile[]>([]);
   const [logFiles, setLogFiles] = useState<UploadFile[]>([]);
   const [toothLogFiles, setToothLogFiles] = useState<UploadFile[]>([]);
+  const [customIniFiles, setCustomIniFiles] = useState<UploadFile[]>([]);
 
   const copyToClipboard = async () => {
     if (navigator.clipboard) {
@@ -103,6 +121,10 @@ const UploadPage = () => {
 
   const onToothLogFilesChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
     setToothLogFiles(newFileList);
+  };
+
+  const onCustomIniFilesChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
+    setCustomIniFiles(newFileList);
   };
 
   const uploadTune = async ({ onError, onSuccess, onProgress, file }: UploadRequestOption) => {
@@ -135,6 +157,8 @@ const UploadPage = () => {
         async () => {
           await setDoc(fireStoreDoc(db, 'tunes', newTuneId!), {
             tuneFile: path,
+            isListed,
+            isPublic,
           }, {
             merge: true,
           });
@@ -180,12 +204,17 @@ const UploadPage = () => {
 
       const found = await getDoc(fireStoreDoc(db, 'tunes', newTuneId));
       if (!found.exists()) {
-        await setDoc(fireStoreDoc(db, 'tunes', newTuneId), {
+        const tuneData: TuneDataType = {
           userUid: currentUser.uid,
           createdAt: new Date(),
-          isPublic: true,
-          isListed: true,
-        });
+          isPublic,
+          isListed,
+          tuneFile: '',
+          logFiles: [],
+          toothLogFiles: [],
+          customIniFile: null,
+        };
+        await setDoc(fireStoreDoc(db, 'tunes', newTuneId), tuneData);
       }
       setShareUrl(`https://speedytuner.cloud/#/t/${newTuneId}`);
       setIsUserAuthorized(true);
@@ -198,7 +227,7 @@ const UploadPage = () => {
       });
     }
 
-  }, [currentUser, history, refreshToken, storageDelete, storageGet, storageSet]);
+  }, [currentUser, history, isListed, isPublic, refreshToken, storageDelete, storageGet, storageSet]);
 
   useEffect(() => {
     prepareData();
@@ -296,6 +325,39 @@ const UploadPage = () => {
       >
         {toothLogFiles.length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
+      <Space style={{ margin: '30px 0' }}>
+        Show more:
+        <Switch checked={showOptions} onChange={setShowOptions} />
+      </Space>
+      {showOptions && <>
+        <Divider>
+          <Space>
+            Upload Custom INI
+            <Typography.Text type="secondary">(.ini)</Typography.Text>
+          </Space>
+        </Divider>
+        <Upload
+          listType="picture-card"
+          customRequest={uploadTune}
+          iconRender={iniIcon}
+          fileList={customIniFiles}
+          onChange={onCustomIniFilesChange}
+          accept=".ini"
+        >
+          {tuneFiles.length < MaxFiles.CUSTOM_INI_FILES && uploadButton}
+        </Upload>
+        <Divider>
+          Visibility
+        </Divider>
+        <Space direction="vertical" size="large">
+          <Space>
+            Public:<Switch disabled checked={isPublic} onChange={setIsPublic} />
+          </Space>
+          <Space>
+            Listed:<Switch checked={isListed} onChange={setIsListed} />
+          </Space>
+        </Space>
+      </>}
       {shareUrl && shareSection}
     </div>
   );
