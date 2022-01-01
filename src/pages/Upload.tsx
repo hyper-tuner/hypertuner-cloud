@@ -23,7 +23,7 @@ import {
   CopyOutlined,
   ShareAltOutlined,
   SendOutlined,
-  FileUnknownOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { useHistory } from 'react-router-dom';
@@ -42,13 +42,11 @@ import { Routes } from '../routes';
 import {
   fireStoreDoc,
   setDoc,
-  addDoc,
   getDoc,
   getStorage,
   storageRef,
   uploadBytesResumable,
   db,
-  fireStoreCollection,
 } from '../firebase';
 import useStorage from '../hooks/useStorage';
 
@@ -59,15 +57,15 @@ enum MaxFiles {
   CUSTOM_INI_FILES = 1,
 }
 
-interface TuneDataType {
-  userUid: string;
-  createdAt: Date;
-  isListed: boolean;
-  isPublic: boolean;
-  tuneFile: string;
-  logFiles: string[];
-  toothLogFiles: string[];
-  customIniFile: string | null;
+interface TuneDbData {
+  userUid?: string;
+  createdAt?: Date;
+  isListed?: boolean;
+  isPublic?: boolean;
+  tuneFile?: string;
+  logFiles?: string[];
+  toothLogFiles?: string[];
+  customIniFile?: string | null;
 }
 
 const containerStyle = {
@@ -82,12 +80,14 @@ const MAX_FILE_SIZE_MB = 10;
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
-const iniIcon = () => <FileUnknownOutlined />;
+const iniIcon = () => <FileTextOutlined />;
 
 const storage = getStorage();
 const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
+const baseUploadPath = 'public/users';
 
 const UploadPage = () => {
+  const [newTuneId, setNewTuneId] = useState<string | null>(null);
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const hasNavigatorShare = navigator.share !== undefined;
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -127,7 +127,9 @@ const UploadPage = () => {
     setCustomIniFiles(newFileList);
   };
 
-  const uploadTune = async ({ onError, onSuccess, onProgress, file }: UploadRequestOption) => {
+  const upload = async (path: string, options: UploadRequestOption, dbData: TuneDbData) => {
+    const { onError, onSuccess, onProgress, file } = options;
+
     if ((file as File).size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
       const errorName = 'File too large';
       const errorMessage = `File should not be larger than ${MAX_FILE_SIZE_MB}MB!`;
@@ -138,9 +140,7 @@ const UploadPage = () => {
 
     try {
       const buffer = await (file as File).arrayBuffer();
-      const name = nanoid();
-      const newTuneId = await storageGet(NEW_TUNE_ID_KEY);
-      const path = `public/users/${currentUser!.uid}/tunes/${newTuneId}/${name}.msq.gz`;
+
       const ref = storageRef(storage, path);
       const compressed = pako.deflate(new Uint8Array(buffer));
       const uploadTask = uploadBytesResumable(ref, compressed, {
@@ -155,14 +155,11 @@ const UploadPage = () => {
         (snap) => onProgress!({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
         (err) => onError!(err),
         async () => {
-          await setDoc(fireStoreDoc(db, 'tunes', newTuneId!), {
-            tuneFile: path,
-            isListed,
-            isPublic,
-          }, {
-            merge: true,
-          });
-
+          await setDoc(
+            fireStoreDoc(db, 'tunes', newTuneId!),
+            dbData,
+            { merge: true },
+          );
           onSuccess!(file);
         },
       );
@@ -178,12 +175,37 @@ const UploadPage = () => {
     return true;
   };
 
+  const uploadTune = async (options: UploadRequestOption) => {
+    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`;
+    upload(path, options, { tuneFile: path });
+  };
+
+  const uploadLogs = async (options: UploadRequestOption) => {
+    const filename = (options.file as File).name;
+    const extension = filename.split('.').pop();
+    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`;
+    const tune = await getDoc(fireStoreDoc(db, 'tunes', newTuneId!));
+    upload(path, options, { logFiles: [...tune.data()!.logFiles, path] });
+  };
+
+  const uploadToothLogs = async (options: UploadRequestOption) => {
+    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`;
+    const tune = await getDoc(fireStoreDoc(db, 'tunes', newTuneId!));
+    upload(path, options, { toothLogFiles: [...tune.data()!.toothLogFiles, path] });
+  };
+
+  const uploadCustomIni = async (options: UploadRequestOption) => {
+    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.ini.gz`;
+    upload(path, options, { customIniFile: path });
+  };
+
   const prepareData = useCallback(async () => {
-    let newTuneId = await storageGet(NEW_TUNE_ID_KEY);
-    if (!newTuneId) {
-      newTuneId = nanoidCustom();
-      await storageSet(NEW_TUNE_ID_KEY, newTuneId);
+    let newTuneIdTemp = await storageGet(NEW_TUNE_ID_KEY);
+    if (!newTuneIdTemp) {
+      newTuneIdTemp = nanoidCustom();
+      await storageSet(NEW_TUNE_ID_KEY, newTuneIdTemp);
     }
+    setNewTuneId(newTuneIdTemp);
 
     if (!currentUser) {
       restrictedPage();
@@ -202,9 +224,9 @@ const UploadPage = () => {
         return;
       }
 
-      const found = await getDoc(fireStoreDoc(db, 'tunes', newTuneId));
+      const found = await getDoc(fireStoreDoc(db, 'tunes', newTuneIdTemp));
       if (!found.exists()) {
-        const tuneData: TuneDataType = {
+        const tuneData: TuneDbData = {
           userUid: currentUser.uid,
           createdAt: new Date(),
           isPublic,
@@ -214,9 +236,9 @@ const UploadPage = () => {
           toothLogFiles: [],
           customIniFile: null,
         };
-        await setDoc(fireStoreDoc(db, 'tunes', newTuneId), tuneData);
+        await setDoc(fireStoreDoc(db, 'tunes', newTuneIdTemp), tuneData);
       }
-      setShareUrl(`https://speedytuner.cloud/#/t/${newTuneId}`);
+      setShareUrl(`https://speedytuner.cloud/#/t/${newTuneIdTemp}`);
       setIsUserAuthorized(true);
     } catch (error) {
       storageDelete(NEW_TUNE_ID_KEY);
@@ -265,7 +287,7 @@ const UploadPage = () => {
     </>
   );
 
-  if (!isUserAuthorized) {
+  if (!isUserAuthorized || !newTuneId) {
     return (
       <div style={containerStyle}>
         <Skeleton active />
@@ -299,6 +321,7 @@ const UploadPage = () => {
       </Divider>
       <Upload
         listType="picture-card"
+        customRequest={uploadLogs}
         iconRender={logIcon}
         fileList={logFiles}
         onChange={onLogFilesChange}
@@ -316,6 +339,7 @@ const UploadPage = () => {
       </Divider>
       <Upload
         listType="picture-card"
+        customRequest={uploadToothLogs}
         iconRender={toothLogIcon}
         fileList={toothLogFiles}
         onChange={onToothLogFilesChange}
@@ -325,7 +349,7 @@ const UploadPage = () => {
       >
         {toothLogFiles.length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
-      <Space style={{ margin: '30px 0' }}>
+      <Space style={{ marginTop: 30 }}>
         Show more:
         <Switch checked={showOptions} onChange={setShowOptions} />
       </Space>
@@ -338,7 +362,7 @@ const UploadPage = () => {
         </Divider>
         <Upload
           listType="picture-card"
-          customRequest={uploadTune}
+          customRequest={uploadCustomIni}
           iconRender={iniIcon}
           fileList={customIniFiles}
           onChange={onCustomIniFilesChange}
