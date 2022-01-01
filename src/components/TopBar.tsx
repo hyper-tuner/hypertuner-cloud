@@ -25,7 +25,6 @@ import {
   LoginOutlined,
   LineChartOutlined,
   SlidersOutlined,
-  GithubOutlined,
   FileExcelOutlined,
   FileTextOutlined,
   FileZipOutlined,

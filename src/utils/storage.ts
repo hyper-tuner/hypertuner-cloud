@@ -19,6 +19,10 @@ class Storage {
   public set(key: string, value: string) {
     return this.storage.set(key, value);
   }
+
+  public delete(key: string) {
+    return this.storage.delete(key);
+  }
 }
 
 export default Storage;
