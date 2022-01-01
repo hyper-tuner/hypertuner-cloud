@@ -22,7 +22,6 @@ import {
   SettingOutlined,
   CopyOutlined,
   ShareAltOutlined,
-  SendOutlined,
   FileTextOutlined,
 } from '@ant-design/icons';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
@@ -60,6 +59,7 @@ enum MaxFiles {
 interface TuneDbData {
   userUid?: string;
   createdAt?: Date;
+  isPublished?: boolean;
   isListed?: boolean;
   isPublic?: boolean;
   tuneFile?: string;
@@ -87,12 +87,13 @@ const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 const baseUploadPath = 'public/users';
 
 const UploadPage = () => {
-  const [newTuneId, setNewTuneId] = useState<string | null>(null);
+  const [newTuneId, setNewTuneId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const hasNavigatorShare = navigator.share !== undefined;
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [isPublished, setIsPublished] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [isListed, setIsListed] = useState(true);
   const { currentUser, refreshToken } = useAuth();
@@ -109,6 +110,15 @@ const UploadPage = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1000);
     }
+  };
+
+  const updateDbData = (dbData: TuneDbData) => setDoc(fireStoreDoc(db, 'tunes', newTuneId!), dbData, { merge: true });
+
+  const getDbData = () => getDoc(fireStoreDoc(db, 'tunes', newTuneId!));
+
+  const publish = async () => {
+    await updateDbData({ isPublished: true });
+    setIsPublished(true);
   };
 
   const onTuneFilesChange = ({ fileList: newFileList }: { fileList: UploadFile[] }) => {
@@ -155,11 +165,7 @@ const UploadPage = () => {
         (snap) => onProgress!({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
         (err) => onError!(err),
         async () => {
-          await setDoc(
-            fireStoreDoc(db, 'tunes', newTuneId!),
-            dbData,
-            { merge: true },
-          );
+          await updateDbData(dbData);
           onSuccess!(file);
         },
       );
@@ -184,13 +190,13 @@ const UploadPage = () => {
     const filename = (options.file as File).name;
     const extension = filename.split('.').pop();
     const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`;
-    const tune = await getDoc(fireStoreDoc(db, 'tunes', newTuneId!));
+    const tune = await getDbData();
     upload(path, options, { logFiles: [...tune.data()!.logFiles, path] });
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
     const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`;
-    const tune = await getDoc(fireStoreDoc(db, 'tunes', newTuneId!));
+    const tune = await getDbData();
     upload(path, options, { toothLogFiles: [...tune.data()!.toothLogFiles, path] });
   };
 
@@ -229,6 +235,7 @@ const UploadPage = () => {
         const tuneData: TuneDbData = {
           userUid: currentUser.uid,
           createdAt: new Date(),
+          isPublished: false,
           isPublic,
           isListed,
           tuneFile: '',
@@ -263,9 +270,9 @@ const UploadPage = () => {
 
   const shareSection = (
     <>
-      <Divider>Share</Divider>
+      <Divider>Publish & Share</Divider>
       <Input
-        style={{ width: `calc(100% - ${hasNavigatorShare ? 100 : 65}px)` }}
+        style={{ width: `calc(100% - ${hasNavigatorShare ? 160 : 128}px)` }}
         value={shareUrl!}
       />
       <Tooltip title={copied ? 'Copied' : 'Copy URL'}>
@@ -279,11 +286,14 @@ const UploadPage = () => {
           />
         </Tooltip>
       )}
-      <a href={shareUrl!}>
-        <Tooltip title="Open">
-          <Button icon={<SendOutlined />} />
-        </Tooltip>
-      </a>
+      <Button
+        type="primary"
+        style={{ float: 'right' }}
+        disabled={isPublished}
+        onClick={publish}
+      >
+        {isPublished ? 'Published' : 'Publish'}
+      </Button>
     </>
   );
 
@@ -300,7 +310,7 @@ const UploadPage = () => {
       <Divider>
         <Space>
           Upload Tune
-          <Typography.Text type="secondary">(.msq)</Typography.Text>
+          <Typography.Text type="secondary">required (.msq)</Typography.Text>
         </Space>
       </Divider>
       <Upload
@@ -368,7 +378,7 @@ const UploadPage = () => {
           onChange={onCustomIniFilesChange}
           accept=".ini"
         >
-          {tuneFiles.length < MaxFiles.CUSTOM_INI_FILES && uploadButton}
+          {customIniFiles.length < MaxFiles.CUSTOM_INI_FILES && uploadButton}
         </Upload>
         <Divider>
           Visibility
@@ -382,7 +392,7 @@ const UploadPage = () => {
           </Space>
         </Space>
       </>}
-      {shareUrl && shareSection}
+      {shareUrl && tuneFiles.length > 0 && shareSection}
     </div>
   );
 };
