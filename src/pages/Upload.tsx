@@ -25,6 +25,10 @@ import {
   FileTextOutlined,
 } from '@ant-design/icons';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
+import {
+  UploadFile,
+  UploadChangeParam,
+} from 'antd/lib/upload/interface';
 import { useHistory } from 'react-router-dom';
 import pako from 'pako';
 import {
@@ -41,9 +45,10 @@ import {
   fireStoreDoc,
   setDoc,
   getDoc,
-  getStorage,
+  storage,
   storageRef,
   uploadBytesResumable,
+  deleteObject,
   db,
 } from '../firebase';
 import useStorage from '../hooks/useStorage';
@@ -68,6 +73,12 @@ interface TuneDbData {
   customIniFile?: string | null;
 }
 
+type Path = string;
+
+interface UploadedFile {
+  [autoUid: string]: Path;
+}
+
 const containerStyle = {
   padding: 20,
   maxWidth: 600,
@@ -82,7 +93,6 @@ const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
 const iniIcon = () => <FileTextOutlined />;
 
-const storage = getStorage();
 const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
 const baseUploadPath = 'public/users';
 
@@ -100,7 +110,8 @@ const UploadPage = () => {
   const { currentUser, refreshToken } = useAuth();
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useStorage();
-  const [tuneFile, setTuneFile] = useState<string | null>(null);
+  const [tuneFile, setTuneFile] = useState<UploadedFile | null>(null);
+  const [tuneFiles, setTuneFiles] = useState<UploadFile[]>([]);
   const [logFiles, setLogFiles] = useState<string[]>([]);
   const [toothLogFiles, setToothLogFiles] = useState<string[]>([]);
   const [customIniFile, setCustomIniFile] = useState<string | null>(null);
@@ -113,21 +124,45 @@ const UploadPage = () => {
     }
   };
 
-  const updateDbData = (tuneId: string, dbData: TuneDbData) => setDoc(fireStoreDoc(db, 'tunes', tuneId), dbData, { merge: true });
+  const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
 
-  const getDbData = (tuneId: string) => getDoc(fireStoreDoc(db, 'tunes', tuneId));
+  const updateDbData = (tuneId: string, dbData: TuneDbData) => {
+    try {
+      return setDoc(fireStoreDoc(db, 'tunes', tuneId), dbData, { merge: true });
+    } catch (error) {
+      console.error(error);
+      genericError(error as Error);
+      return Promise.reject(error);
+    }
+  };
+
+  const getDbData = (tuneId: string) => {
+    try {
+      return getDoc(fireStoreDoc(db, 'tunes', tuneId));
+    } catch (error) {
+      console.error(error);
+      genericError(error as Error);
+      return Promise.reject(error);
+    }
+  };
+
+  const removeFile = (path: string) => {
+    try {
+      return deleteObject(storageRef(storage, path));
+    } catch (error) {
+      console.error(error);
+      genericError(error as Error);
+      return Promise.reject(error);
+    }
+  };
 
   const publish = async () => {
     setIsLoading(true);
     await updateDbData(newTuneId!, {
       updatedAt: new Date(),
       isPublished: true,
-      isPublic: true,
-      isListed: true,
-      tuneFile,
-      logFiles,
-      toothLogFiles,
-      customIniFile,
+      isPublic,
+      isListed,
     });
     setIsPublished(true);
     setIsLoading(false);
@@ -147,10 +182,8 @@ const UploadPage = () => {
 
     try {
       const buffer = await (file as File).arrayBuffer();
-
-      const ref = storageRef(storage, path);
       const compressed = pako.deflate(new Uint8Array(buffer));
-      const uploadTask = uploadBytesResumable(ref, compressed, {
+      const uploadTask = uploadBytesResumable(storageRef(storage, path), compressed, {
         customMetadata: {
           name: (file as File).name,
           size: `${(file as File).size}`,
@@ -168,10 +201,7 @@ const UploadPage = () => {
       );
     } catch (error) {
       console.error('Upload error:', error);
-      notification.error({
-        message: 'Upload error',
-        description: (error as Error).message,
-      });
+      notification.error({ message: 'Upload error', description: (error as Error).message });
       onError!(error as Error);
     }
 
@@ -179,28 +209,41 @@ const UploadPage = () => {
   };
 
   const uploadTune = async (options: UploadRequestOption) => {
-    let newTuneIdTemp = await storageGet(NEW_TUNE_ID_KEY);
-    if (!newTuneIdTemp) {
-      newTuneIdTemp = nanoidCustom();
-      await storageSet(NEW_TUNE_ID_KEY, newTuneIdTemp);
-    }
-    setNewTuneId(newTuneIdTemp);
-    const found = await getDbData(newTuneIdTemp);
-
+    const found = await getDbData(newTuneId!);
     if (!found.exists()) {
       const tuneData: TuneDbData = {
         userUid: currentUser!.uid,
         createdAt: new Date(),
+        updatedAt: new Date(),
         isPublished: false,
+        isPublic,
+        isListed,
+        tuneFile: null,
+        logFiles: [],
+        toothLogFiles: [],
+        customIniFile: null,
       };
-      await updateDbData(newTuneIdTemp, tuneData);
+      await updateDbData(newTuneId!, tuneData);
     }
-    setShareUrl(`https://speedytuner.cloud/#/t/${newTuneIdTemp}`);
+    setShareUrl(`https://speedytuner.cloud/#/t/${newTuneId}`);
 
-    const uid = nanoid();
-    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${uid}.msq.gz`;
+    const { path } = (options.data as any);
+    upload(path, options, () => {
+      const tune: UploadedFile = {};
+      tune[(options.file as UploadFile).uid] = path;
+      setTuneFile(tune);
+      updateDbData(newTuneId!, { tuneFile: path });
+    });
+  };
 
-    upload(path, options, () => setTuneFile(path));
+  const tuneFileData = () => ({
+    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`,
+  });
+
+  const removeTuneFile = (file: UploadFile) => {
+    removeFile(tuneFile![file.uid]);
+    setTuneFile(null);
+    updateDbData(newTuneId!, { tuneFile: null });
   };
 
   const uploadLogs = async (options: UploadRequestOption) => {
@@ -230,7 +273,6 @@ const UploadPage = () => {
 
     try {
       await refreshToken();
-
       if (!currentUser.emailVerified) {
         emailNotVerified();
         history.push(Routes.LOGIN);
@@ -241,13 +283,16 @@ const UploadPage = () => {
     } catch (error) {
       storageDelete(NEW_TUNE_ID_KEY);
       console.error(error);
-      notification.error({
-        message: 'Error',
-        description: (error as Error).message,
-      });
+      genericError(error as Error);
     }
 
-  }, [currentUser, history, refreshToken, storageDelete]);
+    let newTuneIdTemp = await storageGet(NEW_TUNE_ID_KEY);
+    if (!newTuneIdTemp) {
+      newTuneIdTemp = nanoidCustom();
+      await storageSet(NEW_TUNE_ID_KEY, newTuneIdTemp);
+    }
+    setNewTuneId(newTuneIdTemp);
+  }, [currentUser, history, refreshToken, storageDelete, storageGet, storageSet]);
 
   useEffect(() => {
     prepareData();
@@ -378,6 +423,8 @@ const UploadPage = () => {
       <Upload
         listType="picture-card"
         customRequest={uploadTune}
+        data={tuneFileData}
+        onRemove={removeTuneFile}
         iconRender={tuneIcon}
         disabled={isPublished}
         accept=".msq"

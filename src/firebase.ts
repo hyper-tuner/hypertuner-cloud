@@ -17,6 +17,7 @@ import {
   ref,
   uploadBytes,
   uploadBytesResumable,
+  deleteObject,
 } from 'firebase/storage';
 import {
   getFirestore,
@@ -42,6 +43,7 @@ const analytics = getAnalytics(app);
 const performance = getPerformance(app);
 const auth = getAuth(app);
 const db = getFirestore();
+const storage = getStorage();
 
 export {
   auth,
@@ -56,9 +58,10 @@ export {
   GithubAuthProvider,
   signInWithPopup,
   ref as storageRef,
-  getStorage,
+  storage,
   uploadBytes,
   uploadBytesResumable,
+  deleteObject,
   doc as fireStoreDoc,
   collection as fireStoreCollection,
   setDoc,
