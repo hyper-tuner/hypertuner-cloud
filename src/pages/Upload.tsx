@@ -25,10 +25,7 @@ import {
   FileTextOutlined,
 } from '@ant-design/icons';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
-import {
-  UploadFile,
-  UploadChangeParam,
-} from 'antd/lib/upload/interface';
+import { UploadFile } from 'antd/lib/upload/interface';
 import { useHistory } from 'react-router-dom';
 import pako from 'pako';
 import {
@@ -79,6 +76,10 @@ interface UploadedFile {
   [autoUid: string]: Path;
 }
 
+interface UploadFileData {
+  path: string;
+}
+
 const containerStyle = {
   padding: 20,
   maxWidth: 600,
@@ -111,10 +112,9 @@ const UploadPage = () => {
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useStorage();
   const [tuneFile, setTuneFile] = useState<UploadedFile | null>(null);
-  const [tuneFiles, setTuneFiles] = useState<UploadFile[]>([]);
-  const [logFiles, setLogFiles] = useState<string[]>([]);
-  const [toothLogFiles, setToothLogFiles] = useState<string[]>([]);
-  const [customIniFile, setCustomIniFile] = useState<string | null>(null);
+  const [logFiles, setLogFiles] = useState<UploadedFile>({});
+  const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
+  const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
 
   const copyToClipboard = async () => {
     if (navigator.clipboard) {
@@ -208,6 +208,26 @@ const UploadPage = () => {
     return true;
   };
 
+  const tuneFileData = () => ({
+    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`,
+  });
+
+  const logFileData = (file: UploadFile) => {
+    const { name } = file;
+    const extension = name.split('.').pop();
+    return {
+      path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`,
+    };
+  };
+
+  const toothLogFilesData = () => ({
+    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`,
+  });
+
+  const customIniFileData = () => ({
+    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.ini.gz`,
+  });
+
   const uploadTune = async (options: UploadRequestOption) => {
     const found = await getDbData(newTuneId!);
     if (!found.exists()) {
@@ -227,7 +247,7 @@ const UploadPage = () => {
     }
     setShareUrl(`https://speedytuner.cloud/#/t/${newTuneId}`);
 
-    const { path } = (options.data as any);
+    const { path } = (options.data as unknown as UploadFileData);
     upload(path, options, () => {
       const tune: UploadedFile = {};
       tune[(options.file as UploadFile).uid] = path;
@@ -236,31 +256,66 @@ const UploadPage = () => {
     });
   };
 
-  const tuneFileData = () => ({
-    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`,
-  });
-
-  const removeTuneFile = (file: UploadFile) => {
-    removeFile(tuneFile![file.uid]);
-    setTuneFile(null);
-    updateDbData(newTuneId!, { tuneFile: null });
-  };
-
   const uploadLogs = async (options: UploadRequestOption) => {
-    const filename = (options.file as File).name;
-    const extension = filename.split('.').pop();
-    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`;
-    upload(path, options, () => setLogFiles([...logFiles, path]));
+    const { path } = (options.data as unknown as UploadFileData);
+    upload(path, options, async () => {
+      const tune: UploadedFile = {};
+      tune[(options.file as UploadFile).uid] = path;
+      const newValues = { ...logFiles, ...tune };
+      await updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
+      setLogFiles(newValues);
+    });
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
-    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`;
-    upload(path, options, () => setToothLogFiles([...toothLogFiles, path]));
+    const { path } = (options.data as unknown as UploadFileData);
+    upload(path, options, async () => {
+      const tune: UploadedFile = {};
+      tune[(options.file as UploadFile).uid] = path;
+      const newValues = { ...toothLogFiles, ...tune };
+      await updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
+      setToothLogFiles(newValues);
+    });
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
-    const path = `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.ini.gz`;
-    upload(path, options, () => setCustomIniFile(path));
+    const { path } = (options.data as unknown as UploadFileData);
+    upload(path, options, () => {
+      const tune: UploadedFile = {};
+      tune[(options.file as UploadFile).uid] = path;
+      setCustomIniFile(tune);
+      updateDbData(newTuneId!, { customIniFile: path });
+    });
+  };
+
+  const removeTuneFile = async (file: UploadFile) => {
+    removeFile(tuneFile![file.uid]);
+    updateDbData(newTuneId!, { tuneFile: null });
+    setTuneFile(null);
+  };
+
+  const removeLogFile = async (file: UploadFile) => {
+    const { uid } = file;
+    removeFile(logFiles[file.uid]);
+    const newValues = { ...logFiles };
+    delete newValues[uid];
+    updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
+    setLogFiles(newValues);
+  };
+
+  const removeToothLogFile = async (file: UploadFile) => {
+    const { uid } = file;
+    removeFile(toothLogFiles[file.uid]);
+    const newValues = { ...toothLogFiles };
+    delete newValues[uid];
+    updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
+    setToothLogFiles(newValues);
+  };
+
+  const removeCustomIniFile = async (file: UploadFile) => {
+    removeFile(customIniFile![file.uid]);
+    updateDbData(newTuneId!, { customIniFile: null });
+    setCustomIniFile(null);
   };
 
   const prepareData = useCallback(async () => {
@@ -344,13 +399,15 @@ const UploadPage = () => {
       <Upload
         listType="picture-card"
         customRequest={uploadLogs}
+        data={logFileData}
+        onRemove={removeLogFile}
         iconRender={logIcon}
         multiple
         maxCount={MaxFiles.LOG_FILES}
         disabled={isPublished}
         accept=".mlg,.csv,.msl"
       >
-        {logFiles.length < MaxFiles.LOG_FILES && uploadButton}
+        {Object.keys(logFiles).length < MaxFiles.LOG_FILES && uploadButton}
       </Upload>
       <Divider>
         <Space>
@@ -361,12 +418,14 @@ const UploadPage = () => {
       <Upload
         listType="picture-card"
         customRequest={uploadToothLogs}
+        data={toothLogFilesData}
+        onRemove={removeToothLogFile}
         iconRender={toothLogIcon}
         multiple
         maxCount={MaxFiles.TOOTH_LOG_FILES}
         accept=".csv"
       >
-        {toothLogFiles.length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
+        {Object.keys(toothLogFiles).length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
       <Space style={{ marginTop: 30 }}>
         Show more:
@@ -382,6 +441,8 @@ const UploadPage = () => {
         <Upload
           listType="picture-card"
           customRequest={uploadCustomIni}
+          data={customIniFileData}
+          onRemove={removeCustomIniFile}
           iconRender={iniIcon}
           disabled={isPublished}
           accept=".ini"
@@ -408,6 +469,14 @@ const UploadPage = () => {
     return (
       <div style={containerStyle}>
         <Skeleton active />
+      </div>
+    );
+  }
+
+  if (isPublished) {
+    return (
+      <div style={containerStyle}>
+        {shareSection}
       </div>
     );
   }
