@@ -35,7 +35,7 @@ const SmartSelect = ({
   if (values.length < 3) {
     return (
       <Radio.Group
-        defaultValue={values.indexOf(defaultValue)}
+        value={values.indexOf(defaultValue)}
         optionType="button"
         buttonStyle="solid"
         disabled={disabled}
@@ -49,7 +49,7 @@ const SmartSelect = ({
 
   return (
     <Select
-      defaultValue={values.indexOf(defaultValue)}
+      value={values.indexOf(defaultValue)}
       optionFilterProp="label"
       disabled={disabled}
       style={{ maxWidth: 250 }}

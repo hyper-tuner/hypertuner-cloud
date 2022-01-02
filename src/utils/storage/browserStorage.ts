@@ -21,6 +21,10 @@ class BrowserStorage implements StorageInterface {
     this.storage.setItem(key, value);
   }
 
+  public delete(key: string): void {
+    return this.storage.removeItem(key);
+  }
+
   public async isAvailable(): Promise<boolean> {
     return !!this.storage;
   }

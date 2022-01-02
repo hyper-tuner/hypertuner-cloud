@@ -8,6 +8,7 @@ const useStorage = () => {
     storageGet: (key: string) => storage.get(key),
     storageGetSync: (key: string) => storage.getSync(key),
     storageSet: (key: string, value: string) => storage.set(key, value),
+    storageDelete: (key: string) => storage.delete(key),
   };
 };
 

@@ -8,7 +8,6 @@ import {
   Layout,
   Space,
   Button,
-  Input,
   Row,
   Col,
   Tooltip,
@@ -20,21 +19,17 @@ import {
 } from 'antd';
 import {
   UserOutlined,
-  ShareAltOutlined,
   CloudUploadOutlined,
   CloudDownloadOutlined,
   SettingOutlined,
   LoginOutlined,
   LineChartOutlined,
   SlidersOutlined,
-  GithubOutlined,
   FileExcelOutlined,
   FileTextOutlined,
   FileZipOutlined,
   SaveOutlined,
   DesktopOutlined,
-  GlobalOutlined,
-  LinkOutlined,
   DownOutlined,
   SearchOutlined,
   ToolOutlined,
@@ -59,14 +54,14 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   logOutFailed,
   logOutSuccessful,
-} from './Auth/notifications';
+} from '../pages/auth/notifications';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 const { SubMenu } = Menu;
 
 const TopBar = () => {
-  const { sm } = useBreakpoint();
+  const { sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const history = useHistory();
@@ -81,76 +76,7 @@ const TopBar = () => {
     }
   }, [logout]);
 
-  const userMenu = (
-    <Menu>
-      {currentUser ? (
-        <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
-          Logout
-        </Menu.Item>
-      ) : (
-        <>
-          <Menu.Item key="login" icon={<LoginOutlined />}>
-            <Link to={Routes.LOGIN}>Login</Link>
-          </Menu.Item>
-          <Menu.Item key="sign-up" icon={<UserAddOutlined />}>
-            <Link to={Routes.SIGN_UP}>Sign Up</Link>
-          </Menu.Item>
-        </>
-      )}
-      <Menu.Divider />
-      <Menu.Item key="gh" icon={<GithubOutlined />}>
-        <a
-          href="https://github.com/speedy-tuner/speedy-tuner-cloud"
-          target="__blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </a>
-      </Menu.Item>
-      <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
-        Preferences
-      </Menu.Item>
-    </Menu>
-  );
-
-  const shareMenu = (
-    <Menu>
-      <Menu.Item key="upload" disabled icon={<CloudUploadOutlined />}>
-        Upload
-      </Menu.Item>
-      <SubMenu key="download-sub" title="Download" icon={<CloudDownloadOutlined />}>
-        <SubMenu key="tune-sub" title="Tune" icon={<SlidersOutlined />}>
-          <Menu.Item key="download" icon={<SaveOutlined />}>
-            <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
-              Download
-            </a>
-          </Menu.Item>
-          <Menu.Item key="open" disabled icon={<DesktopOutlined />}>
-            Open in app
-          </Menu.Item>
-        </SubMenu>
-        <SubMenu key="logs-sub" title="Logs" icon={<LineChartOutlined />}>
-          <Menu.Item key="mlg" disabled icon={<FileZipOutlined />}>
-            MLG
-          </Menu.Item>
-          <Menu.Item key="msl" disabled icon={<FileTextOutlined />}>
-            MSL
-          </Menu.Item>
-          <Menu.Item key="csv" disabled icon={<FileExcelOutlined />}>
-            CSV
-          </Menu.Item>
-        </SubMenu>
-      </SubMenu>
-      <Menu.Item key="link" disabled icon={<LinkOutlined />}>
-        Create link
-      </Menu.Item>
-      <Menu.Item key="publish" disabled icon={<GlobalOutlined />}>
-        Publish to Hub
-      </Menu.Item>
-    </Menu>
-  );
-
-  const searchInput = useRef<Input | null>(null);
+  const searchInput = useRef<HTMLElement | null>(null);
   const handleGlobalKeyboard = (e: KeyboardEvent) => {
     if (isCommand(e)) {
       if (searchInput) {
@@ -204,25 +130,76 @@ const TopBar = () => {
         </Col>
         <Col span={12} md={8} sm={8} style={{ textAlign: 'right' }}>
           <Space>
-            <Tooltip title={
+            <Tooltip visible={false} title={
               <>
                 <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
+                <Typography.Text keyboard>SHIFT</Typography.Text>
                 <Typography.Text keyboard>P</Typography.Text>
               </>
             }>
-              <Button icon={<SearchOutlined />} ref={searchInput as any} />
+              <Button disabled icon={<SearchOutlined />} ref={searchInput} />
             </Tooltip>
+            <Link to={Routes.UPLOAD}>
+              <Button icon={<CloudUploadOutlined />}>
+                {lg && 'Upload'}
+              </Button>
+            </Link>
             <Dropdown
-              overlay={shareMenu}
+              overlay={
+                <Menu>
+                  <SubMenu key="tune-sub" title="Tune" icon={<SlidersOutlined />}>
+                    <Menu.Item key="download" icon={<SaveOutlined />}>
+                      <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
+                        Download
+                      </a>
+                    </Menu.Item>
+                    <Menu.Item key="open" disabled icon={<DesktopOutlined />}>
+                      Open in app
+                    </Menu.Item>
+                  </SubMenu>
+                  <SubMenu key="logs-sub" title="Logs" icon={<LineChartOutlined />}>
+                    <Menu.Item key="mlg" disabled icon={<FileZipOutlined />}>
+                      MLG
+                    </Menu.Item>
+                    <Menu.Item key="msl" disabled icon={<FileTextOutlined />}>
+                      MSL
+                    </Menu.Item>
+                    <Menu.Item key="csv" disabled icon={<FileExcelOutlined />}>
+                      CSV
+                    </Menu.Item>
+                  </SubMenu>
+                </Menu>
+              }
               placement="bottomCenter"
               trigger={['click']}
             >
-              <Button icon={<ShareAltOutlined />}>
+              <Button icon={<CloudDownloadOutlined />}>
+                {lg && 'Download'}
                 <DownOutlined />
               </Button>
             </Dropdown>
             <Dropdown
-              overlay={userMenu}
+              overlay={
+                <Menu>
+                  {currentUser ? (
+                    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
+                      Logout
+                    </Menu.Item>
+                  ) : (
+                    <>
+                      <Menu.Item key="login" icon={<LoginOutlined />}>
+                        <Link to={Routes.LOGIN}>Login</Link>
+                      </Menu.Item>
+                      <Menu.Item key="sign-up" icon={<UserAddOutlined />}>
+                        <Link to={Routes.SIGN_UP}>Sign Up</Link>
+                      </Menu.Item>
+                    </>
+                  )}
+                  <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
+                    Preferences
+                  </Menu.Item>
+                </Menu>
+              }
               placement="bottomCenter"
               trigger={['click']}
             >

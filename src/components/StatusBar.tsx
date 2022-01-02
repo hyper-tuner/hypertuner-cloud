@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import {
   InfoCircleOutlined,
-  FieldTimeOutlined,
+  GithubOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import {
@@ -37,10 +37,16 @@ const StatusBar = ({ status, config }: { status: StatusState, config: ConfigStat
         {config.megaTune && firmware(config.megaTune.signature)}
       </Col>
       <Col span={12} style={{ textAlign: 'right' }}>
-        <Space>
-          <FieldTimeOutlined />
-          {status.text}
-        </Space>
+        <a
+          href="https://github.com/speedy-tuner/speedy-tuner-cloud"
+          target="__blank"
+          rel="noopener noreferrer"
+        >
+          <Space>
+            <GithubOutlined />
+            GitHub
+          </Space>
+        </a>
       </Col>
     </Row>
   </Footer>

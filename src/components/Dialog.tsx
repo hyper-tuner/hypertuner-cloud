@@ -99,14 +99,12 @@ const Dialog = ({
   tune,
   url,
   name,
-  burnButton,
 }: {
   ui: UIState,
   config: ConfigType,
   tune: TuneType,
   name: string,
   url: string,
-  burnButton: any
 }) => {
   const isDataReady = Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useStorage();
@@ -411,9 +409,6 @@ const Dialog = ({
         <Row gutter={20}>
           {panelsComponents}
         </Row>
-        <Form.Item>
-          {burnButton}
-        </Form.Item>
       </Form>
     </div>
   );

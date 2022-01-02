@@ -34,7 +34,7 @@ const SmartNumber = ({
   if (isSlider(units || '')) {
     return (
       <Slider
-        defaultValue={defaultValue}
+        value={defaultValue}
         min={min}
         max={max}
         step={10**-digits}
@@ -49,7 +49,7 @@ const SmartNumber = ({
 
   return (
     <InputNumber
-      defaultValue={defaultValue}
+      value={defaultValue}
       precision={digits}
       min={min}
       max={max}
