@@ -100,7 +100,7 @@ const TopBar = () => {
     <Header className="app-top-bar">
       <Row>
         <Col span={0} md={6} sm={0} />
-        <Col span={12} md={10} sm={16} style={{ textAlign: 'center' }}>
+        <Col span={10} md={10} sm={16} style={{ textAlign: 'center' }}>
           <Radio.Group
             key={pathname}
             defaultValue={matchedTabPath?.url}
