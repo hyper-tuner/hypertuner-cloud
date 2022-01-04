@@ -2,7 +2,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -104,7 +103,6 @@ const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 const baseUploadPath = 'public/users';
 
 const UploadPage = () => {
-  const editorRef = useRef<HTMLDivElement | null>(null);
   const [newTuneId, setNewTuneId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>();
@@ -170,7 +168,6 @@ const UploadPage = () => {
   };
 
   const publish = async () => {
-    console.log(editorRef.current);
     setIsLoading(true);
     await updateDbData(newTuneId!, {
       updatedAt: new Date(),
