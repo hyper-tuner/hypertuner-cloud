@@ -1,6 +1,8 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -32,6 +34,7 @@ import {
   customAlphabet,
   nanoid,
 } from 'nanoid';
+import SimpleMdeReact from 'react-simplemde-editor';
 import {
   emailNotVerified,
   restrictedPage,
@@ -49,6 +52,8 @@ import {
   db,
 } from '../firebase';
 import useStorage from '../hooks/useStorage';
+
+import 'easymde/dist/easymde.min.css';
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -68,6 +73,7 @@ interface TuneDbData {
   logFiles?: string[];
   toothLogFiles?: string[];
   customIniFile?: string | null;
+  description?: string;
 }
 
 type Path = string;
@@ -98,9 +104,9 @@ const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 const baseUploadPath = 'public/users';
 
 const UploadPage = () => {
+  const editorRef = useRef<HTMLDivElement | null>(null);
   const [newTuneId, setNewTuneId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
-  const hasNavigatorShare = navigator.share !== undefined;
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
@@ -108,13 +114,15 @@ const UploadPage = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [isListed, setIsListed] = useState(true);
-  const { currentUser, refreshToken } = useAuth();
-  const history = useHistory();
-  const { storageSet, storageGet, storageDelete } = useStorage();
+  const [description, setDescription] = useState('# My Tune \ndescription');
   const [tuneFile, setTuneFile] = useState<UploadedFile | null>(null);
   const [logFiles, setLogFiles] = useState<UploadedFile>({});
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
   const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
+  const hasNavigatorShare = navigator.share !== undefined;
+  const { currentUser, refreshToken } = useAuth();
+  const history = useHistory();
+  const { storageSet, storageGet, storageDelete } = useStorage();
 
   const copyToClipboard = async () => {
     if (navigator.clipboard) {
@@ -125,6 +133,11 @@ const UploadPage = () => {
   };
 
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
+
+  const editorOptions = useMemo(() => ({
+    toolbar: false,
+    autofocus: true,
+  }), []);
 
   const updateDbData = (tuneId: string, dbData: TuneDbData) => {
     try {
@@ -157,12 +170,14 @@ const UploadPage = () => {
   };
 
   const publish = async () => {
+    console.log(editorRef.current);
     setIsLoading(true);
     await updateDbData(newTuneId!, {
       updatedAt: new Date(),
       isPublished: true,
       isPublic,
       isListed,
+      description,
     });
     setIsPublished(true);
     setIsLoading(false);
@@ -242,6 +257,7 @@ const UploadPage = () => {
         logFiles: [],
         toothLogFiles: [],
         customIniFile: null,
+        description: '',
       };
       await updateDbData(newTuneId!, tuneData);
     }
@@ -427,6 +443,17 @@ const UploadPage = () => {
       >
         {Object.keys(toothLogFiles).length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
+      <Divider>
+        <Space>
+          Description
+          <Typography.Text type="secondary">(markdown)</Typography.Text>
+        </Space>
+      </Divider>
+      <SimpleMdeReact
+        onChange={setDescription}
+        value={description}
+        options={editorOptions}
+      />
       <Space style={{ marginTop: 30 }}>
         Show more:
         <Switch checked={showOptions} onChange={setShowOptions} />
