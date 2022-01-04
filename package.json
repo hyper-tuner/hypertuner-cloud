@@ -46,6 +46,7 @@
     "react-redux": "^7.2.6",
     "react-router-dom": "^5.2.1",
     "react-scripts": "^4.0.3",
+    "react-simplemde-editor": "^5.0.2",
     "uplot": "^1.6.18",
     "uplot-react": "^1.1.1"
   },

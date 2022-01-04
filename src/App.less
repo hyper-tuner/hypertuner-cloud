@@ -140,3 +140,17 @@ select:-webkit-autofill:focus {
   box-shadow: 0 0 0px 1000px @component-background inset;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+.CodeMirror, .editor-preview {
+  color: @text !important;
+  background-color: @main !important;
+  border: none !important;
+}
+
+.cm-s-easymde .CodeMirror-cursor {
+  border: 1px solid @text !important;
+}
+
+.CodeMirror-wrap {
+  background-color: @main-light !important;
+}
