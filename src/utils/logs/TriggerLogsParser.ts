@@ -28,9 +28,9 @@ class TriggerLogsParser {
 
   private MARKER_PREFIX = 'MARK';
 
-  private isTooth: boolean = false;
+  private isToothLogs: boolean = false;
 
-  private isComposite: boolean = false;
+  private isCompositeLogs: boolean = false;
 
   private resultComposite: CompositeLogEntry[] = [];
 
@@ -42,11 +42,11 @@ class TriggerLogsParser {
     this.parseToothLogs(raw);
 
     if (this.resultComposite.length > 0) {
-      this.isComposite = true;
+      this.isCompositeLogs = true;
     }
 
     if (this.resultTooth.length > 0) {
-      this.isTooth = true;
+      this.isToothLogs = true;
     }
 
     return this;
@@ -60,12 +60,12 @@ class TriggerLogsParser {
     return this.resultTooth;
   }
 
-  isToothLogs(): boolean {
-    return this.isTooth;
+  isTooth(): boolean {
+    return this.isToothLogs;
   }
 
-  isCompositeLogs(): boolean {
-    return this.isComposite;
+  isComposite(): boolean {
+    return this.isCompositeLogs;
   }
 
   private parseToothLogs(raw: string): void {

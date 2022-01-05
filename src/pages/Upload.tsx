@@ -54,6 +54,7 @@ import useStorage from '../hooks/useStorage';
 import TuneParser from '../utils/tune/TuneParser';
 
 import 'easymde/dist/easymde.min.css';
+import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -286,11 +287,8 @@ const UploadPage = () => {
         return { result, message };
       }
 
-      const content = await file.arrayBuffer();
-      const valid = (new TuneParser()).parse(content).isValid();
-
       return {
-        result: valid,
+        result: (new TuneParser()).parse(await file.arrayBuffer()).isValid(),
         message: 'Tune file is not valid!',
       };
     });
@@ -304,7 +302,10 @@ const UploadPage = () => {
     setLogFiles(newValues);
     upload(path, options, () => {
       updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
-    }, () => Promise.resolve({ result: true, message: '' }));
+    }, async (file) => {
+      const { result, message } = await validateSize(file);
+      return { result, message };
+    });
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
@@ -315,7 +316,19 @@ const UploadPage = () => {
     setToothLogFiles(newValues);
     upload(path, options, () => {
       updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
-    }, () => Promise.resolve({ result: true, message: '' }));
+    }, async (file) => {
+      const { result, message } = await validateSize(file);
+      if (!result) {
+        return { result, message };
+      }
+
+      const parser = (new TriggerLogsParser()).parse(await file.arrayBuffer());
+
+      return {
+        result: parser.isComposite() || parser.isTooth(),
+        message: 'Tooth logs file is empty or not valid!',
+      };
+    });
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
