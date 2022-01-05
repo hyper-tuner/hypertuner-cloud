@@ -261,50 +261,50 @@ const UploadPage = () => {
     setShareUrl(`https://speedytuner.cloud/#/t/${newTuneId}`);
 
     const { path } = (options.data as unknown as UploadFileData);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    setTuneFile(tune);
     upload(path, options, () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      setTuneFile(tune);
       updateDbData(newTuneId!, { tuneFile: path });
     });
   };
 
   const uploadLogs = async (options: UploadRequestOption) => {
     const { path } = (options.data as unknown as UploadFileData);
-    upload(path, options, async () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      const newValues = { ...logFiles, ...tune };
-      await updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
-      setLogFiles(newValues);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    const newValues = { ...logFiles, ...tune };
+    setLogFiles(newValues);
+    upload(path, options, () => {
+      updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
     });
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
     const { path } = (options.data as unknown as UploadFileData);
-    upload(path, options, async () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      const newValues = { ...toothLogFiles, ...tune };
-      await updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
-      setToothLogFiles(newValues);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    const newValues = { ...toothLogFiles, ...tune };
+    setToothLogFiles(newValues);
+    upload(path, options, () => {
+      updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
     });
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
     const { path } = (options.data as unknown as UploadFileData);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    setCustomIniFile(tune);
     upload(path, options, () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      setCustomIniFile(tune);
       updateDbData(newTuneId!, { customIniFile: path });
     });
   };
 
   const removeTuneFile = async (file: UploadFile) => {
+    setTuneFile(null);
     removeFile(tuneFile![file.uid]);
     updateDbData(newTuneId!, { tuneFile: null });
-    setTuneFile(null);
   };
 
   const removeLogFile = async (file: UploadFile) => {
@@ -312,8 +312,8 @@ const UploadPage = () => {
     removeFile(logFiles[file.uid]);
     const newValues = { ...logFiles };
     delete newValues[uid];
-    updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
     setLogFiles(newValues);
+    updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
@@ -321,14 +321,14 @@ const UploadPage = () => {
     removeFile(toothLogFiles[file.uid]);
     const newValues = { ...toothLogFiles };
     delete newValues[uid];
-    updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
     setToothLogFiles(newValues);
+    updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
     removeFile(customIniFile![file.uid]);
-    updateDbData(newTuneId!, { customIniFile: null });
     setCustomIniFile(null);
+    updateDbData(newTuneId!, { customIniFile: null });
   };
 
   const prepareData = useCallback(async () => {
