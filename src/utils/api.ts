@@ -7,6 +7,7 @@ import {
   fetchWithProgress,
   onProgress as onProgressType,
 } from './http';
+import TuneParser from './tune/TuneParser';
 
 export const loadAll = async () => {
   const started = new Date();
@@ -16,41 +17,10 @@ export const loadAll = async () => {
   const json: ConfigType = await fetch(`./tunes/${version}.json`)
     .then((response) => response.json());
 
-  const tune = await fetch(`./tunes/${version}.msq`)
-    .then((response) => response.text());
+  const tuneRaw = await fetch(`./tunes/${version}.msq`);
+  const tuneParser = new TuneParser().parse(await tuneRaw.arrayBuffer());
 
-  const xml = (new DOMParser()).parseFromString(tune, 'text/xml');
-  const xmlPages = xml.getElementsByTagName('page');
-  const constants: any = {};
-
-  Object.keys(xmlPages).forEach((key: any) => {
-    const page = xmlPages[key];
-    const pageElements = page.children;
-
-    Object.keys(pageElements).forEach((item: any) => {
-      const element = pageElements[item];
-
-      if (element.tagName === 'constant') {
-        const attributes: any = {};
-
-        Object.keys(element.attributes).forEach((attr: any) => {
-          attributes[element.attributes[attr].name] = element.attributes[attr].value;
-        });
-
-        const val = element.textContent?.replace(/"/g, '').toString();
-
-        constants[attributes.name] = {
-          value: Number.isNaN(Number(val)) ? val : Number(val),
-          // digits: Number.isNaN(Number(attributes.digits)) ? attributes.digits : Number(attributes.digits),
-          // cols: Number.isNaN(Number(attributes.cols)) ? attributes.cols : Number(attributes.cols),
-          // rows: Number.isNaN(Number(attributes.rows)) ? attributes.rows : Number(attributes.rows),
-          units: attributes.units ?? null,
-        };
-      }
-    });
-  });
-
-  if (!Object.keys(constants).length) {
+  if (!tuneParser.isValid()) {
     console.error('Invalid tune');
   }
 
@@ -71,7 +41,7 @@ export const loadAll = async () => {
   console.log(loadingTimeInfo);
 
   store.dispatch({ type: 'config/load', payload: config });
-  store.dispatch({ type: 'tune/load', payload: { constants } });
+  store.dispatch({ type: 'tune/load', payload: tuneParser.getTune() });
   store.dispatch({
     type: 'status',
     payload: loadingTimeInfo,

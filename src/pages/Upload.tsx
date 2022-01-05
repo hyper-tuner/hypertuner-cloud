@@ -51,8 +51,10 @@ import {
   db,
 } from '../firebase';
 import useStorage from '../hooks/useStorage';
+import TuneParser from '../utils/tune/TuneParser';
 
 import 'easymde/dist/easymde.min.css';
+import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -84,6 +86,13 @@ interface UploadedFile {
 interface UploadFileData {
   path: string;
 }
+
+interface ValidationResult {
+  result: boolean;
+  message: string;
+}
+
+type ValidateFile = (file: File) => Promise<ValidationResult>;
 
 const containerStyle = {
   padding: 20,
@@ -181,12 +190,18 @@ const UploadPage = () => {
     storageDelete(NEW_TUNE_ID_KEY);
   };
 
-  const upload = async (path: string, options: UploadRequestOption, done?: Function) => {
+  const validateSize = (file: File) => Promise.resolve({
+    result: (file.size / 1024 / 1024) <= MAX_FILE_SIZE_MB,
+    message: `File should not be larger than ${MAX_FILE_SIZE_MB}MB!`,
+  });
+
+  const upload = async (path: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
     const { onError, onSuccess, onProgress, file } = options;
 
-    if ((file as File).size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
-      const errorName = 'File too large';
-      const errorMessage = `File should not be larger than ${MAX_FILE_SIZE_MB}MB!`;
+    const validation = await validate(file as File);
+    if (!validation.result) {
+      const errorName = 'Validation failed';
+      const errorMessage = validation.message;
       notification.error({ message: errorName, description: errorMessage });
       onError!({ name: errorName, message: errorMessage });
       return false;
@@ -261,50 +276,75 @@ const UploadPage = () => {
     setShareUrl(`https://speedytuner.cloud/#/t/${newTuneId}`);
 
     const { path } = (options.data as unknown as UploadFileData);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    setTuneFile(tune);
     upload(path, options, () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      setTuneFile(tune);
       updateDbData(newTuneId!, { tuneFile: path });
+    }, async (file) => {
+      const { result, message } = await validateSize(file);
+      if (!result) {
+        return { result, message };
+      }
+
+      return {
+        result: (new TuneParser()).parse(await file.arrayBuffer()).isValid(),
+        message: 'Tune file is not valid!',
+      };
     });
   };
 
   const uploadLogs = async (options: UploadRequestOption) => {
     const { path } = (options.data as unknown as UploadFileData);
-    upload(path, options, async () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      const newValues = { ...logFiles, ...tune };
-      await updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
-      setLogFiles(newValues);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    const newValues = { ...logFiles, ...tune };
+    setLogFiles(newValues);
+    upload(path, options, () => {
+      updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
+    }, async (file) => {
+      const { result, message } = await validateSize(file);
+      return { result, message };
     });
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
     const { path } = (options.data as unknown as UploadFileData);
-    upload(path, options, async () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      const newValues = { ...toothLogFiles, ...tune };
-      await updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
-      setToothLogFiles(newValues);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    const newValues = { ...toothLogFiles, ...tune };
+    setToothLogFiles(newValues);
+    upload(path, options, () => {
+      updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
+    }, async (file) => {
+      const { result, message } = await validateSize(file);
+      if (!result) {
+        return { result, message };
+      }
+
+      const parser = (new TriggerLogsParser()).parse(await file.arrayBuffer());
+
+      return {
+        result: parser.isComposite() || parser.isTooth(),
+        message: 'Tooth logs file is empty or not valid!',
+      };
     });
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
     const { path } = (options.data as unknown as UploadFileData);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+    setCustomIniFile(tune);
     upload(path, options, () => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = path;
-      setCustomIniFile(tune);
       updateDbData(newTuneId!, { customIniFile: path });
-    });
+    }, () => Promise.resolve({ result: true, message: '' }));
   };
 
   const removeTuneFile = async (file: UploadFile) => {
+    setTuneFile(null);
     removeFile(tuneFile![file.uid]);
     updateDbData(newTuneId!, { tuneFile: null });
-    setTuneFile(null);
   };
 
   const removeLogFile = async (file: UploadFile) => {
@@ -312,8 +352,8 @@ const UploadPage = () => {
     removeFile(logFiles[file.uid]);
     const newValues = { ...logFiles };
     delete newValues[uid];
-    updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
     setLogFiles(newValues);
+    updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
@@ -321,14 +361,14 @@ const UploadPage = () => {
     removeFile(toothLogFiles[file.uid]);
     const newValues = { ...toothLogFiles };
     delete newValues[uid];
-    updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
     setToothLogFiles(newValues);
+    updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
     removeFile(customIniFile![file.uid]);
-    updateDbData(newTuneId!, { customIniFile: null });
     setCustomIniFile(null);
+    updateDbData(newTuneId!, { customIniFile: null });
   };
 
   const prepareData = useCallback(async () => {
