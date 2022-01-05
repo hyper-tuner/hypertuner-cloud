@@ -51,6 +51,7 @@ import {
   db,
 } from '../firebase';
 import useStorage from '../hooks/useStorage';
+import TuneParser from '../utils/tune/TuneParser';
 
 import 'easymde/dist/easymde.min.css';
 
@@ -84,6 +85,13 @@ interface UploadedFile {
 interface UploadFileData {
   path: string;
 }
+
+interface ValidationResult {
+  result: boolean;
+  message: string;
+}
+
+type ValidateFile = (file: File) => Promise<ValidationResult>;
 
 const containerStyle = {
   padding: 20,
@@ -181,12 +189,18 @@ const UploadPage = () => {
     storageDelete(NEW_TUNE_ID_KEY);
   };
 
-  const upload = async (path: string, options: UploadRequestOption, done?: Function) => {
+  const validateSize = (file: File) => Promise.resolve({
+    result: (file.size / 1024 / 1024) <= MAX_FILE_SIZE_MB,
+    message: `File should not be larger than ${MAX_FILE_SIZE_MB}MB!`,
+  });
+
+  const upload = async (path: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
     const { onError, onSuccess, onProgress, file } = options;
 
-    if ((file as File).size / 1024 / 1024 > MAX_FILE_SIZE_MB) {
-      const errorName = 'File too large';
-      const errorMessage = `File should not be larger than ${MAX_FILE_SIZE_MB}MB!`;
+    const validation = await validate(file as File);
+    if (!validation.result) {
+      const errorName = 'Validation failed';
+      const errorMessage = validation.message;
       notification.error({ message: errorName, description: errorMessage });
       onError!({ name: errorName, message: errorMessage });
       return false;
@@ -266,6 +280,19 @@ const UploadPage = () => {
     setTuneFile(tune);
     upload(path, options, () => {
       updateDbData(newTuneId!, { tuneFile: path });
+    }, async (file) => {
+      const { result, message } = await validateSize(file);
+      if (!result) {
+        return { result, message };
+      }
+
+      const content = await file.arrayBuffer();
+      const valid = (new TuneParser()).parse(content).isValid();
+
+      return {
+        result: valid,
+        message: 'Tune file is not valid!',
+      };
     });
   };
 
@@ -277,7 +304,7 @@ const UploadPage = () => {
     setLogFiles(newValues);
     upload(path, options, () => {
       updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
-    });
+    }, () => Promise.resolve({ result: true, message: '' }));
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
@@ -288,7 +315,7 @@ const UploadPage = () => {
     setToothLogFiles(newValues);
     upload(path, options, () => {
       updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
-    });
+    }, () => Promise.resolve({ result: true, message: '' }));
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
@@ -298,7 +325,7 @@ const UploadPage = () => {
     setCustomIniFile(tune);
     upload(path, options, () => {
       updateDbData(newTuneId!, { customIniFile: path });
-    });
+    }, () => Promise.resolve({ result: true, message: '' }));
   };
 
   const removeTuneFile = async (file: UploadFile) => {

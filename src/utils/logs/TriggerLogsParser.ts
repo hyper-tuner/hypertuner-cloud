@@ -24,22 +24,30 @@ export interface ToothLogEntry {
 }
 
 class TriggerLogsParser {
-  COMMENT_PREFIX = '#';
+  private COMMENT_PREFIX = '#';
 
-  MARKER_PREFIX = 'MARK';
+  private MARKER_PREFIX = 'MARK';
 
-  isTooth: boolean = false;
+  private isTooth: boolean = false;
 
-  isComposite: boolean = false;
+  private isComposite: boolean = false;
 
-  resultComposite: CompositeLogEntry[] = [];
+  private resultComposite: CompositeLogEntry[] = [];
 
-  resultTooth: ToothLogEntry[] = [];
+  private resultTooth: ToothLogEntry[] = [];
 
   parse(buffer: ArrayBuffer): TriggerLogsParser {
     const raw = (new TextDecoder()).decode(buffer);
     this.parseCompositeLogs(raw);
     this.parseToothLogs(raw);
+
+    if (this.resultComposite.length > 0) {
+      this.isComposite = true;
+    }
+
+    if (this.resultTooth.length > 0) {
+      this.isTooth = true;
+    }
 
     return this;
   }
@@ -50,6 +58,14 @@ class TriggerLogsParser {
 
   getToothLogs(): ToothLogEntry[] {
     return this.resultTooth;
+  }
+
+  isToothLogs(): boolean {
+    return this.isTooth;
+  }
+
+  isCompositeLogs(): boolean {
+    return this.isComposite;
   }
 
   private parseToothLogs(raw: string): void {
