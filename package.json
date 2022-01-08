@@ -34,6 +34,7 @@
     "@reduxjs/toolkit": "^1.7.1",
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
+    "@speedy-tuner/ini": "^0.2.2",
     "@speedy-tuner/types": "^0.2.1",
     "antd": "^4.18.2",
     "easymde": "^2.15.0",

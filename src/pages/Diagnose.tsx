@@ -108,9 +108,12 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
         setFileSize(formatBytes(compositeRaw.byteLength));
         setStep(1);
 
-        const parser = new TriggerLogsParser();
-        const resultComposite = parser.parse(pako.inflate(new Uint8Array(compositeRaw))).getCompositeLogs();
-        const resultTooth = parser.parse(pako.inflate(new Uint8Array(toothRaw))).getToothLogs();
+        const resultComposite = (new TriggerLogsParser(pako.inflate(new Uint8Array(compositeRaw))))
+          .parse()
+          .getCompositeLogs();
+        const resultTooth = (new TriggerLogsParser(pako.inflate(new Uint8Array(toothRaw))))
+          .parse()
+          .getToothLogs();
 
         setLogs(resultComposite);
         setToothLogs(resultTooth);

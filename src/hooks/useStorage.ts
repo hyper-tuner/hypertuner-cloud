@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import Storage from '../utils/storage';
+import Storage from '../utils/Storage';
 
 const useStorage = () => {
   const storage = useMemo(() => new Storage(), []);

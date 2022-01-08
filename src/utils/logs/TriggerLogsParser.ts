@@ -1,3 +1,4 @@
+import { ParserInterface } from '../ParserInterface';
 import { isNumber } from '../tune/expression';
 
 export enum EntryType {
@@ -23,7 +24,7 @@ export interface ToothLogEntry {
   time: number;
 }
 
-class TriggerLogsParser {
+class TriggerLogsParser implements ParserInterface {
   private COMMENT_PREFIX = '#';
 
   private MARKER_PREFIX = 'MARK';
@@ -36,10 +37,17 @@ class TriggerLogsParser {
 
   private resultTooth: ToothLogEntry[] = [];
 
-  parse(buffer: ArrayBuffer): TriggerLogsParser {
-    const raw = (new TextDecoder()).decode(buffer);
-    this.parseCompositeLogs(raw);
-    this.parseToothLogs(raw);
+  private alreadyParsed: boolean = false;
+
+  private raw: string = '';
+
+  constructor(buffer: ArrayBuffer) {
+    this.raw = (new TextDecoder()).decode(buffer);
+  }
+
+  parse(): this {
+    this.parseCompositeLogs(this.raw);
+    this.parseToothLogs(this.raw);
 
     if (this.resultComposite.length > 0) {
       this.isCompositeLogs = true;
@@ -48,6 +56,8 @@ class TriggerLogsParser {
     if (this.resultTooth.length > 0) {
       this.isToothLogs = true;
     }
+
+    this.alreadyParsed = true;
 
     return this;
   }
@@ -61,10 +71,18 @@ class TriggerLogsParser {
   }
 
   isTooth(): boolean {
+    if (!this.alreadyParsed) {
+      this.parse();
+    }
+
     return this.isToothLogs;
   }
 
   isComposite(): boolean {
+    if (!this.alreadyParsed) {
+      this.parse();
+    }
+
     return this.isCompositeLogs;
   }
 

@@ -1,4 +1,4 @@
-import { StorageInterface } from '../storageInterface';
+import { StorageInterface } from '../StorageInterface';
 
 class BrowserStorage implements StorageInterface {
   private storage: Storage;
