@@ -56,6 +56,7 @@ import TuneParser from '../utils/tune/TuneParser';
 
 import 'easymde/dist/easymde.min.css';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
+import LogParser from '../utils/logs/LogParser';
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -310,11 +311,37 @@ const UploadPage = () => {
       updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
-      if (result) {
+      if (!result) {
+        return { result, message };
+      }
+
+      let valid = true;
+      const extension = file.name.split('.').pop();
+      const parser = new LogParser(await file.arrayBuffer());
+
+      switch (extension) {
+        case 'mlg':
+          valid = parser.isMLG();
+          break;
+        case 'msl':
+          valid = parser.isMSL();
+          break;
+        case 'csv':
+          valid = parser.isCSV();
+          break;
+        default:
+          valid = false;
+          break;
+      }
+
+      if (valid) {
         setLogFiles(newValues);
       }
 
-      return { result, message };
+      return {
+        result: valid,
+        message: 'Log file is empty or not valid!',
+      };
     });
   };
 
@@ -331,7 +358,7 @@ const UploadPage = () => {
         return { result, message };
       }
 
-      const parser = (new TriggerLogsParser(await file.arrayBuffer())).parse();
+      const parser = new TriggerLogsParser(await file.arrayBuffer());
       const valid = parser.isComposite() || parser.isTooth();
 
       if (valid) {

@@ -37,6 +37,8 @@ class TriggerLogsParser implements ParserInterface {
 
   private resultTooth: ToothLogEntry[] = [];
 
+  private alreadyParsed: boolean = false;
+
   private raw: string = '';
 
   constructor(buffer: ArrayBuffer) {
@@ -55,6 +57,8 @@ class TriggerLogsParser implements ParserInterface {
       this.isToothLogs = true;
     }
 
+    this.alreadyParsed = true;
+
     return this;
   }
 
@@ -67,10 +71,18 @@ class TriggerLogsParser implements ParserInterface {
   }
 
   isTooth(): boolean {
+    if (!this.alreadyParsed) {
+      this.parse();
+    }
+
     return this.isToothLogs;
   }
 
   isComposite(): boolean {
+    if (!this.alreadyParsed) {
+      this.parse();
+    }
+
     return this.isCompositeLogs;
   }
 
