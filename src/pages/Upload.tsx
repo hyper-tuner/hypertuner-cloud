@@ -9,6 +9,7 @@ import {
   Divider,
   Input,
   notification,
+  Row,
   Skeleton,
   Space,
   Switch,
@@ -122,7 +123,7 @@ const UploadPage = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [isListed, setIsListed] = useState(true);
   const [description, setDescription] = useState('# My Tune \ndescription');
-  const [tuneFile, setTuneFile] = useState<UploadedFile | null>(null);
+  const [tuneFile, setTuneFile] = useState<UploadedFile | null | false>(null);
   const [logFiles, setLogFiles] = useState<UploadedFile>({});
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
   const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
@@ -166,12 +167,10 @@ const UploadPage = () => {
     }
   };
 
-  const removeFile = (path: string) => {
+  const removeFile = async (path: string) => {
     try {
-      return deleteObject(storageRef(storage, path));
+      return await deleteObject(storageRef(storage, path));
     } catch (error) {
-      console.error(error);
-      genericError(error as Error);
       return Promise.reject(error);
     }
   };
@@ -278,17 +277,24 @@ const UploadPage = () => {
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
-    setTuneFile(tune);
     upload(path, options, () => {
       updateDbData(newTuneId!, { tuneFile: path });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
+        setTuneFile(false);
         return { result, message };
       }
 
+      const valid = (new TuneParser()).parse(await file.arrayBuffer()).isValid();
+      if (!valid) {
+        setTuneFile(false);
+      } else {
+        setTuneFile(tune);
+      }
+
       return {
-        result: (new TuneParser()).parse(await file.arrayBuffer()).isValid(),
+        result: valid,
         message: 'Tune file is not valid!',
       };
     });
@@ -297,13 +303,17 @@ const UploadPage = () => {
   const uploadLogs = async (options: UploadRequestOption) => {
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
-    tune[(options.file as UploadFile).uid] = path;
+    const uuid = (options.file as UploadFile).uid;
+    tune[uuid] = path;
     const newValues = { ...logFiles, ...tune };
-    setLogFiles(newValues);
     upload(path, options, () => {
       updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
+      if (result) {
+        setLogFiles(newValues);
+      }
+
       return { result, message };
     });
   };
@@ -313,7 +323,6 @@ const UploadPage = () => {
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
     const newValues = { ...toothLogFiles, ...tune };
-    setToothLogFiles(newValues);
     upload(path, options, () => {
       updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
     }, async (file) => {
@@ -323,9 +332,14 @@ const UploadPage = () => {
       }
 
       const parser = (new TriggerLogsParser()).parse(await file.arrayBuffer());
+      const valid = parser.isComposite() || parser.isTooth();
+
+      if (valid) {
+        setToothLogFiles(newValues);
+      }
 
       return {
-        result: parser.isComposite() || parser.isTooth(),
+        result: valid,
         message: 'Tooth logs file is empty or not valid!',
       };
     });
@@ -342,14 +356,18 @@ const UploadPage = () => {
   };
 
   const removeTuneFile = async (file: UploadFile) => {
+    if (tuneFile) {
+      removeFile(tuneFile[file.uid]);
+    }
     setTuneFile(null);
-    removeFile(tuneFile![file.uid]);
     updateDbData(newTuneId!, { tuneFile: null });
   };
 
   const removeLogFile = async (file: UploadFile) => {
     const { uid } = file;
-    removeFile(logFiles[file.uid]);
+    if (logFiles[file.uid]) {
+      removeFile(logFiles[file.uid]);
+    }
     const newValues = { ...logFiles };
     delete newValues[uid];
     setLogFiles(newValues);
@@ -358,7 +376,9 @@ const UploadPage = () => {
 
   const removeToothLogFile = async (file: UploadFile) => {
     const { uid } = file;
-    removeFile(toothLogFiles[file.uid]);
+    if (toothLogFiles[file.uid]) {
+      removeFile(toothLogFiles[file.uid]);
+    }
     const newValues = { ...toothLogFiles };
     delete newValues[uid];
     setToothLogFiles(newValues);
@@ -415,29 +435,33 @@ const UploadPage = () => {
   const shareSection = (
     <>
       <Divider>Publish & Share</Divider>
-      <Input
-        style={{ width: `calc(100% - ${hasNavigatorShare ? 160 : 128}px)` }}
-        value={shareUrl!}
-      />
-      <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-        <Button icon={<CopyOutlined />} onClick={copyToClipboard} />
-      </Tooltip>
-      {hasNavigatorShare && (
-        <Tooltip title="Share">
-          <Button
-            icon={<ShareAltOutlined />}
-            onClick={() => navigator.share({ url: shareUrl! })}
-          />
+      <Row>
+        <Input
+          style={{ width: `calc(100% - ${hasNavigatorShare ? 65 : 35}px)` }}
+          value={shareUrl!}
+        />
+        <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
+          <Button icon={<CopyOutlined />} onClick={copyToClipboard} />
         </Tooltip>
-      )}
-      <Button
-        type="primary"
-        style={{ float: 'right' }}
-        disabled={isPublished || isLoading}
-        onClick={publish}
-      >
-        {isPublished && !isLoading ? 'Published' : 'Publish'}
-      </Button>
+        {hasNavigatorShare && (
+          <Tooltip title="Share">
+            <Button
+              icon={<ShareAltOutlined />}
+              onClick={() => navigator.share({ url: shareUrl! })}
+            />
+          </Tooltip>
+        )}
+      </Row>
+      <Row style={{ marginTop: 10 }}>
+        <Button
+          type="primary"
+          block
+          disabled={isPublished || isLoading}
+          onClick={publish}
+        >
+          {isPublished && !isLoading ? 'Published' : 'Publish'}
+        </Button>
+      </Row>
     </>
   );
 
@@ -562,7 +586,7 @@ const UploadPage = () => {
         disabled={isPublished}
         accept=".msq"
       >
-        {!tuneFile && uploadButton}
+        {tuneFile === null && uploadButton}
       </Upload>
       {tuneFile && optionalSection}
     </div>
