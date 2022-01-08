@@ -26,6 +26,7 @@ import {
   ShareAltOutlined,
   FileTextOutlined,
 } from '@ant-design/icons';
+import { INI } from '@speedy-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { useHistory } from 'react-router-dom';
@@ -374,10 +375,27 @@ const UploadPage = () => {
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
-    setCustomIniFile(tune);
     upload(path, options, () => {
       updateDbData(newTuneId!, { customIniFile: path });
-    }, () => Promise.resolve({ result: true, message: '' }));
+    }, async (file) => {
+      const { result, message } = await validateSize(file);
+      if (!result) {
+        return { result, message };
+      }
+
+      // TODO: change to common interface, add some validation method
+      const parser = new INI((new TextDecoder()).decode(await file.arrayBuffer()));
+      const valid = parser.parse().megaTune.signature.length > 0;
+
+      if (valid) {
+        setCustomIniFile(tune);
+      }
+
+      return {
+        result: valid,
+        message: 'INI file is empty or not valid!',
+      };
+    });
   };
 
   const removeTuneFile = async (file: UploadFile) => {
@@ -411,7 +429,9 @@ const UploadPage = () => {
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
-    removeFile(customIniFile![file.uid]);
+    if (customIniFile) {
+      removeFile(customIniFile![file.uid]);
+    }
     setCustomIniFile(null);
     updateDbData(newTuneId!, { customIniFile: null });
   };
