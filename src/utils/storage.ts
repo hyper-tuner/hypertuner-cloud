@@ -1,5 +1,5 @@
-import BrowserStorage from './storage/browserStorage';
-import { StorageInterface } from './storageInterface';
+import BrowserStorage from './storage/BrowserStorage';
+import { StorageInterface } from './StorageInterface';
 
 class Storage {
   private storage: StorageInterface;

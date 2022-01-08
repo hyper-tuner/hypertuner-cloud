@@ -331,7 +331,7 @@ const UploadPage = () => {
         return { result, message };
       }
 
-      const parser = (new TriggerLogsParser()).parse(await file.arrayBuffer());
+      const parser = (new TriggerLogsParser(await file.arrayBuffer())).parse();
       const valid = parser.isComposite() || parser.isTooth();
 
       if (valid) {
