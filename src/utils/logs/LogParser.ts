@@ -7,13 +7,16 @@ class LogParser implements ParserInterface {
 
   private isMSLLogs: boolean = false;
 
-  private isCSVLogs: boolean = false;
-
   private buffer: ArrayBuffer = new ArrayBuffer(0);
+
+  private raw: string = '';
 
   constructor(buffer: ArrayBuffer) {
     this.buffer = buffer;
+    this.raw = (new TextDecoder()).decode(buffer);
+
     this.checkMLG();
+    this.checkMSL();
   }
 
   parse(): this {
@@ -28,10 +31,6 @@ class LogParser implements ParserInterface {
     return this.isMSLLogs;
   }
 
-  isCSV(): boolean {
-    return this.isCSVLogs;
-  }
-
   private checkMLG() {
     const fileFormat = new TextDecoder('utf8')
       .decode(this.buffer.slice(0, this.MLG_FORMAT_LENGTH))
@@ -40,6 +39,16 @@ class LogParser implements ParserInterface {
 
     if (fileFormat === 'MLVLG') {
       this.isMLGLogs = true;
+    }
+  }
+
+  private checkMSL() {
+    const lines = this.raw.split('\n');
+    for (let index = 0; index < lines.length; index++) {
+      if (lines[index].startsWith('Time')) {
+        this.isMSLLogs = true;
+        break;
+      }
     }
   }
 }

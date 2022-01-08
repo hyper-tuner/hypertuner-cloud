@@ -324,10 +324,8 @@ const UploadPage = () => {
           valid = parser.isMLG();
           break;
         case 'msl':
-          valid = parser.isMSL();
-          break;
         case 'csv':
-          valid = parser.isCSV();
+          valid = parser.isMSL();
           break;
         default:
           valid = false;
