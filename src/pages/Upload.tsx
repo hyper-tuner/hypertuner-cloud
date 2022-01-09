@@ -29,6 +29,7 @@ import {
   ShareAltOutlined,
   FileTextOutlined,
 } from '@ant-design/icons';
+import * as Sentry from '@sentry/browser';
 import { INI } from '@speedy-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -55,46 +56,18 @@ import {
   deleteObject,
   db,
 } from '../firebase';
-import useStorage from '../hooks/useStorage';
+import useBrowserStorage from '../hooks/useBrowserStorage';
 import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
+import { TuneDbData } from '../types/dbData';
+import useDb from '../hooks/useDb';
 
 enum MaxFiles {
   TUNE_FILES = 1,
   LOG_FILES = 5,
   TOOTH_LOG_FILES = 5,
   CUSTOM_INI_FILES = 1,
-}
-
-interface TuneDataDetails {
-  readme?: string | null;
-  make?: string | null;
-  model?: string | null;
-  displacement?: string | null;
-  year?: number | null;
-  hp?: number | null;
-  stockHp?: number | null;
-  engineCode?: string | null;
-  cylinders?: number | null;
-  aspiration?: string | null;
-  fuel?: string | null;
-  injectors?: string | null;
-  coils?: string | null;
-}
-
-interface TuneDbData {
-  userUid?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  isPublished?: boolean;
-  isListed?: boolean;
-  isPublic?: boolean;
-  tuneFile?: string | null;
-  logFiles?: string[];
-  toothLogFiles?: string[];
-  customIniFile?: string | null;
-  details?: TuneDataDetails;
 }
 
 type Path = string;
@@ -150,7 +123,8 @@ const UploadPage = () => {
   const hasNavigatorShare = navigator.share !== undefined;
   const { currentUser, refreshToken } = useAuth();
   const history = useHistory();
-  const { storageSet, storageGet, storageDelete } = useStorage();
+  const { storageSet, storageGet, storageDelete } = useBrowserStorage();
+  const { updateData, getTune } = useDb();
 
   // details
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
@@ -179,26 +153,6 @@ const UploadPage = () => {
 
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
 
-  const updateDbData = (tuneId: string, dbData: TuneDbData) => {
-    try {
-      return setDoc(fireStoreDoc(db, 'tunes', tuneId), dbData, { merge: true });
-    } catch (error) {
-      console.error(error);
-      genericError(error as Error);
-      return Promise.reject(error);
-    }
-  };
-
-  const getDbData = (tuneId: string) => {
-    try {
-      return getDoc(fireStoreDoc(db, 'tunes', tuneId));
-    } catch (error) {
-      console.error(error);
-      genericError(error as Error);
-      return Promise.reject(error);
-    }
-  };
-
   const removeFile = async (path: string) => {
     try {
       return await deleteObject(storageRef(storage, path));
@@ -209,7 +163,7 @@ const UploadPage = () => {
 
   const publish = async () => {
     setIsLoading(true);
-    await updateDbData(newTuneId!, {
+    await updateData(newTuneId!, {
       updatedAt: new Date(),
       isPublished: true,
       isPublic,
@@ -272,6 +226,7 @@ const UploadPage = () => {
         },
       );
     } catch (error) {
+      Sentry.captureException(error);
       console.error('Upload error:', error);
       notification.error({ message: 'Upload error', description: (error as Error).message });
       onError!(error as Error);
@@ -301,8 +256,8 @@ const UploadPage = () => {
   });
 
   const uploadTune = async (options: UploadRequestOption) => {
-    const found = await getDbData(newTuneId!);
-    if (!found.exists()) {
+    const found = await getTune(newTuneId!);
+    if (found) {
       const tuneData: TuneDbData = {
         userUid: currentUser!.uid,
         createdAt: new Date(),
@@ -316,15 +271,15 @@ const UploadPage = () => {
         customIniFile: null,
         details: {},
       };
-      await updateDbData(newTuneId!, tuneData);
+      await updateData(newTuneId!, tuneData);
     }
-    setShareUrl(`https://speedytuner.cloud/#/t/${newTuneId}`);
+    setShareUrl(`${process.env.REACT_APP_WEB_URL}/#/t/${newTuneId}`);
 
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
     upload(path, options, () => {
-      updateDbData(newTuneId!, { tuneFile: path });
+      updateData(newTuneId!, { tuneFile: path });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -353,7 +308,7 @@ const UploadPage = () => {
     tune[uuid] = path;
     const newValues = { ...logFiles, ...tune };
     upload(path, options, () => {
-      updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
+      updateData(newTuneId!, { logFiles: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -394,7 +349,7 @@ const UploadPage = () => {
     tune[(options.file as UploadFile).uid] = path;
     const newValues = { ...toothLogFiles, ...tune };
     upload(path, options, () => {
-      updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
+      updateData(newTuneId!, { toothLogFiles: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -420,7 +375,7 @@ const UploadPage = () => {
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
     upload(path, options, () => {
-      updateDbData(newTuneId!, { customIniFile: path });
+      updateData(newTuneId!, { customIniFile: path });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -428,6 +383,7 @@ const UploadPage = () => {
       }
 
       // TODO: change to common interface, add some validation method
+      // Create INI parser
       const parser = new INI((new TextDecoder()).decode(await file.arrayBuffer()));
       const valid = parser.parse().megaTune.signature.length > 0;
 
@@ -447,7 +403,7 @@ const UploadPage = () => {
       removeFile(tuneFile[file.uid]);
     }
     setTuneFile(null);
-    updateDbData(newTuneId!, { tuneFile: null });
+    updateData(newTuneId!, { tuneFile: null });
   };
 
   const removeLogFile = async (file: UploadFile) => {
@@ -458,7 +414,7 @@ const UploadPage = () => {
     const newValues = { ...logFiles };
     delete newValues[uid];
     setLogFiles(newValues);
-    updateDbData(newTuneId!, { logFiles: Object.values(newValues) });
+    updateData(newTuneId!, { logFiles: Object.values(newValues) });
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
@@ -469,7 +425,7 @@ const UploadPage = () => {
     const newValues = { ...toothLogFiles };
     delete newValues[uid];
     setToothLogFiles(newValues);
-    updateDbData(newTuneId!, { toothLogFiles: Object.values(newValues) });
+    updateData(newTuneId!, { toothLogFiles: Object.values(newValues) });
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
@@ -477,7 +433,7 @@ const UploadPage = () => {
       removeFile(customIniFile![file.uid]);
     }
     setCustomIniFile(null);
-    updateDbData(newTuneId!, { customIniFile: null });
+    updateData(newTuneId!, { customIniFile: null });
   };
 
   const prepareData = useCallback(async () => {
@@ -498,6 +454,7 @@ const UploadPage = () => {
       }
       setIsUserAuthorized(true);
     } catch (error) {
+      Sentry.captureException(error);
       storageDelete(newTuneIdKey);
       console.error(error);
       genericError(error as Error);
