@@ -68,19 +68,19 @@ enum MaxFiles {
 }
 
 interface TuneDataDetails {
-  readme?: string;
-  make?: string;
-  model?: string;
-  displacement?: string;
-  year?: number;
-  hp?: number;
-  stockHp?: number;
-  engineCode?: string;
-  cylinders?: number;
-  aspiration?: string;
-  fuel?: string;
-  injectors?: string;
-  coils?: string;
+  readme?: string | null;
+  make?: string | null;
+  model?: string | null;
+  displacement?: string | null;
+  year?: number | null;
+  hp?: number | null;
+  stockHp?: number | null;
+  engineCode?: string | null;
+  cylinders?: number | null;
+  aspiration?: string | null;
+  fuel?: string | null;
+  injectors?: string | null;
+  coils?: string | null;
 }
 
 interface TuneDbData {
@@ -215,19 +215,19 @@ const UploadPage = () => {
       isPublic,
       isListed,
       details: {
-        readme,
-        make,
-        model,
-        displacement,
-        year,
-        hp,
-        stockHp,
-        engineCode,
-        cylinders,
-        aspiration,
-        fuel,
-        injectors,
-        coils,
+        readme: readme || null,
+        make: make || null,
+        model: model || null,
+        displacement: displacement || null,
+        year: year || null,
+        hp: hp || null,
+        stockHp: stockHp || null,
+        engineCode: engineCode || null,
+        cylinders: cylinders || null,
+        aspiration: aspiration || null,
+        fuel: fuel || null,
+        injectors: injectors || null,
+        coils: coils || null,
       },
     });
     setIsPublished(true);
