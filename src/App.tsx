@@ -25,10 +25,10 @@ import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
 import useStorage from './hooks/useStorage';
+import { loadAll } from './utils/api';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
-import { loadAll } from './utils/api';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Log = lazy(() => import('./pages/Log'));

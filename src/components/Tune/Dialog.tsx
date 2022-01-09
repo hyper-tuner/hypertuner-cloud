@@ -358,7 +358,7 @@ const Dialog = ({
     if (isDataReady) {
       setPanelsComponents(generatePanelsComponents());
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDataReady, url, ui.sidebarCollapsed]);
 
   if (!isDataReady) {
