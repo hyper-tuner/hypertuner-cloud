@@ -5,15 +5,24 @@ import {
   createAction,
   createReducer,
 } from '@reduxjs/toolkit';
-import * as Types from '@speedy-tuner/types';
+import {
+  AppState,
+  ConfigState,
+  LogsState,
+  TuneState,
+  UpdateTunePayload,
+} from './types/state';
 
 // tune and config
-const updateTune = createAction<Types.UpdateTunePayload>('tune/update');
-const loadTune = createAction<Types.TuneState>('tune/load');
-const loadConfig = createAction<Types.ConfigState>('config/load');
+const updateTune = createAction<UpdateTunePayload>('tune/update');
+const loadTune = createAction<TuneState>('tune/load');
+const loadConfig = createAction<ConfigState>('config/load');
+
+// navigation
+const setTuneId = createAction<string>('navigation/tuneId');
 
 // logs
-const loadLogs = createAction<Types.LogsState>('logs/load');
+const loadLogs = createAction<LogsState>('logs/load');
 
 // status bar
 const setStatus = createAction<string>('status');
@@ -22,7 +31,7 @@ const setStatus = createAction<string>('status');
 const setSidebarCollapsed = createAction<boolean>('ui/sidebarCollapsed');
 const toggleSidebar = createAction('ui/toggleSidebar');
 
-const initialState: Types.AppState = {
+const initialState: AppState = {
   tune: {
     constants: {},
   },
@@ -34,30 +43,36 @@ const initialState: Types.AppState = {
   status: {
     text: null,
   },
+  navigation: {
+    tuneId: null,
+  },
 };
 
 const rootReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(loadConfig, (state: Types.AppState, action) => {
+    .addCase(loadConfig, (state: AppState, action) => {
       state.config = action.payload;
     })
-    .addCase(loadTune, (state: Types.AppState, action) => {
+    .addCase(loadTune, (state: AppState, action) => {
       state.tune = action.payload;
     })
-    .addCase(loadLogs, (state: Types.AppState, action) => {
+    .addCase(loadLogs, (state: AppState, action) => {
       state.logs = action.payload;
     })
-    .addCase(updateTune, (state: Types.AppState, action) => {
+    .addCase(updateTune, (state: AppState, action) => {
       state.tune.constants[action.payload.name].value = action.payload.value;
     })
-    .addCase(setSidebarCollapsed, (state: Types.AppState, action) => {
+    .addCase(setSidebarCollapsed, (state: AppState, action) => {
       state.ui.sidebarCollapsed = action.payload;
     })
-    .addCase(toggleSidebar, (state: Types.AppState) => {
+    .addCase(toggleSidebar, (state: AppState) => {
       state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
     })
-    .addCase(setStatus, (state: Types.AppState, action) => {
+    .addCase(setStatus, (state: AppState, action) => {
       state.status.text = action.payload;
+    })
+    .addCase(setTuneId, (state: AppState, action) => {
+      state.navigation.tuneId = action.payload;
     });
 });
 

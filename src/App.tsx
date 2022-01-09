@@ -1,7 +1,8 @@
 import {
   Switch,
   Route,
-  Redirect,
+  useLocation,
+  matchPath,
 } from 'react-router-dom';
 import {
   Layout,
@@ -15,21 +16,25 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useMemo,
 } from 'react';
-import {
-  AppState,
-  UIState,
-  Config as ConfigType,
-} from '@speedy-tuner/types';
+import useBrowserStorage from './hooks/useBrowserStorage';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
-import useStorage from './hooks/useStorage';
-import { loadAll } from './utils/api';
+import { loadTune } from './utils/api';
+import store from './store';
 import Log from './pages/Log';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
+import {
+  AppState,
+  NavigationState,
+  UIState,
+} from './types/state';
+import useDb from './hooks/useDb';
+import useServerStorage from './hooks/useServerStorage';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -47,17 +52,41 @@ const { Content } = Layout;
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
-  config: state.config,
+  navigation: state.navigation,
 });
 
-const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
+const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
+  const { getTune } = useDb();
+  const { getFile } = useServerStorage();
+  const { storageSet } = useBrowserStorage();
+
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
-  const { storageGetSync } = useStorage();
-  const lastDialogPath = storageGetSync('lastDialog');
+  // const lastDialogPath = storageGetSync('lastDialog');
+
+  const { pathname } = useLocation();
+  const matchedTunePath = useMemo(() => matchPath(pathname, {
+    path: Routes.TUNE_ROOT,
+  }), [pathname]);
 
   useEffect(() => {
-    loadAll();
+    const tuneId = (matchedTunePath?.params as any)?.tuneId;
+    if (tuneId) {
+
+      getTune(tuneId).then(async (tuneData) => {
+        const [tuneRaw, iniRaw] = await Promise.all([
+          await getFile(tuneData.tuneFile!),
+          await getFile(tuneData.customIniFile!),
+        ]);
+
+        loadTune(tuneRaw, iniRaw);
+      });
+
+
+      storageSet('lastTuneId', tuneId);
+      store.dispatch({ type: 'navigation/tuneId', payload: tuneId });
+    }
+
     // storageGet('lastDialog')
     //   .then((path) => setLastDialogPath(path));
 
@@ -95,42 +124,51 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
   return (
     <>
       <Layout>
-        <TopBar />
+        <TopBar tuneId={navigation.tuneId} />
         <Switch>
           <Route path={Routes.ROOT} exact>
-            <Redirect to={lastDialogPath || Routes.TUNE} />
+            {/* <Route path={Routes.ROOT} exact>
+              <Redirect to={lastDialogPath || Routes.TUNE_ROOT} />
+            </Route> */}
+            <ContentFor>
+              <Result
+                status="info"
+                title="This page is under construction"
+                style={{ marginTop: 50 }}
+              />
+            </ContentFor>
           </Route>
-          <Route path={Routes.TUNE}>
+          <Route path={Routes.TUNE_TUNE}>
             <ContentFor marginLeft={margin}>
               <Tune />
             </ContentFor>
           </Route>
-          <Route path={Routes.LOG}>
+          <Route path={Routes.TUNE_LOG} exact>
             <ContentFor marginLeft={margin}>
               <Log />
             </ContentFor>
           </Route>
-          <Route path={Routes.DIAGNOSE}>
+          <Route path={Routes.TUNE_DIAGNOSE} exact>
             <ContentFor marginLeft={margin}>
               <Diagnose />
             </ContentFor>
           </Route>
-          <Route path={Routes.LOGIN}>
+          <Route path={Routes.LOGIN} exact>
             <ContentFor>
               <Login />
             </ContentFor>
           </Route>
-          <Route path={Routes.SIGN_UP}>
+          <Route path={Routes.SIGN_UP} exact>
             <ContentFor>
               <SignUp />
             </ContentFor>
           </Route>
-          <Route path={Routes.RESET_PASSWORD}>
+          <Route path={Routes.RESET_PASSWORD} exact>
             <ContentFor>
               <ResetPassword />
             </ContentFor>
           </Route>
-          <Route path={Routes.UPLOAD}>
+          <Route path={Routes.UPLOAD} exact>
             <ContentFor>
               <Upload />
             </ContentFor>

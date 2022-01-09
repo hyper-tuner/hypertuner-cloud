@@ -18,6 +18,7 @@ import {
   uploadBytes,
   uploadBytesResumable,
   deleteObject,
+  getBytes,
 } from 'firebase/storage';
 import {
   getFirestore,
@@ -62,6 +63,7 @@ export {
   uploadBytes,
   uploadBytesResumable,
   deleteObject,
+  getBytes,
   doc as fireStoreDoc,
   collection as fireStoreCollection,
   setDoc,

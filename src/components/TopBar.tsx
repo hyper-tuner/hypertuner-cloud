@@ -3,7 +3,10 @@ import {
   useLocation,
   useHistory,
 } from 'react-router';
-import { Link } from 'react-router-dom';
+import {
+  Link,
+  generatePath,
+} from 'react-router-dom';
 import {
   Layout,
   Space,
@@ -60,12 +63,15 @@ const { Header } = Layout;
 const { useBreakpoint } = Grid;
 const { SubMenu } = Menu;
 
-const TopBar = () => {
+const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const { sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const history = useHistory();
-  const matchedTabPath = useMemo(() => matchPath(pathname, { path: Routes.TAB }), [pathname]);
+  const buildTuneUrl = (route: string) => tuneId ? generatePath(route, { tuneId }) : null;
+  const matchedTabPath = useMemo(() => matchPath(pathname, {
+    path: Routes.TUNE_TAB,
+  }), [pathname]);
   const logoutClick = useCallback(async () => {
     try {
       await logout();
@@ -96,38 +102,42 @@ const TopBar = () => {
     return () => document.removeEventListener('keydown', handleGlobalKeyboard);
   });
 
+  const tabs = (
+    <Col span={10} md={10} sm={16} style={{ textAlign: 'center' }}>
+      <Radio.Group
+        key={pathname}
+        defaultValue={matchedTabPath?.url}
+        optionType="button"
+        buttonStyle="solid"
+        onChange={(e) => history.push(e.target.value)}
+      >
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_TUNE)}>
+          <Space>
+            <ToolOutlined />
+            {sm && 'Tune'}
+          </Space>
+        </Radio.Button>
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOG)}>
+          <Space>
+            <FundOutlined />
+            {sm && 'Log'}
+          </Space>
+        </Radio.Button>
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)}>
+          <Space>
+            <SettingOutlined />
+            {sm && 'Diagnose'}
+          </Space>
+        </Radio.Button>
+      </Radio.Group>
+    </Col>
+  );
+
   return (
     <Header className="app-top-bar">
       <Row>
         <Col span={0} md={6} sm={0} />
-        <Col span={10} md={10} sm={16} style={{ textAlign: 'center' }}>
-          <Radio.Group
-            key={pathname}
-            defaultValue={matchedTabPath?.url}
-            optionType="button"
-            buttonStyle="solid"
-            onChange={(e) => history.push(e.target.value)}
-          >
-            <Radio.Button value={Routes.TUNE}>
-              <Space>
-                <ToolOutlined />
-                {sm && 'Tune'}
-              </Space>
-            </Radio.Button>
-            <Radio.Button value={Routes.LOG}>
-              <Space>
-                <FundOutlined />
-                {sm && 'Log'}
-              </Space>
-            </Radio.Button>
-            <Radio.Button value={Routes.DIAGNOSE}>
-              <Space>
-                <SettingOutlined />
-                {sm && 'Diagnose'}
-              </Space>
-            </Radio.Button>
-          </Radio.Group>
-        </Col>
+        {tuneId ? tabs : <Col span={10} md={10} sm={16} />}
         <Col span={12} md={8} sm={8} style={{ textAlign: 'right' }}>
           <Space>
             <Tooltip visible={false} title={
@@ -140,7 +150,7 @@ const TopBar = () => {
               <Button disabled icon={<SearchOutlined />} ref={searchInput} />
             </Tooltip>
             <Link to={Routes.UPLOAD}>
-              <Button icon={<CloudUploadOutlined />} type={matchedTabPath?.url === Routes.UPLOAD ? 'primary' : 'default' }>
+              <Button icon={<CloudUploadOutlined />} type={matchedTabPath?.url === Routes.UPLOAD ? 'primary' : 'default'}>
                 {lg && 'Upload'}
               </Button>
             </Link>

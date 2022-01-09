@@ -17,8 +17,6 @@ import {
 import {
   Config as ConfigType,
   Menus as MenusType,
-  AppState,
-  UIState,
   Tune as TuneType,
 } from '@speedy-tuner/types';
 import store from '../store';
@@ -26,6 +24,11 @@ import Icon from './SideBar/Icon';
 import { evaluateExpression } from '../utils/tune/expression';
 import { Routes } from '../routes';
 import useConfig from '../hooks/useConfig';
+import {
+  AppState,
+  NavigationState,
+  UIState,
+} from '../types/state';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -42,6 +45,7 @@ const mapStateToProps = (state: AppState) => ({
   config: state.config,
   tune: state.tune,
   ui: state.ui,
+  navigation: state.navigation,
 });
 
 const SKIP_MENUS = [
@@ -62,11 +66,13 @@ const SideBar = ({
   config,
   tune,
   ui,
+  navigation,
   matchedPath,
 }: {
   config: ConfigType,
   tune: TuneType,
   ui: UIState,
+  navigation: NavigationState,
   matchedPath: DialogMatchedPathType,
 }) => {
   const sidebarWidth = 250;
@@ -79,10 +85,11 @@ const SideBar = ({
   } as any;
   const { isConfigReady } = useConfig(config);
   const checkCondition = useCallback((condition: string) => evaluateExpression(condition, tune.constants, config), [tune.constants, config]);
-  const buildLink = useCallback((main: string, sub: string) => generatePath(Routes.DIALOG, {
+  const buildUrl = useCallback((main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
+    tuneId: navigation.tuneId || 'not-ready',
     category: main,
     dialog: sub,
-  }), []);
+  }), [navigation.tuneId]);
   const [menus, setMenus] = useState<any[]>([]);
 
   const menusList = useCallback((types: MenusType) => (
@@ -99,7 +106,7 @@ const SideBar = ({
         >
           {Object.keys(types[menuName].subMenus).map((subMenuName: string) => {
             if (subMenuName === 'std_separator') {
-              return <Menu.Divider key={buildLink(menuName, subMenuName)} />;
+              return <Menu.Divider key={buildUrl(menuName, subMenuName)} />;
             }
 
             if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
@@ -114,11 +121,11 @@ const SideBar = ({
             }
 
             return (<Menu.Item
-              key={buildLink(menuName, subMenuName)}
+              key={buildUrl(menuName, subMenuName)}
               icon={<Icon name={subMenuName} />}
               disabled={!enabled}
             >
-              <Link to={buildLink(menuName, subMenuName)}>
+              <Link to={buildUrl(menuName, subMenuName)}>
                 {subMenu.title}
               </Link>
             </Menu.Item>);
@@ -126,7 +133,7 @@ const SideBar = ({
         </SubMenu>
       );
     })
-  ), [buildLink, checkCondition]);
+  ), [buildUrl, checkCondition]);
 
   useEffect(() => {
     if (Object.keys(tune.constants).length) {
