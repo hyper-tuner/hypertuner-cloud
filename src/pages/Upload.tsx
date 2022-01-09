@@ -101,8 +101,9 @@ const containerStyle = {
   margin: '0 auto',
 };
 
-const NEW_TUNE_ID_KEY = 'newTuneId';
-const MAX_FILE_SIZE_MB = 10;
+const newTuneIdKey = 'newTuneId';
+const maxFileSizeMB = 10;
+const descriptionEditorHeight = 260;
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
@@ -183,12 +184,12 @@ const UploadPage = () => {
     });
     setIsPublished(true);
     setIsLoading(false);
-    storageDelete(NEW_TUNE_ID_KEY);
+    storageDelete(newTuneIdKey);
   };
 
   const validateSize = (file: File) => Promise.resolve({
-    result: (file.size / 1024 / 1024) <= MAX_FILE_SIZE_MB,
-    message: `File should not be larger than ${MAX_FILE_SIZE_MB}MB!`,
+    result: (file.size / 1024 / 1024) <= maxFileSizeMB,
+    message: `File should not be larger than ${maxFileSizeMB}MB!`,
   });
 
   const upload = async (path: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
@@ -449,15 +450,15 @@ const UploadPage = () => {
       }
       setIsUserAuthorized(true);
     } catch (error) {
-      storageDelete(NEW_TUNE_ID_KEY);
+      storageDelete(newTuneIdKey);
       console.error(error);
       genericError(error as Error);
     }
 
-    let newTuneIdTemp = await storageGet(NEW_TUNE_ID_KEY);
+    let newTuneIdTemp = await storageGet(newTuneIdKey);
     if (!newTuneIdTemp) {
       newTuneIdTemp = nanoidCustom();
-      await storageSet(NEW_TUNE_ID_KEY, newTuneIdTemp);
+      await storageSet(newTuneIdKey, newTuneIdTemp);
     }
     setNewTuneId(newTuneIdTemp);
   }, [currentUser, history, refreshToken, storageDelete, storageGet, storageSet]);
@@ -553,7 +554,7 @@ const UploadPage = () => {
         </Space>
       </Divider>
       <Tabs defaultActiveKey="source">
-        <Tabs.TabPane tab="Edit" key="source">
+        <Tabs.TabPane tab="Edit" key="source" style={{ height: descriptionEditorHeight }}>
           <Input.TextArea
             rows={10}
             showCount
@@ -562,8 +563,8 @@ const UploadPage = () => {
             maxLength={3_000}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Preview" key="preview">
-          <div className="markdown-preview" style={{ minHeight: 230 }}>
+        <Tabs.TabPane tab="Preview" key="preview" style={{ height: descriptionEditorHeight }}>
+          <div className="markdown-preview" style={{ height: '100%' }}>
             <ReactMarkdown>
               {description}
             </ReactMarkdown>
