@@ -5,10 +5,13 @@ import {
 } from 'react';
 import {
   Button,
+  Col,
   Divider,
   Input,
+  InputNumber,
   notification,
   Row,
+  Select,
   Skeleton,
   Space,
   Switch,
@@ -64,6 +67,22 @@ enum MaxFiles {
   CUSTOM_INI_FILES = 1,
 }
 
+interface TuneDataDetails {
+  readme?: string;
+  make?: string;
+  model?: string;
+  displacement?: string;
+  year?: number;
+  hp?: number;
+  stockHp?: number;
+  engineCode?: string;
+  cylinders?: number;
+  aspiration?: string;
+  fuel?: string;
+  injectors?: string;
+  coils?: string;
+}
+
 interface TuneDbData {
   userUid?: string;
   createdAt?: Date;
@@ -75,7 +94,7 @@ interface TuneDbData {
   logFiles?: string[];
   toothLogFiles?: string[];
   customIniFile?: string | null;
-  description?: string;
+  details?: TuneDataDetails;
 }
 
 type Path = string;
@@ -118,12 +137,11 @@ const UploadPage = () => {
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
-  const [showOptions, setShowOptions] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [isListed, setIsListed] = useState(true);
-  const [description, setDescription] = useState('# My Tune\n\ndescription');
   const [tuneFile, setTuneFile] = useState<UploadedFile | null | false>(null);
   const [logFiles, setLogFiles] = useState<UploadedFile>({});
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
@@ -132,6 +150,21 @@ const UploadPage = () => {
   const { currentUser, refreshToken } = useAuth();
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useStorage();
+
+  // details
+  const [readme, setReadme] = useState('# My Tune\n\ndescription');
+  const [make, setMake] = useState<string>();
+  const [model, setModel] = useState<string>();
+  const [displacement, setDisplacement] = useState<string>();
+  const [year, setYear] = useState<number>();
+  const [hp, setHp] = useState<number>();
+  const [stockHp, setStockHp] = useState<number>();
+  const [engineCode, setEngineCode] = useState<string>();
+  const [cylinders, setCylinders] = useState<number>();
+  const [aspiration, setAspiration] = useState<string>();
+  const [fuel, setFuel] = useState<string>();
+  const [injectors, setInjectors] = useState<string>();
+  const [coils, setCoils] = useState<string>();
 
   const noop = () => { };
 
@@ -180,7 +213,21 @@ const UploadPage = () => {
       isPublished: true,
       isPublic,
       isListed,
-      description,
+      details: {
+        readme,
+        make,
+        model,
+        displacement,
+        year,
+        hp,
+        stockHp,
+        engineCode,
+        cylinders,
+        aspiration,
+        fuel,
+        injectors,
+        coils,
+      },
     });
     setIsPublished(true);
     setIsLoading(false);
@@ -266,7 +313,7 @@ const UploadPage = () => {
         logFiles: [],
         toothLogFiles: [],
         customIniFile: null,
-        description: '',
+        details: {},
       };
       await updateDbData(newTuneId!, tuneData);
     }
@@ -528,28 +575,80 @@ const UploadPage = () => {
       </Upload>
       <Divider>
         <Space>
-          Description
+          README
           <Typography.Text type="secondary">(markdown)</Typography.Text>
         </Space>
       </Divider>
-      <Tabs defaultActiveKey="source" className="upload-description">
+      <Tabs defaultActiveKey="source" className="upload-readme">
         <Tabs.TabPane tab="Edit" key="source" style={{ height: descriptionEditorHeight }}>
           <Input.TextArea
             rows={10}
             showCount
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={readme}
+            onChange={(e) => setReadme(e.target.value)}
             maxLength={3_000}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Preview" key="preview" style={{ height: descriptionEditorHeight }}>
           <div className="markdown-preview" style={{ height: '100%' }}>
             <ReactMarkdown>
-              {description}
+              {readme}
             </ReactMarkdown>
           </div>
         </Tabs.TabPane>
       </Tabs>
+      <Row gutter={10} style={{ marginBottom: 10 }}>
+        <Col span={12}>
+          <Input addonBefore="Make" value={make} onChange={(e) => setMake(e.target.value)} />
+        </Col>
+        <Col span={12}>
+          <Input addonBefore="Model" value={model} onChange={(e) => setModel(e.target.value)} />
+        </Col>
+      </Row>
+      <Row gutter={10} style={{ marginBottom: 10 }}>
+        <Col span={12}>
+          <InputNumber addonBefore="Year" value={year} onChange={setYear} style={{ width: '100%' }} min={1886} />
+        </Col>
+        <Col span={12}>
+          <Input addonBefore="Displacement" addonAfter="l" value={displacement} onChange={(e) => setDisplacement(e.target.value)} />
+        </Col>
+      </Row>
+      <Row gutter={10} style={{ marginBottom: 10 }}>
+        <Col span={12}>
+          <InputNumber addonBefore="HP" value={hp} onChange={setHp} style={{ width: '100%' }} min={0} />
+        </Col>
+        <Col span={12}>
+          <InputNumber addonBefore="Stock HP" value={stockHp} onChange={setStockHp} style={{ width: '100%' }} min={0} />
+        </Col>
+      </Row>
+      <Row gutter={10} style={{ marginBottom: 10 }}>
+        <Col span={12}>
+          <Input addonBefore="Engine code" value={engineCode} onChange={(e) => setEngineCode(e.target.value)} />
+        </Col>
+        <Col span={12}>
+          <InputNumber addonBefore="No of cylinders" value={cylinders} onChange={setCylinders} style={{ width: '100%' }} min={0} />
+        </Col>
+      </Row>
+      <Row gutter={10} style={{ marginBottom: 10 }}>
+        <Col span={12}>
+          <Select placeholder="Aspiration" value={aspiration} onChange={setAspiration} style={{ width: '100%' }}>
+            <Select.Option value="NA">Naturally aspirated</Select.Option>
+            <Select.Option value="turbo">Turbo</Select.Option>
+            <Select.Option value="compressor">Compressor</Select.Option>
+          </Select>
+        </Col>
+        <Col span={12}>
+          <Input addonBefore="Fuel type" value={fuel} onChange={(e) => setFuel(e.target.value)} />
+        </Col>
+      </Row>
+      <Row gutter={10} style={{ marginBottom: 10 }}>
+        <Col span={12}>
+          <Input addonBefore="Injectors" value={injectors} onChange={(e) => setInjectors(e.target.value)} />
+        </Col>
+        <Col span={12}>
+          <Input addonBefore="Coils" value={coils} onChange={(e) => setCoils(e.target.value)} />
+        </Col>
+      </Row>
       <Divider>
         Visibility
       </Divider>
@@ -606,10 +705,10 @@ const UploadPage = () => {
         {Object.keys(toothLogFiles).length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
       <Space style={{ marginTop: 30 }}>
-        Show more:
-        <Switch checked={showOptions} onChange={setShowOptions} />
+        Show details:
+        <Switch checked={showDetails} onChange={setShowDetails} />
       </Space>
-      {showOptions && detailsSection}
+      {showDetails && detailsSection}
       {shareUrl && tuneFile && shareSection}
     </>
   );
