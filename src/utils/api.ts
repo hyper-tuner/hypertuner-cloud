@@ -9,7 +9,7 @@ import {
 } from './http';
 import TuneParser from './tune/TuneParser';
 
-export const loadAll = async () => {
+export const loadTune = async (tuneId: string) => {
   const started = new Date();
   // const version = 202012;
   const version = 202103;

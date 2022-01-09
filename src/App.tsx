@@ -1,6 +1,8 @@
 import {
   Switch,
   Route,
+  useLocation,
+  matchPath,
 } from 'react-router-dom';
 import {
   Layout,
@@ -14,20 +16,23 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useMemo,
 } from 'react';
-import {
-  AppState,
-  UIState,
-  Config as ConfigType,
-} from '@speedy-tuner/types';
+import useStorage from './hooks/useStorage';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
-import { loadAll } from './utils/api';
+import { loadTune } from './utils/api';
+import store from './store';
 import Log from './pages/Log';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
+import {
+  AppState,
+  NavigationState,
+  UIState,
+} from './types/state';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -45,17 +50,28 @@ const { Content } = Layout;
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
-  config: state.config,
+  navigation: state.navigation,
 });
 
-const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
+const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
-  // const { storageGetSync } = useStorage();
+  const { storageSet } = useStorage();
   // const lastDialogPath = storageGetSync('lastDialog');
 
+  const { pathname } = useLocation();
+  const matchedTunePath = useMemo(() => matchPath(pathname, {
+    path: Routes.TUNE_ROOT,
+  }), [pathname]);
+
   useEffect(() => {
-    loadAll();
+    const tuneId = (matchedTunePath?.params as any)?.tuneId;
+    if (tuneId) {
+      loadTune(tuneId);
+      storageSet('lastTuneId', tuneId);
+      store.dispatch({ type: 'navigation/tuneId', payload: tuneId });
+    }
+
     // storageGet('lastDialog')
     //   .then((path) => setLastDialogPath(path));
 
@@ -93,9 +109,12 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
   return (
     <>
       <Layout>
-        <TopBar />
+        <TopBar tuneId={navigation.tuneId} />
         <Switch>
           <Route path={Routes.ROOT} exact>
+            {/* <Route path={Routes.ROOT} exact>
+              <Redirect to={lastDialogPath || Routes.TUNE_ROOT} />
+            </Route> */}
             <ContentFor>
               <Result
                 status="info"
