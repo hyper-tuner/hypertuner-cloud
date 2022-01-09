@@ -12,7 +12,7 @@ import {
   UIState,
   Config as ConfigType,
 } from '@speedy-tuner/types';
-import Dialog from '../components/Dialog';
+import Dialog from '../components/Tune/Dialog';
 import SideBar, { DialogMatchedPathType } from '../components/SideBar';
 import { Routes } from '../routes';
 import useStorage from '../hooks/useStorage';

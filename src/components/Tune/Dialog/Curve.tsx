@@ -10,7 +10,7 @@ import {
 } from 'react';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
-import { Colors } from '../../utils/colors';
+import { Colors } from '../../../utils/colors';
 import LandscapeNotice from './LandscapeNotice';
 import Table from './Curve/Table';
 
