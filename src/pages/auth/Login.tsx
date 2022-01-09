@@ -39,30 +39,31 @@ const Login = () => {
   const { login, googleAuth, githubAuth } = useAuth();
   const history = useHistory();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading;
+  const redirectAfterLogin = useCallback(() => history.push(Routes.UPLOAD), [history]);
 
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
     try {
       await googleAuth();
       logInSuccessful();
-      history.push(Routes.ROOT);
+      redirectAfterLogin();
     } catch (error) {
       logInFailed(error as Error);
       setIsGoogleLoading(false);
     }
-  }, [googleAuth, history]);
+  }, [googleAuth, redirectAfterLogin]);
 
   const githubLogin = useCallback(async () => {
     setIsGithubLoading(true);
     try {
       await githubAuth();
       logInSuccessful();
-      history.push(Routes.ROOT);
+      redirectAfterLogin();
     } catch (error) {
       logInFailed(error as Error);
       setIsGithubLoading(false);
     }
-  }, [githubAuth, history]);
+  }, [githubAuth, redirectAfterLogin]);
 
   const emailLogin = async ({ email, password }: { form: any, email: string, password: string }) => {
     setIsEmailLoading(true);
@@ -74,7 +75,7 @@ const Login = () => {
         emailNotVerified();
       }
 
-      history.push(Routes.ROOT);
+      redirectAfterLogin();
     } catch (error) {
       form.resetFields();
       console.warn(error);

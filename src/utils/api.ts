@@ -1,4 +1,5 @@
-import { Config as ConfigType } from '@speedy-tuner/types';
+import { INI } from '@speedy-tuner/ini';
+import pako from 'pako';
 import store from '../store';
 import stdDialogs from '../data/standardDialogs';
 import help from '../data/help';
@@ -9,22 +10,19 @@ import {
 } from './http';
 import TuneParser from './tune/TuneParser';
 
-export const loadTune = async (tuneId: string) => {
+export const loadTune = async (tuneRaw: ArrayBuffer, iniRaw: ArrayBuffer) => {
   const started = new Date();
-  // const version = 202012;
-  const version = 202103;
 
-  const json: ConfigType = await fetch(`./tunes/${version}.json`)
-    .then((response) => response.json());
-
-  const tuneRaw = await fetch(`./tunes/${version}.msq`);
-  const tuneParser = new TuneParser().parse(await tuneRaw.arrayBuffer());
+  const tuneParser = new TuneParser()
+    .parse(pako.inflate(new Uint8Array(tuneRaw)));
 
   if (!tuneParser.isValid()) {
+    // TODO: capture exception
     console.error('Invalid tune');
   }
 
-  const config = json;
+  const buff = pako.inflate(new Uint8Array(iniRaw));
+  const config = new INI((new TextDecoder()).decode(buff)).parse();
 
   // override / merge standard dialogs, constants and help
   config.dialogs = {

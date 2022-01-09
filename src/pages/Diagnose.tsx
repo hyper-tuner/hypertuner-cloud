@@ -19,6 +19,7 @@ import {
   FileTextOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
+import * as Sentry from '@sentry/browser';
 import pako from 'pako';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
@@ -121,6 +122,7 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
         setStep(2);
       } catch (error) {
         setFetchError(error as Error);
+        Sentry.captureException(error);
         console.error(error);
       }
     };

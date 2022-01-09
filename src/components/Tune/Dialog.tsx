@@ -39,7 +39,7 @@ import {
 } from '../../utils/tune/table';
 import Map from './Dialog/Map';
 import { evaluateExpression } from '../../utils/tune/expression';
-import useStorage from '../../hooks/useStorage';
+import useBrowserStorage from '../../hooks/useBrowserStorage';
 import useConfig from '../../hooks/useConfig';
 
 interface DialogsAndCurves {
@@ -107,7 +107,7 @@ const Dialog = ({
   url: string,
 }) => {
   const isDataReady = Object.keys(tune.constants).length && Object.keys(config.constants).length;
-  const { storageSet } = useStorage();
+  const { storageSet } = useBrowserStorage();
   const { findConstantOnPage } = useConfig(config);
   const [panelsComponents, setPanelsComponents] = useState<any[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);

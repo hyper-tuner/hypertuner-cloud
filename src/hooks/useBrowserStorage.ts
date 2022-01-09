@@ -1,6 +1,6 @@
-import { StorageInterface } from '../StorageInterface';
+import { useMemo } from 'react';
 
-class BrowserStorage implements StorageInterface {
+class BrowserStorage {
   private storage: Storage;
 
   public constructor() {
@@ -30,4 +30,15 @@ class BrowserStorage implements StorageInterface {
   }
 }
 
-export default BrowserStorage;
+const useBrowserStorage = () => {
+  const storage = useMemo(() => new BrowserStorage(), []);
+
+  return {
+    storageGet: (key: string) => storage.get(key),
+    storageGetSync: (key: string) => storage.getSync(key),
+    storageSet: (key: string, value: string) => storage.set(key, value),
+    storageDelete: (key: string) => storage.delete(key),
+  };
+};
+
+export default useBrowserStorage;

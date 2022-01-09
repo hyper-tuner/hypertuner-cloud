@@ -11,7 +11,7 @@ import { Config as ConfigType } from '@speedy-tuner/types';
 import Dialog from '../components/Tune/Dialog';
 import SideBar, { DialogMatchedPathType } from '../components/SideBar';
 import { Routes } from '../routes';
-import useStorage from '../hooks/useStorage';
+import useBrowserStorage from '../hooks/useBrowserStorage';
 import useConfig from '../hooks/useConfig';
 import {
   AppState,
@@ -26,7 +26,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const Tune = ({ navigation, config }: { navigation: NavigationState, config: ConfigType }) => {
   const { pathname } = useLocation();
-  const { storageGetSync } = useStorage();
+  const { storageGetSync } = useBrowserStorage();
   const lastDialogPath = storageGetSync('lastDialog');
   const { isConfigReady } = useConfig(config);
   const dialogMatchedPath: DialogMatchedPathType = useMemo(() => matchPath(pathname, {

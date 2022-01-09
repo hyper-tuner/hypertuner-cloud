@@ -18,7 +18,7 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import useStorage from './hooks/useStorage';
+import useBrowserStorage from './hooks/useBrowserStorage';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
@@ -33,6 +33,8 @@ import {
   NavigationState,
   UIState,
 } from './types/state';
+import useDb from './hooks/useDb';
+import useServerStorage from './hooks/useServerStorage';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -55,8 +57,11 @@ const mapStateToProps = (state: AppState) => ({
 
 const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
+  const { getTune } = useDb();
+  const { getFile } = useServerStorage();
+  const { storageSet } = useBrowserStorage();
+
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
-  const { storageSet } = useStorage();
   // const lastDialogPath = storageGetSync('lastDialog');
 
   const { pathname } = useLocation();
@@ -67,7 +72,17 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
   useEffect(() => {
     const tuneId = (matchedTunePath?.params as any)?.tuneId;
     if (tuneId) {
-      loadTune(tuneId);
+
+      getTune(tuneId).then(async (tuneData) => {
+        const [tuneRaw, iniRaw] = await Promise.all([
+          await getFile(tuneData.tuneFile!),
+          await getFile(tuneData.customIniFile!),
+        ]);
+
+        loadTune(tuneRaw, iniRaw);
+      });
+
+
       storageSet('lastTuneId', tuneId);
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });
     }
