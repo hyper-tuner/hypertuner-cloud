@@ -140,7 +140,7 @@ const TopBar = () => {
               <Button disabled icon={<SearchOutlined />} ref={searchInput} />
             </Tooltip>
             <Link to={Routes.UPLOAD}>
-              <Button icon={<CloudUploadOutlined />}>
+              <Button icon={<CloudUploadOutlined />} type={matchedTabPath?.url === Routes.UPLOAD ? 'primary' : 'default' }>
                 {lg && 'Upload'}
               </Button>
             </Link>
