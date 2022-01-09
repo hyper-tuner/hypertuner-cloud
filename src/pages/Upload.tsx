@@ -47,14 +47,10 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { Routes } from '../routes';
 import {
-  fireStoreDoc,
-  setDoc,
-  getDoc,
   storage,
   storageRef,
   uploadBytesResumable,
   deleteObject,
-  db,
 } from '../firebase';
 import useBrowserStorage from '../hooks/useBrowserStorage';
 import TuneParser from '../utils/tune/TuneParser';
