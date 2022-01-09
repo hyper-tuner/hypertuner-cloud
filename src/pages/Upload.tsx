@@ -598,6 +598,9 @@ const UploadPage = () => {
           </div>
         </Tabs.TabPane>
       </Tabs>
+      <Divider>
+        <Space>Details</Space>
+      </Divider>
       <Row {...rowProps}>
         <Col span={12}>
           <Input addonBefore="Make" value={make} onChange={(e) => setMake(e.target.value)} />
