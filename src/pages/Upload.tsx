@@ -506,6 +506,64 @@ const UploadPage = () => {
     </>
   );
 
+  const detailsSection = (
+    <>
+      <Divider>
+        <Space>
+          Upload Custom INI
+          <Typography.Text type="secondary">(.ini)</Typography.Text>
+        </Space>
+      </Divider>
+      <Upload
+        listType="picture-card"
+        customRequest={uploadCustomIni}
+        data={customIniFileData}
+        onRemove={removeCustomIniFile}
+        iconRender={iniIcon}
+        disabled={isPublished}
+        onPreview={noop}
+        accept=".ini"
+      >
+        {!customIniFile && uploadButton}
+      </Upload>
+      <Divider>
+        <Space>
+          Description
+          <Typography.Text type="secondary">(markdown)</Typography.Text>
+        </Space>
+      </Divider>
+      <Tabs defaultActiveKey="source">
+        <Tabs.TabPane tab="Edit" key="source" style={{ height: descriptionEditorHeight }}>
+          <Input.TextArea
+            rows={10}
+            showCount
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={3_000}
+          />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Preview" key="preview" style={{ height: descriptionEditorHeight }}>
+          <div className="markdown-preview" style={{ height: '100%' }}>
+            <ReactMarkdown>
+              {description}
+            </ReactMarkdown>
+          </div>
+        </Tabs.TabPane>
+      </Tabs>
+      <Divider>
+        Visibility
+      </Divider>
+      <Space direction="vertical" size="large">
+        <Space>
+          Public:<Switch disabled checked={isPublic} onChange={setIsPublic} />
+        </Space>
+        <Space>
+          Listed:<Switch checked={isListed} onChange={setIsListed} />
+        </Space>
+      </Space>
+    </>
+  );
+
   const optionalSection = (
     <>
       <Divider>
@@ -547,65 +605,11 @@ const UploadPage = () => {
       >
         {Object.keys(toothLogFiles).length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
-      <Divider>
-        <Space>
-          Description
-          <Typography.Text type="secondary">(markdown)</Typography.Text>
-        </Space>
-      </Divider>
-      <Tabs defaultActiveKey="source">
-        <Tabs.TabPane tab="Edit" key="source" style={{ height: descriptionEditorHeight }}>
-          <Input.TextArea
-            rows={10}
-            showCount
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            maxLength={3_000}
-          />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="Preview" key="preview" style={{ height: descriptionEditorHeight }}>
-          <div className="markdown-preview" style={{ height: '100%' }}>
-            <ReactMarkdown>
-              {description}
-            </ReactMarkdown>
-          </div>
-        </Tabs.TabPane>
-      </Tabs>
       <Space style={{ marginTop: 30 }}>
         Show more:
         <Switch checked={showOptions} onChange={setShowOptions} />
       </Space>
-      {showOptions && <>
-        <Divider>
-          <Space>
-            Upload Custom INI
-            <Typography.Text type="secondary">(.ini)</Typography.Text>
-          </Space>
-        </Divider>
-        <Upload
-          listType="picture-card"
-          customRequest={uploadCustomIni}
-          data={customIniFileData}
-          onRemove={removeCustomIniFile}
-          iconRender={iniIcon}
-          disabled={isPublished}
-          onPreview={noop}
-          accept=".ini"
-        >
-          {!customIniFile && uploadButton}
-        </Upload>
-        <Divider>
-          Visibility
-        </Divider>
-        <Space direction="vertical" size="large">
-          <Space>
-            Public:<Switch disabled checked={isPublic} onChange={setIsPublic} />
-          </Space>
-          <Space>
-            Listed:<Switch checked={isListed} onChange={setIsListed} />
-          </Space>
-        </Space>
-      </>}
+      {showOptions && detailsSection}
       {shareUrl && tuneFile && shareSection}
     </>
   );
