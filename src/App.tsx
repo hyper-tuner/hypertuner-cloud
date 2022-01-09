@@ -26,12 +26,16 @@ import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
 import useStorage from './hooks/useStorage';
 import { loadAll } from './utils/api';
+import Log from './pages/Log';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
 
+// TODO: fix this
+// lazy loading this component causes a weird Curve canvas scaling
+// const Log = lazy(() => import('./pages/Log'));
+
 const Tune = lazy(() => import('./pages/Tune'));
-const Log = lazy(() => import('./pages/Log'));
 const Diagnose = lazy(() => import('./pages/Diagnose'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const SignUp = lazy(() => import('./pages/auth/SignUp'));
