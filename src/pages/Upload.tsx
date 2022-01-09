@@ -123,6 +123,7 @@ const containerStyle = {
 const newTuneIdKey = 'newTuneId';
 const maxFileSizeMB = 10;
 const descriptionEditorHeight = 260;
+const rowProps = { gutter: 10, style: { marginBottom: 10 } };
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
@@ -597,7 +598,7 @@ const UploadPage = () => {
           </div>
         </Tabs.TabPane>
       </Tabs>
-      <Row gutter={10} style={{ marginBottom: 10 }}>
+      <Row {...rowProps}>
         <Col span={12}>
           <Input addonBefore="Make" value={make} onChange={(e) => setMake(e.target.value)} />
         </Col>
@@ -605,7 +606,7 @@ const UploadPage = () => {
           <Input addonBefore="Model" value={model} onChange={(e) => setModel(e.target.value)} />
         </Col>
       </Row>
-      <Row gutter={10} style={{ marginBottom: 10 }}>
+      <Row {...rowProps}>
         <Col span={12}>
           <InputNumber addonBefore="Year" value={year} onChange={setYear} style={{ width: '100%' }} min={1886} />
         </Col>
@@ -613,7 +614,7 @@ const UploadPage = () => {
           <Input addonBefore="Displacement" addonAfter="l" value={displacement} onChange={(e) => setDisplacement(e.target.value)} />
         </Col>
       </Row>
-      <Row gutter={10} style={{ marginBottom: 10 }}>
+      <Row {...rowProps}>
         <Col span={12}>
           <InputNumber addonBefore="HP" value={hp} onChange={setHp} style={{ width: '100%' }} min={0} />
         </Col>
@@ -621,7 +622,7 @@ const UploadPage = () => {
           <InputNumber addonBefore="Stock HP" value={stockHp} onChange={setStockHp} style={{ width: '100%' }} min={0} />
         </Col>
       </Row>
-      <Row gutter={10} style={{ marginBottom: 10 }}>
+      <Row {...rowProps}>
         <Col span={12}>
           <Input addonBefore="Engine code" value={engineCode} onChange={(e) => setEngineCode(e.target.value)} />
         </Col>
@@ -629,7 +630,7 @@ const UploadPage = () => {
           <InputNumber addonBefore="No of cylinders" value={cylinders} onChange={setCylinders} style={{ width: '100%' }} min={0} />
         </Col>
       </Row>
-      <Row gutter={10} style={{ marginBottom: 10 }}>
+      <Row {...rowProps}>
         <Col span={12}>
           <Select placeholder="Aspiration" value={aspiration} onChange={setAspiration} style={{ width: '100%' }}>
             <Select.Option value="NA">Naturally aspirated</Select.Option>
@@ -641,7 +642,7 @@ const UploadPage = () => {
           <Input addonBefore="Fuel type" value={fuel} onChange={(e) => setFuel(e.target.value)} />
         </Col>
       </Row>
-      <Row gutter={10} style={{ marginBottom: 10 }}>
+      <Row {...rowProps}>
         <Col span={12}>
           <Input addonBefore="Injectors" value={injectors} onChange={(e) => setInjectors(e.target.value)} />
         </Col>
