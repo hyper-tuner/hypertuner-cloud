@@ -532,7 +532,7 @@ const UploadPage = () => {
           <Typography.Text type="secondary">(markdown)</Typography.Text>
         </Space>
       </Divider>
-      <Tabs defaultActiveKey="source">
+      <Tabs defaultActiveKey="source" className="upload-description">
         <Tabs.TabPane tab="Edit" key="source" style={{ height: descriptionEditorHeight }}>
           <Input.TextArea
             rows={10}
