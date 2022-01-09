@@ -141,20 +141,6 @@ select:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
 }
 
-.CodeMirror, .editor-preview {
-  color: @text !important;
-  background-color: @main !important;
-  border: none !important;
-}
-
-.cm-s-easymde .CodeMirror-cursor {
-  border: 1px solid @text !important;
-}
-
-.CodeMirror-wrap {
-  background-color: @main-light !important;
-}
-
 .markdown-preview {
   background-color: @main-light;
   padding: 5px 11px;
@@ -162,4 +148,27 @@ select:-webkit-autofill:focus {
   border-width: 1px;
   border-radius: @border-radius-base;
   border-color: @main-dark;
+
+  h1 {
+    font-size: 2em;
+  }
+
+  code, pre {
+    background-color: @main;
+    border-radius: @border-radius-base;
+  }
+
+  pre {
+    padding: 0.5rem;
+  }
+
+  p code {
+    padding: 0.3rem;
+  }
+}
+
+.upload-readme {
+  textarea {
+    resize: none;
+  }
 }
