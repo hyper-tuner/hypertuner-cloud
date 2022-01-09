@@ -6,7 +6,7 @@ import { Grid } from 'antd';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
-import LandscapeNotice from '../Dialog/LandscapeNotice';
+import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
 import { Colors } from '../../utils/colors';
 

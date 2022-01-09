@@ -1,7 +1,6 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import {
@@ -13,6 +12,7 @@ import {
   Skeleton,
   Space,
   Switch,
+  Tabs,
   Tooltip,
   Typography,
   Upload,
@@ -30,12 +30,12 @@ import { INI } from '@speedy-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { useHistory } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import pako from 'pako';
 import {
   customAlphabet,
   nanoid,
 } from 'nanoid';
-import SimpleMdeReact from 'react-simplemde-editor';
 import {
   emailNotVerified,
   restrictedPage,
@@ -54,8 +54,6 @@ import {
 } from '../firebase';
 import useStorage from '../hooks/useStorage';
 import TuneParser from '../utils/tune/TuneParser';
-
-import 'easymde/dist/easymde.min.css';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 
@@ -124,7 +122,7 @@ const UploadPage = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [isListed, setIsListed] = useState(true);
-  const [description, setDescription] = useState('# My Tune \ndescription');
+  const [description, setDescription] = useState('# My Tune\n\ndescription');
   const [tuneFile, setTuneFile] = useState<UploadedFile | null | false>(null);
   const [logFiles, setLogFiles] = useState<UploadedFile>({});
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
@@ -134,7 +132,7 @@ const UploadPage = () => {
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useStorage();
 
-  const noop = () => {};
+  const noop = () => { };
 
   const copyToClipboard = async () => {
     if (navigator.clipboard) {
@@ -145,11 +143,6 @@ const UploadPage = () => {
   };
 
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
-
-  const editorOptions = useMemo(() => ({
-    toolbar: false,
-    autofocus: true,
-  }), []);
 
   const updateDbData = (tuneId: string, dbData: TuneDbData) => {
     try {
@@ -559,11 +552,24 @@ const UploadPage = () => {
           <Typography.Text type="secondary">(markdown)</Typography.Text>
         </Space>
       </Divider>
-      <SimpleMdeReact
-        onChange={setDescription}
-        value={description}
-        options={editorOptions}
-      />
+      <Tabs defaultActiveKey="source">
+        <Tabs.TabPane tab="Edit" key="source">
+          <Input.TextArea
+            rows={10}
+            showCount
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={3_000}
+          />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Preview" key="preview">
+          <div className="markdown-preview" style={{ minHeight: 230 }}>
+            <ReactMarkdown>
+              {description}
+            </ReactMarkdown>
+          </div>
+        </Tabs.TabPane>
+      </Tabs>
       <Space style={{ marginTop: 30 }}>
         Show more:
         <Switch checked={showOptions} onChange={setShowOptions} />

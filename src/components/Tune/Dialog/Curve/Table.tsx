@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 
 import { useCallback } from 'react';
-import { colorHsl } from '../../../utils/number';
+import { colorHsl } from '../../../../utils/number';
 
 const titleProps = { disabled: true };
 

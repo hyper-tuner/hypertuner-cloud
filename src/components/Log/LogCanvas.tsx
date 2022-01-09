@@ -14,7 +14,7 @@ import {
   colorHsl,
   formatNumber,
 } from '../../utils/number';
-import LandscapeNotice from '../Dialog/LandscapeNotice';
+import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { Colors } from '../../utils/colors';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 

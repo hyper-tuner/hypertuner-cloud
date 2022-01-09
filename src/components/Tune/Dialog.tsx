@@ -36,11 +36,11 @@ import Curve from './Dialog/Curve';
 import {
   parseXy,
   parseZ,
-} from '../utils/tune/table';
+} from '../../utils/tune/table';
 import Map from './Dialog/Map';
-import { evaluateExpression } from '../utils/tune/expression';
-import useStorage from '../hooks/useStorage';
-import useConfig from '../hooks/useConfig';
+import { evaluateExpression } from '../../utils/tune/expression';
+import useStorage from '../../hooks/useStorage';
+import useConfig from '../../hooks/useConfig';
 
 interface DialogsAndCurves {
   [name: string]: DialogType | CurveType | TableType,
@@ -358,7 +358,7 @@ const Dialog = ({
     if (isDataReady) {
       setPanelsComponents(generatePanelsComponents());
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDataReady, url, ui.sidebarCollapsed]);
 
   if (!isDataReady) {
