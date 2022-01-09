@@ -7,30 +7,30 @@ import {
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useMemo } from 'react';
-import {
-  AppState,
-  UIState,
-  Config as ConfigType,
-} from '@speedy-tuner/types';
+import { Config as ConfigType } from '@speedy-tuner/types';
 import Dialog from '../components/Tune/Dialog';
 import SideBar, { DialogMatchedPathType } from '../components/SideBar';
 import { Routes } from '../routes';
 import useStorage from '../hooks/useStorage';
 import useConfig from '../hooks/useConfig';
+import {
+  AppState,
+  NavigationState,
+} from '../types/state';
 
 const mapStateToProps = (state: AppState) => ({
-  ui: state.ui,
+  navigation: state.navigation,
   status: state.status,
   config: state.config,
 });
 
-const Tune = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
+const Tune = ({ navigation, config }: { navigation: NavigationState, config: ConfigType }) => {
   const { pathname } = useLocation();
   const { storageGetSync } = useStorage();
   const lastDialogPath = storageGetSync('lastDialog');
   const { isConfigReady } = useConfig(config);
   const dialogMatchedPath: DialogMatchedPathType = useMemo(() => matchPath(pathname, {
-    path: Routes.DIALOG,
+    path: Routes.TUNE_DIALOG,
     exact: true,
   }) || { url: '', params: { category: '', dialog: '' } }, [pathname]);
 
@@ -41,12 +41,16 @@ const Tune = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
 
     const firstCategory = Object.keys(config.menus)[0];
     const firstDialog = Object.keys(config.menus[firstCategory].subMenus)[0];
-    return generatePath(Routes.DIALOG, { category: firstCategory, dialog: firstDialog });
-  }, [config.menus, isConfigReady]);
+    return generatePath(Routes.TUNE_DIALOG, {
+      tuneId: navigation.tuneId || 'not-ready',
+      category: firstCategory,
+      dialog: firstDialog,
+    });
+  }, [config.menus, isConfigReady, navigation.tuneId]);
 
   return (
     <>
-      <Route path={Routes.TUNE} exact>
+      <Route path={Routes.TUNE_TUNE} exact>
         {firstDialogPath && <Redirect to={lastDialogPath || firstDialogPath} />}
       </Route>
       <SideBar matchedPath={dialogMatchedPath} />
