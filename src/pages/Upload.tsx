@@ -134,6 +134,8 @@ const UploadPage = () => {
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useStorage();
 
+  const noop = () => {};
+
   const copyToClipboard = async () => {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(shareUrl!);
@@ -527,6 +529,7 @@ const UploadPage = () => {
         multiple
         maxCount={MaxFiles.LOG_FILES}
         disabled={isPublished}
+        onPreview={noop}
         accept=".mlg,.csv,.msl"
       >
         {Object.keys(logFiles).length < MaxFiles.LOG_FILES && uploadButton}
@@ -545,6 +548,7 @@ const UploadPage = () => {
         iconRender={toothLogIcon}
         multiple
         maxCount={MaxFiles.TOOTH_LOG_FILES}
+        onPreview={noop}
         accept=".csv"
       >
         {Object.keys(toothLogFiles).length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
@@ -578,6 +582,7 @@ const UploadPage = () => {
           onRemove={removeCustomIniFile}
           iconRender={iniIcon}
           disabled={isPublished}
+          onPreview={noop}
           accept=".ini"
         >
           {!customIniFile && uploadButton}
@@ -629,6 +634,7 @@ const UploadPage = () => {
         onRemove={removeTuneFile}
         iconRender={tuneIcon}
         disabled={isPublished}
+        onPreview={noop}
         accept=".msq"
       >
         {tuneFile === null && uploadButton}
