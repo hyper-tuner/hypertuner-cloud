@@ -37,7 +37,7 @@
     "@speedy-tuner/ini": "^0.2.2",
     "@speedy-tuner/types": "^0.2.1",
     "antd": "^4.18.2",
-    "firebase": "^9.6.1",
+    "firebase": "^9.6.2",
     "mlg-converter": "^0.5.1",
     "nanoid": "^3.1.30",
     "pako": "^2.0.4",
