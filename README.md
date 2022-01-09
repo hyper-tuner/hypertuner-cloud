@@ -13,16 +13,6 @@ Share your [Speeduino](https://speeduino.com/) tune and logs.
 
 ![Screenshot](https://speedytuner.cloud/img/screen.png)
 
-## Project main goals
-
-- 🚀 always free and open source (FOSS)
-- 💻 Cloud based web app with CDN
-- 🔥 `60 FPS` animations and fast load times
-- 👍 good user experience
-  - 💎 intuitive, modern and responsive UI
-  - 👶 easy for newcomers with tips, tools and simple diagnostics
-  - 📱 touch screen friendly
-
 ## ECU firmware
 
 - Documentation: [wiki.speeduino.com](https://wiki.speeduino.com/)
@@ -32,39 +22,12 @@ Share your [Speeduino](https://speeduino.com/) tune and logs.
 
 There are many ways in which you can participate in the project and every bit of help is greatly appreciated.
 
-- 👋 Say Hi and start a conversation over at [Discussions](https://github.com/karniv00l/speedy-tuner/discussions)
-- 🐞 [Submit bugs and feature requests](https://github.com/karniv00l/speedy-tuner/issues)
+- 👋 Say Hi and start a conversation over at [Discussions](https://github.com/speedy-tuner/speedy-tuner-cloud/discussions)
+- 🐞 [Submit bugs and feature requests](https://github.com/speedy-tuner/speedy-tuner-cloud/issues)
 - 🧪 Test on different platforms, hardware and Speeduino firmware
 - 👓 Review source code
 - ⌨️ Write tests and refactor code according to best practices
 
 ## Development
 
-### Recommended dev environment
-
-- [Node](https://nodejs.org/) 16.x.x
-
-### Authenticate to GitHub Packages
-
-Project uses shared packages (`@speedy-tuner/...`).
-
-They are hosted using `GitHub Packages`, to install them you need to [authenticate to GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) first.
-
-Private token can be assing to ENV like so when running `npm install` in the same shell:
-
-```bash
-export NPM_GITHUB_TOKEN=YOUR_PRIVATE_GITHUB_TOKEN
-```
-
-### Install and run
-
-```bash
-# install packages
-npm install
-
-# run development server
-npm start
-
-# open in browser
-open http://localhost:3000
-```
+Please see [Developer guide](https://github.com/speedy-tuner/speedy-tuner-cloud/blob/master/DEVELOPMENT.md)
