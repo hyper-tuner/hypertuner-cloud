@@ -6,17 +6,13 @@ import {
   generatePath,
 } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {
-  useEffect,
-  useMemo,
-} from 'react';
+import { useMemo } from 'react';
 import {
   AppState,
   UIState,
   Config as ConfigType,
 } from '@speedy-tuner/types';
 import Dialog from '../components/Dialog';
-import { loadAll } from '../utils/api';
 import SideBar, { DialogMatchedPathType } from '../components/SideBar';
 import { Routes } from '../routes';
 import useStorage from '../hooks/useStorage';
@@ -47,19 +43,6 @@ const Tune = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
     const firstDialog = Object.keys(config.menus[firstCategory].subMenus)[0];
     return generatePath(Routes.DIALOG, { category: firstCategory, dialog: firstDialog });
   }, [config.menus, isConfigReady]);
-
-  useEffect(() => {
-    loadAll();
-    // storageGet('lastDialog')
-    //   .then((path) => setLastDialogPath(path));
-
-    // window.addEventListener('beforeunload', beforeUnload);
-    // return () => {
-    //   window.removeEventListener('beforeunload', beforeUnload);
-    // };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>

@@ -14,6 +14,7 @@ import {
   ReactNode,
   Suspense,
   useCallback,
+  useEffect,
 } from 'react';
 import {
   AppState,
@@ -27,6 +28,7 @@ import useStorage from './hooks/useStorage';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
+import { loadAll } from './utils/api';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Log = lazy(() => import('./pages/Log'));
@@ -49,6 +51,19 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   const { storageGetSync } = useStorage();
   const lastDialogPath = storageGetSync('lastDialog');
+
+  useEffect(() => {
+    loadAll();
+    // storageGet('lastDialog')
+    //   .then((path) => setLastDialogPath(path));
+
+    // window.addEventListener('beforeunload', beforeUnload);
+    // return () => {
+    //   window.removeEventListener('beforeunload', beforeUnload);
+    // };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const ContentFor = useCallback((props: { children: ReactNode, marginLeft?: number }) => {
     const { children, marginLeft } = props;

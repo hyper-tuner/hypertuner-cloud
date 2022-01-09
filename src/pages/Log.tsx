@@ -121,10 +121,7 @@ const Log = ({
     'afr',
     'dwell',
   ]);
-  const {
-    isConfigReady,
-    findOutputChannel,
-  } = useConfig(config);
+  const { isConfigReady, findOutputChannel } = useConfig(config);
   const prepareSelectedFields = useCallback((selectedFields: CheckboxValueType[]) => {
     if (!isConfigReady) {
       return [];
