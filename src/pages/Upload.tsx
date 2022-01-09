@@ -481,7 +481,7 @@ const UploadPage = () => {
   const shareSection = (
     <>
       <Divider>Publish & Share</Divider>
-      <Row>
+      {isPublished && <Row>
         <Input
           style={{ width: `calc(100% - ${hasNavigatorShare ? 65 : 35}px)` }}
           value={shareUrl!}
@@ -497,16 +497,24 @@ const UploadPage = () => {
             />
           </Tooltip>
         )}
-      </Row>
+      </Row>}
       <Row style={{ marginTop: 10 }}>
-        <Button
+        {!isPublished ? <Button
           type="primary"
           block
-          disabled={isPublished || isLoading}
+          disabled={isLoading}
           onClick={publish}
         >
-          {isPublished && !isLoading ? 'Published' : 'Publish'}
-        </Button>
+          Publish
+        </Button> : <Button
+          type="primary"
+          block
+          onClick={() => {
+            window.location.href = shareUrl as string;
+          }}
+        >
+          Open
+        </Button>}
       </Row>
     </>
   );
