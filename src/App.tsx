@@ -123,37 +123,37 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
               />
             </ContentFor>
           </Route>
-          <Route path={Routes.TUNE_ROOT}>
+          <Route path={Routes.TUNE_TUNE}>
             <ContentFor marginLeft={margin}>
               <Tune />
             </ContentFor>
           </Route>
-          <Route path={Routes.TUNE_LOG}>
+          <Route path={Routes.TUNE_LOG} exact>
             <ContentFor marginLeft={margin}>
               <Log />
             </ContentFor>
           </Route>
-          <Route path={Routes.TUNE_DIAGNOSE}>
+          <Route path={Routes.TUNE_DIAGNOSE} exact>
             <ContentFor marginLeft={margin}>
               <Diagnose />
             </ContentFor>
           </Route>
-          <Route path={Routes.LOGIN}>
+          <Route path={Routes.LOGIN} exact>
             <ContentFor>
               <Login />
             </ContentFor>
           </Route>
-          <Route path={Routes.SIGN_UP}>
+          <Route path={Routes.SIGN_UP} exact>
             <ContentFor>
               <SignUp />
             </ContentFor>
           </Route>
-          <Route path={Routes.RESET_PASSWORD}>
+          <Route path={Routes.RESET_PASSWORD} exact>
             <ContentFor>
               <ResetPassword />
             </ContentFor>
           </Route>
-          <Route path={Routes.UPLOAD}>
+          <Route path={Routes.UPLOAD} exact>
             <ContentFor>
               <Upload />
             </ContentFor>
