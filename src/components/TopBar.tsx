@@ -65,7 +65,7 @@ const TopBar = () => {
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const history = useHistory();
-  const matchedTabPath = useMemo(() => matchPath(pathname, { path: Routes.TAB }), [pathname]);
+  const matchedTabPath = useMemo(() => matchPath(pathname, { path: Routes.TUNE_TAB }), [pathname]);
   const logoutClick = useCallback(async () => {
     try {
       await logout();
@@ -108,19 +108,19 @@ const TopBar = () => {
             buttonStyle="solid"
             onChange={(e) => history.push(e.target.value)}
           >
-            <Radio.Button value={Routes.TUNE}>
+            <Radio.Button value={Routes.TUNE_TUNE}>
               <Space>
                 <ToolOutlined />
                 {sm && 'Tune'}
               </Space>
             </Radio.Button>
-            <Radio.Button value={Routes.LOG}>
+            <Radio.Button value={Routes.TUNE_LOG}>
               <Space>
                 <FundOutlined />
                 {sm && 'Log'}
               </Space>
             </Radio.Button>
-            <Radio.Button value={Routes.DIAGNOSE}>
+            <Radio.Button value={Routes.TUNE_DIAGNOSE}>
               <Space>
                 <SettingOutlined />
                 {sm && 'Diagnose'}

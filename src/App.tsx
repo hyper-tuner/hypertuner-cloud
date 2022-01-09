@@ -1,7 +1,6 @@
 import {
   Switch,
   Route,
-  Redirect,
 } from 'react-router-dom';
 import {
   Layout,
@@ -24,7 +23,6 @@ import {
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
-import useStorage from './hooks/useStorage';
 import { loadAll } from './utils/api';
 import Log from './pages/Log';
 
@@ -53,8 +51,8 @@ const mapStateToProps = (state: AppState) => ({
 const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
-  const { storageGetSync } = useStorage();
-  const lastDialogPath = storageGetSync('lastDialog');
+  // const { storageGetSync } = useStorage();
+  // const lastDialogPath = storageGetSync('lastDialog');
 
   useEffect(() => {
     loadAll();
@@ -98,19 +96,25 @@ const App = ({ ui, config }: { ui: UIState, config: ConfigType }) => {
         <TopBar />
         <Switch>
           <Route path={Routes.ROOT} exact>
-            <Redirect to={lastDialogPath || Routes.TUNE} />
+            <ContentFor>
+              <Result
+                status="info"
+                title="This page is under construction"
+                style={{ marginTop: 50 }}
+              />
+            </ContentFor>
           </Route>
-          <Route path={Routes.TUNE}>
+          <Route path={Routes.TUNE_ROOT}>
             <ContentFor marginLeft={margin}>
               <Tune />
             </ContentFor>
           </Route>
-          <Route path={Routes.LOG}>
+          <Route path={Routes.TUNE_LOG}>
             <ContentFor marginLeft={margin}>
               <Log />
             </ContentFor>
           </Route>
-          <Route path={Routes.DIAGNOSE}>
+          <Route path={Routes.TUNE_DIAGNOSE}>
             <ContentFor marginLeft={margin}>
               <Diagnose />
             </ContentFor>
