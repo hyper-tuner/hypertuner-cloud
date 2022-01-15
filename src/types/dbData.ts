@@ -2,7 +2,7 @@ export interface TuneDataDetails {
   readme?: string | null;
   make?: string | null;
   model?: string | null;
-  displacement?: string | null;
+  displacement?: number | null;
   year?: number | null;
   hp?: number | null;
   stockHp?: number | null;

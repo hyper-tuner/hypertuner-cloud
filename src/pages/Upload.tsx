@@ -102,7 +102,6 @@ const UploadPage = () => {
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
@@ -122,7 +121,7 @@ const UploadPage = () => {
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
   const [make, setMake] = useState<string>();
   const [model, setModel] = useState<string>();
-  const [displacement, setDisplacement] = useState<string>();
+  const [displacement, setDisplacement] = useState<number>();
   const [year, setYear] = useState<number>();
   const [hp, setHp] = useState<number>();
   const [stockHp, setStockHp] = useState<number>();
@@ -501,24 +500,61 @@ const UploadPage = () => {
   const detailsSection = (
     <>
       <Divider>
-        <Space>
-          Upload Custom INI
-          <Typography.Text type="secondary">(.ini)</Typography.Text>
-        </Space>
+        <Space>Details</Space>
       </Divider>
-      <Upload
-        listType="picture-card"
-        customRequest={uploadCustomIni}
-        data={customIniFileData}
-        onRemove={removeCustomIniFile}
-        iconRender={iniIcon}
-        disabled={isPublished}
-        onPreview={noop}
-        accept=".ini"
-      >
-        {!customIniFile && uploadButton}
-      </Upload>
-      <Divider>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <Input addonBefore="Make" value={make} onChange={(e) => setMake(e.target.value)} />
+        </Col>
+        <Col span={12}>
+          <Input addonBefore="Model" value={model} onChange={(e) => setModel(e.target.value)} />
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <InputNumber addonBefore="Year" value={year} onChange={setYear} style={{ width: '100%' }} min={1886} />
+        </Col>
+        <Col span={12}>
+          <InputNumber addonBefore="Displacement" addonAfter="l" value={displacement} onChange={(e) => setDisplacement} min={0.0} />
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <InputNumber addonBefore="HP" value={hp} onChange={setHp} style={{ width: '100%' }} min={0} />
+        </Col>
+        <Col span={12}>
+          <InputNumber addonBefore="Stock HP" value={stockHp} onChange={setStockHp} style={{ width: '100%' }} min={0} />
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <Input addonBefore="Engine code" value={engineCode} onChange={(e) => setEngineCode(e.target.value)} />
+        </Col>
+        <Col span={12}>
+          <InputNumber addonBefore="No of cylinders" value={cylinders} onChange={setCylinders} style={{ width: '100%' }} min={0} />
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <Select placeholder="Aspiration" value={aspiration} onChange={setAspiration} style={{ width: '100%' }}>
+            <Select.Option value="NA">Naturally aspirated</Select.Option>
+            <Select.Option value="turbo">Turbocharged</Select.Option>
+            <Select.Option value="compressor">Supercharged</Select.Option>
+          </Select>
+        </Col>
+        <Col span={12}>
+          <Input addonBefore="Fuel" value={fuel} onChange={(e) => setFuel(e.target.value)} />
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <Input addonBefore="Injectors" value={injectors} onChange={(e) => setInjectors(e.target.value)} />
+        </Col>
+        <Col span={12}>
+          <Input addonBefore="Coils" value={coils} onChange={(e) => setCoils(e.target.value)} />
+        </Col>
+      </Row>
+      <Divider style={{ marginTop: 40 }}>
         <Space>
           README
           <Typography.Text type="secondary">(markdown)</Typography.Text>
@@ -542,61 +578,6 @@ const UploadPage = () => {
           </div>
         </Tabs.TabPane>
       </Tabs>
-      <Divider>
-        <Space>Details</Space>
-      </Divider>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <Input addonBefore="Make" value={make} onChange={(e) => setMake(e.target.value)} />
-        </Col>
-        <Col span={12}>
-          <Input addonBefore="Model" value={model} onChange={(e) => setModel(e.target.value)} />
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <InputNumber addonBefore="Year" value={year} onChange={setYear} style={{ width: '100%' }} min={1886} />
-        </Col>
-        <Col span={12}>
-          <Input addonBefore="Displacement" addonAfter="l" value={displacement} onChange={(e) => setDisplacement(e.target.value)} />
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <InputNumber addonBefore="HP" value={hp} onChange={setHp} style={{ width: '100%' }} min={0} />
-        </Col>
-        <Col span={12}>
-          <InputNumber addonBefore="Stock HP" value={stockHp} onChange={setStockHp} style={{ width: '100%' }} min={0} />
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <Input addonBefore="Engine code" value={engineCode} onChange={(e) => setEngineCode(e.target.value)} />
-        </Col>
-        <Col span={12}>
-          <InputNumber addonBefore="No of cylinders" value={cylinders} onChange={setCylinders} style={{ width: '100%' }} min={0} />
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <Select placeholder="Aspiration" value={aspiration} onChange={setAspiration} style={{ width: '100%' }}>
-            <Select.Option value="NA">Naturally aspirated</Select.Option>
-            <Select.Option value="turbo">Turbo</Select.Option>
-            <Select.Option value="compressor">Compressor</Select.Option>
-          </Select>
-        </Col>
-        <Col span={12}>
-          <Input addonBefore="Fuel type" value={fuel} onChange={(e) => setFuel(e.target.value)} />
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <Input addonBefore="Injectors" value={injectors} onChange={(e) => setInjectors(e.target.value)} />
-        </Col>
-        <Col span={12}>
-          <Input addonBefore="Coils" value={coils} onChange={(e) => setCoils(e.target.value)} />
-        </Col>
-      </Row>
       <Divider>
         Visibility
       </Divider>
@@ -652,11 +633,25 @@ const UploadPage = () => {
       >
         {Object.keys(toothLogFiles).length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
-      <Space style={{ marginTop: 30 }}>
-        Show details:
-        <Switch checked={showDetails} onChange={setShowDetails} />
-      </Space>
-      {showDetails && detailsSection}
+      <Divider>
+        <Space>
+          Upload Custom INI
+          <Typography.Text type="secondary">(.ini)</Typography.Text>
+        </Space>
+      </Divider>
+      <Upload
+        listType="picture-card"
+        customRequest={uploadCustomIni}
+        data={customIniFileData}
+        onRemove={removeCustomIniFile}
+        iconRender={iniIcon}
+        disabled={isPublished}
+        onPreview={noop}
+        accept=".ini"
+      >
+        {!customIniFile && uploadButton}
+      </Upload>
+      {detailsSection}
       {shareUrl && tuneFile && shareSection}
     </>
   );
