@@ -2,15 +2,15 @@ export interface TuneDataDetails {
   readme?: string | null;
   make?: string | null;
   model?: string | null;
-  displacement?: string | null;
+  displacement?: number | null;
   year?: number | null;
   hp?: number | null;
   stockHp?: number | null;
   engineCode?: string | null;
-  cylinders?: number | null;
+  cylindersCount?: number | null;
   aspiration?: string | null;
   fuel?: string | null;
-  injectors?: string | null;
+  injectorsSize?: number | null;
   coils?: string | null;
 }
 

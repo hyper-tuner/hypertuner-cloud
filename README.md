@@ -30,4 +30,4 @@ There are many ways in which you can participate in the project and every bit of
 
 ## Development
 
-Please see [Developer guide](https://github.com/speedy-tuner/speedy-tuner-cloud/blob/master/DEVELOPMENT.md)
+Before you begin please see [Development guide](https://github.com/speedy-tuner/speedy-tuner-cloud/blob/master/DEVELOPMENT.md).

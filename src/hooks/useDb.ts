@@ -8,12 +8,14 @@ import {
 } from '../firebase';
 import { TuneDbData } from '../types/dbData';
 
+const TUNES_PATH = 'publicTunes';
+
 const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
 
 const useDb = () => {
-  const getData = async (tuneId: string, collection: string) => {
+  const getData = async (tuneId: string) => {
     try {
-      const tune = (await getDoc(fireStoreDoc(db, collection, tuneId))).data() as TuneDbData;
+      const tune = (await getDoc(fireStoreDoc(db, TUNES_PATH, tuneId))).data() as TuneDbData;
 
       return Promise.resolve(tune);
     } catch (error) {
@@ -25,9 +27,9 @@ const useDb = () => {
     }
   };
 
-  const updateData = async (tuneId: string, collection: string, data: TuneDbData) => {
+  const updateData = async (tuneId: string, data: TuneDbData) => {
     try {
-      await setDoc(fireStoreDoc(db, collection, tuneId), data, { merge: true });
+      await setDoc(fireStoreDoc(db, TUNES_PATH, tuneId), data, { merge: true });
 
       return Promise.resolve();
     } catch (error) {
@@ -40,8 +42,8 @@ const useDb = () => {
   };
 
   return {
-    getTune: (tuneId: string): Promise<TuneDbData> => getData(tuneId, 'tunes'),
-    updateData: (tuneId: string, data: TuneDbData): Promise<void> => updateData(tuneId, 'tunes', data),
+    getTune: (tuneId: string): Promise<TuneDbData> => getData(tuneId),
+    updateData: (tuneId: string, data: TuneDbData): Promise<void> => updateData(tuneId, data),
   };
 };
 

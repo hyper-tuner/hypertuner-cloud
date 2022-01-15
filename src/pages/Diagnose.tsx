@@ -25,11 +25,13 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
-  AppState,
-  UIState,
   Config,
   Logs,
 } from '@speedy-tuner/types';
+import {
+  AppState,
+  UIState,
+} from '../types/state';
 import {
   loadCompositeLogs,
   loadToothLogs,
