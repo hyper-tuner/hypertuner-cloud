@@ -17,7 +17,6 @@ import {
 } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import {
-  AppState,
   Dialogs as DialogsType,
   Dialog as DialogType,
   Config as ConfigType,
@@ -27,8 +26,11 @@ import {
   ScalarConstant as ScalarConstantType,
   ConstantTypes,
   Tune as TuneType,
-  UIState,
 } from '@speedy-tuner/types';
+import {
+  AppState,
+  UIState,
+} from '../../types/state';
 import SmartSelect from './Dialog/SmartSelect';
 import SmartNumber from './Dialog/SmartNumber';
 import TextField from './Dialog/TextField';

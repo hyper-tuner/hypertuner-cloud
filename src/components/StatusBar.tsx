@@ -14,7 +14,7 @@ import {
   AppState,
   ConfigState,
   StatusState,
-} from '@speedy-tuner/types';
+} from '../types/state';
 
 const { Footer } = Layout;
 

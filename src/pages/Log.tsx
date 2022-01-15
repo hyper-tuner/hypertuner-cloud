@@ -29,8 +29,6 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
 import {
-  AppState,
-  UIState,
   Config,
   OutputChannel,
   Logs,
@@ -49,6 +47,10 @@ import {
   isExpression,
   stripExpression,
 } from '../utils/tune/expression';
+import {
+  AppState,
+  UIState,
+} from '../types/state';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
