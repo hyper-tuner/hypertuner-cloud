@@ -19,6 +19,7 @@ import {
   Tooltip,
   Typography,
   Upload,
+  Form,
 } from 'antd';
 import {
   PlusOutlined,
@@ -54,6 +55,8 @@ import { TuneDbData } from '../types/dbData';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
 
+const { Item } = Form;
+
 enum MaxFiles {
   TUNE_FILES = 1,
   LOG_FILES = 5,
@@ -87,7 +90,7 @@ const containerStyle = {
 const newTuneIdKey = 'newTuneId';
 const maxFileSizeMB = 10;
 const descriptionEditorHeight = 260;
-const rowProps = { gutter: 10, style: { marginBottom: 10 } };
+const rowProps = { gutter: 10 };
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
@@ -104,8 +107,6 @@ const UploadPage = () => {
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-  const [isPublic, setIsPublic] = useState(true);
-  const [isListed, setIsListed] = useState(true);
   const [tuneFile, setTuneFile] = useState<UploadedFile | null | false>(null);
   const [logFiles, setLogFiles] = useState<UploadedFile>({});
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
@@ -116,21 +117,8 @@ const UploadPage = () => {
   const { storageSet, storageGet, storageDelete } = useBrowserStorage();
   const { updateData, getTune } = useDb();
   const { removeFile, uploadFile } = useServerStorage();
-
-  // details
+  const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
-  const [make, setMake] = useState<string>();
-  const [model, setModel] = useState<string>();
-  const [displacement, setDisplacement] = useState<number>();
-  const [year, setYear] = useState<number>();
-  const [hp, setHp] = useState<number>();
-  const [stockHp, setStockHp] = useState<number>();
-  const [engineCode, setEngineCode] = useState<string>();
-  const [cylinders, setCylinders] = useState<number>();
-  const [aspiration, setAspiration] = useState<string>();
-  const [fuel, setFuel] = useState<string>();
-  const [injectors, setInjectors] = useState<string>();
-  const [coils, setCoils] = useState<string>();
 
   const noop = () => { };
 
@@ -144,31 +132,31 @@ const UploadPage = () => {
 
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
 
-  const publish = async () => {
+  const publish = async (values: any) => {
     setIsLoading(true);
     await updateData(newTuneId!, {
       updatedAt: new Date(),
       isPublished: true,
-      isPublic,
-      isListed,
+      isPublic: values.isPublic,
+      isListed: values.isListed,
       details: {
         readme: readme || null,
-        make: make || null,
-        model: model || null,
-        displacement: displacement || null,
-        year: year || null,
-        hp: hp || null,
-        stockHp: stockHp || null,
-        engineCode: engineCode || null,
-        cylinders: cylinders || null,
-        aspiration: aspiration || null,
-        fuel: fuel || null,
-        injectors: injectors || null,
-        coils: coils || null,
+        make: values.make || null,
+        model: values.model || null,
+        displacement: values.displacement || null,
+        year: values.year || null,
+        hp: values.hp || null,
+        stockHp: values.stockHp || null,
+        engineCode: values.engineCode || null,
+        cylindersCount: values.cylindersCount || null,
+        aspiration: values.aspiration || null,
+        fuel: values.fuel || null,
+        injectorsSize: values.injectorsSize || null,
+        coils: values.coils || null,
       },
     });
-    setIsPublished(true);
     setIsLoading(false);
+    setIsPublished(true);
     storageDelete(newTuneIdKey);
   };
 
@@ -241,8 +229,8 @@ const UploadPage = () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         isPublished: false,
-        isPublic,
-        isListed,
+        isPublic: true,
+        isListed: true,
         tuneFile: null,
         logFiles: [],
         toothLogFiles: [],
@@ -477,22 +465,24 @@ const UploadPage = () => {
         )}
       </Row>}
       <Row style={{ marginTop: 10 }}>
-        {!isPublished ? <Button
-          type="primary"
-          block
-          disabled={isLoading}
-          onClick={publish}
-        >
-          Publish
-        </Button> : <Button
-          type="primary"
-          block
-          onClick={() => {
-            window.location.href = shareUrl as string;
-          }}
-        >
-          Open
-        </Button>}
+        <Item style={{ width: '100%' }}>
+          {!isPublished ? <Button
+            type="primary"
+            block
+            loading={isLoading}
+            htmlType="submit"
+          >
+            Publish
+          </Button> : <Button
+            type="primary"
+            block
+            onClick={() => {
+              window.location.href = shareUrl as string;
+            }}
+          >
+            Open
+          </Button>}
+        </Item>
       </Row>
     </>
   );
@@ -504,54 +494,78 @@ const UploadPage = () => {
       </Divider>
       <Row {...rowProps}>
         <Col span={12}>
-          <Input addonBefore="Make" value={make} onChange={(e) => setMake(e.target.value)} />
+          <Item name="make" rules={requiredRules}>
+            <Input addonBefore="Make"/>
+          </Item>
         </Col>
         <Col span={12}>
-          <Input addonBefore="Model" value={model} onChange={(e) => setModel(e.target.value)} />
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <InputNumber addonBefore="Year" value={year} onChange={setYear} style={{ width: '100%' }} min={1886} />
-        </Col>
-        <Col span={12}>
-          <InputNumber addonBefore="Displacement" addonAfter="l" value={displacement} onChange={(e) => setDisplacement} min={0.0} />
+          <Item name="model" rules={requiredRules}>
+            <Input addonBefore="Model"/>
+          </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
         <Col span={12}>
-          <InputNumber addonBefore="HP" value={hp} onChange={setHp} style={{ width: '100%' }} min={0} />
+          <Item name="year" rules={requiredRules}>
+            <InputNumber addonBefore="Year" style={{ width: '100%' }} min={1886} max={2222} />
+          </Item>
         </Col>
         <Col span={12}>
-          <InputNumber addonBefore="Stock HP" value={stockHp} onChange={setStockHp} style={{ width: '100%' }} min={0} />
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col span={12}>
-          <Input addonBefore="Engine code" value={engineCode} onChange={(e) => setEngineCode(e.target.value)} />
-        </Col>
-        <Col span={12}>
-          <InputNumber addonBefore="No of cylinders" value={cylinders} onChange={setCylinders} style={{ width: '100%' }} min={0} />
+          <Item name="displacement" rules={requiredRules}>
+            <InputNumber addonBefore="Displacement" addonAfter="l" min={0.0} />
+          </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
         <Col span={12}>
-          <Select placeholder="Aspiration" value={aspiration} onChange={setAspiration} style={{ width: '100%' }}>
-            <Select.Option value="NA">Naturally aspirated</Select.Option>
-            <Select.Option value="turbo">Turbocharged</Select.Option>
-            <Select.Option value="compressor">Supercharged</Select.Option>
-          </Select>
+          <Item name="hp">
+            <InputNumber addonBefore="HP" style={{ width: '100%' }} min={0} />
+          </Item>
         </Col>
         <Col span={12}>
-          <Input addonBefore="Fuel" value={fuel} onChange={(e) => setFuel(e.target.value)} />
+          <Item name="stockHp">
+            <InputNumber addonBefore="Stock HP" style={{ width: '100%' }} min={0} />
+          </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
         <Col span={12}>
-          <Input addonBefore="Injectors" value={injectors} onChange={(e) => setInjectors(e.target.value)} />
+          <Item name="engineCode">
+            <Input addonBefore="Engine code"/>
+          </Item>
         </Col>
         <Col span={12}>
-          <Input addonBefore="Coils" value={coils} onChange={(e) => setCoils(e.target.value)} />
+          <Item name="cylindersCount">
+            <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} />
+          </Item>
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <Item name="aspiration">
+            <Select placeholder="Aspiration" style={{ width: '100%' }}>
+              <Select.Option value="na">Naturally aspirated</Select.Option>
+              <Select.Option value="turbocharger">Turbocharged</Select.Option>
+              <Select.Option value="supercharger">Supercharged</Select.Option>
+            </Select>
+          </Item>
+        </Col>
+        <Col span={12}>
+          <Item name="fuel">
+            <Input addonBefore="Fuel" />
+          </Item>
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col span={12}>
+          <Item name="injectorsSize">
+            <InputNumber addonBefore="Injectors size" addonAfter="cc" min={0} />
+          </Item>
+        </Col>
+        <Col span={12}>
+          <Item name="coils">
+            <Input addonBefore="Coils" />
+          </Item>
         </Col>
       </Row>
       <Divider style={{ marginTop: 40 }}>
@@ -562,13 +576,15 @@ const UploadPage = () => {
       </Divider>
       <Tabs defaultActiveKey="source" className="upload-readme">
         <Tabs.TabPane tab="Edit" key="source" style={{ height: descriptionEditorHeight }}>
-          <Input.TextArea
-            rows={10}
-            showCount
-            value={readme}
-            onChange={(e) => setReadme(e.target.value)}
-            maxLength={3_000}
-          />
+          <Item name="readme">
+            <Input.TextArea
+              rows={10}
+              showCount
+              value={readme}
+              onChange={(e) => setReadme(e.target.value)}
+              maxLength={3_000}
+            />
+          </Item>
         </Tabs.TabPane>
         <Tabs.TabPane tab="Preview" key="preview" style={{ height: descriptionEditorHeight }}>
           <div className="markdown-preview" style={{ height: '100%' }}>
@@ -581,14 +597,12 @@ const UploadPage = () => {
       <Divider>
         Visibility
       </Divider>
-      <Space direction="vertical" size="large">
-        <Space>
-          Public:<Switch disabled checked={isPublic} onChange={setIsPublic} />
-        </Space>
-        <Space>
-          Listed:<Switch checked={isListed} onChange={setIsListed} />
-        </Space>
-      </Space>
+      <Item name="isPublic" label="Public:" valuePropName="checked">
+        <Switch disabled />
+      </Item>
+      <Item name="isListed" label="Listed:" valuePropName="checked">
+        <Switch />
+      </Item>
     </>
   );
 
@@ -674,25 +688,34 @@ const UploadPage = () => {
 
   return (
     <div style={containerStyle}>
-      <Divider>
-        <Space>
-          Upload Tune
-          <Typography.Text type="secondary">(.msq)</Typography.Text>
-        </Space>
-      </Divider>
-      <Upload
-        listType="picture-card"
-        customRequest={uploadTune}
-        data={tuneFileData}
-        onRemove={removeTuneFile}
-        iconRender={tuneIcon}
-        disabled={isPublished}
-        onPreview={noop}
-        accept=".msq"
+      <Form
+        onFinish={publish}
+        initialValues={{
+          readme: '# My Tune\n\ndescription',
+          isPublic: true,
+          isListed: true,
+        }}
       >
-        {tuneFile === null && uploadButton}
-      </Upload>
-      {tuneFile && optionalSection}
+        <Divider>
+          <Space>
+            Upload Tune
+            <Typography.Text type="secondary">(.msq)</Typography.Text>
+          </Space>
+        </Divider>
+        <Upload
+          listType="picture-card"
+          customRequest={uploadTune}
+          data={tuneFileData}
+          onRemove={removeTuneFile}
+          iconRender={tuneIcon}
+          disabled={isPublished}
+          onPreview={noop}
+          accept=".msq"
+        >
+          {tuneFile === null && uploadButton}
+        </Upload>
+        {tuneFile && optionalSection}
+      </Form>
     </div>
   );
 };
