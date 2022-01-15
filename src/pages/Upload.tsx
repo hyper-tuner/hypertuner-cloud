@@ -98,7 +98,6 @@ const toothLogIcon = () => <SettingOutlined />;
 const iniIcon = () => <FileTextOutlined />;
 
 const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
-const baseUploadPath = 'public/users';
 
 const UploadPage = () => {
   const [newTuneId, setNewTuneId] = useState<string>();
@@ -202,23 +201,23 @@ const UploadPage = () => {
   };
 
   const tuneFileData = () => ({
-    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`,
+    path: `${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`,
   });
 
   const logFileData = (file: UploadFile) => {
     const { name } = file;
     const extension = name.split('.').pop();
     return {
-      path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`,
+      path: `${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`,
     };
   };
 
   const toothLogFilesData = () => ({
-    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`,
+    path: `${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`,
   });
 
   const customIniFileData = () => ({
-    path: `${baseUploadPath}/${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.ini.gz`,
+    path: `${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.ini.gz`,
   });
 
   const uploadTune = async (options: UploadRequestOption) => {
@@ -512,7 +511,7 @@ const UploadPage = () => {
         </Col>
         <Col span={12}>
           <Item name="displacement" rules={requiredRules}>
-            <InputNumber addonBefore="Displacement" addonAfter="l" min={0.0} />
+            <InputNumber addonBefore="Displacement" addonAfter="l" min={0} max={100} />
           </Item>
         </Col>
       </Row>
