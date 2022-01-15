@@ -46,18 +46,13 @@ import {
 } from './auth/notifications';
 import { useAuth } from '../contexts/AuthContext';
 import { Routes } from '../routes';
-import {
-  storage,
-  storageRef,
-  uploadBytesResumable,
-  deleteObject,
-} from '../firebase';
 import useBrowserStorage from '../hooks/useBrowserStorage';
 import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 import { TuneDbData } from '../types/dbData';
 import useDb from '../hooks/useDb';
+import useServerStorage from '../hooks/useServerStorage';
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -121,6 +116,7 @@ const UploadPage = () => {
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useBrowserStorage();
   const { updateData, getTune } = useDb();
+  const { removeFile, uploadFile } = useServerStorage();
 
   // details
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
@@ -148,14 +144,6 @@ const UploadPage = () => {
   };
 
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
-
-  const removeFile = async (path: string) => {
-    try {
-      return await deleteObject(storageRef(storage, path));
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  };
 
   const publish = async () => {
     setIsLoading(true);
@@ -205,12 +193,7 @@ const UploadPage = () => {
     try {
       const buffer = await (file as File).arrayBuffer();
       const compressed = pako.deflate(new Uint8Array(buffer));
-      const uploadTask = uploadBytesResumable(storageRef(storage, path), compressed, {
-        customMetadata: {
-          name: (file as File).name,
-          size: `${(file as File).size}`,
-        },
-      });
+      const uploadTask = uploadFile(path, file as File, compressed);
 
       uploadTask.on(
         'state_changed',
@@ -253,7 +236,7 @@ const UploadPage = () => {
 
   const uploadTune = async (options: UploadRequestOption) => {
     const found = await getTune(newTuneId!);
-    if (found) {
+    if (!found) {
       const tuneData: TuneDbData = {
         userUid: currentUser!.uid,
         createdAt: new Date(),

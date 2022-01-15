@@ -8,6 +8,8 @@ import {
 } from '../firebase';
 import { TuneDbData } from '../types/dbData';
 
+const TUNES_PATH = 'publicTunes';
+
 const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
 
 const useDb = () => {
@@ -40,8 +42,8 @@ const useDb = () => {
   };
 
   return {
-    getTune: (tuneId: string): Promise<TuneDbData> => getData(tuneId, 'tunes'),
-    updateData: (tuneId: string, data: TuneDbData): Promise<void> => updateData(tuneId, 'tunes', data),
+    getTune: (tuneId: string): Promise<TuneDbData> => getData(tuneId, TUNES_PATH),
+    updateData: (tuneId: string, data: TuneDbData): Promise<void> => updateData(tuneId, TUNES_PATH, data),
   };
 };
 
