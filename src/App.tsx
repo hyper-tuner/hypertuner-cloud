@@ -18,7 +18,6 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import useBrowserStorage from './hooks/useBrowserStorage';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
@@ -35,6 +34,7 @@ import {
 } from './types/state';
 import useDb from './hooks/useDb';
 import useServerStorage from './hooks/useServerStorage';
+import Info from './pages/Info';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -59,7 +59,6 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
   const margin = ui.sidebarCollapsed ? 80 : 250;
   const { getTune } = useDb();
   const { getFile } = useServerStorage();
-  const { storageSet } = useBrowserStorage();
 
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   // const lastDialogPath = storageGetSync('lastDialog');
@@ -69,21 +68,21 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
     path: Routes.TUNE_ROOT,
   }), [pathname]);
 
-  useEffect(() => {
-    const tuneId = (matchedTunePath?.params as any)?.tuneId;
-    if (tuneId) {
+  const tuneId = (matchedTunePath?.params as any)?.tuneId;
 
+  useEffect(() => {
+    if (tuneId) {
       getTune(tuneId).then(async (tuneData) => {
         const [tuneRaw, iniRaw] = await Promise.all([
-          await getFile(tuneData.tuneFile!),
-          await getFile(tuneData.customIniFile!),
+          getFile(tuneData.tuneFile!),
+          getFile(tuneData.customIniFile!),
         ]);
+
+        store.dispatch({ type: 'tuneData/load', payload: tuneData });
 
         loadTune(tuneRaw, iniRaw);
       });
 
-
-      storageSet('lastTuneId', tuneId);
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });
     }
 
@@ -96,7 +95,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
     // };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [tuneId]);
 
   const ContentFor = useCallback((props: { children: ReactNode, marginLeft?: number }) => {
     const { children, marginLeft } = props;
@@ -127,15 +126,17 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
         <TopBar tuneId={navigation.tuneId} />
         <Switch>
           <Route path={Routes.ROOT} exact>
-            {/* <Route path={Routes.ROOT} exact>
-              <Redirect to={lastDialogPath || Routes.TUNE_ROOT} />
-            </Route> */}
             <ContentFor>
               <Result
                 status="info"
                 title="This page is under construction"
                 style={{ marginTop: 50 }}
               />
+            </ContentFor>
+          </Route>
+          <Route path={Routes.TUNE_ROOT} exact>
+            <ContentFor>
+              <Info />
             </ContentFor>
           </Route>
           <Route path={Routes.TUNE_TUNE}>

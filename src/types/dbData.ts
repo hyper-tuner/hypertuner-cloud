@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface TuneDataDetails {
   readme?: string | null;
   make?: string | null;
@@ -16,8 +18,8 @@ export interface TuneDataDetails {
 
 export interface TuneDbData {
   userUid?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date | Timestamp | string;
+  updatedAt?: Date | Timestamp | string;
   isPublished?: boolean;
   isListed?: boolean;
   isPublic?: boolean;

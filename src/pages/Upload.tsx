@@ -34,7 +34,10 @@ import * as Sentry from '@sentry/browser';
 import { INI } from '@speedy-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
-import { useHistory } from 'react-router-dom';
+import {
+  generatePath,
+  useHistory,
+} from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import pako from 'pako';
 import {
@@ -47,7 +50,6 @@ import {
 } from './auth/notifications';
 import { useAuth } from '../contexts/AuthContext';
 import { Routes } from '../routes';
-import useBrowserStorage from '../hooks/useBrowserStorage';
 import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
@@ -87,7 +89,6 @@ const containerStyle = {
   margin: '0 auto',
 };
 
-const newTuneIdKey = 'newTuneId';
 const maxFileSizeMB = 10;
 const descriptionEditorHeight = 260;
 const rowProps = { gutter: 10 };
@@ -113,13 +114,16 @@ const UploadPage = () => {
   const hasNavigatorShare = navigator.share !== undefined;
   const { currentUser, refreshToken } = useAuth();
   const history = useHistory();
-  const { storageSet, storageGet, storageDelete } = useBrowserStorage();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
   const { updateData, getTune } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
   const noop = () => { };
+
+  const goToNewTune = () => history.push(generatePath(Routes.TUNE_ROOT, {
+    tuneId: newTuneId!,
+  }));
 
   const copyToClipboard = async () => {
     if (navigator.clipboard) {
@@ -156,7 +160,6 @@ const UploadPage = () => {
     });
     setIsLoading(false);
     setIsPublished(true);
-    storageDelete(newTuneIdKey);
   };
 
   const validateSize = (file: File) => Promise.resolve({
@@ -425,18 +428,12 @@ const UploadPage = () => {
       setIsUserAuthorized(true);
     } catch (error) {
       Sentry.captureException(error);
-      storageDelete(newTuneIdKey);
       console.error(error);
       genericError(error as Error);
     }
 
-    let newTuneIdTemp = await storageGet(newTuneIdKey);
-    if (!newTuneIdTemp) {
-      newTuneIdTemp = nanoidCustom();
-      await storageSet(newTuneIdKey, newTuneIdTemp);
-    }
-    setNewTuneId(newTuneIdTemp);
-  }, [currentUser, history, refreshToken, storageDelete, storageGet, storageSet]);
+    setNewTuneId(nanoidCustom());
+  }, [currentUser, history, refreshToken]);
 
   useEffect(() => {
     prepareData();
@@ -480,9 +477,7 @@ const UploadPage = () => {
           </Button> : <Button
             type="primary"
             block
-            onClick={() => {
-              window.location.href = shareUrl as string;
-            }}
+            onClick={goToNewTune}
           >
             Open
           </Button>}
