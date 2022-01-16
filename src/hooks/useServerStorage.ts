@@ -9,7 +9,7 @@ import {
   uploadBytesResumable,
 } from '../firebase';
 
-const TUNES_PATH = 'public/users';
+const BASE_PATH = 'public/users';
 
 const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
 
@@ -30,7 +30,7 @@ const useServerStorage = () => {
 
   const removeFile = async (path: string) => {
     try {
-      await deleteObject(storageRef(storage, `${TUNES_PATH}/${path}`));
+      await deleteObject(storageRef(storage, path));
 
       return Promise.resolve();
     } catch (error) {
@@ -43,7 +43,7 @@ const useServerStorage = () => {
   };
 
   const uploadFile = (path: string, file: File, data: Uint8Array) =>
-    uploadBytesResumable(storageRef(storage, `${TUNES_PATH}/${path}`), data, {
+    uploadBytesResumable(storageRef(storage, path), data, {
       customMetadata: {
         name: file.name,
         size: `${file.size}`,
@@ -54,6 +54,7 @@ const useServerStorage = () => {
     getFile: (path: string): Promise<ArrayBuffer> => getFile(path),
     removeFile: (path: string): Promise<void> => removeFile(path),
     uploadFile: (path: string, file: File, data: Uint8Array): UploadTask => uploadFile(path, file, data),
+    basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${BASE_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
   };
 };
 

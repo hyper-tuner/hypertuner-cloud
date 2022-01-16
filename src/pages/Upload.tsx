@@ -114,8 +114,8 @@ const UploadPage = () => {
   const { currentUser, refreshToken } = useAuth();
   const history = useHistory();
   const { storageSet, storageGet, storageDelete } = useBrowserStorage();
+  const { removeFile, uploadFile, basePathForFile } = useServerStorage();
   const { updateData, getTune } = useDb();
-  const { removeFile, uploadFile } = useServerStorage();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
@@ -201,23 +201,23 @@ const UploadPage = () => {
   };
 
   const tuneFileData = () => ({
-    path: `${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.msq.gz`,
+    path: basePathForFile(currentUser!.uid, newTuneId!, `tune/${nanoid()}.msq.gz`),
   });
 
   const logFileData = (file: UploadFile) => {
     const { name } = file;
     const extension = name.split('.').pop();
     return {
-      path: `${currentUser!.uid}/tunes/${newTuneId}/logs/${nanoid()}.${extension}.gz`,
+      path: basePathForFile(currentUser!.uid, newTuneId!, `logs/${nanoid()}.${extension}.gz`),
     };
   };
 
   const toothLogFilesData = () => ({
-    path: `${currentUser!.uid}/tunes/${newTuneId}/tooth-logs/${nanoid()}.csv.gz`,
+    path: basePathForFile(currentUser!.uid, newTuneId!, `tooth-logs/${nanoid()}.csv.gz`),
   });
 
   const customIniFileData = () => ({
-    path: `${currentUser!.uid}/tunes/${newTuneId}/${nanoid()}.ini.gz`,
+    path: basePathForFile(currentUser!.uid, newTuneId!, `ini/${nanoid()}.ini.gz`),
   });
 
   const uploadTune = async (options: UploadRequestOption) => {
@@ -347,10 +347,17 @@ const UploadPage = () => {
         return { result, message };
       }
 
-      // TODO: change to common interface, add some validation method
-      // Create INI parser
-      const parser = new INI((new TextDecoder()).decode(await file.arrayBuffer()));
-      const valid = parser.parse().megaTune.signature.length > 0;
+      let validationMessage = 'INI file is empty or not valid!';
+      let valid = false;
+      try {
+        // TODO: change to common interface, add some validation method
+        // Create INI parser
+        const parser = new INI(await file.arrayBuffer()).parse();
+        valid = parser.getResults().megaTune.signature.length > 0;
+      } catch (error) {
+        valid = false;
+        validationMessage = (error as Error).message;
+      }
 
       if (valid) {
         setCustomIniFile(tune);
@@ -358,7 +365,7 @@ const UploadPage = () => {
 
       return {
         result: valid,
-        message: 'INI file is empty or not valid!',
+        message: validationMessage,
       };
     });
   };
