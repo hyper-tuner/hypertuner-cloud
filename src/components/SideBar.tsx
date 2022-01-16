@@ -86,7 +86,7 @@ const SideBar = ({
   const { isConfigReady } = useConfig(config);
   const checkCondition = useCallback((condition: string) => evaluateExpression(condition, tune.constants, config), [tune.constants, config]);
   const buildUrl = useCallback((main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
-    tuneId: navigation.tuneId || 'not-ready',
+    tuneId: navigation.tuneId!,
     category: main,
     dialog: sub,
   }), [navigation.tuneId]);

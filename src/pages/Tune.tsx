@@ -42,7 +42,7 @@ const Tune = ({ navigation, config }: { navigation: NavigationState, config: Con
     const firstCategory = Object.keys(config.menus)[0];
     const firstDialog = Object.keys(config.menus[firstCategory].subMenus)[0];
     return generatePath(Routes.TUNE_DIALOG, {
-      tuneId: navigation.tuneId || 'not-ready',
+      tuneId: navigation.tuneId!,
       category: firstCategory,
       dialog: firstDialog,
     });

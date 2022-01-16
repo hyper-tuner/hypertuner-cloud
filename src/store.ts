@@ -9,6 +9,7 @@ import {
   AppState,
   ConfigState,
   LogsState,
+  TuneDataState,
   TuneState,
   UpdateTunePayload,
 } from './types/state';
@@ -16,6 +17,7 @@ import {
 // tune and config
 const updateTune = createAction<UpdateTunePayload>('tune/update');
 const loadTune = createAction<TuneState>('tune/load');
+const loadTuneData = createAction<TuneDataState>('tuneData/load');
 const loadConfig = createAction<ConfigState>('config/load');
 
 // navigation
@@ -35,6 +37,7 @@ const initialState: AppState = {
   tune: {
     constants: {},
   },
+  tuneData: {},
   logs: [],
   config: {} as any,
   ui: {
@@ -55,6 +58,9 @@ const rootReducer = createReducer(initialState, (builder) => {
     })
     .addCase(loadTune, (state: AppState, action) => {
       state.tune = action.payload;
+    })
+    .addCase(loadTuneData, (state: AppState, action) => {
+      state.tuneData = action.payload;
     })
     .addCase(loadLogs, (state: AppState, action) => {
       state.logs = action.payload;

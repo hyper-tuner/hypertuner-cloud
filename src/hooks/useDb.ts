@@ -1,5 +1,6 @@
 import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
+import { Timestamp } from 'firebase/firestore';
 import {
   fireStoreDoc,
   getDoc,
@@ -16,8 +17,13 @@ const useDb = () => {
   const getData = async (tuneId: string) => {
     try {
       const tune = (await getDoc(fireStoreDoc(db, TUNES_PATH, tuneId))).data() as TuneDbData;
+      const processed = {
+        ...tune,
+        createdAt: (tune?.createdAt as Timestamp)?.toDate().toISOString(),
+        updatedAt: (tune?.updatedAt as Timestamp)?.toDate().toISOString(),
+      };
 
-      return Promise.resolve(tune);
+      return Promise.resolve(processed);
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);

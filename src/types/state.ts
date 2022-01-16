@@ -3,10 +3,13 @@ import {
   Logs,
   Tune,
 } from '@speedy-tuner/types';
+import { TuneDbData } from './dbData';
 
 export interface ConfigState extends Config {}
 
 export interface TuneState extends Tune {}
+
+export interface TuneDataState extends TuneDbData {}
 
 export interface LogsState extends Logs {}
 
@@ -24,6 +27,7 @@ export interface NavigationState {
 
 export interface AppState {
   tune: TuneState;
+  tuneData: TuneDataState;
   config: ConfigState;
   logs: LogsState,
   ui: UIState;

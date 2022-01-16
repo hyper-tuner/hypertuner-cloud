@@ -39,6 +39,7 @@ import {
   FundOutlined,
   UserAddOutlined,
   LogoutOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -69,6 +70,9 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const { currentUser, logout } = useAuth();
   const history = useHistory();
   const buildTuneUrl = (route: string) => tuneId ? generatePath(route, { tuneId }) : null;
+  const matchedTuneRootPath = useMemo(() => matchPath(pathname, {
+    path: Routes.TUNE_ROOT,
+  }), [pathname]);
   const matchedTabPath = useMemo(() => matchPath(pathname, {
     path: Routes.TUNE_TAB,
   }), [pathname]);
@@ -106,11 +110,17 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     <Col span={10} md={10} sm={16} style={{ textAlign: 'center' }}>
       <Radio.Group
         key={pathname}
-        defaultValue={matchedTabPath?.url}
+        defaultValue={matchedTabPath?.url || matchedTuneRootPath?.url}
         optionType="button"
         buttonStyle="solid"
         onChange={(e) => history.push(e.target.value)}
       >
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_ROOT)}>
+          <Space>
+            <InfoCircleOutlined />
+            {sm && 'Info'}
+          </Space>
+        </Radio.Button>
         <Radio.Button value={buildTuneUrl(Routes.TUNE_TUNE)}>
           <Space>
             <ToolOutlined />
