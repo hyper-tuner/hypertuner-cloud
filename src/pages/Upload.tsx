@@ -92,6 +92,7 @@ const containerStyle = {
 const maxFileSizeMB = 10;
 const descriptionEditorHeight = 260;
 const rowProps = { gutter: 10 };
+const colProps = { span: 24, sm: 12 };
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
@@ -492,55 +493,55 @@ const UploadPage = () => {
         <Space>Details</Space>
       </Divider>
       <Row {...rowProps}>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="make" rules={requiredRules}>
             <Input addonBefore="Make"/>
           </Item>
         </Col>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="model" rules={requiredRules}>
             <Input addonBefore="Model"/>
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="year" rules={requiredRules}>
             <InputNumber addonBefore="Year" style={{ width: '100%' }} min={1886} max={2222} />
           </Item>
         </Col>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="displacement" rules={requiredRules}>
             <InputNumber addonBefore="Displacement" addonAfter="l" min={0} max={100} />
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="hp">
             <InputNumber addonBefore="HP" style={{ width: '100%' }} min={0} />
           </Item>
         </Col>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="stockHp">
             <InputNumber addonBefore="Stock HP" style={{ width: '100%' }} min={0} />
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="engineCode">
             <Input addonBefore="Engine code"/>
           </Item>
         </Col>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="cylindersCount">
             <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} />
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="aspiration">
             <Select placeholder="Aspiration" style={{ width: '100%' }}>
               <Select.Option value="na">Naturally aspirated</Select.Option>
@@ -549,19 +550,19 @@ const UploadPage = () => {
             </Select>
           </Item>
         </Col>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="fuel">
             <Input addonBefore="Fuel" />
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="injectorsSize">
             <InputNumber addonBefore="Injectors size" addonAfter="cc" min={0} />
           </Item>
         </Col>
-        <Col span={12}>
+        <Col {...colProps}>
           <Item name="coils">
             <Input addonBefore="Coils" />
           </Item>

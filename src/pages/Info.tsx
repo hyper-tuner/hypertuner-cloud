@@ -21,6 +21,7 @@ const containerStyle = {
   margin: '0 auto',
 };
 const rowProps = { gutter: 10 };
+const colProps = { span: 24, sm: 12 };
 
 const mapStateToProps = (state: AppState) => ({
   tuneData: state.tuneData,
@@ -40,55 +41,55 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       <Divider>Details</Divider>
       <Form>
         <Row {...rowProps}>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.make!} addonBefore="Make" />
             </Item>
           </Col>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.model!} addonBefore="Model" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.year!} addonBefore="Year" style={{ width: '100%' }} />
             </Item>
           </Col>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.displacement!} addonBefore="Displacement" addonAfter="l" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.hp!} addonBefore="HP" style={{ width: '100%' }} />
             </Item>
           </Col>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.stockHp!} addonBefore="Stock HP" style={{ width: '100%' }} />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.engineCode!} addonBefore="Engine code" />
             </Item>
           </Col>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.cylindersCount!} addonBefore="No of cylinders" style={{ width: '100%' }} />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Select placeholder="Aspiration" style={{ width: '100%' }} value={tuneData.details.aspiration}>
                 <Select.Option value="na">Naturally aspirated</Select.Option>
@@ -97,19 +98,19 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
               </Select>
             </Item>
           </Col>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.fuel!} addonBefore="Fuel" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.injectorsSize!} addonBefore="Injectors size" addonAfter="cc" />
             </Item>
           </Col>
-          <Col span={12}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData.details.coils!} addonBefore="Coils" />
             </Item>

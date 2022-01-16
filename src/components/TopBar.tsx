@@ -107,7 +107,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   });
 
   const tabs = (
-    <Col span={10} md={10} sm={16} style={{ textAlign: 'center' }}>
+    <Col span={14} md={12} sm={16} style={{ textAlign: 'center' }}>
       <Radio.Group
         key={pathname}
         defaultValue={matchedTabPath?.url || matchedTuneRootPath?.url}
@@ -146,11 +146,11 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   return (
     <Header className="app-top-bar">
       <Row>
-        <Col span={0} md={6} sm={0} />
+        <Col span={0} md={4} sm={0} />
         {tuneId ? tabs : <Col span={10} md={10} sm={16} />}
-        <Col span={12} md={8} sm={8} style={{ textAlign: 'right' }}>
+        <Col span={10} md={8} sm={8} style={{ textAlign: 'right' }}>
           <Space>
-            <Tooltip visible={false} title={
+            {sm && <Tooltip visible={false} title={
               <>
                 <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
                 <Typography.Text keyboard>SHIFT</Typography.Text>
@@ -158,7 +158,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
               </>
             }>
               <Button disabled icon={<SearchOutlined />} ref={searchInput} />
-            </Tooltip>
+            </Tooltip>}
             <Link to={Routes.UPLOAD}>
               <Button icon={<CloudUploadOutlined />} type={matchedTabPath?.url === Routes.UPLOAD ? 'primary' : 'default'}>
                 {lg && 'Upload'}
@@ -195,7 +195,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
             >
               <Button icon={<CloudDownloadOutlined />}>
                 {lg && 'Download'}
-                <DownOutlined />
+                {sm && <DownOutlined />}
               </Button>
             </Dropdown>
             <Dropdown
@@ -224,7 +224,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
               trigger={['click']}
             >
               <Button icon={<UserOutlined />}>
-                <DownOutlined />
+                {sm && <DownOutlined />}
               </Button>
             </Dropdown>
           </Space>
