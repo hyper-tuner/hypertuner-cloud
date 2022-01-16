@@ -22,7 +22,7 @@ export const loadTune = async (tuneRaw: ArrayBuffer, iniRaw: ArrayBuffer) => {
   }
 
   const buff = pako.inflate(new Uint8Array(iniRaw));
-  const config = new INI((new TextDecoder()).decode(buff)).parse();
+  const config = new INI(buff).parse().getResults();
 
   // override / merge standard dialogs, constants and help
   config.dialogs = {
