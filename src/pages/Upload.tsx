@@ -350,8 +350,6 @@ const UploadPage = () => {
       let validationMessage = 'INI file is empty or not valid!';
       let valid = false;
       try {
-        // TODO: change to common interface, add some validation method
-        // Create INI parser
         const parser = new INI(await file.arrayBuffer()).parse();
         valid = parser.getResults().megaTune.signature.length > 0;
       } catch (error) {
