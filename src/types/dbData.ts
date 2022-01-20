@@ -22,7 +22,6 @@ export interface TuneDbData {
   updatedAt?: Date | Timestamp | string;
   isPublished?: boolean;
   isListed?: boolean;
-  isPublic?: boolean;
   tuneFile?: string | null;
   logFiles?: string[];
   toothLogFiles?: string[];

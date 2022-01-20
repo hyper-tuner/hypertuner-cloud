@@ -88,18 +88,18 @@ const containerStyle = {
   maxWidth: 600,
   margin: '0 auto',
 };
+const rowProps = { gutter: 10 };
+const colProps = { span: 24, sm: 12 };
 
 const maxFileSizeMB = 10;
 const descriptionEditorHeight = 260;
-const rowProps = { gutter: 10 };
-const colProps = { span: 24, sm: 12 };
+const thisYear = (new Date()).getFullYear();
+const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
 const iniIcon = () => <FileTextOutlined />;
-
-const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
 
 const UploadPage = () => {
   const [newTuneId, setNewTuneId] = useState<string>();
@@ -141,7 +141,6 @@ const UploadPage = () => {
     await updateData(newTuneId!, {
       updatedAt: new Date(),
       isPublished: true,
-      isPublic: values.isPublic,
       isListed: values.isListed,
       details: {
         readme: readme || null,
@@ -232,7 +231,6 @@ const UploadPage = () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         isPublished: false,
-        isPublic: true,
         isListed: true,
         tuneFile: null,
         logFiles: [],
@@ -507,7 +505,7 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="year" rules={requiredRules}>
-            <InputNumber addonBefore="Year" style={{ width: '100%' }} min={1886} max={2222} />
+            <InputNumber addonBefore="Year" style={{ width: '100%' }} min={1886} max={thisYear} />
           </Item>
         </Col>
         <Col {...colProps}>
@@ -597,9 +595,6 @@ const UploadPage = () => {
       <Divider>
         Visibility
       </Divider>
-      <Item name="isPublic" label="Public:" valuePropName="checked">
-        <Switch disabled />
-      </Item>
       <Item name="isListed" label="Listed:" valuePropName="checked">
         <Switch />
       </Item>
@@ -692,7 +687,6 @@ const UploadPage = () => {
         onFinish={publish}
         initialValues={{
           readme: '# My Tune\n\ndescription',
-          isPublic: true,
           isListed: true,
         }}
       >
