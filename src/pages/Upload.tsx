@@ -139,6 +139,7 @@ const UploadPage = () => {
   const publish = async (values: any) => {
     setIsLoading(true);
     await updateData(newTuneId!, {
+      createdAt: new Date(),
       updatedAt: new Date(),
       isPublished: true,
       isListed: values.isListed,
@@ -585,7 +586,7 @@ const UploadPage = () => {
           </Item>
         </Tabs.TabPane>
         <Tabs.TabPane tab="Preview" key="preview" style={{ height: descriptionEditorHeight }}>
-          <div className="markdown-preview" style={{ height: '100%' }}>
+          <div className="markdown-preview">
             <ReactMarkdown>
               {readme}
             </ReactMarkdown>
