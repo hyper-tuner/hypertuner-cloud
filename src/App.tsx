@@ -24,8 +24,6 @@ import { Routes } from './routes';
 import { loadTune } from './utils/api';
 import store from './store';
 import Log from './pages/Log';
-
-import 'react-perfect-scrollbar/dist/css/styles.css';
 import './App.less';
 import {
   AppState,
@@ -35,6 +33,8 @@ import {
 import useDb from './hooks/useDb';
 import useServerStorage from './hooks/useServerStorage';
 import Info from './pages/Info';
+
+import 'react-perfect-scrollbar/dist/css/styles.css';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
