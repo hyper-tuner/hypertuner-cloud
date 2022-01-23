@@ -48,7 +48,10 @@ import {
 } from '@ant-design/icons';
 import { useKBar } from 'kbar';
 import store from '../store';
-import { isMac } from '../utils/env';
+import {
+  isMac,
+  isFirefox,
+} from '../utils/env';
 import {
   isCommand,
   isToggleSidebar,
@@ -91,6 +94,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
 
   const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
     if (isCommand(e)) {
+      e.preventDefault();
       toggleCommandPalette();
     }
 
@@ -161,11 +165,17 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         <Col {...rightMenuColProps} style={{ textAlign: 'right' }}>
           <Space>
             {sm && <Tooltip title={
-              <>
-                <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
-                <Typography.Text keyboard>SHIFT</Typography.Text>
-                <Typography.Text keyboard>P</Typography.Text>
-              </>
+              isFirefox ?
+                (<>
+                  <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
+                  <Typography.Text keyboard>K</Typography.Text>
+                </>)
+                :
+                (<>
+                  <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
+                  <Typography.Text keyboard>SHIFT</Typography.Text>
+                  <Typography.Text keyboard>P</Typography.Text>
+                </>)
             }>
               <Button icon={<SearchOutlined />} onClick={toggleCommandPalette} />
             </Tooltip>}
