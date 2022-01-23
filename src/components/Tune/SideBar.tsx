@@ -21,7 +21,6 @@ import {
 } from '@speedy-tuner/types';
 import store from '../../store';
 import Icon from '../SideBar/Icon';
-import { evaluateExpression } from '../../utils/tune/expression';
 import { Routes } from '../../routes';
 import useConfig from '../../hooks/useConfig';
 import {
@@ -80,7 +79,6 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
     onCollapse: (collapsed: boolean) => store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed }),
   } as any;
   const { isConfigReady } = useConfig(config);
-  const checkCondition = useCallback((condition: string) => evaluateExpression(condition, tune.constants, config), [tune.constants, config]);
   const buildUrl = useCallback((main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
     tuneId: navigation.tuneId!,
     category: main,
@@ -109,18 +107,11 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
             if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
               return null;
             }
-
             const subMenu = types[menuName].subMenus[subMenuName];
-            let enabled = true;
-
-            if (subMenu.condition) {
-              enabled = checkCondition(subMenu.condition);
-            }
 
             return (<Menu.Item
               key={buildUrl(menuName, subMenuName)}
               icon={<Icon name={subMenuName} />}
-              disabled={!enabled}
             >
               <Link to={buildUrl(menuName, subMenuName)}>
                 {subMenu.title}
@@ -130,7 +121,7 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
         </SubMenu>
       );
     })
-  ), [buildUrl, checkCondition]);
+  ), [buildUrl]);
 
   useEffect(() => {
     if (Object.keys(tune.constants).length) {
