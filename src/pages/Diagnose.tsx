@@ -38,12 +38,12 @@ import {
 } from '../utils/api';
 import store from '../store';
 import { formatBytes } from '../utils/number';
-import CompositeCanvas from '../components/TriggerLog/CompositeCanvas';
+import CompositeCanvas from '../components/TriggerLogs/CompositeCanvas';
 import TriggerLogsParser, {
   CompositeLogEntry,
   ToothLogEntry,
 } from '../utils/logs/TriggerLogsParser';
-import ToothCanvas from '../components/TriggerLog/ToothCanvas';
+import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;

@@ -23,7 +23,7 @@ import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
 import { loadTune } from './utils/api';
 import store from './store';
-import Log from './pages/Log';
+import Logs from './pages/Logs';
 import './App.less';
 import {
   AppState,
@@ -146,7 +146,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
           </Route>
           <Route path={Routes.TUNE_LOGS} exact>
             <ContentFor marginLeft={margin}>
-              <Log />
+              <Logs />
             </ContentFor>
           </Route>
           <Route path={Routes.TUNE_DIAGNOSE} exact>

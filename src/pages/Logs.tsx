@@ -31,12 +31,12 @@ import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
 import {
   Config,
   OutputChannel,
-  Logs,
+  Logs as LogsType,
   DatalogEntry,
   Tune as TuneType,
 } from '@speedy-tuner/types';
 import { loadLogs } from '../utils/api';
-import LogCanvas from '../components/Log/LogCanvas';
+import LogCanvas from '../components/Logs/LogCanvas';
 import store from '../store';
 import {
   formatBytes,
@@ -68,7 +68,7 @@ const mapStateToProps = (state: AppState) => ({
   loadedLogs: state.logs,
 });
 
-const Log = ({
+const Logs = ({
   ui,
   config,
   tune,
@@ -77,7 +77,7 @@ const Log = ({
   ui: UIState,
   tune: TuneType,
   config: Config,
-  loadedLogs: Logs,
+  loadedLogs: LogsType,
 }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -265,7 +265,7 @@ const Log = ({
             {logs || !!loadedLogs.length
               ?
               <LogCanvas
-                data={loadedLogs || (logs!.records as Logs)}
+                data={loadedLogs || (logs!.records as LogsType)}
                 width={canvasWidth}
                 height={canvasHeight}
                 selectedFields1={prepareSelectedFields(selectedFields1)}
@@ -316,4 +316,4 @@ const Log = ({
   );
 };
 
-export default connect(mapStateToProps)(Log);
+export default connect(mapStateToProps)(Logs);
