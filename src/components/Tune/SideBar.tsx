@@ -19,19 +19,38 @@ import {
   Menus as MenusType,
   Tune as TuneType,
 } from '@speedy-tuner/types';
-import store from '../store';
-import Icon from './SideBar/Icon';
-import { evaluateExpression } from '../utils/tune/expression';
-import { Routes } from '../routes';
-import useConfig from '../hooks/useConfig';
+import store from '../../store';
+import Icon from '../SideBar/Icon';
+import { Routes } from '../../routes';
+import useConfig from '../../hooks/useConfig';
 import {
   AppState,
   NavigationState,
   UIState,
-} from '../types/state';
+} from '../../types/state';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
+
+export const SKIP_MENUS = [
+  'help',
+  'hardwareTesting',
+  '3dTuningMaps',
+  'dataLogging',
+  'tools',
+];
+
+export const SKIP_SUB_MENUS = [
+  'settings/gaugeLimits',
+  'settings/io_summary',
+  'tuning/std_realtime',
+];
+
+export const buildUrl = (tuneId: string, main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
+  tuneId,
+  category: main,
+  dialog: sub,
+});
 
 export interface DialogMatchedPathType {
   url: string;
@@ -48,33 +67,15 @@ const mapStateToProps = (state: AppState) => ({
   navigation: state.navigation,
 });
 
-const SKIP_MENUS = [
-  'help',
-  'hardwareTesting',
-  '3dTuningMaps',
-  'dataLogging',
-  'tools',
-];
+interface SideBarProps {
+  config: ConfigType;
+  tune: TuneType;
+  ui: UIState;
+  navigation: NavigationState;
+  matchedPath: DialogMatchedPathType;
+};
 
-const SKIP_SUB_MENUS = [
-  'settings/gaugeLimits',
-  'settings/io_summary',
-  'tuning/std_realtime',
-];
-
-const SideBar = ({
-  config,
-  tune,
-  ui,
-  navigation,
-  matchedPath,
-}: {
-  config: ConfigType,
-  tune: TuneType,
-  ui: UIState,
-  navigation: NavigationState,
-  matchedPath: DialogMatchedPathType,
-}) => {
+const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) => {
   const sidebarWidth = 250;
   const siderProps = {
     width: sidebarWidth,
@@ -84,12 +85,6 @@ const SideBar = ({
     onCollapse: (collapsed: boolean) => store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed }),
   } as any;
   const { isConfigReady } = useConfig(config);
-  const checkCondition = useCallback((condition: string) => evaluateExpression(condition, tune.constants, config), [tune.constants, config]);
-  const buildUrl = useCallback((main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
-    tuneId: navigation.tuneId!,
-    category: main,
-    dialog: sub,
-  }), [navigation.tuneId]);
   const [menus, setMenus] = useState<any[]>([]);
 
   const menusList = useCallback((types: MenusType) => (
@@ -103,29 +98,23 @@ const SideBar = ({
           key={`/${menuName}`}
           icon={<Icon name={menuName} />}
           title={types[menuName].title}
+          onTitleClick={() => store.dispatch({ type: 'ui/sidebarCollapsed', payload: false })}
         >
           {Object.keys(types[menuName].subMenus).map((subMenuName: string) => {
             if (subMenuName === 'std_separator') {
-              return <Menu.Divider key={buildUrl(menuName, subMenuName)} />;
+              return <Menu.Divider key={buildUrl(navigation.tuneId!, menuName, subMenuName)} />;
             }
 
             if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
               return null;
             }
-
             const subMenu = types[menuName].subMenus[subMenuName];
-            let enabled = true;
-
-            if (subMenu.condition) {
-              enabled = checkCondition(subMenu.condition);
-            }
 
             return (<Menu.Item
-              key={buildUrl(menuName, subMenuName)}
+              key={buildUrl(navigation.tuneId!, menuName, subMenuName)}
               icon={<Icon name={subMenuName} />}
-              disabled={!enabled}
             >
-              <Link to={buildUrl(menuName, subMenuName)}>
+              <Link to={buildUrl(navigation.tuneId!, menuName, subMenuName)}>
                 {subMenu.title}
               </Link>
             </Menu.Item>);
@@ -133,7 +122,7 @@ const SideBar = ({
         </SubMenu>
       );
     })
-  ), [buildUrl, checkCondition]);
+  ), [navigation.tuneId]);
 
   useEffect(() => {
     if (Object.keys(tune.constants).length) {
