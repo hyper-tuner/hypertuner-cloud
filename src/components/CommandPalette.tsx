@@ -31,6 +31,8 @@ import {
   logOutFailed,
   logOutSuccessful,
 } from '../pages/auth/notifications';
+import store from '../store';
+import { isMac } from '../utils/env';
 
 enum Sections {
   NAVIGATION = 'Navigation',
@@ -197,6 +199,12 @@ const CommandPalette = (props: { children: ReactNode }) => {
   }, [logout]);
 
   const initialActions = useMemo(() => [
+    {
+      id: 'ToggleSidebar',
+      name: 'Toggle Sidebar',
+      shortcut: [isMac ? '⌘' : 'ctrl', '\\'],
+      perform: () => store.dispatch({ type: 'ui/toggleSidebar' }),
+    },
     {
       id: 'UploadAction',
       name: 'Upload',
