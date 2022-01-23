@@ -6,7 +6,7 @@ export enum Routes {
   TUNE_TAB = '/t/:tuneId/:tab',
   TUNE_TUNE = '/t/:tuneId/tune',
   TUNE_DIALOG = '/t/:tuneId/tune/:category/:dialog',
-  TUNE_LOG = '/t/:tuneId/log',
+  TUNE_LOGS = '/t/:tuneId/logs',
   TUNE_DIAGNOSE = '/t/:tuneId/diagnose',
 
   LOGIN = '/auth/login',

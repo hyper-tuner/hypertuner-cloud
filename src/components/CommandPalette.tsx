@@ -27,8 +27,14 @@ import {
   LoginOutlined,
   UserAddOutlined,
   LogoutOutlined,
+  InfoCircleOutlined,
+  FundOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
-import { useHistory } from 'react-router';
+import {
+  useHistory,
+  generatePath,
+} from 'react-router';
 import {
   Config as ConfigType,
   Tune as TuneType,
@@ -56,6 +62,23 @@ import Icon from './SideBar/Icon';
 enum Sections {
   NAVIGATION = 'Navigation',
   AUTH = 'Authentication',
+  TUNE = 'Tune',
+  LOG = 'Log',
+  DIAGNOSE = 'Diagnose',
+};
+
+const mapStateToProps = (state: AppState) => ({
+  config: state.config,
+  tune: state.tune,
+  ui: state.ui,
+  navigation: state.navigation,
+});
+
+interface CommandPaletteProps {
+  config: ConfigType;
+  tune: TuneType;
+  navigation: NavigationState;
+  children?: ReactNode;
 };
 
 const searchStyle = {
@@ -202,19 +225,7 @@ const RenderResults = () => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  config: state.config,
-  tune: state.tune,
-  ui: state.ui,
-  navigation: state.navigation,
-});
-
-interface CommandPaletteProps {
-  config: ConfigType;
-  tune: TuneType;
-  navigation: NavigationState;
-  children?: ReactNode;
-};
+const buildTuneUrl = (tuneId: string, route: string) => generatePath(route, { tuneId });
 
 const ActionsProvider = (props: CommandPaletteProps) => {
   const { config, tune, navigation } = props;
@@ -222,7 +233,32 @@ const ActionsProvider = (props: CommandPaletteProps) => {
   const history = useHistory();
 
   const generateActions = useCallback((types: MenusType) => {
-    const newActions: Action[] = [];
+    const newActions: Action[] = [
+      {
+        id: 'InfoAction',
+        section: Sections.TUNE,
+        name: 'Info',
+        subtitle: 'Basic information about this tune.',
+        icon: <InfoCircleOutlined />,
+        perform: () => history.push(buildTuneUrl(navigation.tuneId!, Routes.TUNE_ROOT)),
+      },
+      {
+        id: 'LogsAction',
+        section: Sections.LOG,
+        name: 'Logs',
+        subtitle: 'Log viewer.',
+        icon: <FundOutlined />,
+        perform: () => history.push(buildTuneUrl(navigation.tuneId!, Routes.TUNE_LOGS)),
+      },
+      {
+        id: 'DiagnoseAction',
+        section: Sections.DIAGNOSE,
+        name: 'Diagnose',
+        subtitle: 'Tooth and composite logs viewer.',
+        icon: <SettingOutlined />,
+        perform: () => history.push(buildTuneUrl(navigation.tuneId!, Routes.TUNE_DIAGNOSE)),
+      },
+    ];
 
     Object.keys(types).forEach((menuName: string) => {
       if (SKIP_MENUS.includes(menuName)) {

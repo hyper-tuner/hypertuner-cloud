@@ -131,10 +131,10 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
             {sm && 'Tune'}
           </Space>
         </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOG)}>
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOGS)}>
           <Space>
             <FundOutlined />
-            {sm && 'Log'}
+            {sm && 'Logs'}
           </Space>
         </Radio.Button>
         <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)}>

@@ -144,7 +144,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
               <Tune />
             </ContentFor>
           </Route>
-          <Route path={Routes.TUNE_LOG} exact>
+          <Route path={Routes.TUNE_LOGS} exact>
             <ContentFor marginLeft={margin}>
               <Log />
             </ContentFor>
