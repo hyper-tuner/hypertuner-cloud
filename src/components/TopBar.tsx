@@ -143,12 +143,22 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     </Col>
   );
 
+  const rightMenuColProps = tuneId ? {
+    span: 10,
+    md: 8,
+    sm: 8,
+  } : {
+    span: 14,
+    md: 10,
+    sm: 8,
+  };
+
   return (
     <Header className="app-top-bar">
       <Row>
         <Col span={0} md={4} sm={0} />
         {tuneId ? tabs : <Col span={10} md={10} sm={16} />}
-        <Col span={10} md={8} sm={8} style={{ textAlign: 'right' }}>
+        <Col {...rightMenuColProps} style={{ textAlign: 'right' }}>
           <Space>
             {sm && <Tooltip visible={false} title={
               <>
