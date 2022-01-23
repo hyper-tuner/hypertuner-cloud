@@ -11,6 +11,7 @@ import {
   sentryDsn,
 } from './utils/env';
 import { AuthProvider } from './contexts/AuthContext';
+import CommandPalette from './components/CommandPalette';
 
 if (isProduction) {
   Sentry.init({
@@ -25,7 +26,9 @@ ReactDOM.render(
   <HashRouter>
     <AuthProvider>
       <Provider store={store}>
-        <App />
+        <CommandPalette>
+          <App />
+        </CommandPalette>
       </Provider>
     </AuthProvider>
   </HashRouter>,

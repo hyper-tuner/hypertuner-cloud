@@ -5,6 +5,14 @@
 @import './themes/common.less';
 @import './themes/ant.less';
 
+:root {
+  --background: @component-background;
+  --foreground: @text;
+  --a1: @main;
+  --border: @border-color-split;
+  --shadow: @shadow-2;
+}
+
 body {
   overflow: hidden;
 }
@@ -90,7 +98,7 @@ html, body {
 
   td {
     text-align: center;
-    border: 1px solid @main-light;
+    border: 1px solid @component-background;
     height: 50px;
     // transition: all 0.1s;
 
@@ -142,12 +150,12 @@ select:-webkit-autofill:focus {
 }
 
 .markdown-preview {
-  background-color: @main-light;
+  background-color: @component-background;
   padding: 5px 11px;
   border-style: solid;
   border-width: 1px;
   border-radius: @border-radius-base;
-  border-color: @main-dark;
+  border-color: @border-color-split;
 
   h1 {
     font-size: 2em;
