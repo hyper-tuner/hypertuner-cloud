@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { useMemo } from 'react';
 import { Config as ConfigType } from '@speedy-tuner/types';
 import Dialog from '../components/Tune/Dialog';
-import SideBar, { DialogMatchedPathType } from '../components/SideBar';
+import SideBar, { DialogMatchedPathType } from '../components/Tune/SideBar';
 import { Routes } from '../routes';
 import useBrowserStorage from '../hooks/useBrowserStorage';
 import useConfig from '../hooks/useConfig';

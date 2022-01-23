@@ -19,16 +19,16 @@ import {
   Menus as MenusType,
   Tune as TuneType,
 } from '@speedy-tuner/types';
-import store from '../store';
-import Icon from './SideBar/Icon';
-import { evaluateExpression } from '../utils/tune/expression';
-import { Routes } from '../routes';
-import useConfig from '../hooks/useConfig';
+import store from '../../store';
+import Icon from '../SideBar/Icon';
+import { evaluateExpression } from '../../utils/tune/expression';
+import { Routes } from '../../routes';
+import useConfig from '../../hooks/useConfig';
 import {
   AppState,
   NavigationState,
   UIState,
-} from '../types/state';
+} from '../../types/state';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
