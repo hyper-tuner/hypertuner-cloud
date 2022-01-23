@@ -6,6 +6,7 @@ import {
   useMemo,
   ReactNode,
   useCallback,
+  useEffect,
 } from 'react';
 import {
   ActionId,
@@ -17,7 +18,10 @@ import {
   KBarResults,
   useMatches,
   ActionImpl,
+  Action,
+  useKBar,
 } from 'kbar';
+import { connect } from 'react-redux';
 import {
   CloudUploadOutlined,
   LoginOutlined,
@@ -25,6 +29,11 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import { useHistory } from 'react-router';
+import {
+  Config as ConfigType,
+  Tune as TuneType,
+  Menus as MenusType,
+} from '@speedy-tuner/types';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -33,6 +42,16 @@ import {
 } from '../pages/auth/notifications';
 import store from '../store';
 import { isMac } from '../utils/env';
+import {
+  AppState,
+  NavigationState,
+} from '../types/state';
+import {
+  buildUrl,
+  SKIP_MENUS,
+  SKIP_SUB_MENUS,
+} from './Tune/SideBar';
+import Icon from './SideBar/Icon';
 
 enum Sections {
   NAVIGATION = 'Navigation',
@@ -183,12 +202,71 @@ const RenderResults = () => {
   );
 };
 
-const CommandPalette = (props: { children: ReactNode }) => {
-  const { children } = props;
-  const history = useHistory();
-  const { logout } = useAuth();
+const mapStateToProps = (state: AppState) => ({
+  config: state.config,
+  tune: state.tune,
+  ui: state.ui,
+  navigation: state.navigation,
+});
 
-  const logoutAction = useCallback(async() => {
+interface CommandPaletteProps {
+  config: ConfigType;
+  tune: TuneType;
+  navigation: NavigationState;
+  children?: ReactNode;
+};
+
+const ActionsProvider = (props: CommandPaletteProps) => {
+  const { config, tune, navigation } = props;
+  const { query } = useKBar();
+  const history = useHistory();
+
+  const generateActions = useCallback((types: MenusType) => {
+    const newActions: Action[] = [];
+
+    Object.keys(types).forEach((menuName: string) => {
+      if (SKIP_MENUS.includes(menuName)) {
+        return;
+      }
+
+      Object.keys(types[menuName].subMenus).forEach((subMenuName: string) => {
+        if (subMenuName === 'std_separator') {
+          return;
+        }
+
+        if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
+          return;
+        }
+        const subMenu = types[menuName].subMenus[subMenuName];
+
+        newActions.push({
+          id: buildUrl(navigation.tuneId!, menuName, subMenuName),
+          section: types[menuName].title,
+          name: subMenu.title,
+          icon: <Icon name={subMenuName} />,
+          perform: () => history.push(buildUrl(navigation.tuneId!, menuName, subMenuName)),
+        });
+      });
+    });
+
+    return newActions;
+  }, [history, navigation.tuneId]);
+
+  useEffect(() => {
+    if (Object.keys(tune.constants).length) {
+      query.registerActions(generateActions(config.menus));
+    }
+  }, [config.menus, generateActions, query, tune.constants]);
+
+  return null;
+};
+
+const CommandPalette = (props: CommandPaletteProps) => {
+  const { children, config, tune, navigation } = props;
+  const { logout } = useAuth();
+  const history = useHistory();
+
+  const logoutAction = useCallback(async () => {
     try {
       await logout();
       logOutSuccessful();
@@ -198,7 +276,7 @@ const CommandPalette = (props: { children: ReactNode }) => {
     }
   }, [logout]);
 
-  const initialActions = useMemo(() => [
+  const initialActions = [
     {
       id: 'ToggleSidebar',
       name: 'Toggle Sidebar',
@@ -207,37 +285,37 @@ const CommandPalette = (props: { children: ReactNode }) => {
     },
     {
       id: 'UploadAction',
-      name: 'Upload',
       section: Sections.NAVIGATION,
-      icon: <CloudUploadOutlined />,
+      name: 'Upload',
       subtitle: 'Upload tune and logs.',
+      icon: <CloudUploadOutlined />,
       perform: () => history.push(Routes.UPLOAD),
     },
     {
       id: 'LoginAction',
-      name: 'Login',
       section: Sections.AUTH,
-      icon: <LoginOutlined />,
+      name: 'Login',
       subtitle: 'Login using email, Google or GitHub account.',
+      icon: <LoginOutlined />,
       perform: () => history.push(Routes.LOGIN),
     },
     {
       id: 'SignUpAction',
-      name: 'Sign-up',
       section: Sections.AUTH,
-      icon: <UserAddOutlined />,
+      name: 'Sign-up',
       subtitle: 'Create new account.',
+      icon: <UserAddOutlined />,
       perform: () => history.push(Routes.SIGN_UP),
     },
     {
       id: 'LogoutAction',
-      name: 'Logout',
       section: Sections.AUTH,
-      icon: <LogoutOutlined />,
+      name: 'Logout',
       subtitle: 'Logout current user.',
+      icon: <LogoutOutlined />,
       perform: logoutAction,
     },
-  ], [history, logoutAction]);
+  ];
 
   return (
     <KBarProvider actions={initialActions}>
@@ -249,9 +327,10 @@ const CommandPalette = (props: { children: ReactNode }) => {
           </KBarAnimator>
         </KBarPositioner>
       </KBarPortal>
+      <ActionsProvider config={config} tune={tune} navigation={navigation} />
       {children}
     </KBarProvider>
   );
 };
 
-export default CommandPalette;
+export default connect(mapStateToProps)(CommandPalette);

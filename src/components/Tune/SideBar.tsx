@@ -32,6 +32,26 @@ import {
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
+export const SKIP_MENUS = [
+  'help',
+  'hardwareTesting',
+  '3dTuningMaps',
+  'dataLogging',
+  'tools',
+];
+
+export const SKIP_SUB_MENUS = [
+  'settings/gaugeLimits',
+  'settings/io_summary',
+  'tuning/std_realtime',
+];
+
+export const buildUrl = (tuneId: string, main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
+  tuneId,
+  category: main,
+  dialog: sub,
+});
+
 export interface DialogMatchedPathType {
   url: string;
   params: {
@@ -46,20 +66,6 @@ const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   navigation: state.navigation,
 });
-
-const SKIP_MENUS = [
-  'help',
-  'hardwareTesting',
-  '3dTuningMaps',
-  'dataLogging',
-  'tools',
-];
-
-const SKIP_SUB_MENUS = [
-  'settings/gaugeLimits',
-  'settings/io_summary',
-  'tuning/std_realtime',
-];
 
 interface SideBarProps {
   config: ConfigType;
@@ -79,11 +85,6 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
     onCollapse: (collapsed: boolean) => store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed }),
   } as any;
   const { isConfigReady } = useConfig(config);
-  const buildUrl = useCallback((main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
-    tuneId: navigation.tuneId!,
-    category: main,
-    dialog: sub,
-  }), [navigation.tuneId]);
   const [menus, setMenus] = useState<any[]>([]);
 
   const menusList = useCallback((types: MenusType) => (
@@ -101,7 +102,7 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
         >
           {Object.keys(types[menuName].subMenus).map((subMenuName: string) => {
             if (subMenuName === 'std_separator') {
-              return <Menu.Divider key={buildUrl(menuName, subMenuName)} />;
+              return <Menu.Divider key={buildUrl(navigation.tuneId!, menuName, subMenuName)} />;
             }
 
             if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
@@ -110,10 +111,10 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
             const subMenu = types[menuName].subMenus[subMenuName];
 
             return (<Menu.Item
-              key={buildUrl(menuName, subMenuName)}
+              key={buildUrl(navigation.tuneId!, menuName, subMenuName)}
               icon={<Icon name={subMenuName} />}
             >
-              <Link to={buildUrl(menuName, subMenuName)}>
+              <Link to={buildUrl(navigation.tuneId!, menuName, subMenuName)}>
                 {subMenu.title}
               </Link>
             </Menu.Item>);
@@ -121,7 +122,7 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
         </SubMenu>
       );
     })
-  ), [buildUrl]);
+  ), [navigation.tuneId]);
 
   useEffect(() => {
     if (Object.keys(tune.constants).length) {
