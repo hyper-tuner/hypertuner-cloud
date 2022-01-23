@@ -176,7 +176,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
             </Link>
             <Dropdown
               overlay={
-                <Menu>
+                <Menu disabled>
                   <SubMenu key="tune-sub" title="Tune" icon={<SlidersOutlined />}>
                     <Menu.Item key="download" icon={<SaveOutlined />}>
                       <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
