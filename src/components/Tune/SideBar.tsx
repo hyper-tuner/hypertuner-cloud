@@ -62,19 +62,15 @@ const SKIP_SUB_MENUS = [
   'tuning/std_realtime',
 ];
 
-const SideBar = ({
-  config,
-  tune,
-  ui,
-  navigation,
-  matchedPath,
-}: {
-  config: ConfigType,
-  tune: TuneType,
-  ui: UIState,
-  navigation: NavigationState,
-  matchedPath: DialogMatchedPathType,
-}) => {
+interface SideBarProps {
+  config: ConfigType;
+  tune: TuneType;
+  ui: UIState;
+  navigation: NavigationState;
+  matchedPath: DialogMatchedPathType;
+};
+
+const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) => {
   const sidebarWidth = 250;
   const siderProps = {
     width: sidebarWidth,
@@ -103,6 +99,7 @@ const SideBar = ({
           key={`/${menuName}`}
           icon={<Icon name={menuName} />}
           title={types[menuName].title}
+          onTitleClick={() => store.dispatch({ type: 'ui/sidebarCollapsed', payload: false })}
         >
           {Object.keys(types[menuName].subMenus).map((subMenuName: string) => {
             if (subMenuName === 'std_separator') {
