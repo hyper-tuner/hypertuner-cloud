@@ -33,6 +33,7 @@ import {
 import useDb from './hooks/useDb';
 import useServerStorage from './hooks/useServerStorage';
 import Info from './pages/Info';
+import Hub from './pages/Hub';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 
@@ -127,11 +128,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
         <Switch>
           <Route path={Routes.ROOT} exact>
             <ContentFor>
-              <Result
-                status="info"
-                title="This page is under construction"
-                style={{ marginTop: 50 }}
-              />
+              <Hub />
             </ContentFor>
           </Route>
           <Route path={Routes.TUNE_ROOT} exact>
