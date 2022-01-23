@@ -1,4 +1,9 @@
 import {
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
+import {
   matchPath,
   useLocation,
   useHistory,
@@ -41,12 +46,7 @@ import {
   LogoutOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import { useKBar } from 'kbar';
 import store from '../store';
 import { isMac } from '../utils/env';
 import {
@@ -69,6 +69,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const history = useHistory();
+  const { query } = useKBar();
   const buildTuneUrl = (route: string) => tuneId ? generatePath(route, { tuneId }) : null;
   const matchedTuneRootPath = useMemo(() => matchPath(pathname, {
     path: Routes.TUNE_ROOT,
@@ -86,20 +87,19 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     }
   }, [logout]);
 
-  const searchInput = useRef<HTMLElement | null>(null);
-  const handleGlobalKeyboard = (e: KeyboardEvent) => {
+  const toggleCommandPalette = useCallback(() => query.toggle(), [query]);
+
+  const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
     if (isCommand(e)) {
-      if (searchInput) {
-        e.preventDefault();
-        searchInput.current!.focus();
-      }
+      toggleCommandPalette();
     }
 
     if (isToggleSidebar(e)) {
       e.preventDefault();
       store.dispatch({ type: 'ui/toggleSidebar' });
     }
-  };
+  }, [toggleCommandPalette]);
+
   useEffect(() => {
     document.addEventListener('keydown', handleGlobalKeyboard);
 
@@ -160,14 +160,14 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         {tuneId ? tabs : <Col span={10} md={10} sm={16} />}
         <Col {...rightMenuColProps} style={{ textAlign: 'right' }}>
           <Space>
-            {sm && <Tooltip visible={false} title={
+            {sm && <Tooltip title={
               <>
                 <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
                 <Typography.Text keyboard>SHIFT</Typography.Text>
                 <Typography.Text keyboard>P</Typography.Text>
               </>
             }>
-              <Button disabled icon={<SearchOutlined />} ref={searchInput} />
+              <Button icon={<SearchOutlined />} onClick={toggleCommandPalette} />
             </Tooltip>}
             <Link to={Routes.UPLOAD}>
               <Button icon={<CloudUploadOutlined />} type={matchedTabPath?.url === Routes.UPLOAD ? 'primary' : 'default'}>
