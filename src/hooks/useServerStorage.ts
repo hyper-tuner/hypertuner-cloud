@@ -1,13 +1,13 @@
 import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
-import { UploadTask } from 'firebase/storage';
 import {
-  storage,
-  storageRef,
+  UploadTask,
+  ref,
   getBytes,
   deleteObject,
   uploadBytesResumable,
-} from '../firebase';
+} from 'firebase/storage';
+import { storage } from '../firebase';
 
 const BASE_PATH = 'public/users';
 
@@ -16,7 +16,7 @@ const genericError = (error: Error) => notification.error({ message: 'Database E
 const useServerStorage = () => {
   const getFile = async (path: string) => {
     try {
-      const buffer = await getBytes(storageRef(storage, path));
+      const buffer = await getBytes(ref(storage, path));
 
       return Promise.resolve(buffer);
     } catch (error) {
@@ -30,7 +30,7 @@ const useServerStorage = () => {
 
   const removeFile = async (path: string) => {
     try {
-      await deleteObject(storageRef(storage, path));
+      await deleteObject(ref(storage, path));
 
       return Promise.resolve();
     } catch (error) {
@@ -43,7 +43,7 @@ const useServerStorage = () => {
   };
 
   const uploadFile = (path: string, file: File, data: Uint8Array) =>
-    uploadBytesResumable(storageRef(storage, path), data, {
+    uploadBytesResumable(ref(storage, path), data, {
       customMetadata: {
         name: file.name,
         size: `${file.size}`,

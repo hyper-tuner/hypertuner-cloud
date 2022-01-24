@@ -1,6 +1,14 @@
 import {
   User,
   UserCredential,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  signOut,
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 import {
   createContext,
@@ -10,17 +18,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import {
-  auth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  signOut,
-  sendPasswordResetEmail,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
-} from '../firebase';
+import { auth } from '../firebase';
 
 interface AuthValue {
   currentUser: User | null,

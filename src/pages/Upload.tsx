@@ -53,9 +53,9 @@ import { Routes } from '../routes';
 import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
-import { TuneDbData } from '../types/dbData';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
+import { generateShareUrl } from '../utils/url';
 
 const { Item } = Form;
 
@@ -116,7 +116,7 @@ const UploadPage = () => {
   const { currentUser, refreshToken } = useAuth();
   const history = useHistory();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
-  const { updateData, getTune } = useDb();
+  const { updateData } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
@@ -139,7 +139,8 @@ const UploadPage = () => {
   const publish = async (values: any) => {
     setIsLoading(true);
     await updateData(newTuneId!, {
-      createdAt: new Date(),
+      id: newTuneId!,
+      userUid: currentUser!.uid,
       updatedAt: new Date(),
       isPublished: true,
       isListed: values.isListed,
@@ -225,29 +226,25 @@ const UploadPage = () => {
   });
 
   const uploadTune = async (options: UploadRequestOption) => {
-    const found = await getTune(newTuneId!);
-    if (!found) {
-      const tuneData: TuneDbData = {
+    setShareUrl(generateShareUrl(newTuneId!));
+
+    const { path } = (options.data as unknown as UploadFileData);
+    const tune: UploadedFile = {};
+    tune[(options.file as UploadFile).uid] = path;
+
+    upload(path, options, () => {
+      // this is `create` for firebase
+      // initialize data
+      updateData(newTuneId!, {
+        id: newTuneId!,
         userUid: currentUser!.uid,
         createdAt: new Date(),
         updatedAt: new Date(),
         isPublished: false,
         isListed: true,
-        tuneFile: null,
-        logFiles: [],
-        toothLogFiles: [],
-        customIniFile: null,
         details: {},
-      };
-      await updateData(newTuneId!, tuneData);
-    }
-    setShareUrl(`${process.env.REACT_APP_WEB_URL}/#/t/${newTuneId}`);
-
-    const { path } = (options.data as unknown as UploadFileData);
-    const tune: UploadedFile = {};
-    tune[(options.file as UploadFile).uid] = path;
-    upload(path, options, () => {
-      updateData(newTuneId!, { tuneFile: path });
+        tuneFile: path,
+      });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -432,7 +429,9 @@ const UploadPage = () => {
       genericError(error as Error);
     }
 
-    setNewTuneId(nanoidCustom());
+    const tuneId = nanoidCustom();
+    setNewTuneId(tuneId);
+    console.log('New tuneId:', tuneId);
   }, [currentUser, history, refreshToken]);
 
   useEffect(() => {

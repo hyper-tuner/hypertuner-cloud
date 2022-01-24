@@ -45,6 +45,7 @@ import {
   UserAddOutlined,
   LogoutOutlined,
   InfoCircleOutlined,
+  CarOutlined,
 } from '@ant-design/icons';
 import { useKBar } from 'kbar';
 import store from '../store';
@@ -74,6 +75,9 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const history = useHistory();
   const { query } = useKBar();
   const buildTuneUrl = (route: string) => tuneId ? generatePath(route, { tuneId }) : null;
+  const matchedRootPath = useMemo(() => matchPath(pathname, {
+    path: Routes.ROOT,
+  }), [pathname]);
   const matchedTuneRootPath = useMemo(() => matchPath(pathname, {
     path: Routes.TUNE_ROOT,
   }), [pathname]);
@@ -114,33 +118,39 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     <Col span={14} md={12} sm={16} style={{ textAlign: 'center' }}>
       <Radio.Group
         key={pathname}
-        defaultValue={matchedTabPath?.url || matchedTuneRootPath?.url}
+        defaultValue={matchedTabPath?.url || matchedTuneRootPath?.url || matchedRootPath?.url || ''}
         optionType="button"
         buttonStyle="solid"
         onChange={(e) => history.push(e.target.value)}
       >
+        <Radio.Button value={buildTuneUrl(Routes.ROOT)}>
+          <Space>
+            <CarOutlined />
+            {lg && 'Hub'}
+          </Space>
+        </Radio.Button>
         <Radio.Button value={buildTuneUrl(Routes.TUNE_ROOT)}>
           <Space>
             <InfoCircleOutlined />
-            {sm && 'Info'}
+            {lg && 'Info'}
           </Space>
         </Radio.Button>
         <Radio.Button value={buildTuneUrl(Routes.TUNE_TUNE)}>
           <Space>
             <ToolOutlined />
-            {sm && 'Tune'}
+            {lg && 'Tune'}
           </Space>
         </Radio.Button>
         <Radio.Button value={buildTuneUrl(Routes.TUNE_LOGS)}>
           <Space>
             <FundOutlined />
-            {sm && 'Logs'}
+            {lg && 'Logs'}
           </Space>
         </Radio.Button>
         <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)}>
           <Space>
             <SettingOutlined />
-            {sm && 'Diagnose'}
+            {lg && 'Diagnose'}
           </Space>
         </Radio.Button>
       </Radio.Group>

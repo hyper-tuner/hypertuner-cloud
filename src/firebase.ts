@@ -1,33 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getPerformance } from 'firebase/performance';
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
-} from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  uploadBytesResumable,
-  deleteObject,
-  getBytes,
-} from 'firebase/storage';
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  collection,
-  addDoc,
-  getDoc,
-} from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -47,27 +23,10 @@ const db = getFirestore();
 const storage = getStorage();
 
 export {
-  auth,
+  app,
   analytics,
   performance,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  signOut,
-  sendPasswordResetEmail,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
-  ref as storageRef,
-  storage,
-  uploadBytes,
-  uploadBytesResumable,
-  deleteObject,
-  getBytes,
-  doc as fireStoreDoc,
-  collection as fireStoreCollection,
-  setDoc,
-  addDoc,
-  getDoc,
+  auth,
   db,
+  storage,
 };
