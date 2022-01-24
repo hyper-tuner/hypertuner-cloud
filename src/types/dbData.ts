@@ -17,6 +17,7 @@ export interface TuneDataDetails {
 }
 
 export interface TuneDbData {
+  id?: string,
   userUid?: string;
   createdAt?: Date | Timestamp | string;
   updatedAt?: Date | Timestamp | string;

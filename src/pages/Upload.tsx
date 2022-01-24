@@ -55,6 +55,7 @@ import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
+import { generateShareUrl } from '../utils/url';
 
 const { Item } = Form;
 
@@ -138,6 +139,7 @@ const UploadPage = () => {
   const publish = async (values: any) => {
     setIsLoading(true);
     await updateData(newTuneId!, {
+      id: newTuneId!,
       userUid: currentUser!.uid,
       updatedAt: new Date(),
       isPublished: true,
@@ -224,7 +226,7 @@ const UploadPage = () => {
   });
 
   const uploadTune = async (options: UploadRequestOption) => {
-    setShareUrl(`${process.env.REACT_APP_WEB_URL}/#/t/${newTuneId}`);
+    setShareUrl(generateShareUrl(newTuneId!));
 
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
@@ -234,6 +236,7 @@ const UploadPage = () => {
       // this is `create` for firebase
       // initialize data
       updateData(newTuneId!, {
+        id: newTuneId!,
         userUid: currentUser!.uid,
         createdAt: new Date(),
         updatedAt: new Date(),

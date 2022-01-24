@@ -1,13 +1,14 @@
 import {
+  Badge,
   Card,
   Col,
-  List,
   Row,
+  Tooltip,
   Typography,
 } from 'antd';
 import {
   CopyOutlined,
-  HeartOutlined,
+  StarOutlined,
   ArrowRightOutlined,
 } from '@ant-design/icons';
 import {
@@ -15,8 +16,14 @@ import {
   useEffect,
   useState,
 } from 'react';
+import {
+  generatePath,
+  useHistory,
+} from 'react-router';
 import useDb from '../hooks/useDb';
 import { TuneDbData } from '../types/dbData';
+import { Routes } from '../routes';
+import { generateShareUrl } from '../utils/url';
 
 const containerStyle = {
   padding: 20,
@@ -41,6 +48,18 @@ const loadingCards = (
 const Hub = () => {
   const [tunes, setTunes] = useState<TuneDbData[]>([]);
   const { listTunes } = useDb();
+  const history = useHistory();
+  const [copied, setCopied] = useState(false);
+
+  const goToTune = (tuneId: string) => history.push(generatePath(Routes.TUNE_ROOT, { tuneId }));
+
+  const copyToClipboard = async (shareUrl: string) => {
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    }
+  };
 
   const loadData = useCallback(() => {
     listTunes().then((data) => {
@@ -61,21 +80,25 @@ const Hub = () => {
   return (
     <div style={containerStyle}>
       <Typography.Title>Hub</Typography.Title>
-      <Row gutter={16}>
+      <Row gutter={[16, 16]}>
         {tunes.length === 0 ? loadingCards : (
           tunes.map((tune) => (
-            <Col span={8} key={tune.tuneFile}>
+            <Col span={16} sm={8} key={tune.tuneFile}>
               <Card
                 title={tune.details!.model}
                 actions={[
-                  <HeartOutlined />,
-                  <CopyOutlined />,
-                  <ArrowRightOutlined />,
+                  <Badge count={0} showZero size="small" color="gold">
+                    <StarOutlined />
+                  </Badge>,
+                  <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
+                    <CopyOutlined onClick={() => copyToClipboard(generateShareUrl(tune.id!))} />
+                  </Tooltip>,
+                  <ArrowRightOutlined onClick={() => goToTune(tune.id!)} />,
                 ]}
               >
-                <List>
+                <Typography.Text ellipsis>
                   {tune.details!.make} {tune.details!.model} {tune.details!.year}
-                </List>
+                </Typography.Text>
               </Card>
             </Col>
           )))}
