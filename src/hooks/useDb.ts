@@ -9,7 +9,6 @@ import {
   where,
   query,
   getDocs,
-  DocumentData,
   QuerySnapshot,
   orderBy,
 } from 'firebase/firestore';
@@ -43,7 +42,12 @@ const useDb = () => {
   const listTunesData = async () => {
     try {
       const tunesRef = collection(db, TUNES_PATH);
-      const q = query(tunesRef, where('isListed', '==', true), orderBy('createdAt', 'desc'));
+      const q = query(
+        tunesRef,
+        where('isPublished', '==', true),
+        where('isListed', '==', true),
+        orderBy('createdAt', 'desc'),
+      );
 
       return Promise.resolve(await getDocs(q));
     } catch (error) {

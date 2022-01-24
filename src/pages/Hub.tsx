@@ -8,7 +8,7 @@ import {
 import {
   CopyOutlined,
   HeartOutlined,
-  MoreOutlined,
+  ArrowRightOutlined,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -70,7 +70,7 @@ const Hub = () => {
                 actions={[
                   <HeartOutlined />,
                   <CopyOutlined />,
-                  <MoreOutlined />,
+                  <ArrowRightOutlined />,
                 ]}
               >
                 <List>

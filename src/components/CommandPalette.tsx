@@ -30,6 +30,7 @@ import {
   InfoCircleOutlined,
   FundOutlined,
   SettingOutlined,
+  CarOutlined,
 } from '@ant-design/icons';
 import {
   useHistory,
@@ -313,6 +314,14 @@ const CommandPalette = (props: CommandPaletteProps) => {
   }, [logout]);
 
   const initialActions = [
+    {
+      id: 'HubAction',
+      section: Sections.NAVIGATION,
+      name: 'Hub',
+      subtitle: 'Public tunes and logs.',
+      icon: <CarOutlined />,
+      perform: () => history.push(Routes.ROOT),
+    },
     {
       id: 'ToggleSidebar',
       name: 'Toggle Sidebar',
