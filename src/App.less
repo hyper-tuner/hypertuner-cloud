@@ -32,10 +32,7 @@ html, body {
 }
 
 .app-top-bar {
-  // border-bottom-width: 1px;
-  // border-bottom-color: @border-color-split;
-  // border-bottom-style: solid;
-  box-shadow: 0px 0px 20px 0px #0000001c, 5px 5px 15px 5px rgb(0 0 0 e('/') 4%);
+  box-shadow: @shadow-2;
   z-index: @bars-z-index;
 }
 
@@ -44,7 +41,6 @@ html, body {
   position: fixed;
   left: 0;
   user-select: none;
-  // .border-right;
 }
 
 .app-status-bar {
@@ -56,9 +52,6 @@ html, body {
   color: @text-color;
   z-index: @bars-z-index;
   padding-top: 5px;
-  // border-top-width: 1px;
-  // border-top-color: @border-color-split;
-  // border-top-style: solid;
 
   a {
     color: @text;
