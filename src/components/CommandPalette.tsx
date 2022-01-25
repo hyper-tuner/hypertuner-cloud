@@ -33,7 +33,7 @@ import {
   CarOutlined,
 } from '@ant-design/icons';
 import {
-  useHistory,
+  useNavigate,
   generatePath,
 } from 'react-router';
 import {
@@ -231,7 +231,7 @@ const buildTuneUrl = (tuneId: string, route: string) => generatePath(route, { tu
 const ActionsProvider = (props: CommandPaletteProps) => {
   const { config, tune, navigation } = props;
   const { query } = useKBar();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const generateActions = useCallback((types: MenusType) => {
     const newActions: Action[] = [
@@ -241,7 +241,7 @@ const ActionsProvider = (props: CommandPaletteProps) => {
         name: 'Info',
         subtitle: 'Basic information about this tune.',
         icon: <InfoCircleOutlined />,
-        perform: () => history.push(buildTuneUrl(navigation.tuneId!, Routes.TUNE_ROOT)),
+        perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_ROOT)),
       },
       {
         id: 'LogsAction',
@@ -249,7 +249,7 @@ const ActionsProvider = (props: CommandPaletteProps) => {
         name: 'Logs',
         subtitle: 'Log viewer.',
         icon: <FundOutlined />,
-        perform: () => history.push(buildTuneUrl(navigation.tuneId!, Routes.TUNE_LOGS)),
+        perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_LOGS)),
       },
       {
         id: 'DiagnoseAction',
@@ -257,7 +257,7 @@ const ActionsProvider = (props: CommandPaletteProps) => {
         name: 'Diagnose',
         subtitle: 'Tooth and composite logs viewer.',
         icon: <SettingOutlined />,
-        perform: () => history.push(buildTuneUrl(navigation.tuneId!, Routes.TUNE_DIAGNOSE)),
+        perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_DIAGNOSE)),
       },
     ];
 
@@ -281,16 +281,17 @@ const ActionsProvider = (props: CommandPaletteProps) => {
           section: types[menuName].title,
           name: subMenu.title,
           icon: <Icon name={subMenuName} />,
-          perform: () => history.push(buildUrl(navigation.tuneId!, menuName, subMenuName)),
+          perform: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
         });
       });
     });
 
     return newActions;
-  }, [history, navigation.tuneId]);
+  }, [navigate, navigation.tuneId]);
 
   useEffect(() => {
     if (Object.keys(tune.constants).length) {
+      // TODO: unregister old actions
       query.registerActions(generateActions(config.menus));
     }
   }, [config.menus, generateActions, query, tune.constants]);
@@ -301,7 +302,7 @@ const ActionsProvider = (props: CommandPaletteProps) => {
 const CommandPalette = (props: CommandPaletteProps) => {
   const { children, config, tune, navigation } = props;
   const { logout } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const logoutAction = useCallback(async () => {
     try {
@@ -320,7 +321,7 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Hub',
       subtitle: 'Public tunes and logs.',
       icon: <CarOutlined />,
-      perform: () => history.push(Routes.ROOT),
+      perform: () => navigate(Routes.ROOT),
     },
     {
       id: 'ToggleSidebar',
@@ -334,7 +335,7 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Upload',
       subtitle: 'Upload tune and logs.',
       icon: <CloudUploadOutlined />,
-      perform: () => history.push(Routes.UPLOAD),
+      perform: () => navigate(Routes.UPLOAD),
     },
     {
       id: 'LoginAction',
@@ -342,7 +343,7 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Login',
       subtitle: 'Login using email, Google or GitHub account.',
       icon: <LoginOutlined />,
-      perform: () => history.push(Routes.LOGIN),
+      perform: () => navigate(Routes.LOGIN),
     },
     {
       id: 'SignUpAction',
@@ -350,7 +351,7 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Sign-up',
       subtitle: 'Create new account.',
       icon: <UserAddOutlined />,
-      perform: () => history.push(Routes.SIGN_UP),
+      perform: () => navigate(Routes.SIGN_UP),
     },
     {
       id: 'LogoutAction',

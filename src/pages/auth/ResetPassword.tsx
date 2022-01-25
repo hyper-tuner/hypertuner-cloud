@@ -8,7 +8,7 @@ import {
 import { MailOutlined } from '@ant-design/icons';
 import {
   Link,
-  useHistory,
+  useNavigate,
 } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
@@ -25,14 +25,14 @@ const ResetPassword = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const { resetPassword } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onFinish = async ({ email }: { form: any, email: string }) => {
     setIsLoading(true);
     try {
       await resetPassword(email);
       resetSuccessful();
-      history.push(Routes.LOGIN);
+      navigate(Routes.LOGIN);
     } catch (error) {
       form.resetFields();
       console.warn(error);

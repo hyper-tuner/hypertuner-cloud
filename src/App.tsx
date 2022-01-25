@@ -1,8 +1,7 @@
 import {
-  Switch,
+  Routes as ReactRoutes,
   Route,
-  useLocation,
-  matchPath,
+  useMatch,
 } from 'react-router-dom';
 import {
   Layout,
@@ -16,7 +15,6 @@ import {
   Suspense,
   useCallback,
   useEffect,
-  useMemo,
 } from 'react';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
@@ -64,12 +62,8 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   // const lastDialogPath = storageGetSync('lastDialog');
 
-  const { pathname } = useLocation();
-  const matchedTunePath = useMemo(() => matchPath(pathname, {
-    path: Routes.TUNE_ROOT,
-  }), [pathname]);
-
-  const tuneId = (matchedTunePath?.params as any)?.tuneId;
+  const tunePathMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
+  const tuneId = tunePathMatch?.params.tuneId;
 
   useEffect(() => {
     if (tuneId) {
@@ -125,53 +119,53 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
     <>
       <Layout>
         <TopBar tuneId={navigation.tuneId} />
-        <Switch>
-          <Route path={Routes.ROOT} exact>
+        <ReactRoutes>
+          <Route path={Routes.ROOT} element={
             <ContentFor>
               <Hub />
             </ContentFor>
-          </Route>
-          <Route path={Routes.TUNE_ROOT} exact>
+          } />
+          <Route path={Routes.TUNE_ROOT} element={
             <ContentFor>
               <Info />
             </ContentFor>
-          </Route>
-          <Route path={Routes.TUNE_TUNE}>
+          } />
+          <Route path={`${Routes.TUNE_TUNE}/*`} element={
             <ContentFor marginLeft={margin}>
               <Tune />
             </ContentFor>
-          </Route>
-          <Route path={Routes.TUNE_LOGS} exact>
+          } />
+          <Route path={Routes.TUNE_LOGS} element={
             <ContentFor marginLeft={margin}>
               <Logs />
             </ContentFor>
-          </Route>
-          <Route path={Routes.TUNE_DIAGNOSE} exact>
+          } />
+          <Route path={Routes.TUNE_DIAGNOSE} element={
             <ContentFor marginLeft={margin}>
               <Diagnose />
             </ContentFor>
-          </Route>
-          <Route path={Routes.LOGIN} exact>
+          } />
+          <Route path={Routes.LOGIN} element={
             <ContentFor>
               <Login />
             </ContentFor>
-          </Route>
-          <Route path={Routes.SIGN_UP} exact>
+          } />
+          <Route path={Routes.SIGN_UP} element={
             <ContentFor>
               <SignUp />
             </ContentFor>
-          </Route>
-          <Route path={Routes.RESET_PASSWORD} exact>
+          } />
+          <Route path={Routes.RESET_PASSWORD} element={
             <ContentFor>
               <ResetPassword />
             </ContentFor>
-          </Route>
-          <Route path={Routes.UPLOAD} exact>
+          } />
+          <Route path={Routes.UPLOAD} element={
             <ContentFor>
               <Upload />
             </ContentFor>
-          </Route>
-        </Switch>
+          } />
+        </ReactRoutes>
         <Result
           status="warning"
           title="Page not found"

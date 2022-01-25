@@ -18,7 +18,7 @@ import {
 } from 'react';
 import {
   generatePath,
-  useHistory,
+  useNavigate,
 } from 'react-router';
 import useDb from '../hooks/useDb';
 import { TuneDbData } from '../types/dbData';
@@ -48,10 +48,10 @@ const loadingCards = (
 const Hub = () => {
   const [tunes, setTunes] = useState<TuneDbData[]>([]);
   const { listTunes } = useDb();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
-  const goToTune = (tuneId: string) => history.push(generatePath(Routes.TUNE_ROOT, { tuneId }));
+  const goToTune = (tuneId: string) => navigate(generatePath(Routes.TUNE_ROOT, { tuneId }));
 
   const copyToClipboard = async (shareUrl: string) => {
     if (navigator.clipboard) {

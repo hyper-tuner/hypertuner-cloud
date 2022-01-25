@@ -36,7 +36,7 @@ import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import {
   generatePath,
-  useHistory,
+  useNavigate,
 } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import pako from 'pako';
@@ -114,7 +114,7 @@ const UploadPage = () => {
   const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
   const hasNavigatorShare = navigator.share !== undefined;
   const { currentUser, refreshToken } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
   const { updateData } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
@@ -122,7 +122,7 @@ const UploadPage = () => {
 
   const noop = () => { };
 
-  const goToNewTune = () => history.push(generatePath(Routes.TUNE_ROOT, {
+  const goToNewTune = () => navigate(generatePath(Routes.TUNE_ROOT, {
     tuneId: newTuneId!,
   }));
 
@@ -409,7 +409,7 @@ const UploadPage = () => {
   const prepareData = useCallback(async () => {
     if (!currentUser) {
       restrictedPage();
-      history.push(Routes.LOGIN);
+      navigate(Routes.LOGIN);
 
       return;
     }
@@ -418,7 +418,7 @@ const UploadPage = () => {
       await refreshToken();
       if (!currentUser.emailVerified) {
         emailNotVerified();
-        history.push(Routes.LOGIN);
+        navigate(Routes.LOGIN);
 
         return;
       }
@@ -432,11 +432,11 @@ const UploadPage = () => {
     const tuneId = nanoidCustom();
     setNewTuneId(tuneId);
     console.log('New tuneId:', tuneId);
-  }, [currentUser, history, refreshToken]);
+  }, [currentUser, navigate, refreshToken]);
 
   useEffect(() => {
     prepareData();
-  }, [currentUser, history, prepareData, refreshToken]);
+  }, [currentUser, prepareData, refreshToken]);
 
   const uploadButton = (
     <Space direction="vertical">

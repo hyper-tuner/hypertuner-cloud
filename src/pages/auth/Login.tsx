@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import {
   Link,
-  useHistory,
+  useNavigate,
 } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
@@ -37,9 +37,9 @@ const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const { login, googleAuth, githubAuth } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading;
-  const redirectAfterLogin = useCallback(() => history.push(Routes.UPLOAD), [history]);
+  const redirectAfterLogin = useCallback(() => navigate(Routes.UPLOAD), [navigate]);
 
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);

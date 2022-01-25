@@ -1,15 +1,17 @@
+import { Skeleton } from 'antd';
 import {
-  useLocation,
-  Route,
-  matchPath,
-  Redirect,
   generatePath,
+  useMatch,
+  useNavigate,
 } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { useMemo } from 'react';
+import {
+  useEffect,
+  useMemo,
+} from 'react';
 import { Config as ConfigType } from '@speedy-tuner/types';
 import Dialog from '../components/Tune/Dialog';
-import SideBar, { DialogMatchedPathType } from '../components/Tune/SideBar';
+import SideBar from '../components/Tune/SideBar';
 import { Routes } from '../routes';
 import useConfig from '../hooks/useConfig';
 import {
@@ -24,14 +26,12 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const Tune = ({ navigation, config }: { navigation: NavigationState, config: ConfigType }) => {
-  const { pathname } = useLocation();
+  const dialogMatch = useMatch(Routes.TUNE_DIALOG);
+  const tuneRootMatch = useMatch(Routes.TUNE_TUNE);
   // const { storageGetSync } = useBrowserStorage();
   // const lastDialogPath = storageGetSync('lastDialog');
   const { isConfigReady } = useConfig(config);
-  const dialogMatchedPath: DialogMatchedPathType = useMemo(() => matchPath(pathname, {
-    path: Routes.TUNE_DIALOG,
-    exact: true,
-  }) || { url: '', params: { category: '', dialog: '' } }, [pathname]);
+  const navigate = useNavigate();
 
   const firstDialogPath = useMemo(() => {
     if (!isConfigReady) {
@@ -40,6 +40,7 @@ const Tune = ({ navigation, config }: { navigation: NavigationState, config: Con
 
     const firstCategory = Object.keys(config.menus)[0];
     const firstDialog = Object.keys(config.menus[firstCategory].subMenus)[0];
+
     return generatePath(Routes.TUNE_DIALOG, {
       tuneId: navigation.tuneId!,
       category: firstCategory,
@@ -47,15 +48,27 @@ const Tune = ({ navigation, config }: { navigation: NavigationState, config: Con
     });
   }, [config.menus, isConfigReady, navigation.tuneId]);
 
+  useEffect(() => {
+    if (tuneRootMatch && firstDialogPath) {
+      navigate(firstDialogPath, { replace: true });
+    }
+  }, [firstDialogPath, navigate, tuneRootMatch, isConfigReady]);
+
+  // TODO: unify loading indicators across the app
+  if (!isConfigReady || !dialogMatch) {
+    return (
+      <div>
+        <Skeleton active />
+      </div>
+    );
+  }
+
   return (
     <>
-      <Route path={Routes.TUNE_TUNE} exact>
-        {firstDialogPath && <Redirect to={firstDialogPath} />}
-      </Route>
-      <SideBar matchedPath={dialogMatchedPath} />
+      <SideBar matchedPath={dialogMatch!} />
       <Dialog
-        name={dialogMatchedPath.params.dialog}
-        url={dialogMatchedPath.url}
+        name={dialogMatch?.params.dialog!}
+        url={dialogMatch?.pathname || ''}
       />
     </>
   );
