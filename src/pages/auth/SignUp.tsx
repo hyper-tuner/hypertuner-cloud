@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import {
   Link,
-  useHistory,
+  useNavigate,
 } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
@@ -31,7 +31,7 @@ const SignUp = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const onFinish = async ({ email, password }: { email: string, password: string }) => {
     setIsLoading(true);
@@ -39,7 +39,7 @@ const SignUp = () => {
       await signUp(email, password);
       signUpSuccessful();
       emailNotVerified();
-      history.push(Routes.ROOT);
+      navigate(Routes.ROOT);
     } catch (error) {
       form.resetFields();
       console.warn(error);

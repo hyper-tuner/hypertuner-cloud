@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import {
   generatePath,
   Link,
+  PathMatch,
 } from 'react-router-dom';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
@@ -52,14 +53,6 @@ export const buildUrl = (tuneId: string, main: string, sub: string) => generateP
   dialog: sub,
 });
 
-export interface DialogMatchedPathType {
-  url: string;
-  params: {
-    category: string;
-    dialog: string;
-  };
-}
-
 const mapStateToProps = (state: AppState) => ({
   config: state.config,
   tune: state.tune,
@@ -72,7 +65,7 @@ interface SideBarProps {
   tune: TuneType;
   ui: UIState;
   navigation: NavigationState;
-  matchedPath: DialogMatchedPathType;
+  matchedPath: PathMatch<'dialog' | 'tuneId' | 'category'>;
 };
 
 const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) => {
@@ -148,11 +141,11 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
     <Sider {...siderProps} className="app-sidebar">
       <PerfectScrollbar options={{ suppressScrollX: true }}>
         <Menu
-          defaultSelectedKeys={[matchedPath.url]}
+          defaultSelectedKeys={[matchedPath.pathname]}
           defaultOpenKeys={ui.sidebarCollapsed ? [] : [`/${matchedPath.params.category}`]}
           mode="inline"
           style={{ height: '100%' }}
-          key={matchedPath.url}
+          key={matchedPath.pathname}
         >
           {menus}
         </Menu>

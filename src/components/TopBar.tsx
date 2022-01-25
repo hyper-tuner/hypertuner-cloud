@@ -1,16 +1,13 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
 } from 'react';
 import {
-  matchPath,
   useLocation,
-  useHistory,
-} from 'react-router';
-import {
+  useNavigate,
   Link,
   generatePath,
+  useMatch,
 } from 'react-router-dom';
 import {
   Layout,
@@ -72,18 +69,14 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const { sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { query } = useKBar();
   const buildTuneUrl = (route: string) => tuneId ? generatePath(route, { tuneId }) : null;
-  const matchedRootPath = useMemo(() => matchPath(pathname, {
-    path: Routes.ROOT,
-  }), [pathname]);
-  const matchedTuneRootPath = useMemo(() => matchPath(pathname, {
-    path: Routes.TUNE_ROOT,
-  }), [pathname]);
-  const matchedTabPath = useMemo(() => matchPath(pathname, {
-    path: Routes.TUNE_TAB,
-  }), [pathname]);
+  const rootPathMatch = useMatch(Routes.ROOT);
+  const tuneRootMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
+  const tuneTuneMatch = useMatch(`${Routes.TUNE_TUNE}/*`);
+  const tabMatch = useMatch(`${Routes.TUNE_TAB}/*`);
+  const uploadMatch = useMatch(Routes.UPLOAD);
   const logoutClick = useCallback(async () => {
     try {
       await logout();
@@ -118,10 +111,10 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     <Col span={14} md={12} sm={16} style={{ textAlign: 'center' }}>
       <Radio.Group
         key={pathname}
-        defaultValue={matchedTabPath?.url || matchedTuneRootPath?.url || matchedRootPath?.url || ''}
+        defaultValue={tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || rootPathMatch?.pathname}
         optionType="button"
         buttonStyle="solid"
-        onChange={(e) => history.push(e.target.value)}
+        onChange={(e) => navigate(e.target.value)}
       >
         <Radio.Button value={buildTuneUrl(Routes.ROOT)}>
           <Space>
@@ -190,7 +183,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
               <Button icon={<SearchOutlined />} onClick={toggleCommandPalette} />
             </Tooltip>}
             <Link to={Routes.UPLOAD}>
-              <Button icon={<CloudUploadOutlined />} type={matchedTabPath?.url === Routes.UPLOAD ? 'primary' : 'default'}>
+              <Button icon={<CloudUploadOutlined />} type={uploadMatch ? 'primary' : 'default'}>
                 {lg && 'Upload'}
               </Button>
             </Link>
