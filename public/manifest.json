@@ -18,12 +18,16 @@
     {
       "src": "/img/screen1.png",
       "sizes": "1920x1109",
-      "type": "image/png"
+      "type": "image/png",
+      "platform": "wide",
+      "label": "VE Table with command palette"
     },
     {
       "src": "/img/screen2.png",
       "sizes": "1920x1111",
-      "type": "image/png"
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Log viewer"
     }
   ],
   "start_url": ".",
