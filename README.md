@@ -11,7 +11,8 @@ Share your [Speeduino](https://speeduino.com/) tune and logs.
 
 ## [https://speedytuner.cloud](https://speedytuner.cloud)
 
-![Screenshot](https://speedytuner.cloud/img/screen.png)
+![Screenshot VE Table](https://speedytuner.cloud/img/screen1.png)
+![Screenshot Logs](https://speedytuner.cloud/img/screen2.png)
 
 ## ECU firmware
 

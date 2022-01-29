@@ -16,8 +16,13 @@
   ],
   "screenshots" : [
     {
-      "src": "/img/screen.png",
-      "sizes": "1200x761",
+      "src": "/img/screen1.png",
+      "sizes": "1920x1109",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/screen2.png",
+      "sizes": "1920x1111",
       "type": "image/png"
     }
   ],
