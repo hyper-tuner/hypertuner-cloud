@@ -1,16 +1,50 @@
 import { Tune } from '@speedy-tuner/types';
 
+export interface TuneWithDetails extends Tune {
+  details: {
+    author: string;
+    tuneComment: string;
+    writeDate: string;
+    fileFormat: string;
+    firmwareInfo: string;
+    nPages: number;
+    signature: string;
+  };
+}
+
 class TuneParser {
   private isTuneValid = false;
 
-  private tune: Tune = {
+  // TODO: move this to types package
+  private tune: TuneWithDetails = {
     constants: {},
+    details: {
+      author: '',
+      tuneComment: '',
+      writeDate: '',
+      fileFormat: '',
+      firmwareInfo: '',
+      nPages: 0,
+      signature: '',
+    },
   };
 
   parse(buffer: ArrayBuffer): TuneParser {
     const raw = (new TextDecoder()).decode(buffer);
     const xml = (new DOMParser()).parseFromString(raw, 'text/xml');
     const xmlPages = xml.getElementsByTagName('page');
+    const bibliography = xml.getElementsByTagName('bibliography')[0].attributes as any;
+    const versionInfo = xml.getElementsByTagName('versionInfo')[0].attributes as any;
+
+    this.tune.details = {
+      author: bibliography.author.value,
+      tuneComment: `${bibliography.tuneComment.value}`.trim(),
+      writeDate: bibliography.writeDate.value,
+      fileFormat: versionInfo.fileFormat.value,
+      firmwareInfo: versionInfo.firmwareInfo.value,
+      nPages: Number.parseInt(versionInfo.nPages.value, 2),
+      signature: versionInfo.signature.value,
+    };
 
     Object.keys(xmlPages).forEach((key: any) => {
       const page = xmlPages[key];
@@ -48,7 +82,7 @@ class TuneParser {
     return this;
   }
 
-  getTune(): Tune {
+  getTune(): TuneWithDetails {
     return this.tune;
   }
 

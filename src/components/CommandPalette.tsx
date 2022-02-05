@@ -6,7 +6,6 @@ import {
   useMemo,
   ReactNode,
   useCallback,
-  useEffect,
 } from 'react';
 import {
   ActionId,
@@ -19,7 +18,7 @@ import {
   useMatches,
   ActionImpl,
   Action,
-  useKBar,
+  useRegisterActions,
 } from 'kbar';
 import { connect } from 'react-redux';
 import {
@@ -230,7 +229,6 @@ const buildTuneUrl = (tuneId: string, route: string) => generatePath(route, { tu
 
 const ActionsProvider = (props: CommandPaletteProps) => {
   const { config, tune, navigation } = props;
-  const { query } = useKBar();
   const navigate = useNavigate();
 
   const generateActions = useCallback((types: MenusType) => {
@@ -289,12 +287,15 @@ const ActionsProvider = (props: CommandPaletteProps) => {
     return newActions;
   }, [navigate, navigation.tuneId]);
 
-  useEffect(() => {
+  const getActions = () => {
     if (Object.keys(tune.constants).length) {
-      // TODO: unregister old actions
-      query.registerActions(generateActions(config.menus));
+      return generateActions(config.menus);
     }
-  }, [config.menus, generateActions, query, tune.constants]);
+
+    return [];
+  };
+
+  useRegisterActions(getActions(), [tune.constants]);
 
   return null;
 };

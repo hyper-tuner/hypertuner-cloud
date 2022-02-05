@@ -9,19 +9,25 @@ import {
   onProgress as onProgressType,
 } from './http';
 import TuneParser from './tune/TuneParser';
+import { TuneDbData } from '../types/dbData';
+import useServerStorage from '../hooks/useServerStorage';
 
-export const loadTune = async (tuneRaw: ArrayBuffer, iniRaw: ArrayBuffer) => {
+export const loadTune = async (tuneData: TuneDbData) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { getFile, getINIFile } = useServerStorage();
   const started = new Date();
-
+  const tuneRaw = getFile(tuneData.tuneFile!);
   const tuneParser = new TuneParser()
-    .parse(pako.inflate(new Uint8Array(tuneRaw)));
+    .parse(pako.inflate(new Uint8Array(await tuneRaw)));
 
   if (!tuneParser.isValid()) {
     // TODO: capture exception
     console.error('Invalid tune');
   }
 
-  const buff = pako.inflate(new Uint8Array(iniRaw));
+  const tune = tuneParser.getTune();
+  const iniRaw = tuneData.customIniFile ? getFile(tuneData.customIniFile) : getINIFile(tune.details.signature);
+  const buff = pako.inflate(new Uint8Array(await iniRaw));
   const config = new INI(buff).parse().getResults();
 
   // override / merge standard dialogs, constants and help
@@ -39,11 +45,8 @@ export const loadTune = async (tuneRaw: ArrayBuffer, iniRaw: ArrayBuffer) => {
   console.log(loadingTimeInfo);
 
   store.dispatch({ type: 'config/load', payload: config });
-  store.dispatch({ type: 'tune/load', payload: tuneParser.getTune() });
-  store.dispatch({
-    type: 'status',
-    payload: loadingTimeInfo,
-  });
+  store.dispatch({ type: 'tune/load', payload: tune });
+  store.dispatch({ type: 'status', payload: loadingTimeInfo });
 };
 
 export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>

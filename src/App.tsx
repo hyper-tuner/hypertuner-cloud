@@ -29,7 +29,6 @@ import {
   UIState,
 } from './types/state';
 import useDb from './hooks/useDb';
-import useServerStorage from './hooks/useServerStorage';
 import Info from './pages/Info';
 import Hub from './pages/Hub';
 
@@ -57,7 +56,6 @@ const mapStateToProps = (state: AppState) => ({
 const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   const { getTune } = useDb();
-  const { getFile } = useServerStorage();
 
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   // const lastDialogPath = storageGetSync('lastDialog');
@@ -68,14 +66,8 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
   useEffect(() => {
     if (tuneId) {
       getTune(tuneId).then(async (tuneData) => {
-        const [tuneRaw, iniRaw] = await Promise.all([
-          getFile(tuneData.tuneFile!),
-          getFile(tuneData.customIniFile!),
-        ]);
-
+        loadTune(tuneData);
         store.dispatch({ type: 'tuneData/load', payload: tuneData });
-
-        loadTune(tuneRaw, iniRaw);
       });
 
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });

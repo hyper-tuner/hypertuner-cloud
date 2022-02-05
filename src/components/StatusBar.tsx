@@ -1,9 +1,13 @@
-
+import {
+  useEffect,
+  useState,
+} from 'react';
 import {
   Layout,
   Space,
   Row,
   Col,
+  Typography,
 } from 'antd';
 import {
   InfoCircleOutlined,
@@ -12,8 +16,7 @@ import {
 import { connect } from 'react-redux';
 import {
   AppState,
-  ConfigState,
-  StatusState,
+  TuneState,
 } from '../types/state';
 
 const { Footer } = Layout;
@@ -21,22 +24,37 @@ const { Footer } = Layout;
 const mapStateToProps = (state: AppState) => ({
   status: state.status,
   config: state.config,
+  tune: state.tune,
 });
 
-const firmware = (signature: string) => (
-  <Space>
-    <InfoCircleOutlined />
-    {signature}
-  </Space>
-);
+const Firmware = ({ tune }: { tune: TuneState }) => {
+  const [width, setWidth] = useState(1000);
+  const calculateWidth = () => setWidth(window.innerWidth - 130);
 
-const StatusBar = ({ status, config }: { status: StatusState, config: ConfigState }) => (
+  useEffect(() => {
+    calculateWidth();
+    window.addEventListener('resize', calculateWidth);
+
+    return () => window.removeEventListener('resize', calculateWidth);
+  }, []);
+
+  return (
+    <Space>
+      <InfoCircleOutlined />
+      <Typography.Text ellipsis style={{ maxWidth: width }}>
+        {`${tune.details.signature} - ${tune.details.writeDate} - ${tune.details.author}`}
+      </Typography.Text>
+    </Space>
+  );
+};
+
+const StatusBar = ({ tune }: { tune: TuneState }) => (
   <Footer className="app-status-bar">
     <Row>
-      <Col span={12}>
-        {config.megaTune && firmware(config.megaTune.signature)}
+      <Col span={20}>
+        {tune.details.author && <Firmware tune={tune} />}
       </Col>
-      <Col span={12} style={{ textAlign: 'right' }}>
+      <Col span={4} style={{ textAlign: 'right' }}>
         <a
           href="https://github.com/speedy-tuner/speedy-tuner-cloud"
           target="__blank"

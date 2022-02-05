@@ -9,20 +9,51 @@ import {
 } from 'firebase/storage';
 import { storage } from '../firebase';
 
-const BASE_PATH = 'public/users';
+const PUBLIC_PATH = 'public';
+const USERS_PATH = `${PUBLIC_PATH}/users`;
+const INI_PATH = `${PUBLIC_PATH}/ini`;
 
-const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
+const genericError = (error: Error) => notification.error({ message: 'Storage Error', description: error.message });
 
 const useServerStorage = () => {
   const getFile = async (path: string) => {
     try {
-      const buffer = await getBytes(ref(storage, path));
-
-      return Promise.resolve(buffer);
+      return Promise.resolve(await getBytes(ref(storage, path)));
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
       genericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const getINIFile = async (signature: string) => {
+    const { version, baseVersion } = /.+?(?<version>(?<baseVersion>\d+)(-\w+)*)/.exec(signature)?.groups || { version: null, baseVersion: null };
+
+    try {
+      return Promise.resolve(await getBytes(ref(storage, `${INI_PATH}/${version}.ini.gz`)));
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+
+      notification.warning({
+        message: 'INI not found',
+        description: `INI version: "${version}" not found. Trying base version: "${baseVersion}"!` ,
+      });
+
+      try {
+        return Promise.resolve(await getBytes(ref(storage, `${INI_PATH}/${baseVersion}.ini.gz`)));
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      } catch (error) {
+        Sentry.captureException(error);
+        console.error(error);
+
+        notification.error({
+          message: 'INI not found',
+          description: `INI version: "${baseVersion}" not found. Try uploading custom INI file!` ,
+        });
+      }
 
       return Promise.reject(error);
     }
@@ -52,9 +83,10 @@ const useServerStorage = () => {
 
   return {
     getFile: (path: string): Promise<ArrayBuffer> => getFile(path),
+    getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
     removeFile: (path: string): Promise<void> => removeFile(path),
     uploadFile: (path: string, file: File, data: Uint8Array): UploadTask => uploadFile(path, file, data),
-    basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${BASE_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
+    basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${USERS_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
   };
 };
 
