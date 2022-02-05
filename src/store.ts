@@ -36,6 +36,7 @@ const toggleSidebar = createAction('ui/toggleSidebar');
 const initialState: AppState = {
   tune: {
     constants: {},
+    details: {} as any,
   },
   tuneData: {},
   logs: [],

@@ -9,7 +9,9 @@ import {
 } from 'firebase/storage';
 import { storage } from '../firebase';
 
-const BASE_PATH = 'public/users';
+const PUBLIC_PATH = 'public';
+const USERS_PATH = `${PUBLIC_PATH}/users`;
+const INI_PATH = `${PUBLIC_PATH}/ini`;
 
 const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
 
@@ -26,6 +28,13 @@ const useServerStorage = () => {
 
       return Promise.reject(error);
     }
+  };
+
+  const getINIFile = async (signature: string) => {
+    const version = /.+?(?<version>(\d+)(-\w+)*)/.exec(signature)?.groups?.version;
+    // TODO: add error handling
+
+    return getFile(`${INI_PATH}/${version}.ini.gz`);
   };
 
   const removeFile = async (path: string) => {
@@ -52,9 +61,10 @@ const useServerStorage = () => {
 
   return {
     getFile: (path: string): Promise<ArrayBuffer> => getFile(path),
+    getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
     removeFile: (path: string): Promise<void> => removeFile(path),
     uploadFile: (path: string, file: File, data: Uint8Array): UploadTask => uploadFile(path, file, data),
-    basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${BASE_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
+    basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${USERS_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
   };
 };
 
