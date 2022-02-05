@@ -29,7 +29,6 @@ import {
   UIState,
 } from './types/state';
 import useDb from './hooks/useDb';
-import useServerStorage from './hooks/useServerStorage';
 import Info from './pages/Info';
 import Hub from './pages/Hub';
 
