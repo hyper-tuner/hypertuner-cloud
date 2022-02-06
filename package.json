@@ -16,7 +16,8 @@
     "build:stats": "craco build --stats",
     "test": "craco test",
     "lint": "tsc && eslint --max-warnings=0 src",
-    "lint:fix": "eslint --fix src"
+    "lint:fix": "eslint --fix src",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "browserslist": {
     "production": [
@@ -66,6 +67,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "less-loader": "^6.1.0",
     "prettier": "^2.5.1",
+    "source-map-explorer": "^2.5.2",
     "typescript": "^4.5.5",
     "worker-loader": "^3.0.8"
   }

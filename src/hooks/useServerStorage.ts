@@ -6,12 +6,14 @@ import {
   getBytes,
   deleteObject,
   uploadBytesResumable,
+  getStorage,
 } from 'firebase/storage';
-import { storage } from '../firebase';
 
 const PUBLIC_PATH = 'public';
 const USERS_PATH = `${PUBLIC_PATH}/users`;
 const INI_PATH = `${PUBLIC_PATH}/ini`;
+
+const storage = getStorage();
 
 const genericError = (error: Error) => notification.error({ message: 'Storage Error', description: error.message });
 

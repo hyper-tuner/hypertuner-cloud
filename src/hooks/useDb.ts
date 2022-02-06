@@ -11,11 +11,13 @@ import {
   getDocs,
   QuerySnapshot,
   orderBy,
-} from 'firebase/firestore';
-import { db } from '../firebase';
+  getFirestore,
+} from 'firebase/firestore/lite';
 import { TuneDbData } from '../types/dbData';
 
 const TUNES_PATH = 'publicTunes';
+
+const db = getFirestore();
 
 const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
 
