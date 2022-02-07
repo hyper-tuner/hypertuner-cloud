@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
 } from 'react';
 import {
   useLocation,
@@ -107,8 +108,8 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     return () => document.removeEventListener('keydown', handleGlobalKeyboard);
   });
 
-  const tabs = (
-    <Col span={14} md={12} sm={16} style={{ textAlign: 'center' }}>
+  const tabs = useMemo(() => (
+    <Col span={16} md={12} sm={16} style={{ textAlign: 'center' }}>
       <Radio.Group
         key={pathname}
         defaultValue={tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || rootPathMatch?.pathname}
@@ -148,10 +149,10 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         </Radio.Button>
       </Radio.Group>
     </Col>
-  );
+  ), [buildTuneUrl, lg, navigate, pathname, rootPathMatch?.pathname, tabMatch?.pathname, tuneRootMatch?.pathname, tuneTuneMatch?.pathnameBase]);
 
   const rightMenuColProps = tuneId ? {
-    span: 10,
+    span: 8,
     md: 8,
     sm: 8,
   } : {
@@ -159,6 +160,20 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     md: 10,
     sm: 8,
   };
+
+  const downloadButton = useMemo(() => {
+    const list = [];
+
+    if (lg) {
+      list.push('Download');
+    }
+
+    if (sm) {
+      list.push(<DownOutlined />);
+    }
+
+    return list.length ? list : null;
+  }, [lg, sm]);
 
   return (
     <Header className="app-top-bar">
@@ -217,8 +232,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
               trigger={['click']}
             >
               <Button icon={<CloudDownloadOutlined />}>
-                {lg && 'Download'}
-                {sm && <DownOutlined />}
+                {downloadButton}
               </Button>
             </Dropdown>
             <Dropdown
