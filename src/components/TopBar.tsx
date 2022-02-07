@@ -72,7 +72,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const { query } = useKBar();
-  const buildTuneUrl = (route: string) => tuneId ? generatePath(route, { tuneId }) : null;
+  const buildTuneUrl = useCallback((route: string) => tuneId ? generatePath(route, { tuneId }) : null, [tuneId]);
   const rootPathMatch = useMatch(Routes.ROOT);
   const tuneRootMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneTuneMatch = useMatch(`${Routes.TUNE_TUNE}/*`);
@@ -165,11 +165,11 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     const list = [];
 
     if (lg) {
-      list.push('Download');
+      list.push(<span key="download-text">Download</span>);
     }
 
     if (sm) {
-      list.push(<DownOutlined />);
+      list.push(<DownOutlined key="download-icon" />);
     }
 
     return list.length ? list : null;
