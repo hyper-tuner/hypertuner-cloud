@@ -51,7 +51,7 @@
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
-    "uplot": "^1.6.18",
+    "uplot": "^1.6.19",
     "uplot-react": "^1.1.1"
   },
   "devDependencies": {
