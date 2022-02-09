@@ -57,5 +57,5 @@ gcloud auth login
 Set up CORS:
 
 ```bash
-gsutil cors set cors.json gs://<YOUR-BUCKET>
+gsutil cors set firebase/cors.json gs://<YOUR-BUCKET>
 ```

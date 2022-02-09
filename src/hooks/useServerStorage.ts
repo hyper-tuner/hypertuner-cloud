@@ -12,15 +12,26 @@ import {
 const PUBLIC_PATH = 'public';
 const USERS_PATH = `${PUBLIC_PATH}/users`;
 const INI_PATH = `${PUBLIC_PATH}/ini`;
+const CDN_URL = process.env.REACT_APP_CDN_URL;
 
 const storage = getStorage();
 
 const genericError = (error: Error) => notification.error({ message: 'Storage Error', description: error.message });
 
+const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
+  if (CDN_URL) {
+    const response = await fetch(`${CDN_URL}/${path}`);
+    return Promise.resolve(response.arrayBuffer());
+  }
+
+  return Promise.resolve(await getBytes(ref(storage, path)));
+};
+
 const useServerStorage = () => {
   const getFile = async (path: string) => {
+
     try {
-      return Promise.resolve(await getBytes(ref(storage, path)));
+      return fetchFromServer(path);
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
@@ -34,7 +45,7 @@ const useServerStorage = () => {
     const { version, baseVersion } = /.+?(?<version>(?<baseVersion>\d+)(-\w+)*)/.exec(signature)?.groups || { version: null, baseVersion: null };
 
     try {
-      return Promise.resolve(await getBytes(ref(storage, `${INI_PATH}/${version}.ini.gz`)));
+      return fetchFromServer(`${INI_PATH}/${version}.ini.gz`);
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
@@ -45,11 +56,10 @@ const useServerStorage = () => {
       });
 
       try {
-        return Promise.resolve(await getBytes(ref(storage, `${INI_PATH}/${baseVersion}.ini.gz`)));
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      } catch (error) {
-        Sentry.captureException(error);
-        console.error(error);
+        return fetchFromServer(`${INI_PATH}/${baseVersion}.ini.gz`);
+      } catch (err) {
+        Sentry.captureException(err);
+        console.error(err);
 
         notification.error({
           message: 'INI not found',

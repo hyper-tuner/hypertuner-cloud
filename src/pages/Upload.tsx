@@ -91,7 +91,7 @@ const containerStyle = {
 const rowProps = { gutter: 10 };
 const colProps = { span: 24, sm: 12 };
 
-const maxFileSizeMB = 10;
+const maxFileSizeMB = 50;
 const descriptionEditorHeight = 260;
 const thisYear = (new Date()).getFullYear();
 const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
