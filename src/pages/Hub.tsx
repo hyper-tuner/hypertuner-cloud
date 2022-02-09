@@ -1,8 +1,13 @@
 import {
   Badge,
+  Button,
   Card,
   Col,
+  Grid,
+  Input,
   Row,
+  Space,
+  Table,
   Tooltip,
   Typography,
 } from 'antd';
@@ -20,6 +25,7 @@ import {
   generatePath,
   useNavigate,
 } from 'react-router';
+import { Timestamp } from 'firebase/firestore/lite';
 import useDb from '../hooks/useDb';
 import { TuneDbData } from '../types/dbData';
 import { Routes } from '../routes';
@@ -27,9 +33,11 @@ import { generateShareUrl } from '../utils/url';
 
 const containerStyle = {
   padding: 20,
-  maxWidth: 800,
+  maxWidth: 1200,
   margin: '0 auto',
 };
+
+const { useBreakpoint } = Grid;
 
 const loadingCards = (
   <>
@@ -46,9 +54,11 @@ const loadingCards = (
 );
 
 const Hub = () => {
-  const [tunes, setTunes] = useState<TuneDbData[]>([]);
+  const { md } = useBreakpoint();
   const { listTunes } = useDb();
   const navigate = useNavigate();
+  const [tunes, setTunes] = useState<TuneDbData[]>([]);
+  const [dataSource, setDataSource] = useState<any[]>([]);
   const [copied, setCopied] = useState(false);
 
   const goToTune = (tuneId: string) => navigate(generatePath(Routes.TUNE_ROOT, { tuneId }));
@@ -70,40 +80,99 @@ const Hub = () => {
       });
 
       setTunes(temp);
+      setDataSource(temp.map((tune) => ({
+        key: tune.id,
+        tuneId: tune.id,
+        make: tune.details!.make,
+        model: tune.details!.model,
+        year: tune.details!.year,
+        author: 'karniv00l',
+        publishedAt: new Date((tune.createdAt as Timestamp).seconds * 1000).toLocaleString(),
+        stars: 0,
+      })));
     });
   }, [listTunes]);
 
+  const columns = [
+    {
+      title: 'Make',
+      dataIndex: 'make',
+      key: 'make',
+    },
+    {
+      title: 'Model',
+      dataIndex: 'model',
+      key: 'model',
+    },
+    {
+      title: 'Year',
+      dataIndex: 'year',
+      key: 'year',
+    },
+    {
+      title: 'Author',
+      dataIndex: 'author',
+      key: 'author',
+    },
+    {
+      title: 'Published',
+      dataIndex: 'publishedAt',
+      key: 'publishedAt',
+    },
+    {
+      title: <StarOutlined />,
+      dataIndex: 'stars',
+      key: 'stars',
+    },
+    {
+      dataIndex: 'tuneId',
+      render: (tuneId: string) => (
+        <Space>
+          <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
+            <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(generateShareUrl(tuneId))} />
+          </Tooltip>
+          <Button icon={<ArrowRightOutlined />} onClick={() => goToTune(tuneId)} />
+        </Space>
+      ),
+      key: 'tuneId',
+    },
+  ];
+
   useEffect(() => {
     loadData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // TODO: fix this
 
   return (
     <div style={containerStyle}>
       <Typography.Title>Hub</Typography.Title>
-      <Row gutter={[16, 16]}>
-        {tunes.length === 0 ? loadingCards : (
-          tunes.map((tune) => (
-            <Col span={16} sm={8} key={tune.tuneFile}>
-              <Card
-                title={tune.details!.model}
-                actions={[
-                  <Badge count={0} showZero size="small" color="gold">
-                    <StarOutlined />
-                  </Badge>,
-                  <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-                    <CopyOutlined onClick={() => copyToClipboard(generateShareUrl(tune.id!))} />
-                  </Tooltip>,
-                  <ArrowRightOutlined onClick={() => goToTune(tune.id!)} />,
-                ]}
-              >
-                <Typography.Text ellipsis>
-                  {tune.details!.make} {tune.details!.model} {tune.details!.year}
-                </Typography.Text>
-              </Card>
-            </Col>
-          )))}
-      </Row>
+      <Input style={{ marginBottom: 10, height: 50 }} placeholder="Search..." />
+      {md ?
+        <Table dataSource={dataSource} columns={columns} />
+        :
+        <Row gutter={[16, 16]}>
+          {tunes.length === 0 ? loadingCards : (
+            tunes.map((tune) => (
+              <Col span={16} sm={8} key={tune.tuneFile}>
+                <Card
+                  title={tune.details!.model}
+                  actions={[
+                    <Badge count={0} showZero size="small" color="gold">
+                      <StarOutlined />
+                    </Badge>,
+                    <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
+                      <CopyOutlined onClick={() => copyToClipboard(generateShareUrl(tune.id!))} />
+                    </Tooltip>,
+                    <ArrowRightOutlined onClick={() => goToTune(tune.id!)} />,
+                  ]}
+                >
+                  <Typography.Text ellipsis>
+                    {tune.details!.make} {tune.details!.model} {tune.details!.year}
+                  </Typography.Text>
+                </Card>
+              </Col>
+            )))}
+        </Row>}
     </div>
   );
 };
