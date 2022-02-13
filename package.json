@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.2",
-    "@sentry/react": "^6.17.5",
+    "@sentry/react": "^6.17.7",
     "@sentry/tracing": "^6.17.6",
     "@speedy-tuner/ini": "^0.3.0",
     "@speedy-tuner/types": "^0.3.0",
