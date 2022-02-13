@@ -10,7 +10,6 @@ import {
   Tabs,
   Checkbox,
   Row,
-  Skeleton,
   Progress,
   Steps,
   Space,
@@ -52,6 +51,7 @@ import {
   AppState,
   UIState,
 } from '../types/state';
+import Loader from '../components/Loader';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -220,7 +220,7 @@ const Logs = ({
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
         {!logs && !loadedLogs.length ?
-          <div style={{ padding: 20 }}><Skeleton active /></div>
+          <Loader />
           :
           !ui.sidebarCollapsed &&
           <Tabs defaultActiveKey="fields" style={{ marginLeft: 20 }}>

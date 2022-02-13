@@ -6,7 +6,6 @@ import {
 import {
   Layout,
   Result,
-  Skeleton,
 } from 'antd';
 import { connect } from 'react-redux';
 import {
@@ -22,7 +21,7 @@ import { Routes } from './routes';
 import { loadTune } from './utils/api';
 import store from './store';
 import Logs from './pages/Logs';
-import './App.less';
+import Loader from './components/Loader';
 import {
   AppState,
   NavigationState,
@@ -33,6 +32,7 @@ import Info from './pages/Info';
 import Hub from './pages/Hub';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
+import './App.less';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -92,7 +92,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
       <Layout style={{ marginLeft }}>
         <Layout className="app-content">
           <Content>
-            <Suspense fallback={<Skeleton active className="small-container" />}>
+            <Suspense fallback={<Loader />}>
               {element}
             </Suspense>
           </Content>

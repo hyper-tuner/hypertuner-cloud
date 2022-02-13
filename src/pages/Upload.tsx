@@ -56,6 +56,7 @@ import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
 import { generateShareUrl } from '../utils/url';
+import Loader from '../components/Loader';
 
 const { Item } = Form;
 
@@ -661,11 +662,7 @@ const UploadPage = () => {
   );
 
   if (!isUserAuthorized) {
-    return (
-      <div className="small-container">
-        <Skeleton active />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (isPublished) {

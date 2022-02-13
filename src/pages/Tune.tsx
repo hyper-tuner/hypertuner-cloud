@@ -1,4 +1,3 @@
-import { Skeleton } from 'antd';
 import {
   generatePath,
   useMatch,
@@ -18,6 +17,7 @@ import {
   AppState,
   NavigationState,
 } from '../types/state';
+import Loader from '../components/Loader';
 
 const mapStateToProps = (state: AppState) => ({
   navigation: state.navigation,
@@ -54,13 +54,8 @@ const Tune = ({ navigation, config }: { navigation: NavigationState, config: Con
     }
   }, [firstDialogPath, navigate, tuneRootMatch, isConfigReady]);
 
-  // TODO: unify loading indicators across the app
   if (!isConfigReady || !dialogMatch) {
-    return (
-      <div>
-        <Skeleton active />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
