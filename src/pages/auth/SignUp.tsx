@@ -39,7 +39,7 @@ const SignUp = () => {
       await signUp(email, password);
       signUpSuccessful();
       emailNotVerified();
-      navigate(Routes.ROOT);
+      navigate(Routes.HUB);
     } catch (error) {
       form.resetFields();
       console.warn(error);

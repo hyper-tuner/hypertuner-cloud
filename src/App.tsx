@@ -113,7 +113,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
       <Layout>
         <TopBar tuneId={navigation.tuneId} />
         <ReactRoutes>
-          <Route path={Routes.ROOT} element={<ContentFor element={<Hub />} />} />
+          <Route path={Routes.HUB} element={<ContentFor element={<Hub />} />} />
           <Route path={Routes.TUNE_ROOT} element={<ContentFor element={<Info />} />} />
           <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
           <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
