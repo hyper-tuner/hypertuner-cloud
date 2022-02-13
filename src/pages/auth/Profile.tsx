@@ -32,6 +32,7 @@ const Profile = () => {
       <Form
         validateMessages={validateMessages}
         form={form}
+        autoComplete="off"
       >
         <Item
           name="username"
