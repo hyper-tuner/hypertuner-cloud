@@ -81,13 +81,14 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const hubMatch = useMatch(Routes.HUB);
   const logoutClick = useCallback(async () => {
     try {
-      await logout();
+      navigate(Routes.HUB);
+      logout();
       logOutSuccessful();
     } catch (error) {
       console.warn(error);
       logOutFailed(error as Error);
     }
-  }, [logout]);
+  }, [logout, navigate]);
 
   const toggleCommandPalette = useCallback(() => query.toggle(), [query]);
 

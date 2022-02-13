@@ -39,7 +39,7 @@ const Login = () => {
   const { login, googleAuth, githubAuth } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading;
-  const redirectAfterLogin = useCallback(() => navigate(Routes.UPLOAD), [navigate]);
+  const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
 
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
