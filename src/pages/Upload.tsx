@@ -12,7 +12,6 @@ import {
   notification,
   Row,
   Select,
-  Skeleton,
   Space,
   Switch,
   Tabs,
