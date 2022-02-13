@@ -88,7 +88,6 @@ const Login = () => {
     <div style={containerStyle}>
       <Divider>Log In using email</Divider>
       <Form
-        initialValues={{ remember: true }}
         onFinish={emailLogin}
         validateMessages={validateMessages}
         autoComplete="off"

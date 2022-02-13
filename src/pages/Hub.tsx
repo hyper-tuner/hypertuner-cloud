@@ -60,6 +60,7 @@ const Hub = () => {
   const [tunes, setTunes] = useState<TuneDbData[]>([]);
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const goToTune = (tuneId: string) => navigate(generatePath(Routes.TUNE_ROOT, { tuneId }));
 
@@ -90,6 +91,7 @@ const Hub = () => {
         publishedAt: new Date((tune.createdAt as Timestamp).seconds * 1000).toLocaleString(),
         stars: 0,
       })));
+      setIsLoading(false);
     });
   }, [listTunes]);
 
@@ -146,12 +148,12 @@ const Hub = () => {
   return (
     <div style={containerStyle}>
       <Typography.Title>Hub</Typography.Title>
-      <Input style={{ marginBottom: 10, height: 50 }} placeholder="Search..." />
+      <Input style={{ marginBottom: 10, height: 40 }} placeholder="Search..." />
       {md ?
-        <Table dataSource={dataSource} columns={columns} />
+        <Table dataSource={dataSource} columns={columns} loading={isLoading} />
         :
         <Row gutter={[16, 16]}>
-          {tunes.length === 0 ? loadingCards : (
+          {isLoading ? loadingCards : (
             tunes.map((tune) => (
               <Col span={16} sm={8} key={tune.tuneFile}>
                 <Card

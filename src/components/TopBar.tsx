@@ -78,6 +78,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const tuneTuneMatch = useMatch(`${Routes.TUNE_TUNE}/*`);
   const tabMatch = useMatch(`${Routes.TUNE_TAB}/*`);
   const uploadMatch = useMatch(Routes.UPLOAD);
+  const hubMatch = useMatch(Routes.HUB);
   const logoutClick = useCallback(async () => {
     try {
       await logout();
@@ -109,7 +110,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   });
 
   const tabs = useMemo(() => (
-    <Col span={16} md={12} sm={16} style={{ textAlign: 'center' }}>
+    <Col span={16} md={16} sm={16}>
       <Radio.Group
         key={pathname}
         defaultValue={tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || rootPathMatch?.pathname}
@@ -117,7 +118,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         buttonStyle="solid"
         onChange={(e) => navigate(e.target.value)}
       >
-        <Radio.Button value={buildTuneUrl(Routes.ROOT)}>
+        <Radio.Button value={buildTuneUrl(Routes.HUB)}>
           <Space>
             <CarOutlined />
             {lg && 'Hub'}
@@ -178,8 +179,13 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   return (
     <Header className="app-top-bar">
       <Row>
-        <Col span={0} md={4} sm={0} />
-        {tuneId ? tabs : <Col span={10} md={10} sm={16} />}
+        {tuneId ? tabs : (
+          <Col span={10} md={14} sm={16}>
+            <Link to={Routes.HUB}>
+              <Button icon={<CarOutlined />} type={hubMatch ? 'primary' : 'default'}>Hub</Button>
+            </Link>
+          </Col>
+        )}
         <Col {...rightMenuColProps} style={{ textAlign: 'right' }}>
           <Space>
             {sm && <Tooltip title={
@@ -239,9 +245,14 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
               overlay={
                 <Menu>
                   {currentUser ? (
-                    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
-                      Logout
-                    </Menu.Item>
+                    <>
+                      <Menu.Item key="profile" icon={<UserOutlined />}>
+                        <Link to={Routes.PROFILE}>Profile</Link>
+                      </Menu.Item>
+                      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
+                        Logout
+                      </Menu.Item>
+                    </>
                   ) : (
                     <>
                       <Menu.Item key="login" icon={<LoginOutlined />}>
@@ -252,9 +263,6 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
                       </Menu.Item>
                     </>
                   )}
-                  <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
-                    Preferences
-                  </Menu.Item>
                 </Menu>
               }
               placement="bottomCenter"

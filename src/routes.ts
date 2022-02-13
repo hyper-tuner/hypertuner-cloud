@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/prefer-default-export
 export enum Routes {
   ROOT = '/',
+  HUB = '/',
 
   TUNE_ROOT = '/t/:tuneId',
   TUNE_TAB = '/t/:tuneId/:tab',
@@ -11,6 +12,7 @@ export enum Routes {
 
   LOGIN = '/auth/login',
   LOGOUT = '/auth/logout',
+  PROFILE = '/auth/profile',
   SIGN_UP = '/auth/sign-up',
   FORGOT_PASSWORD = '/auth/forgot-password',
   RESET_PASSWORD = '/auth/reset-password',

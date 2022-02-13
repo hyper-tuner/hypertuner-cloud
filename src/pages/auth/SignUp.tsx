@@ -52,7 +52,6 @@ const SignUp = () => {
     <div style={containerStyle}>
       <Divider>Sign Up</Divider>
       <Form
-        initialValues={{ remember: true }}
         onFinish={onFinish}
         validateMessages={validateMessages}
         autoComplete="off"
