@@ -322,7 +322,7 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Hub',
       subtitle: 'Public tunes and logs.',
       icon: <CarOutlined />,
-      perform: () => navigate(Routes.ROOT),
+      perform: () => navigate(Routes.HUB),
     },
     {
       id: 'ToggleSidebar',

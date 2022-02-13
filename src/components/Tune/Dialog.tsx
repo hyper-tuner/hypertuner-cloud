@@ -7,7 +7,6 @@ import {
 import { connect } from 'react-redux';
 import {
   Form,
-  Skeleton,
   Divider,
   Col,
   Row,
@@ -43,6 +42,7 @@ import Map from './Dialog/Map';
 import { evaluateExpression } from '../../utils/tune/expression';
 import useBrowserStorage from '../../hooks/useBrowserStorage';
 import useConfig from '../../hooks/useConfig';
+import Loader from '../Loader';
 
 interface DialogsAndCurves {
   [name: string]: DialogType | CurveType | TableType,
@@ -81,18 +81,6 @@ const mapStateToProps = (state: AppState) => ({
   tune: state.tune,
   ui: state.ui,
 });
-
-const containerStyle = {
-  padding: 20,
-  maxWidth: 1400,
-  width: '100%',
-  margin: '0 auto',
-};
-
-const skeleton = (<div style={containerStyle}>
-  <Skeleton active />
-  <Skeleton active />
-</div>);
 
 // TODO: refactor this
 const Dialog = ({
@@ -364,7 +352,7 @@ const Dialog = ({
   }, [isDataReady, url, ui.sidebarCollapsed]);
 
   if (!isDataReady) {
-    return skeleton;
+    return <Loader />;
   }
 
   const dialogConfig = config.dialogs[name];
@@ -375,7 +363,7 @@ const Dialog = ({
   if (!dialogConfig) {
     if (curveConfig) {
       return (
-        <div ref={containerRef} style={containerStyle}>
+        <div ref={containerRef} className="large-container">
           <Divider>{curveConfig.title}</Divider>
           {renderCurve(curveConfig)}
         </div>
@@ -384,7 +372,7 @@ const Dialog = ({
 
     if (tableConfig) {
       return (
-        <div ref={containerRef} style={containerStyle}>
+        <div ref={containerRef} className="large-container">
           {renderHelp(tableConfig.help)}
           <Divider>{tableConfig.title}</Divider>
           {renderTable(tableConfig)}
@@ -402,7 +390,7 @@ const Dialog = ({
   }
 
   return (
-    <div ref={containerRef} style={containerStyle}>
+    <div ref={containerRef} className="large-container">
       {renderHelp(dialogConfig?.help)}
       <Form
         labelCol={{ span: 10 }}

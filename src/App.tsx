@@ -6,7 +6,6 @@ import {
 import {
   Layout,
   Result,
-  Skeleton,
 } from 'antd';
 import { connect } from 'react-redux';
 import {
@@ -22,7 +21,7 @@ import { Routes } from './routes';
 import { loadTune } from './utils/api';
 import store from './store';
 import Logs from './pages/Logs';
-import './App.less';
+import Loader from './components/Loader';
 import {
   AppState,
   NavigationState,
@@ -33,6 +32,7 @@ import Info from './pages/Info';
 import Hub from './pages/Hub';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
+import './App.less';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -41,6 +41,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 const Tune = lazy(() => import('./pages/Tune'));
 const Diagnose = lazy(() => import('./pages/Diagnose'));
 const Login = lazy(() => import('./pages/auth/Login'));
+const Profile = lazy(() => import('./pages/auth/Profile'));
 const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const Upload = lazy(() => import('./pages/Upload'));
@@ -84,22 +85,15 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuneId]);
 
-  const ContentFor = useCallback((props: { children: ReactNode, marginLeft?: number }) => {
-    const { children, marginLeft } = props;
+  const ContentFor = useCallback((props: { element: ReactNode, marginLeft?: number }) => {
+    const { element, marginLeft } = props;
 
     return (
       <Layout style={{ marginLeft }}>
         <Layout className="app-content">
           <Content>
-            <Suspense fallback={<Skeleton
-              active
-              style={{
-                maxWidth: 600,
-                margin: '0 auto',
-                padding: 20,
-              }}
-            />}>
-              {children}
+            <Suspense fallback={<Loader />}>
+              {element}
             </Suspense>
           </Content>
         </Layout>
@@ -112,57 +106,18 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
       <Layout>
         <TopBar tuneId={navigation.tuneId} />
         <ReactRoutes>
-          <Route path={Routes.ROOT} element={
-            <ContentFor>
-              <Hub />
-            </ContentFor>
-          } />
-          <Route path={Routes.TUNE_ROOT} element={
-            <ContentFor>
-              <Info />
-            </ContentFor>
-          } />
-          <Route path={`${Routes.TUNE_TUNE}/*`} element={
-            <ContentFor marginLeft={margin}>
-              <Tune />
-            </ContentFor>
-          } />
-          <Route path={Routes.TUNE_LOGS} element={
-            <ContentFor marginLeft={margin}>
-              <Logs />
-            </ContentFor>
-          } />
-          <Route path={Routes.TUNE_DIAGNOSE} element={
-            <ContentFor marginLeft={margin}>
-              <Diagnose />
-            </ContentFor>
-          } />
-          <Route path={Routes.LOGIN} element={
-            <ContentFor>
-              <Login />
-            </ContentFor>
-          } />
-          <Route path={Routes.SIGN_UP} element={
-            <ContentFor>
-              <SignUp />
-            </ContentFor>
-          } />
-          <Route path={Routes.RESET_PASSWORD} element={
-            <ContentFor>
-              <ResetPassword />
-            </ContentFor>
-          } />
-          <Route path={Routes.UPLOAD} element={
-            <ContentFor>
-              <Upload />
-            </ContentFor>
-          } />
+          <Route path={Routes.HUB} element={<ContentFor element={<Hub />} />} />
+          <Route path={Routes.TUNE_ROOT} element={<ContentFor element={<Info />} />} />
+          <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
+          <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
+          <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
+          <Route path={Routes.LOGIN} element={<ContentFor element={<Login />} />} />
+          <Route path={Routes.PROFILE} element={<ContentFor element={<Profile />} />} />
+          <Route path={Routes.SIGN_UP} element={<ContentFor element={<SignUp />} />} />
+          <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
+          <Route path={Routes.UPLOAD} element={<ContentFor element={<Upload />} />} />
         </ReactRoutes>
-        <Result
-          status="warning"
-          title="Page not found"
-          style={{ marginTop: 50 }}
-        />
+        <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>
       <StatusBar />
     </>

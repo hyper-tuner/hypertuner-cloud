@@ -21,7 +21,6 @@ import {
   signUpFailed,
   signUpSuccessful,
 } from './notifications';
-import { containerStyle } from './common';
 
 const { Item } = Form;
 
@@ -39,7 +38,7 @@ const SignUp = () => {
       await signUp(email, password);
       signUpSuccessful();
       emailNotVerified();
-      navigate(Routes.ROOT);
+      navigate(Routes.HUB);
     } catch (error) {
       form.resetFields();
       console.warn(error);
@@ -49,10 +48,9 @@ const SignUp = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Divider>Sign Up</Divider>
       <Form
-        initialValues={{ remember: true }}
         onFinish={onFinish}
         validateMessages={validateMessages}
         autoComplete="off"

@@ -27,7 +27,6 @@ import {
   logInFailed,
   logInSuccessful,
 } from './notifications';
-import { containerStyle } from './common';
 
 const { Item } = Form;
 
@@ -39,7 +38,7 @@ const Login = () => {
   const { login, googleAuth, githubAuth } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading;
-  const redirectAfterLogin = useCallback(() => navigate(Routes.UPLOAD), [navigate]);
+  const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
 
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
@@ -85,10 +84,9 @@ const Login = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Divider>Log In using email</Divider>
       <Form
-        initialValues={{ remember: true }}
         onFinish={emailLogin}
         validateMessages={validateMessages}
         autoComplete="off"

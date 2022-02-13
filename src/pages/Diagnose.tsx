@@ -8,7 +8,6 @@ import {
 import {
   Layout,
   Tabs,
-  Skeleton,
   Progress,
   Steps,
   Space,
@@ -44,6 +43,7 @@ import TriggerLogsParser, {
   ToothLogEntry,
 } from '../utils/logs/TriggerLogsParser';
 import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
+import Loader from '../components/Loader';
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -144,7 +144,7 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
         {!logs && !loadedLogs.length ?
-          <div style={{ padding: 20 }}><Skeleton active /></div>
+          <Loader />
           :
           !ui.sidebarCollapsed &&
           <Tabs defaultActiveKey="files" style={{ marginLeft: 20 }}>

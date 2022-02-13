@@ -12,7 +12,6 @@ import {
   notification,
   Row,
   Select,
-  Skeleton,
   Space,
   Switch,
   Tabs,
@@ -56,6 +55,7 @@ import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
 import { generateShareUrl } from '../utils/url';
+import Loader from '../components/Loader';
 
 const { Item } = Form;
 
@@ -83,11 +83,6 @@ interface ValidationResult {
 
 type ValidateFile = (file: File) => Promise<ValidationResult>;
 
-const containerStyle = {
-  padding: 20,
-  maxWidth: 600,
-  margin: '0 auto',
-};
 const rowProps = { gutter: 10 };
 const colProps = { span: 24, sm: 12 };
 
@@ -666,23 +661,19 @@ const UploadPage = () => {
   );
 
   if (!isUserAuthorized) {
-    return (
-      <div style={containerStyle}>
-        <Skeleton active />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (isPublished) {
     return (
-      <div style={containerStyle}>
+      <div className="small-container">
         {shareSection}
       </div>
     );
   }
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Form
         onFinish={publish}
         initialValues={{

@@ -7,19 +7,14 @@ import {
   Input,
   Row,
   Select,
-  Skeleton,
 } from 'antd';
 import {
   AppState,
   TuneDataState,
 } from '../types/state';
+import Loader from '../components/Loader';
 
 const { Item } = Form;
-const containerStyle = {
-  padding: 20,
-  maxWidth: 600,
-  margin: '0 auto',
-};
 const rowProps = { gutter: 10 };
 const colProps = { span: 24, sm: 12 };
 
@@ -29,15 +24,11 @@ const mapStateToProps = (state: AppState) => ({
 
 const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
   if (!tuneData.details) {
-    return (
-      <div style={containerStyle}>
-        <Skeleton active />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Divider>Details</Divider>
       <Form>
         <Row {...rowProps}>

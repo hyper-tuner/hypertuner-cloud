@@ -17,9 +17,9 @@ import {
 import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { Colors } from '../../utils/colors';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
+import { isNumber } from '../../utils/tune/expression';
 
 import 'uplot/dist/uPlot.min.css';
-import { isNumber } from '../../utils/tune/expression';
 
 const { useBreakpoint } = Grid;
 

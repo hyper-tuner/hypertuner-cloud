@@ -73,20 +73,22 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const navigate = useNavigate();
   const { query } = useKBar();
   const buildTuneUrl = useCallback((route: string) => tuneId ? generatePath(route, { tuneId }) : null, [tuneId]);
-  const rootPathMatch = useMatch(Routes.ROOT);
+  const hubPathMatch = useMatch(Routes.HUB);
   const tuneRootMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneTuneMatch = useMatch(`${Routes.TUNE_TUNE}/*`);
   const tabMatch = useMatch(`${Routes.TUNE_TAB}/*`);
   const uploadMatch = useMatch(Routes.UPLOAD);
+  const hubMatch = useMatch(Routes.HUB);
   const logoutClick = useCallback(async () => {
     try {
-      await logout();
+      navigate(Routes.HUB);
+      logout();
       logOutSuccessful();
     } catch (error) {
       console.warn(error);
       logOutFailed(error as Error);
     }
-  }, [logout]);
+  }, [logout, navigate]);
 
   const toggleCommandPalette = useCallback(() => query.toggle(), [query]);
 
@@ -109,15 +111,15 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   });
 
   const tabs = useMemo(() => (
-    <Col span={16} md={12} sm={16} style={{ textAlign: 'center' }}>
+    <Col span={16} md={16} sm={16}>
       <Radio.Group
         key={pathname}
-        defaultValue={tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || rootPathMatch?.pathname}
+        defaultValue={tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || hubPathMatch?.pathname}
         optionType="button"
         buttonStyle="solid"
         onChange={(e) => navigate(e.target.value)}
       >
-        <Radio.Button value={buildTuneUrl(Routes.ROOT)}>
+        <Radio.Button value={buildTuneUrl(Routes.HUB)}>
           <Space>
             <CarOutlined />
             {lg && 'Hub'}
@@ -149,7 +151,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         </Radio.Button>
       </Radio.Group>
     </Col>
-  ), [buildTuneUrl, lg, navigate, pathname, rootPathMatch?.pathname, tabMatch?.pathname, tuneRootMatch?.pathname, tuneTuneMatch?.pathnameBase]);
+  ), [buildTuneUrl, lg, navigate, pathname, hubPathMatch?.pathname, tabMatch?.pathname, tuneRootMatch?.pathname, tuneTuneMatch?.pathnameBase]);
 
   const rightMenuColProps = tuneId ? {
     span: 8,
@@ -178,8 +180,13 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   return (
     <Header className="app-top-bar">
       <Row>
-        <Col span={0} md={4} sm={0} />
-        {tuneId ? tabs : <Col span={10} md={10} sm={16} />}
+        {tuneId ? tabs : (
+          <Col span={10} md={14} sm={16}>
+            <Link to={Routes.HUB}>
+              <Button icon={<CarOutlined />} type={hubMatch ? 'primary' : 'default'}>Hub</Button>
+            </Link>
+          </Col>
+        )}
         <Col {...rightMenuColProps} style={{ textAlign: 'right' }}>
           <Space>
             {sm && <Tooltip title={
@@ -239,9 +246,14 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
               overlay={
                 <Menu>
                   {currentUser ? (
-                    <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
-                      Logout
-                    </Menu.Item>
+                    <>
+                      <Menu.Item key="profile" icon={<UserOutlined />}>
+                        <Link to={Routes.PROFILE}>Profile</Link>
+                      </Menu.Item>
+                      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
+                        Logout
+                      </Menu.Item>
+                    </>
                   ) : (
                     <>
                       <Menu.Item key="login" icon={<LoginOutlined />}>
@@ -252,9 +264,6 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
                       </Menu.Item>
                     </>
                   )}
-                  <Menu.Item key="preferences" disabled icon={<SettingOutlined />}>
-                    Preferences
-                  </Menu.Item>
                 </Menu>
               }
               placement="bottomCenter"

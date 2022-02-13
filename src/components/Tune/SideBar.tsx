@@ -1,7 +1,6 @@
 import {
   Layout,
   Menu,
-  Skeleton,
 } from 'antd';
 import { connect } from 'react-redux';
 import {
@@ -23,7 +22,6 @@ import {
 import store from '../../store';
 import Icon from '../SideBar/Icon';
 import { Routes } from '../../routes';
-import useConfig from '../../hooks/useConfig';
 import {
   AppState,
   NavigationState,
@@ -77,7 +75,6 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
     collapsed: ui.sidebarCollapsed,
     onCollapse: (collapsed: boolean) => store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed }),
   } as any;
-  const { isConfigReady } = useConfig(config);
   const [menus, setMenus] = useState<any[]>([]);
 
   const menusList = useCallback((types: MenusType) => (
@@ -122,20 +119,6 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
       setMenus(menusList(config.menus));
     }
   }, [config.menus, menusList, tune.constants]);
-
-  if (!isConfigReady) {
-    return (
-      <Sider {...siderProps} className="app-sidebar" >
-        <div style={{ paddingLeft: 10 }}>
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-          <Skeleton active />
-        </div>
-      </Sider>
-    );
-  }
 
   return (
     <Sider {...siderProps} className="app-sidebar">
