@@ -31,12 +31,6 @@ import { TuneDbData } from '../types/dbData';
 import { Routes } from '../routes';
 import { generateShareUrl } from '../utils/url';
 
-const containerStyle = {
-  padding: 20,
-  maxWidth: 1200,
-  margin: '0 auto',
-};
-
 const { useBreakpoint } = Grid;
 
 const loadingCards = (
@@ -146,7 +140,7 @@ const Hub = () => {
   }, []); // TODO: fix this
 
   return (
-    <div style={containerStyle}>
+    <div className="large-container">
       <Typography.Title>Hub</Typography.Title>
       <Input style={{ marginBottom: 10, height: 40 }} placeholder="Search..." />
       {md ?

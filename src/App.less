@@ -64,6 +64,20 @@ html, body {
   overflow-x: hidden;
 }
 
+.small-container,
+.large-container {
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.small-container {
+  max-width: 600px;
+}
+
+.large-container {
+  max-width: 1400px;
+}
+
 .ant-tabs-tabpane {
   height: calc(100vh - @layout-header-height - @layout-footer-height - @layout-trigger-height - @tabs-nav-height);
   overflow-y: auto;

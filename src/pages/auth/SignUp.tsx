@@ -21,7 +21,6 @@ import {
   signUpFailed,
   signUpSuccessful,
 } from './notifications';
-import { containerStyle } from './common';
 
 const { Item } = Form;
 
@@ -49,7 +48,7 @@ const SignUp = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Divider>Sign Up</Divider>
       <Form
         onFinish={onFinish}

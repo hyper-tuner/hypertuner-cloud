@@ -8,7 +8,6 @@ import {
 } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import validateMessages from './validateMessages';
-import { containerStyle } from './common';
 import { useAuth } from '../../contexts/AuthContext';
 import { restrictedPage } from './notifications';
 import { Routes } from '../../routes';
@@ -28,7 +27,7 @@ const Profile = () => {
   }, [currentUser, navigate]);
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Divider>Your Profile</Divider>
       <Form
         validateMessages={validateMessages}

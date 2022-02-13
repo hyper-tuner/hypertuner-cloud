@@ -17,7 +17,6 @@ import {
   resetFailed,
   resetSuccessful,
 } from './notifications';
-import { containerStyle } from './common';
 
 const { Item } = Form;
 
@@ -42,7 +41,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Divider>Reset password</Divider>
       <Form
         initialValues={{ remember: true }}

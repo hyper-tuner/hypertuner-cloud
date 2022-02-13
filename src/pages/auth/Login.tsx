@@ -27,7 +27,6 @@ import {
   logInFailed,
   logInSuccessful,
 } from './notifications';
-import { containerStyle } from './common';
 
 const { Item } = Form;
 
@@ -85,7 +84,7 @@ const Login = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Divider>Log In using email</Divider>
       <Form
         onFinish={emailLogin}

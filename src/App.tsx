@@ -92,14 +92,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
       <Layout style={{ marginLeft }}>
         <Layout className="app-content">
           <Content>
-            <Suspense fallback={<Skeleton
-              active
-              style={{
-                maxWidth: 600,
-                margin: '0 auto',
-                padding: 20,
-              }}
-            />}>
+            <Suspense fallback={<Skeleton active className="small-container" />}>
               {element}
             </Suspense>
           </Content>

@@ -83,11 +83,6 @@ interface ValidationResult {
 
 type ValidateFile = (file: File) => Promise<ValidationResult>;
 
-const containerStyle = {
-  padding: 20,
-  maxWidth: 600,
-  margin: '0 auto',
-};
 const rowProps = { gutter: 10 };
 const colProps = { span: 24, sm: 12 };
 
@@ -667,7 +662,7 @@ const UploadPage = () => {
 
   if (!isUserAuthorized) {
     return (
-      <div style={containerStyle}>
+      <div className="small-container">
         <Skeleton active />
       </div>
     );
@@ -675,14 +670,14 @@ const UploadPage = () => {
 
   if (isPublished) {
     return (
-      <div style={containerStyle}>
+      <div className="small-container">
         {shareSection}
       </div>
     );
   }
 
   return (
-    <div style={containerStyle}>
+    <div className="small-container">
       <Form
         onFinish={publish}
         initialValues={{

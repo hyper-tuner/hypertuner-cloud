@@ -82,14 +82,7 @@ const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
 });
 
-const containerStyle = {
-  padding: 20,
-  maxWidth: 1400,
-  width: '100%',
-  margin: '0 auto',
-};
-
-const skeleton = (<div style={containerStyle}>
+const skeleton = (<div className="small-container">
   <Skeleton active />
   <Skeleton active />
 </div>);
@@ -375,7 +368,7 @@ const Dialog = ({
   if (!dialogConfig) {
     if (curveConfig) {
       return (
-        <div ref={containerRef} style={containerStyle}>
+        <div ref={containerRef} className="large-container">
           <Divider>{curveConfig.title}</Divider>
           {renderCurve(curveConfig)}
         </div>
@@ -384,7 +377,7 @@ const Dialog = ({
 
     if (tableConfig) {
       return (
-        <div ref={containerRef} style={containerStyle}>
+        <div ref={containerRef} className="large-container">
           {renderHelp(tableConfig.help)}
           <Divider>{tableConfig.title}</Divider>
           {renderTable(tableConfig)}
@@ -402,7 +395,7 @@ const Dialog = ({
   }
 
   return (
-    <div ref={containerRef} style={containerStyle}>
+    <div ref={containerRef} className="large-container">
       {renderHelp(dialogConfig?.help)}
       <Form
         labelCol={{ span: 10 }}
