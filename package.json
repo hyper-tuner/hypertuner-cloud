@@ -40,7 +40,7 @@
     "antd": "^4.18.8",
     "craco-less": "^2.0.0",
     "firebase": "^9.6.7",
-    "kbar": "^0.1.0-beta.27",
+    "kbar": "^0.1.0-beta.28",
     "mlg-converter": "^0.5.1",
     "nanoid": "^3.3.1",
     "pako": "^2.0.4",
