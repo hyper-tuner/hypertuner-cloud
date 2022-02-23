@@ -10,7 +10,7 @@ import {
 } from './http';
 import TuneParser from './tune/TuneParser';
 import { TuneDbData } from '../types/dbData';
-import useServerStorage from '../hooks/useServerStorage';
+import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
 
 export const loadTune = async (tuneData: TuneDbData) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -51,26 +51,21 @@ export const loadTune = async (tuneData: TuneDbData) => {
 
 export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
   fetchWithProgress(
-    // 'https://speedytuner-cloud.s3.eu-west-2.amazonaws.com/logs/longest.mlg.gz',
-    // 'https://d29mjpbgm6k6md.cloudfront.net/logs/longest.mlg.gz',
-    'https://d29mjpbgm6k6md.cloudfront.net/logs/middle.mlg.gz',
-    // 'https://d29mjpbgm6k6md.cloudfront.net/logs/markers.mlg.gz',
+    `${CDN_URL}/public/temp/long.mlg.gz`,
     onProgress,
     signal,
   ).then((response) => response);
 
 export const loadCompositeLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
   fetchWithProgress(
-    'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/composite_1_2.csv.gz',
-    // 'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/composite_miata.csv.gz',
-    // 'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/2.csv.gz',
+    `${CDN_URL}/public/temp/composite_1.csv.gz`,
     onProgress,
     signal,
   ).then((response) => response);
 
 export const loadToothLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
   fetchWithProgress(
-    'https://d29mjpbgm6k6md.cloudfront.net/trigger-logs/tooth_3.csv.gz',
+    `${CDN_URL}/public/temp/tooth_3.csv.gz`,
     onProgress,
     signal,
   ).then((response) => response);
