@@ -1,4 +1,3 @@
-/* eslint-disable import/no-webpack-loader-syntax */
 import {
   useCallback,
   useEffect,
@@ -26,8 +25,6 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import { Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-// eslint-disable-next-line import/no-unresolved
-import MlgParserWorker from 'worker-loader!../workers/mlgParser.worker';
 import {
   Config,
   OutputChannel,
@@ -35,6 +32,8 @@ import {
   DatalogEntry,
   Tune as TuneType,
 } from '@speedy-tuner/types';
+// eslint-disable-next-line import/no-unresolved
+import MlgParserWorker from '../workers/mlgParser?worker';
 import { loadLogs } from '../utils/api';
 import LogCanvas from '../components/Logs/LogCanvas';
 import store from '../store';

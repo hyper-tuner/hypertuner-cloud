@@ -1,8 +1,6 @@
-export const isWeb = process.env.APP_PLATFORM === 'web';
-export const isDesktop = process.env.APP_PLATFORM === 'desktop';
 export const isMac = `${window.navigator.platform}`.includes('Mac');
 export const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-export const environment = process.env.NODE_ENV || 'development';
+export const environment = import.meta.env.NODE_ENV || 'development';
 export const isProduction = environment === 'production';
-export const sentryDsn = process.env.REACT_APP_SENTRY_DSN;
+export const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
 export const platform = `${window.navigator.platform}`;

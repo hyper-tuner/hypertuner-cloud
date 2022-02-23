@@ -11,25 +11,11 @@
     "url": "https://github.com/speedy-tuner/speedy-tuner-cloud"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "build:stats": "craco build --stats",
-    "test": "craco test",
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
     "lint": "tsc && eslint --max-warnings=0 src",
-    "lint:fix": "eslint --fix src",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "lint:fix": "eslint --fix src"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.2",
@@ -38,9 +24,8 @@
     "@speedy-tuner/ini": "^0.3.0",
     "@speedy-tuner/types": "^0.3.0",
     "antd": "^4.18.8",
-    "craco-less": "^2.0.0",
     "firebase": "^9.6.7",
-    "kbar": "^0.1.0-beta.27",
+    "kbar": "^0.1.0-beta.28",
     "mlg-converter": "^0.5.1",
     "nanoid": "^3.3.1",
     "pako": "^2.0.4",
@@ -50,9 +35,9 @@
     "react-perfect-scrollbar": "^1.5.8",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
-    "react-scripts": "^5.0.0",
     "uplot": "^1.6.19",
-    "uplot-react": "^1.1.1"
+    "uplot-react": "^1.1.1",
+    "vite": "^2.8.4"
   },
   "devDependencies": {
     "@craco/craco": "^7.0.0-7.0.0-alpha.2.0",
@@ -63,12 +48,11 @@
     "@types/react-dom": "^17.0.11",
     "@types/react-redux": "^7.1.22",
     "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^1.2.0",
     "eslint-plugin-modules-newline": "^0.0.6",
     "eslint-plugin-prettier": "^4.0.0",
-    "less-loader": "^6.1.0",
+    "less": "^4.1.2",
     "prettier": "^2.5.1",
-    "source-map-explorer": "^2.5.2",
-    "typescript": "^4.5.5",
-    "worker-loader": "^3.0.8"
+    "typescript": "^4.5.5"
   }
 }
