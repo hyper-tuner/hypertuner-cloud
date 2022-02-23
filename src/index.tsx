@@ -15,10 +15,10 @@ import CommandPalette from './components/CommandPalette';
 
 if (isProduction) {
   Sentry.init({
-    dsn: sentryDsn,
+    dsn: sentryDsn as string,
     integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 0.2,
-    environment,
+    environment: environment as string,
   });
 }
 

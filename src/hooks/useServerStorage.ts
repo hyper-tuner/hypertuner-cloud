@@ -12,7 +12,7 @@ import {
 const PUBLIC_PATH = 'public';
 const USERS_PATH = `${PUBLIC_PATH}/users`;
 const INI_PATH = `${PUBLIC_PATH}/ini`;
-export const CDN_URL = process.env.REACT_APP_CDN_URL;
+export const CDN_URL = import.meta.env.VITE_CDN_URL;
 
 const storage = getStorage();
 
