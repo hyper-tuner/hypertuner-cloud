@@ -14,22 +14,8 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "build:stats": "build --stats",
     "lint": "tsc && eslint --max-warnings=0 src",
-    "lint:fix": "eslint --fix src",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "lint:fix": "eslint --fix src"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.2",
@@ -67,7 +53,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "less": "^4.1.2",
     "prettier": "^2.5.1",
-    "source-map-explorer": "^2.5.2",
     "typescript": "^4.5.5"
   }
 }
