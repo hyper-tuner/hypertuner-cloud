@@ -2,13 +2,9 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "types": [
-      "vite/client",
-      "vite-plugin-svgr/client"
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
     ],
     "allowJs": false,
     "skipLibCheck": false,
@@ -16,9 +12,8 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
@@ -27,4 +22,9 @@
   "include": [
     "src"
   ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }
