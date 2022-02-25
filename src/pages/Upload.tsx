@@ -38,7 +38,6 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import pako from 'pako';
 import {
   customAlphabet,
   nanoid,
@@ -177,6 +176,7 @@ const UploadPage = () => {
     }
 
     try {
+      const pako = await import('pako');
       const buffer = await (file as File).arrayBuffer();
       const compressed = pako.deflate(new Uint8Array(buffer));
       const uploadTask = uploadFile(path, file as File, compressed);

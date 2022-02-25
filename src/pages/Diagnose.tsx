@@ -19,7 +19,6 @@ import {
   GlobalOutlined,
 } from '@ant-design/icons';
 import * as Sentry from '@sentry/browser';
-import pako from 'pako';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -99,6 +98,8 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
     const { signal } = controller;
 
     const loadData = async () => {
+      const pako = await import('pako');
+
       try {
         const compositeRaw = await loadCompositeLogs((percent, total, edge) => {
           setProgress(percent);

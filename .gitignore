@@ -26,3 +26,6 @@ yarn-error.log*
 
 # custom ts builds
 /src/**/*.js
+
+# rollup-plugin-visualizer generated files
+stats.html

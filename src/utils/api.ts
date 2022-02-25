@@ -1,5 +1,4 @@
 import { INI } from '@speedy-tuner/ini';
-import pako from 'pako';
 import store from '../store';
 import stdDialogs from '../data/standardDialogs';
 import help from '../data/help';
@@ -13,6 +12,7 @@ import { TuneDbData } from '../types/dbData';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
 
 export const loadTune = async (tuneData: TuneDbData) => {
+  const pako = await import('pako');
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { getFile, getINIFile } = useServerStorage();
   const started = new Date();

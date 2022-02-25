@@ -19,7 +19,6 @@ import {
   EditOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
-import pako from 'pako';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
@@ -164,6 +163,7 @@ const Logs = ({
 
         setFileSize(formatBytes(raw.byteLength));
 
+        const pako = await import('pako');
         worker.postMessage(pako.inflate(new Uint8Array(raw)).buffer);
 
         worker.onmessage = ({ data }) => {

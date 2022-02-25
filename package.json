@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.2",
-    "@sentry/react": "^6.17.9",
-    "@sentry/tracing": "^6.17.9",
+    "@sentry/react": "^6.18.0",
+    "@sentry/tracing": "^6.18.0",
     "@speedy-tuner/ini": "^0.3.0",
     "@speedy-tuner/types": "^0.3.0",
     "antd": "^4.18.8",
@@ -54,6 +54,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "less": "^4.1.2",
     "prettier": "^2.5.1",
+    "rollup-plugin-visualizer": "^5.6.0",
     "typescript": "^4.5.5"
   }
 }
