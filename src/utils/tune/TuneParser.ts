@@ -75,8 +75,10 @@ class TuneParser {
 
     if (Object.keys(this.tune.constants).length > 0) {
       this.isTuneValid = true;
+    }
 
-      return this;
+    if (this.tune.details.signature.match(/^speeduino \d+$/) === null) {
+      this.isTuneValid = false;
     }
 
     return this;

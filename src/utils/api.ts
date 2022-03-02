@@ -1,4 +1,5 @@
 import { INI } from '@speedy-tuner/ini';
+import { notification } from 'antd';
 import store from '../store';
 import stdDialogs from '../data/standardDialogs';
 import help from '../data/help';
@@ -21,8 +22,10 @@ export const loadTune = async (tuneData: TuneDbData) => {
     .parse(pako.inflate(new Uint8Array(await tuneRaw)));
 
   if (!tuneParser.isValid()) {
-    // TODO: capture exception
     console.error('Invalid tune');
+    notification.error({ message: 'Error', description: 'Tune file is not valid!' });
+
+    return;
   }
 
   const tune = tuneParser.getTune();
