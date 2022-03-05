@@ -56,7 +56,7 @@ const Hub = () => {
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const goToTune = (tuneId: string) => navigate(generatePath(Routes.TUNE_ROOT, { tuneId }));
+  const goToTune = (tuneId: string) => navigate(generatePath(Routes.TUNE_TUNE, { tuneId }));
 
   const copyToClipboard = async (shareUrl: string) => {
     if (navigator.clipboard) {
