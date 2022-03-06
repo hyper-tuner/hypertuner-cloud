@@ -1,8 +1,8 @@
 import {
   Config,
   Logs,
+  TuneWithDetails,
 } from '@speedy-tuner/types';
-import { TuneWithDetails } from '../utils/tune/TuneParser';
 import { TuneDbData } from './dbData';
 
 export interface ConfigState extends Config {}
