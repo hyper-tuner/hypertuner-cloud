@@ -1,21 +1,8 @@
-import { Tune } from '@speedy-tuner/types';
-
-export interface TuneWithDetails extends Tune {
-  details: {
-    author: string;
-    tuneComment: string;
-    writeDate: string;
-    fileFormat: string;
-    firmwareInfo: string;
-    nPages: number;
-    signature: string;
-  };
-}
+import { TuneWithDetails } from '@speedy-tuner/types';
 
 class TuneParser {
   private isTuneValid = false;
 
-  // TODO: move this to types package
   private tune: TuneWithDetails = {
     constants: {},
     details: {
