@@ -47,14 +47,8 @@ import {
 } from '@ant-design/icons';
 import { useKBar } from 'kbar';
 import store from '../store';
-import {
-  isMac,
-  isFirefox,
-} from '../utils/env';
-import {
-  isCommand,
-  isToggleSidebar,
-} from '../utils/keyboard/shortcuts';
+import { isMac } from '../utils/env';
+import { isToggleSidebar } from '../utils/keyboard/shortcuts';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -93,16 +87,11 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const toggleCommandPalette = useCallback(() => query.toggle(), [query]);
 
   const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
-    if (isCommand(e)) {
-      e.preventDefault();
-      toggleCommandPalette();
-    }
-
     if (isToggleSidebar(e)) {
       e.preventDefault();
       store.dispatch({ type: 'ui/toggleSidebar' });
     }
-  }, [toggleCommandPalette]);
+  }, []);
 
   useEffect(() => {
     document.addEventListener('keydown', handleGlobalKeyboard);
@@ -190,17 +179,10 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         <Col {...rightMenuColProps} style={{ textAlign: 'right' }}>
           <Space>
             {sm && <Tooltip title={
-              isFirefox ?
-                (<>
-                  <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
-                  <Typography.Text keyboard>K</Typography.Text>
-                </>)
-                :
-                (<>
-                  <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
-                  <Typography.Text keyboard>SHIFT</Typography.Text>
-                  <Typography.Text keyboard>P</Typography.Text>
-                </>)
+              <>
+                <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
+                <Typography.Text keyboard>K</Typography.Text>
+              </>
             }>
               <Button icon={<SearchOutlined />} onClick={toggleCommandPalette} />
             </Tooltip>}
