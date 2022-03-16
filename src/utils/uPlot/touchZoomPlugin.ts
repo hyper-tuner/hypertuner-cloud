@@ -108,6 +108,11 @@ const touchZoomPlugin = () => {
     };
 
     over.addEventListener('touchstart', (e: TouchEvent) => {
+      if (e.touches.length > 1) {
+        // prevent default pinch zoom
+        e.preventDefault();
+      }
+
       rect = over.getBoundingClientRect();
 
       storePos(fr, e);
