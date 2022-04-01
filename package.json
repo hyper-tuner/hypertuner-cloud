@@ -34,7 +34,7 @@
     "react-markdown": "^8.0.0",
     "react-perfect-scrollbar": "^1.5.8",
     "react-redux": "^7.2.6",
-    "react-router-dom": "^6.2.1",
+    "react-router-dom": "^6.3.0",
     "uplot": "^1.6.19",
     "uplot-react": "^1.1.1",
     "vite": "^2.8.4"
