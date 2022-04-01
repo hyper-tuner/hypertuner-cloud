@@ -18,7 +18,7 @@
     "lint:fix": "eslint --fix src"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.7.2",
+    "@reduxjs/toolkit": "^1.8.1",
     "@sentry/react": "^6.18.0",
     "@sentry/tracing": "^6.18.0",
     "@speedy-tuner/ini": "^0.3.0",
