@@ -97,7 +97,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     document.addEventListener('keydown', handleGlobalKeyboard);
 
     return () => document.removeEventListener('keydown', handleGlobalKeyboard);
-  });
+  }, [currentUser, handleGlobalKeyboard]);
 
   const tabs = useMemo(() => (
     <Col span={16} md={16} sm={16}>
@@ -217,7 +217,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
                   </SubMenu>
                 </Menu>
               }
-              placement="bottomCenter"
+              placement="bottom"
               trigger={['click']}
             >
               <Button icon={<CloudDownloadOutlined />}>
@@ -248,7 +248,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
                   )}
                 </Menu>
               }
-              placement="bottomCenter"
+              placement="bottom"
               trigger={['click']}
             >
               <Button icon={<UserOutlined />}>
