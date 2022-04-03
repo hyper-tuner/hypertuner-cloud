@@ -4,6 +4,7 @@ const duration = 6;
 
 const baseOptions = {
   duration,
+  placement: 'bottomRight' as const,
 };
 
 const emailNotVerified = () => notification.warning({
