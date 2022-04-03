@@ -24,6 +24,7 @@
     "@speedy-tuner/ini": "^0.3.0",
     "@speedy-tuner/types": "^0.3.0",
     "antd": "^4.18.8",
+    "appwrite": "^7.0.0",
     "firebase": "^9.6.7",
     "kbar": "^0.1.0-beta.28",
     "mlg-converter": "^0.5.1",

@@ -13,6 +13,12 @@ const emailNotVerified = () => notification.warning({
   ...baseOptions,
 });
 
+const magicLinkSent = () => notification.success({
+  message: 'Check your email',
+  description: 'Magic link sent!',
+  ...baseOptions,
+});
+
 const signUpSuccessful = () => notification.success({
   message: 'Sign Up successful',
   description: 'Welcome on board!',
@@ -53,7 +59,7 @@ const logOutFailed = (err: Error) => notification.error({
 });
 
 const resetSuccessful = () => notification.success({
-  message: 'Password reset successful',
+  message: 'Password reset initiated',
   description: 'Check your email!',
   ...baseOptions,
 });
@@ -65,6 +71,7 @@ const resetFailed = (err: Error) => notification.error({
 
 export {
   emailNotVerified,
+  magicLinkSent,
   signUpSuccessful,
   signUpFailed,
   logInSuccessful,
