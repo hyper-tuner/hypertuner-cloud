@@ -27,7 +27,7 @@ const Profile = () => {
   }, [currentUser, navigate]);
 
   return (
-    <div className="small-container">
+    <div className="auth-container">
       <Divider>Your Profile</Divider>
       <Form
         validateMessages={validateMessages}

@@ -10,11 +10,13 @@ export enum Routes {
   TUNE_LOGS = '/t/:tuneId/logs',
   TUNE_DIAGNOSE = '/t/:tuneId/diagnose',
 
+  UPLOAD = '/upload',
+
   LOGIN = '/auth/login',
   LOGOUT = '/auth/logout',
   PROFILE = '/auth/profile',
   SIGN_UP = '/auth/sign-up',
   FORGOT_PASSWORD = '/auth/forgot-password',
   RESET_PASSWORD = '/auth/reset-password',
-  UPLOAD = '/upload',
+  MAGIC_LINK_CONFIRMATION = '/auth/magic-link-confirmation',
 }

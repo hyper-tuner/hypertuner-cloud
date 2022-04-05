@@ -44,7 +44,7 @@ const SignUp = () => {
   const { signUp, googleAuth, githubAuth, facebookAuth, sendMagicLink } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading || isMagicLinkLoading;
-  const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
+  const redirectAfterLogin = navigate(Routes.HUB);
 
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);

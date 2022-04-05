@@ -45,7 +45,7 @@ export const loadTune = async (tuneData: TuneDbData) => {
   config.constants.pages[0].data.divider = divider;
 
   const loadingTimeInfo = `Tune loaded in ${(new Date().getTime() - started.getTime())}ms`;
-  console.log(loadingTimeInfo);
+  console.info(loadingTimeInfo);
 
   store.dispatch({ type: 'config/load', payload: config });
   store.dispatch({ type: 'tune/load', payload: tune });

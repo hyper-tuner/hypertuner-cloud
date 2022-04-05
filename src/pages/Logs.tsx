@@ -178,7 +178,7 @@ const Logs = ({
               store.dispatch({ type: 'logs/load', payload: data.result.records });
               break;
             case 'metrics':
-              console.log(`Log parsed in ${data.elapsed}ms`);
+              console.info(`Log parsed in ${data.elapsed}ms`);
               setParseElapsed(msToTime(data.elapsed));
               setSamplesCount(data.records);
               setStep(2);

@@ -53,7 +53,7 @@ import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
-import { generateShareUrl } from '../utils/url';
+import { buildShareUrl } from '../utils/url';
 import Loader from '../components/Loader';
 
 const { Item } = Form;
@@ -221,7 +221,7 @@ const UploadPage = () => {
   });
 
   const uploadTune = async (options: UploadRequestOption) => {
-    setShareUrl(generateShareUrl(newTuneId!));
+    setShareUrl(buildShareUrl(newTuneId!));
 
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
@@ -411,7 +411,7 @@ const UploadPage = () => {
 
     try {
       await refreshToken();
-      if (!currentUser.emailVerified) {
+      if (!currentUser.emailVerification) {
         emailNotVerified();
         navigate(Routes.LOGIN);
 
@@ -426,7 +426,7 @@ const UploadPage = () => {
 
     const tuneId = nanoidCustom();
     setNewTuneId(tuneId);
-    console.log('New tuneId:', tuneId);
+    console.info('New tuneId:', tuneId);
   }, [currentUser, navigate, refreshToken]);
 
   useEffect(() => {
