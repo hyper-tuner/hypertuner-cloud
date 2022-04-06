@@ -40,11 +40,12 @@ import './App.less';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Diagnose = lazy(() => import('./pages/Diagnose'));
+const Upload = lazy(() => import('./pages/Upload'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Profile = lazy(() => import('./pages/auth/Profile'));
 const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
-const Upload = lazy(() => import('./pages/Upload'));
+const MagicLinkConfirmation = lazy(() => import('./pages/auth/MagicLinkConfirmation'));
 
 const { Content } = Layout;
 
@@ -57,6 +58,16 @@ const mapStateToProps = (state: AppState) => ({
 const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   const { getTune } = useDb();
+  const searchParams = new URLSearchParams(window.location.search);
+  const redirectPage = searchParams.get('redirectPage');
+
+  switch (redirectPage) {
+    case Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION:
+      window.location.href = `/#${Routes.MAGIC_LINK_CONFIRMATION}?${searchParams.toString()}`;
+      break;
+    default:
+      break;
+  }
 
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   // const lastDialogPath = storageGetSync('lastDialog');
@@ -92,9 +103,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
       <Layout style={{ marginLeft }}>
         <Layout className="app-content">
           <Content>
-            <Suspense fallback={<Loader />}>
-              {element}
-            </Suspense>
+            <Suspense fallback={<Loader />}>{element}</Suspense>
           </Content>
         </Layout>
       </Layout>
@@ -111,11 +120,13 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
           <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
           <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
           <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
+          <Route path={Routes.UPLOAD} element={<ContentFor element={<Upload />} />} />
+
           <Route path={Routes.LOGIN} element={<ContentFor element={<Login />} />} />
           <Route path={Routes.PROFILE} element={<ContentFor element={<Profile />} />} />
           <Route path={Routes.SIGN_UP} element={<ContentFor element={<SignUp />} />} />
           <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
-          <Route path={Routes.UPLOAD} element={<ContentFor element={<Upload />} />} />
+          <Route path={Routes.MAGIC_LINK_CONFIRMATION} element={<ContentFor element={<MagicLinkConfirmation />} />} />
         </ReactRoutes>
         <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>

@@ -9,6 +9,8 @@ import {
 import appwrite from '../appwrite';
 import Loader from '../components/Loader';
 import { auth } from '../firebase';
+import { Routes } from '../routes';
+import { buildFullUrl } from '../utils/url';
 
 export interface User {
   $id: string;
@@ -53,6 +55,7 @@ interface AuthValue {
   signUp: (email: string, password: string, username: string) => Promise<User>,
   login: (email: string, password: string) => Promise<User>,
   sendMagicLink: (email: string) => Promise<void>,
+  confirmMagicLink: (userId: string, secret: string) => Promise<User>,
   logout: () => Promise<void>,
   initResetPassword: (email: string) => Promise<void>,
   googleAuth: () => Promise<void>,
@@ -61,9 +64,9 @@ interface AuthValue {
   refreshToken: () => Promise<string> | undefined,
 }
 
-const OAUTH_REDIRECT_URL = import.meta.env.VITE_WEB_URL as string;
-const MAGIC_LINK_REDIRECT_URL = import.meta.env.VITE_WEB_URL as string;
-const RESET_PASSWORD_REDIRECT_URL = import.meta.env.VITE_WEB_URL as string;
+const OAUTH_REDIRECT_URL = buildFullUrl();
+const MAGIC_LINK_REDIRECT_URL = `${import.meta.env.VITE_WEB_URL}?redirectPage=${Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION}`;
+const RESET_PASSWORD_REDIRECT_URL = buildFullUrl(['/reset-password-confirmation']);
 const GOOGLE_SCOPES = ['https://www.googleapis.com/auth/userinfo.email'];
 const GITHUB_SCOPES = ['user:email'];
 const FACEBOOK_SCOPES = ['email'];
@@ -104,6 +107,16 @@ const AuthProvider = (props: { children: ReactNode }) => {
       try {
         await appwrite.account.createMagicURLSession('unique()', email, MAGIC_LINK_REDIRECT_URL);
         return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    confirmMagicLink: async (userId: string, secret: string) => {
+      try {
+        await appwrite.account.updateMagicURLSession(userId, secret);
+        const user = await appwrite.account.get();
+        setCurrentUser(user);
+        return Promise.resolve(user);
       } catch (error) {
         return Promise.reject(error);
       }
@@ -154,10 +167,10 @@ const AuthProvider = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     appwrite.account.get().then((user) => {
-      console.info('Logged as:', user.name);
+      console.info('Logged as:', user.name || 'Unknown');
       setCurrentUser(user);
       setIsLoading(false);
-    }).catch((error) => {
+    }).catch(() => {
       console.info('User not logged in');
     }).finally(() => setIsLoading(false));
 

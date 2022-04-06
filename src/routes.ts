@@ -19,4 +19,6 @@ export enum Routes {
   FORGOT_PASSWORD = '/auth/forgot-password',
   RESET_PASSWORD = '/auth/reset-password',
   MAGIC_LINK_CONFIRMATION = '/auth/magic-link-confirmation',
+
+  REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION = 'magic-link-confirmation',
 }

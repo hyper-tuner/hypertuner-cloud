@@ -69,6 +69,11 @@ const resetFailed = (err: Error) => notification.error({
   description: err.message,
 });
 
+const magicLinkConfirmationFailed = (err: Error) => notification.error({
+  message: 'Magic Link is invalid',
+  description: err.message,
+});
+
 export {
   emailNotVerified,
   magicLinkSent,
@@ -81,4 +86,5 @@ export {
   logOutFailed,
   resetSuccessful,
   resetFailed,
+  magicLinkConfirmationFailed,
 };
