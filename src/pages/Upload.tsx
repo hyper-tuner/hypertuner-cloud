@@ -53,7 +53,7 @@ import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
-import { buildShareUrl } from '../utils/url';
+import { buildFullUrl, buildShareUrl } from '../utils/url';
 import Loader from '../components/Loader';
 
 const { Item } = Form;
@@ -95,6 +95,8 @@ const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
 const iniIcon = () => <FileTextOutlined />;
 
+const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
+
 const UploadPage = () => {
   const [newTuneId, setNewTuneId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
@@ -134,7 +136,7 @@ const UploadPage = () => {
     setIsLoading(true);
     await updateData(newTuneId!, {
       id: newTuneId!,
-      userUid: currentUser!.uid,
+      userUid: currentUser!.$id,
       updatedAt: new Date(),
       isPublished: true,
       isListed: values.isListed,
@@ -201,27 +203,27 @@ const UploadPage = () => {
   };
 
   const tuneFileData = () => ({
-    path: basePathForFile(currentUser!.uid, newTuneId!, `tune/${nanoid()}.msq.gz`),
+    path: basePathForFile(currentUser!.$id, newTuneId!, `tune/${nanoid()}.msq.gz`),
   });
 
   const logFileData = (file: UploadFile) => {
     const { name } = file;
     const extension = name.split('.').pop();
     return {
-      path: basePathForFile(currentUser!.uid, newTuneId!, `logs/${nanoid()}.${extension}.gz`),
+      path: basePathForFile(currentUser!.$id, newTuneId!, `logs/${nanoid()}.${extension}.gz`),
     };
   };
 
   const toothLogFilesData = () => ({
-    path: basePathForFile(currentUser!.uid, newTuneId!, `tooth-logs/${nanoid()}.csv.gz`),
+    path: basePathForFile(currentUser!.$id, newTuneId!, `tooth-logs/${nanoid()}.csv.gz`),
   });
 
   const customIniFileData = () => ({
-    path: basePathForFile(currentUser!.uid, newTuneId!, `ini/${nanoid()}.ini.gz`),
+    path: basePathForFile(currentUser!.$id, newTuneId!, `ini/${nanoid()}.ini.gz`),
   });
 
   const uploadTune = async (options: UploadRequestOption) => {
-    setShareUrl(buildShareUrl(newTuneId!));
+    setShareUrl(buildFullUrl([tunePath(newTuneId!)]));
 
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
@@ -232,7 +234,7 @@ const UploadPage = () => {
       // initialize data
       updateData(newTuneId!, {
         id: newTuneId!,
-        userUid: currentUser!.uid,
+        userUid: currentUser!.$id,
         createdAt: new Date(),
         updatedAt: new Date(),
         isPublished: false,

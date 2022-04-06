@@ -29,7 +29,7 @@ import { Timestamp } from 'firebase/firestore/lite';
 import useDb from '../hooks/useDb';
 import { TuneDbData } from '../types/dbData';
 import { Routes } from '../routes';
-import { generateShareUrl } from '../utils/url';
+import { buildFullUrl } from '../utils/url';
 
 const { useBreakpoint } = Grid;
 
@@ -47,6 +47,8 @@ const loadingCards = (
   </>
 );
 
+const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
+
 const Hub = () => {
   const { md } = useBreakpoint();
   const { listTunes } = useDb();
@@ -55,8 +57,6 @@ const Hub = () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const goToTune = (tuneId: string) => navigate(generatePath(Routes.TUNE_TUNE, { tuneId }));
 
   const copyToClipboard = async (shareUrl: string) => {
     if (navigator.clipboard) {
@@ -125,9 +125,9 @@ const Hub = () => {
       render: (tuneId: string) => (
         <Space>
           <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-            <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(generateShareUrl(tuneId))} />
+            <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />
           </Tooltip>
-          <Button icon={<ArrowRightOutlined />} onClick={() => goToTune(tuneId)} />
+          <Button icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
         </Space>
       ),
       key: 'tuneId',
@@ -157,9 +157,9 @@ const Hub = () => {
                       <StarOutlined />
                     </Badge>,
                     <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-                      <CopyOutlined onClick={() => copyToClipboard(generateShareUrl(tune.id!))} />
+                      <CopyOutlined onClick={() => copyToClipboard(buildFullUrl([tunePath(tune.id!)]))} />
                     </Tooltip>,
-                    <ArrowRightOutlined onClick={() => goToTune(tune.id!)} />,
+                    <ArrowRightOutlined onClick={() => navigate(tunePath(tune.id!))} />,
                   ]}
                 >
                   <Typography.Text ellipsis>
