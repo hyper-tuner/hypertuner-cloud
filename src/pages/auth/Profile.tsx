@@ -106,21 +106,22 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (!currentUser) {
-      restrictedPage();
-      navigate(Routes.LOGIN);
+    if (currentUser) {
+      getSessions()
+        .then((list) => setSessions(list.sessions.map((ses) => [
+          ses.clientName,
+          ses.osName,
+          ses.deviceName,
+          ses.countryName,
+          ses.ip,
+        ].join(' '))));
+
+      fetchLogs();
+      return;
     }
 
-    getSessions()
-      .then((list) => setSessions(list.sessions.map((ses) => [
-        ses.clientName,
-        ses.osName,
-        ses.deviceName,
-        ses.countryName,
-        ses.ip,
-      ].join(' '))));
-
-    fetchLogs();
+    restrictedPage();
+    navigate(Routes.LOGIN);
   }, [currentUser, fetchLogs, getLogs, getSessions, navigate]);
 
   return (
@@ -149,11 +150,11 @@ const Profile = () => {
         fields={[
           {
             name: 'username',
-            value: currentUser!.name,
+            value: currentUser?.name,
           },
           {
             name: 'email',
-            value: currentUser!.email,
+            value: currentUser?.email,
           },
         ]}
       >
@@ -220,14 +221,14 @@ const Profile = () => {
           </Button>
         </Item>
       </Form>
-      <Divider>Active session</Divider>
+      <Divider>Active sessions</Divider>
       <List
         size="small"
         bordered
         dataSource={sessions}
         renderItem={item => <List.Item>{item}</List.Item>}
       />
-      <Divider>Logs</Divider>
+      <Divider>Audit logs</Divider>
       <List
         size="small"
         bordered

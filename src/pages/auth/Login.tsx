@@ -81,6 +81,9 @@ const Login = () => {
       if (!user.emailVerification) {
         emailNotVerified();
       }
+      if (!user.name) {
+        navigate(Routes.PROFILE);
+      }
       redirectAfterLogin();
     } catch (error) {
       console.warn(error);
