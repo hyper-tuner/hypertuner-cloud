@@ -44,7 +44,6 @@ const SignUp = () => {
   const { signUp, googleAuth, githubAuth, facebookAuth, sendMagicLink } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading || isMagicLinkLoading;
-  const redirectAfterLogin = navigate(Routes.HUB);
 
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
@@ -81,7 +80,7 @@ const SignUp = () => {
       if (!user.emailVerification) {
         emailNotVerified();
       }
-      redirectAfterLogin();
+      navigate(Routes.HUB);
     } catch (error) {
       console.warn(error);
       signUpFailed(error as Error);
