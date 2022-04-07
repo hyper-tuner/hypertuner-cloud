@@ -32,10 +32,9 @@ import {
   magicLinkSent,
   signUpSuccessful,
 } from './notifications';
+import { passwordPattern } from '../../utils/password';
 
 const { Item } = Form;
-
-const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
 
 const SignUp = () => {
   const [formMagicLink] = Form.useForm();
@@ -45,7 +44,15 @@ const SignUp = () => {
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
   const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false);
-  const { currentUser, signUp, googleAuth, githubAuth, facebookAuth, sendMagicLink } = useAuth();
+  const {
+    currentUser,
+    signUp,
+    sendEmailVerification,
+    googleAuth,
+    githubAuth,
+    facebookAuth,
+    sendMagicLink,
+  } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading || isMagicLinkLoading;
 
@@ -80,6 +87,7 @@ const SignUp = () => {
     setIsEmailLoading(true);
     try {
       const user = await signUp(email, password, username);
+      await sendEmailVerification();
       signUpSuccessful();
       if (!user.emailVerification) {
         emailNotVerified();

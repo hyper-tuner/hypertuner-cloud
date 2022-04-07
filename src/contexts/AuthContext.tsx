@@ -59,6 +59,8 @@ interface AuthValue {
   login: (email: string, password: string) => Promise<User>,
   sendMagicLink: (email: string) => Promise<void>,
   confirmMagicLink: (userId: string, secret: string) => Promise<User>,
+  sendEmailVerification: () => Promise<void>,
+  confirmEmailVerification: (userId: string, secret: string) => Promise<void>,
   logout: () => Promise<void>,
   initResetPassword: (email: string) => Promise<void>,
   googleAuth: () => Promise<void>,
@@ -68,8 +70,9 @@ interface AuthValue {
 }
 
 const OAUTH_REDIRECT_URL = buildFullUrl();
-const MAGIC_LINK_REDIRECT_URL = `${import.meta.env.VITE_WEB_URL}?redirectPage=${Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION}`;
-const RESET_PASSWORD_REDIRECT_URL = buildFullUrl(['/reset-password-confirmation']);
+const MAGIC_LINK_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION);
+const EMAIL_VERIFICATION_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_EMAIL_VERIFICATION);
+const RESET_PASSWORD_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_RESET_PASSWORD);
 const GOOGLE_SCOPES = ['https://www.googleapis.com/auth/userinfo.email'];
 const GITHUB_SCOPES = ['user:email'];
 const FACEBOOK_SCOPES = ['email'];
@@ -120,6 +123,24 @@ const AuthProvider = (props: { children: ReactNode }) => {
         const user = await appwrite.account.get();
         setCurrentUser(user);
         return Promise.resolve(user);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    sendEmailVerification: async () => {
+      try {
+        await appwrite.account.createVerification(EMAIL_VERIFICATION_REDIRECT_URL);
+        return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    confirmEmailVerification: async (userId: string, secret: string) => {
+      try {
+        await appwrite.account.updateVerification(userId, secret);
+        const user = await appwrite.account.get();
+        setCurrentUser(user);
+        return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
       }

@@ -46,6 +46,7 @@ const Profile = lazy(() => import('./pages/auth/Profile'));
 const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const MagicLinkConfirmation = lazy(() => import('./pages/auth/MagicLinkConfirmation'));
+const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
 
 const { Content } = Layout;
 
@@ -64,6 +65,9 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
   switch (redirectPage) {
     case Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION:
       window.location.href = `/#${Routes.MAGIC_LINK_CONFIRMATION}?${searchParams.toString()}`;
+      break;
+    case Routes.REDIRECT_PAGE_EMAIL_VERIFICATION:
+      window.location.href = `/#${Routes.EMAIL_VERIFICATION}?${searchParams.toString()}`;
       break;
     default:
       break;
@@ -127,6 +131,7 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
           <Route path={Routes.SIGN_UP} element={<ContentFor element={<SignUp />} />} />
           <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
           <Route path={Routes.MAGIC_LINK_CONFIRMATION} element={<ContentFor element={<MagicLinkConfirmation />} />} />
+          <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
         </ReactRoutes>
         <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>

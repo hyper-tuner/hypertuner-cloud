@@ -74,6 +74,23 @@ const magicLinkConfirmationFailed = (err: Error) => notification.error({
   description: err.message,
 });
 
+const sendingEmailVerificationFailed = (err: Error) => notification.success({
+  message: 'Sending verification email failed',
+  description: err.message,
+  ...baseOptions,
+});
+
+const emailVerificationSent = () => notification.success({
+  message: 'Check your email',
+  description: 'Email verification sent!',
+  ...baseOptions,
+});
+
+const emailVerificationFailed = (err: Error) => notification.error({
+  message: 'Email verification failed',
+  description: err.message,
+});
+
 export {
   emailNotVerified,
   magicLinkSent,
@@ -87,4 +104,7 @@ export {
   resetSuccessful,
   resetFailed,
   magicLinkConfirmationFailed,
+  sendingEmailVerificationFailed,
+  emailVerificationSent,
+  emailVerificationFailed,
 };
