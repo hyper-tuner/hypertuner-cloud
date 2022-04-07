@@ -10,7 +10,10 @@ import appwrite from '../appwrite';
 import Loader from '../components/Loader';
 import { auth } from '../firebase';
 import { Routes } from '../routes';
-import { buildFullUrl } from '../utils/url';
+import {
+  buildFullUrl,
+  buildRedirectUrl,
+} from '../utils/url';
 
 export interface User {
   $id: string;

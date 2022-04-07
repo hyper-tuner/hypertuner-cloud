@@ -53,7 +53,7 @@ import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
-import { buildFullUrl, buildShareUrl } from '../utils/url';
+import { buildFullUrl } from '../utils/url';
 import Loader from '../components/Loader';
 
 const { Item } = Form;

@@ -1,4 +1,8 @@
-import { useCallback, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {
   Form,
   Input,
@@ -41,7 +45,7 @@ const SignUp = () => {
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
   const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false);
-  const { signUp, googleAuth, githubAuth, facebookAuth, sendMagicLink } = useAuth();
+  const { currentUser, signUp, googleAuth, githubAuth, facebookAuth, sendMagicLink } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading || isMagicLinkLoading;
 
@@ -52,7 +56,7 @@ const SignUp = () => {
     } catch (error) {
       signUpFailed(error as Error);
     }
-  }, []);
+  }, [googleAuth]);
 
   const githubLogin = useCallback(async () => {
     setIsGithubLoading(true);
@@ -61,7 +65,7 @@ const SignUp = () => {
     } catch (error) {
       signUpFailed(error as Error);
     }
-  }, []);
+  }, [githubAuth]);
 
   const facebookLogin = useCallback(async () => {
     setIsFacebookLoading(true);
@@ -70,7 +74,7 @@ const SignUp = () => {
     } catch (error) {
       signUpFailed(error as Error);
     }
-  }, []);
+  }, [facebookAuth]);
 
   const emailSignUp = async ({ email, password, username }: { email: string, password: string, username: string }) => {
     setIsEmailLoading(true);
@@ -104,6 +108,12 @@ const SignUp = () => {
     }
   };
 
+  useEffect(() => {
+    if (currentUser) {
+      navigate(Routes.HUB);
+    }
+  }, [currentUser, navigate]);
+
   return (
     <div className="auth-container">
       <Divider>Sign Up</Divider>
@@ -134,7 +144,6 @@ const SignUp = () => {
       <Form
         onFinish={magicLinkLogin}
         validateMessages={validateMessages}
-        autoComplete="off"
         form={formMagicLink}
       >
         <Item name="email" rules={[{ required: true, type: 'email' }]} hasFeedback>
@@ -160,7 +169,6 @@ const SignUp = () => {
       <Form
         onFinish={emailSignUp}
         validateMessages={validateMessages}
-        autoComplete="off"
         form={formEmail}
       >
         <Divider />

@@ -135,7 +135,6 @@ const Login = () => {
       <Form
         onFinish={magicLinkLogin}
         validateMessages={validateMessages}
-        autoComplete="off"
         form={formMagicLink}
       >
         <Item name="email" rules={[{ required: true, type: 'email' }]} hasFeedback>
@@ -161,7 +160,6 @@ const Login = () => {
       <Form
         onFinish={emailLogin}
         validateMessages={validateMessages}
-        autoComplete="off"
         form={formEmail}
       >
         <Divider />
