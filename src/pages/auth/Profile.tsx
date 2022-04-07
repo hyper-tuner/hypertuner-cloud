@@ -10,6 +10,7 @@ import {
   Divider,
   Alert,
   Space,
+  List,
 } from 'antd';
 import {
   UserOutlined,
@@ -29,11 +30,13 @@ import { passwordPattern } from '../../utils/password';
 const { Item } = Form;
 
 const Profile = () => {
-  const { currentUser, sendEmailVerification } = useAuth();
+  const { currentUser, sendEmailVerification, getSessions, getLogs } = useAuth();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
+  const [sessions, setSessions] = useState<string[]>([]);
+  const [logs, setLogs] = useState<string[]>([]);
 
   const resendEmailVerification = async () => {
     setIsSendingVerification(true);
@@ -53,7 +56,25 @@ const Profile = () => {
       restrictedPage();
       navigate(Routes.LOGIN);
     }
-  }, [currentUser, navigate]);
+
+    getSessions()
+      .then((list) => setSessions(list.sessions.map((ses) => [
+        ses.clientName,
+        ses.countryName,
+        ses.osName,
+        ses.deviceName,
+        ses.ip,
+      ].join(' '))));
+
+    getLogs()
+      .then((list) => setLogs(list.logs.map((log) => [
+        log.clientName,
+        log.countryName,
+        log.osName,
+        log.deviceName,
+        log.ip,
+      ].join(' '))));
+  }, [currentUser, getLogs, getSessions, navigate]);
 
   return (
     <div className="auth-container">
@@ -146,10 +167,24 @@ const Profile = () => {
             style={{ width: '100%' }}
             icon={<LockOutlined />}
           >
-            Change password
+            Change
           </Button>
         </Item>
       </Form>
+      <Divider>Active session</Divider>
+      <List
+        size="small"
+        bordered
+        dataSource={sessions}
+        renderItem={item => <List.Item>{item}</List.Item>}
+      />
+      <Divider>Logs</Divider>
+      <List
+        size="small"
+        bordered
+        dataSource={logs}
+        renderItem={item => <List.Item>{item}</List.Item>}
+      />
     </div>
   );
 };

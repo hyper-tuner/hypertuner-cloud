@@ -53,6 +53,40 @@ export interface Session {
   current: boolean;
 };
 
+export interface SessionList {
+  sessions: Session[];
+  total: number;
+};
+
+export interface Log {
+  event: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  mode: string;
+  ip: string;
+  time: number;
+  osCode: string;
+  osName: string;
+  osVersion: string;
+  clientType: string;
+  clientCode: string;
+  clientName: string;
+  clientVersion: string;
+  clientEngine: string;
+  clientEngineVersion: string;
+  deviceName: string;
+  deviceBrand: string;
+  deviceModel: string;
+  countryCode: string;
+  countryName: string;
+};
+
+export interface LogList {
+  logs: Log[];
+  total: number;
+}
+
 interface AuthValue {
   currentUser: User | null,
   signUp: (email: string, password: string, username: string) => Promise<User>,
@@ -67,6 +101,8 @@ interface AuthValue {
   githubAuth: () => Promise<void>,
   facebookAuth: () => Promise<void>,
   refreshToken: () => Promise<string> | undefined,
+  getSessions: () => Promise<SessionList>,
+  getLogs: () => Promise<LogList>,
 }
 
 const OAUTH_REDIRECT_URL = buildFullUrl();
@@ -187,6 +223,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
       );
     },
     refreshToken: () => auth.currentUser?.getIdToken(true),
+    getSessions: () => appwrite.account.getSessions(),
+    getLogs: () => appwrite.account.getLogs(),
   }), [currentUser]);
 
   useEffect(() => {
