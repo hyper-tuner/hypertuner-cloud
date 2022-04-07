@@ -101,6 +101,7 @@ interface AuthValue {
   githubAuth: () => Promise<void>,
   facebookAuth: () => Promise<void>,
   updateUsername: (username: string) => Promise<void>,
+  updatePassword: (password: string, oldPassword: string) => Promise<void>,
   refreshToken: () => Promise<string> | undefined,
   getSessions: () => Promise<SessionList>,
   getLogs: () => Promise<LogList>,
@@ -228,6 +229,14 @@ const AuthProvider = (props: { children: ReactNode }) => {
         await appwrite.account.updateName(username);
         const user = await appwrite.account.get();
         setCurrentUser(user);
+        return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    updatePassword: async (password: string, oldPassword: string) => {
+      try {
+        await appwrite.account.updatePassword(password, oldPassword);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);

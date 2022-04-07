@@ -26,6 +26,8 @@ import {
   emailVerificationSent,
   profileUpdateSuccess,
   profileUpdateFailed,
+  passwordUpdateSuccess,
+  passwordUpdateFailed,
 } from './notifications';
 import { Routes } from '../../routes';
 import { passwordPattern } from '../../utils/password';
@@ -39,6 +41,7 @@ const Profile = () => {
     currentUser,
     sendEmailVerification,
     updateUsername,
+    updatePassword,
     getSessions,
     getLogs,
   } = useAuth();
@@ -46,6 +49,7 @@ const Profile = () => {
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [sessions, setSessions] = useState<string[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -74,7 +78,7 @@ const Profile = () => {
       log.ip,
     ].join(' ')))), [getLogs]);
 
-  const updateProfile = async ({ username }: { username: string }) => {
+  const onUpdateProfile = async ({ username }: { username: string }) => {
     setIsProfileLoading(true);
     try {
       await updateUsername(username);
@@ -84,6 +88,20 @@ const Profile = () => {
       profileUpdateFailed(error as Error);
     } finally {
       setIsProfileLoading(false);
+    }
+  };
+
+  const onUpdatePassword = async ({ password, oldPassword }: { password: string, oldPassword: string }) => {
+    setIsPasswordLoading(true);
+    try {
+      await updatePassword(password, oldPassword);
+      passwordUpdateSuccess();
+      fetchLogs();
+      formPassword.resetFields();
+    } catch (error) {
+      passwordUpdateFailed(error as Error);
+    } finally {
+      setIsPasswordLoading(false);
     }
   };
 
@@ -127,7 +145,7 @@ const Profile = () => {
       <Form
         validateMessages={validateMessages}
         form={formProfile}
-        onFinish={updateProfile}
+        onFinish={onUpdateProfile}
         fields={[
           {
             name: 'username',
@@ -165,17 +183,18 @@ const Profile = () => {
       <Form
         validateMessages={validateMessages}
         form={formPassword}
-        fields={[
-          {
-            name: 'username',
-            value: currentUser!.name,
-          },
-          {
-            name: 'email',
-            value: currentUser!.email,
-          },
-        ]}
+        onFinish={onUpdatePassword}
       >
+        <Item
+          name="oldPassword"
+          rules={[{ required: true }]}
+          hasFeedback
+        >
+          <Input.Password
+            placeholder="Old password"
+            prefix={<LockOutlined />}
+          />
+        </Item>
         <Item
           name="password"
           rules={[
@@ -195,6 +214,7 @@ const Profile = () => {
             htmlType="submit"
             style={{ width: '100%' }}
             icon={<LockOutlined />}
+            loading={isPasswordLoading}
           >
             Change
           </Button>

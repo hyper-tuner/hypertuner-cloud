@@ -28,6 +28,7 @@ const signUpSuccessful = () => notification.success({
 const signUpFailed = (err: Error) => notification.error({
   message: 'Failed to create an account',
   description: err.message,
+  ...baseOptions,
 });
 
 const logInSuccessful = () => notification.success({
@@ -39,6 +40,7 @@ const logInSuccessful = () => notification.success({
 const logInFailed = (err: Error) => notification.error({
   message: 'Failed to log in',
   description: err.message,
+  ...baseOptions,
 });
 
 const restrictedPage = () => notification.error({
@@ -56,6 +58,7 @@ const logOutSuccessful = () => notification.success({
 const logOutFailed = (err: Error) => notification.error({
   message: 'Log out failed',
   description: err.message,
+  ...baseOptions,
 });
 
 const resetSuccessful = () => notification.success({
@@ -67,11 +70,13 @@ const resetSuccessful = () => notification.success({
 const resetFailed = (err: Error) => notification.error({
   message: 'Password reset failed',
   description: err.message,
+  ...baseOptions,
 });
 
 const magicLinkConfirmationFailed = (err: Error) => notification.error({
   message: 'Magic Link is invalid',
   description: err.message,
+  ...baseOptions,
 });
 
 const sendingEmailVerificationFailed = (err: Error) => notification.success({
@@ -89,10 +94,11 @@ const emailVerificationSent = () => notification.success({
 const emailVerificationFailed = (err: Error) => notification.error({
   message: 'Email verification failed',
   description: err.message,
+  ...baseOptions,
 });
 
 const profileUpdateSuccess = () => notification.success({
-  message: 'Updated',
+  message: 'Profile updated',
   description: 'Your profile has been updated!',
   ...baseOptions,
 });
@@ -100,6 +106,19 @@ const profileUpdateSuccess = () => notification.success({
 const profileUpdateFailed = (err: Error) => notification.error({
   message: 'Unable to update your profile',
   description: err.message,
+  ...baseOptions,
+});
+
+const passwordUpdateSuccess = () => notification.success({
+  message: 'Password changed',
+  description: 'Your password has been changed!',
+  ...baseOptions,
+});
+
+const passwordUpdateFailed = (err: Error) => notification.error({
+  message: 'Unable to change your password',
+  description: err.message,
+  ...baseOptions,
 });
 
 export {
@@ -120,4 +139,6 @@ export {
   emailVerificationFailed,
   profileUpdateSuccess,
   profileUpdateFailed,
+  passwordUpdateSuccess,
+  passwordUpdateFailed,
 };
