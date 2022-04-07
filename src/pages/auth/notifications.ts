@@ -91,6 +91,17 @@ const emailVerificationFailed = (err: Error) => notification.error({
   description: err.message,
 });
 
+const profileUpdateSuccess = () => notification.success({
+  message: 'Updated',
+  description: 'Your profile has been updated!',
+  ...baseOptions,
+});
+
+const profileUpdateFailed = (err: Error) => notification.error({
+  message: 'Unable to update your profile',
+  description: err.message,
+});
+
 export {
   emailNotVerified,
   magicLinkSent,
@@ -107,4 +118,6 @@ export {
   sendingEmailVerificationFailed,
   emailVerificationSent,
   emailVerificationFailed,
+  profileUpdateSuccess,
+  profileUpdateFailed,
 };

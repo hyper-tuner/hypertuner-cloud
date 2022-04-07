@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -23,6 +24,8 @@ import {
   restrictedPage,
   sendingEmailVerificationFailed,
   emailVerificationSent,
+  profileUpdateSuccess,
+  profileUpdateFailed,
 } from './notifications';
 import { Routes } from '../../routes';
 import { passwordPattern } from '../../utils/password';
@@ -30,11 +33,19 @@ import { passwordPattern } from '../../utils/password';
 const { Item } = Form;
 
 const Profile = () => {
-  const { currentUser, sendEmailVerification, getSessions, getLogs } = useAuth();
+  const [formProfile] = Form.useForm();
+  const [formPassword] = Form.useForm();
+  const {
+    currentUser,
+    sendEmailVerification,
+    updateUsername,
+    getSessions,
+    getLogs,
+  } = useAuth();
   const navigate = useNavigate();
-  const [form] = Form.useForm();
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [sessions, setSessions] = useState<string[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -47,8 +58,33 @@ const Profile = () => {
     } catch (error) {
       sendingEmailVerificationFailed(error as Error);
       setIsVerificationSent(false);
+    } finally {
+      setIsSendingVerification(false);
     }
-    setIsSendingVerification(false);
+  };
+
+  const fetchLogs = useCallback(async () => getLogs()
+    .then((list) => setLogs(list.logs.map((log) => [
+      new Date(log.time * 1000).toLocaleString(),
+      log.event,
+      log.clientName,
+      log.osName,
+      log.deviceName,
+      log.countryName,
+      log.ip,
+    ].join(' ')))), [getLogs]);
+
+  const updateProfile = async ({ username }: { username: string }) => {
+    setIsProfileLoading(true);
+    try {
+      await updateUsername(username);
+      profileUpdateSuccess();
+      fetchLogs();
+    } catch (error) {
+      profileUpdateFailed(error as Error);
+    } finally {
+      setIsProfileLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -60,21 +96,14 @@ const Profile = () => {
     getSessions()
       .then((list) => setSessions(list.sessions.map((ses) => [
         ses.clientName,
-        ses.countryName,
         ses.osName,
         ses.deviceName,
+        ses.countryName,
         ses.ip,
       ].join(' '))));
 
-    getLogs()
-      .then((list) => setLogs(list.logs.map((log) => [
-        log.clientName,
-        log.countryName,
-        log.osName,
-        log.deviceName,
-        log.ip,
-      ].join(' '))));
-  }, [currentUser, getLogs, getSessions, navigate]);
+    fetchLogs();
+  }, [currentUser, fetchLogs, getLogs, getSessions, navigate]);
 
   return (
     <div className="auth-container">
@@ -97,8 +126,8 @@ const Profile = () => {
       <Divider>Your Profile</Divider>
       <Form
         validateMessages={validateMessages}
-        form={form}
-        autoComplete="off"
+        form={formProfile}
+        onFinish={updateProfile}
         fields={[
           {
             name: 'username',
@@ -126,6 +155,7 @@ const Profile = () => {
             htmlType="submit"
             style={{ width: '100%' }}
             icon={<UserOutlined />}
+            loading={isProfileLoading}
           >
             Update
           </Button>
@@ -134,8 +164,7 @@ const Profile = () => {
       <Divider>Password</Divider>
       <Form
         validateMessages={validateMessages}
-        form={form}
-        autoComplete="off"
+        form={formPassword}
         fields={[
           {
             name: 'username',

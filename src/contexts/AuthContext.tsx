@@ -100,6 +100,7 @@ interface AuthValue {
   googleAuth: () => Promise<void>,
   githubAuth: () => Promise<void>,
   facebookAuth: () => Promise<void>,
+  updateUsername: (username: string) => Promise<void>,
   refreshToken: () => Promise<string> | undefined,
   getSessions: () => Promise<SessionList>,
   getLogs: () => Promise<LogList>,
@@ -221,6 +222,16 @@ const AuthProvider = (props: { children: ReactNode }) => {
         OAUTH_REDIRECT_URL,
         FACEBOOK_SCOPES,
       );
+    },
+    updateUsername: async (username: string) => {
+      try {
+        await appwrite.account.updateName(username);
+        const user = await appwrite.account.get();
+        setCurrentUser(user);
+        return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
+      }
     },
     refreshToken: () => auth.currentUser?.getIdToken(true),
     getSessions: () => appwrite.account.getSessions(),
