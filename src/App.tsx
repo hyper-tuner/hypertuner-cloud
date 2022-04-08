@@ -14,6 +14,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useState,
 } from 'react';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
@@ -63,6 +64,7 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   const { getTune } = useDb();
   const searchParams = new URLSearchParams(window.location.search);
   const redirectPage = searchParams.get('redirectPage');
+  const [isLoading, setIsLoading] = useState(false);
 
   switch (redirectPage) {
     case Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION:
@@ -85,8 +87,10 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
     if (tuneId) {
       // clear out last state
       if (tuneData && tuneId !== tuneData.id) {
+        setIsLoading(true);
         loadTune(null);
         store.dispatch({ type: 'tuneData/load', payload: null });
+        setIsLoading(false);
       }
 
       getTune(tuneId).then(async (tune) => {
@@ -121,6 +125,10 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
       </Layout>
     );
   }, []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
