@@ -10,16 +10,20 @@ import Dialog from '../components/Tune/Dialog';
 import SideBar from '../components/Tune/SideBar';
 import { Routes } from '../routes';
 import useConfig from '../hooks/useConfig';
-import { AppState } from '../types/state';
+import {
+  AppState,
+  TuneState,
+} from '../types/state';
 import Loader from '../components/Loader';
 
 const mapStateToProps = (state: AppState) => ({
   navigation: state.navigation,
   status: state.status,
   config: state.config,
+  tune: state.tune,
 });
 
-const Tune = ({ config }: { config: ConfigType }) => {
+const Tune = ({ config, tune }: { config: ConfigType | null, tune: TuneState }) => {
   const dialogMatch = useMatch(Routes.TUNE_DIALOG);
   const tuneRootMatch = useMatch(Routes.TUNE_TUNE);
   // const { storageGetSync } = useBrowserStorage();
@@ -31,9 +35,9 @@ const Tune = ({ config }: { config: ConfigType }) => {
   const tuneId = tunePathMatch?.params.tuneId;
 
   useEffect(() => {
-    if (isConfigReady && tuneRootMatch) {
-      const firstCategory = Object.keys(config.menus)[0];
-      const firstDialog = Object.keys(config.menus[firstCategory].subMenus)[0];
+    if (tune && config && tuneRootMatch) {
+      const firstCategory = Object.keys(config!.menus)[0];
+      const firstDialog = Object.keys(config!.menus[firstCategory].subMenus)[0];
 
       const firstDialogPath = generatePath(Routes.TUNE_DIALOG, {
         tuneId,
@@ -43,9 +47,9 @@ const Tune = ({ config }: { config: ConfigType }) => {
 
       navigate(firstDialogPath, { replace: true });
     }
-  }, [navigate, tuneRootMatch, isConfigReady, config.menus, tuneId]);
+  }, [navigate, tuneRootMatch, isConfigReady, config?.menus, tuneId, config, tune, dialogMatch]);
 
-  if (!isConfigReady || !dialogMatch) {
+  if (!tune || !config || !dialogMatch) {
     return <Loader />;
   }
 

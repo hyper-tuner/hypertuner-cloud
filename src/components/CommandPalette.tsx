@@ -75,8 +75,8 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 interface CommandPaletteProps {
-  config: ConfigType;
-  tune: TuneType;
+  config: ConfigType | null;
+  tune: TuneType  | null;
   navigation: NavigationState;
   children?: ReactNode;
 };
@@ -288,14 +288,14 @@ const ActionsProvider = (props: CommandPaletteProps) => {
   }, [navigate, navigation.tuneId]);
 
   const getActions = () => {
-    if (Object.keys(tune.constants).length) {
-      return generateActions(config.menus);
+    if (tune?.constants && Object.keys(tune.constants).length) {
+      return generateActions(config!.menus);
     }
 
     return [];
   };
 
-  useRegisterActions(getActions(), [tune.constants]);
+  useRegisterActions(getActions(), [tune?.constants]);
 
   return null;
 };

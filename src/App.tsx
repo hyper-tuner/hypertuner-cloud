@@ -25,6 +25,7 @@ import Loader from './components/Loader';
 import {
   AppState,
   NavigationState,
+  TuneDataState,
   UIState,
 } from './types/state';
 import useDb from './hooks/useDb';
@@ -54,9 +55,10 @@ const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
   navigation: state.navigation,
+  tuneData: state.tuneData,
 });
 
-const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) => {
+const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: NavigationState, tuneData: TuneDataState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   const { getTune } = useDb();
   const searchParams = new URLSearchParams(window.location.search);
@@ -81,9 +83,15 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
 
   useEffect(() => {
     if (tuneId) {
-      getTune(tuneId).then(async (tuneData) => {
-        loadTune(tuneData);
-        store.dispatch({ type: 'tuneData/load', payload: tuneData });
+      // clear out last state
+      if (tuneData && tuneId !== tuneData.id) {
+        loadTune(null);
+        store.dispatch({ type: 'tuneData/load', payload: null });
+      }
+
+      getTune(tuneId).then(async (tune) => {
+        loadTune(tune);
+        store.dispatch({ type: 'tuneData/load', payload: tune });
       });
 
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });

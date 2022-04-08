@@ -59,8 +59,8 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 interface SideBarProps {
-  config: ConfigType;
-  tune: TuneType;
+  config: ConfigType | null;
+  tune: TuneType | null;
   ui: UIState;
   navigation: NavigationState;
   matchedPath: PathMatch<'dialog' | 'tuneId' | 'category'>;
@@ -115,10 +115,10 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
   ), [navigation.tuneId]);
 
   useEffect(() => {
-    if (Object.keys(tune.constants).length) {
+    if (tune && config && Object.keys(tune.constants).length) {
       setMenus(menusList(config.menus));
     }
-  }, [config.menus, menusList, tune.constants]);
+  }, [config, config?.menus, menusList, tune, tune?.constants]);
 
   return (
     <Sider {...siderProps} className="app-sidebar">

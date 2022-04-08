@@ -12,7 +12,13 @@ import TuneParser from './tune/TuneParser';
 import { TuneDbData } from '../types/dbData';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
 
-export const loadTune = async (tuneData: TuneDbData) => {
+export const loadTune = async (tuneData: TuneDbData | null) => {
+  if (tuneData === null) {
+    store.dispatch({ type: 'config/load', payload: null });
+    store.dispatch({ type: 'tune/load', payload: null });
+    return;
+  }
+
   const pako = await import('pako');
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { getFile, getINIFile } = useServerStorage();
