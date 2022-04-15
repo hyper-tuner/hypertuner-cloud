@@ -37,7 +37,7 @@
     "react-router-dom": "^6.2.1",
     "uplot": "^1.6.19",
     "uplot-react": "^1.1.1",
-    "vite": "^2.8.4"
+    "vite": "^2.9.5"
   },
   "devDependencies": {
     "@speedy-tuner/eslint-config": "^0.1.3",
