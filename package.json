@@ -27,7 +27,7 @@
     "firebase": "^9.6.7",
     "kbar": "^0.1.0-beta.28",
     "mlg-converter": "^0.5.1",
-    "nanoid": "^3.3.1",
+    "nanoid": "^3.3.3",
     "pako": "^2.0.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.2",
