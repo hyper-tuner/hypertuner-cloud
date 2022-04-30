@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
@@ -22,7 +22,9 @@ if (isProduction) {
   });
 }
 
-ReactDOM.render(
+const container = document.getElementById('root');
+
+createRoot(container!).render(
   <HashRouter>
     <AuthProvider>
       <Provider store={store}>
@@ -32,5 +34,4 @@ ReactDOM.render(
       </Provider>
     </AuthProvider>
   </HashRouter>,
-  document.getElementById('root'),
 );
