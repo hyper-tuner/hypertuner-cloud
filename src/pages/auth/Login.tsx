@@ -144,6 +144,7 @@ const Login = () => {
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
+            id="email-magic-link"
             disabled={isAnythingLoading}
           />
         </Item>
