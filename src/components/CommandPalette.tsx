@@ -78,6 +78,7 @@ interface CommandPaletteProps {
   config: ConfigType | null;
   tune: TuneType  | null;
   navigation: NavigationState;
+  // eslint-disable-next-line react/no-unused-prop-types
   children?: ReactNode;
 };
 
