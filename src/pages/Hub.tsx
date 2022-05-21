@@ -127,7 +127,7 @@ const Hub = () => {
           <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
             <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />
           </Tooltip>
-          <Button icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
+          <Button type="primary" icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
         </Space>
       ),
       key: 'tuneId',

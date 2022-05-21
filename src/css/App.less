@@ -4,14 +4,7 @@
 @import './themes/dark.less';
 @import './themes/common.less';
 @import './themes/ant.less';
-
-:root {
-  --background: @component-background;
-  --foreground: @text;
-  --a1: @main;
-  --border: @border-color-split;
-  --shadow: @shadow-2;
-}
+@import './overrides.less';
 
 body {
   overflow: hidden;
@@ -91,15 +84,6 @@ html, body {
 
 .ant-checkbox-wrapper {
   user-select: none;
-}
-
-.ant-upload-list-picture-card
-.ant-upload-list-item-actions
-.anticon-delete,
-.ant-upload-list-picture-card
-.ant-upload-list-item-actions
-.anticon-eye {
-  color: @text;
 }
 
 .table {

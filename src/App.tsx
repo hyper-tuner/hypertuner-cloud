@@ -34,7 +34,7 @@ import Info from './pages/Info';
 import Hub from './pages/Hub';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import './App.less';
+import './css/App.less';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
