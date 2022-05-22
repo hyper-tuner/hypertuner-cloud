@@ -47,7 +47,6 @@ const ResetPassword = () => {
         initialValues={{ remember: true }}
         onFinish={onFinish}
         validateMessages={validateMessages}
-        autoComplete="off"
         form={form}
       >
         <Item

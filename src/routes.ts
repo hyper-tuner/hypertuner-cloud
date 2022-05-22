@@ -20,6 +20,7 @@ export enum Routes {
   RESET_PASSWORD = '/auth/reset-password',
   MAGIC_LINK_CONFIRMATION = '/auth/magic-link-confirmation',
   EMAIL_VERIFICATION = '/auth/email-verification',
+  RESET_PASSWORD_CONFIRMATION = '/auth/reset-password-confirmation',
 
   REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION = 'magic-link-confirmation',
   REDIRECT_PAGE_EMAIL_VERIFICATION = 'email-verification',

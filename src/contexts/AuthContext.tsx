@@ -95,6 +95,7 @@ interface AuthValue {
   confirmMagicLink: (userId: string, secret: string) => Promise<User>,
   sendEmailVerification: () => Promise<void>,
   confirmEmailVerification: (userId: string, secret: string) => Promise<void>,
+  confirmResetPassword: (userId: string, secret: string, password: string) => Promise<void>,
   logout: () => Promise<void>,
   initResetPassword: (email: string) => Promise<void>,
   googleAuth: () => Promise<void>,
@@ -111,6 +112,7 @@ const OAUTH_REDIRECT_URL = buildFullUrl();
 const MAGIC_LINK_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION);
 const EMAIL_VERIFICATION_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_EMAIL_VERIFICATION);
 const RESET_PASSWORD_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_RESET_PASSWORD);
+
 const GOOGLE_SCOPES = ['https://www.googleapis.com/auth/userinfo.email'];
 const GITHUB_SCOPES = ['user:email'];
 const FACEBOOK_SCOPES = ['email'];
@@ -176,6 +178,16 @@ const AuthProvider = (props: { children: ReactNode }) => {
     confirmEmailVerification: async (userId: string, secret: string) => {
       try {
         await appwrite.account.updateVerification(userId, secret);
+        const user = await appwrite.account.get();
+        setCurrentUser(user);
+        return Promise.resolve();
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    confirmResetPassword: async (userId: string, secret: string, password: string) => {
+      try {
+        await appwrite.account.updateRecovery(userId, secret, password, password);
         const user = await appwrite.account.get();
         setCurrentUser(user);
         return Promise.resolve();

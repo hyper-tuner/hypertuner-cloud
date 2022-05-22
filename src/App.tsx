@@ -49,6 +49,7 @@ const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const MagicLinkConfirmation = lazy(() => import('./pages/auth/MagicLinkConfirmation'));
 const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
+const ResetPasswordConfirmation = lazy(() => import('./pages/auth/ResetPasswordConfirmation'));
 
 const { Content } = Layout;
 
@@ -66,12 +67,16 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   const redirectPage = searchParams.get('redirectPage');
   const [isLoading, setIsLoading] = useState(false);
 
+  // TODO: refactor this
   switch (redirectPage) {
     case Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION:
       window.location.href = `/#${Routes.MAGIC_LINK_CONFIRMATION}?${searchParams.toString()}`;
       break;
     case Routes.REDIRECT_PAGE_EMAIL_VERIFICATION:
       window.location.href = `/#${Routes.EMAIL_VERIFICATION}?${searchParams.toString()}`;
+      break;
+    case Routes.REDIRECT_PAGE_RESET_PASSWORD:
+      window.location.href = `/#${Routes.RESET_PASSWORD_CONFIRMATION}?${searchParams.toString()}`;
       break;
     default:
       break;
@@ -146,8 +151,10 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
           <Route path={Routes.PROFILE} element={<ContentFor element={<Profile />} />} />
           <Route path={Routes.SIGN_UP} element={<ContentFor element={<SignUp />} />} />
           <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
+
           <Route path={Routes.MAGIC_LINK_CONFIRMATION} element={<ContentFor element={<MagicLinkConfirmation />} />} />
           <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
+          <Route path={Routes.RESET_PASSWORD_CONFIRMATION} element={<ContentFor element={<ResetPasswordConfirmation />} />} />
         </ReactRoutes>
         <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>

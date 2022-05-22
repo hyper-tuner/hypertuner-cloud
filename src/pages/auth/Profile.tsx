@@ -30,7 +30,7 @@ import {
   passwordUpdateFailed,
 } from './notifications';
 import { Routes } from '../../routes';
-import { passwordPattern } from '../../utils/password';
+import { passwordRules } from '../../utils/password';
 
 const { Item } = Form;
 
@@ -198,10 +198,7 @@ const Profile = () => {
         </Item>
         <Item
           name="password"
-          rules={[
-            { required: true },
-            { pattern: passwordPattern, message: 'Password is too weak!' },
-          ]}
+          rules={passwordRules}
           hasFeedback
         >
           <Input.Password

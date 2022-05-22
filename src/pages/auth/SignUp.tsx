@@ -32,7 +32,7 @@ import {
   magicLinkSent,
   signUpSuccessful,
 } from './notifications';
-import { passwordPattern } from '../../utils/password';
+import { passwordRules } from '../../utils/password';
 
 const { Item } = Form;
 
@@ -197,10 +197,7 @@ const SignUp = () => {
         </Item>
         <Item
           name="password"
-          rules={[
-            { required: true },
-            { pattern: passwordPattern, message: 'Password is too weak!' },
-          ]}
+          rules={passwordRules}
           hasFeedback
         >
           <Input.Password

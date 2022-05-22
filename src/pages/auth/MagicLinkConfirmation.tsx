@@ -17,11 +17,12 @@ const MagicLinkConfirmation = () => {
 
   useEffect(() => {
     if (userId && secret) {
-      confirmMagicLink(userId, secret).then(() => {
-      }).catch((error) => {
-        console.error(error);
-        magicLinkConfirmationFailed(error);
-      });
+      confirmMagicLink(userId, secret)
+        .then()
+        .catch((error) => {
+          console.error(error);
+          magicLinkConfirmationFailed(error);
+        });
     } else {
       magicLinkConfirmationFailed(new Error('Invalid URL'));
     }

@@ -17,11 +17,12 @@ const EmailVerification = () => {
 
   useEffect(() => {
     if (userId && secret) {
-      confirmEmailVerification(userId, secret).then(() => {
-      }).catch((error) => {
-        console.error(error);
-        emailVerificationFailed(error);
-      });
+      confirmEmailVerification(userId, secret)
+        .then()
+        .catch((error) => {
+          console.error(error);
+          emailVerificationFailed(error);
+        });
     } else {
       emailVerificationFailed(new Error('Invalid URL'));
     }
