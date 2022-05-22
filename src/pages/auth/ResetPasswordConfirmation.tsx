@@ -39,7 +39,7 @@ const ResetPasswordConfirmation = () => {
     try {
       await confirmResetPassword(userId!, secret!, password);
       passwordUpdateSuccess();
-      navigate(Routes.HUB);
+      navigate(Routes.LOGIN);
     } catch (error) {
       console.warn(error);
       passwordUpdateFailed(error as Error);
@@ -87,8 +87,8 @@ const ResetPasswordConfirmation = () => {
           </Button>
         </Item>
         <Link to={Routes.SIGN_UP}>Sign Up</Link>
-        <Link to={Routes.LOGIN} style={{ float: 'right' }}>
-          Log In
+        <Link to={Routes.RESET_PASSWORD} style={{ float: 'right' }}>
+          Forgot password?
         </Link>
       </Form>
     </div>

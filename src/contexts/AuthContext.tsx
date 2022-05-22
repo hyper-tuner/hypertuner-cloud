@@ -188,8 +188,6 @@ const AuthProvider = (props: { children: ReactNode }) => {
     confirmResetPassword: async (userId: string, secret: string, password: string) => {
       try {
         await appwrite.account.updateRecovery(userId, secret, password, password);
-        const user = await appwrite.account.get();
-        setCurrentUser(user);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);

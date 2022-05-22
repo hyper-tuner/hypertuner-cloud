@@ -197,14 +197,12 @@ const Login = () => {
             Log in using password
           </Button>
         </Item>
-        <Button type="link">
-          <Link to={Routes.SIGN_UP}>Sign Up</Link>
-        </Button>
-        <Button type="link" style={{ float: 'right' }}>
-          <Link to={Routes.RESET_PASSWORD}>
-            Forgot password?
-          </Link>
-        </Button>
+        <Link to={Routes.SIGN_UP}>
+          Sign Up
+        </Link>
+        <Link to={Routes.RESET_PASSWORD} style={{ float: 'right' }}>
+          Forgot password?
+        </Link>
       </Form>
     </div>
   );
