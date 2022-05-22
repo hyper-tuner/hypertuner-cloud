@@ -39,3 +39,10 @@ export interface TuneDbData {
   injectorsSize?: number | null;
   coils?: string | null;
 }
+
+export interface UsersBucket {
+  userId: string;
+  bucketId: string;
+  visibility: 'pubic' | 'private';
+  createdAt: number;
+}

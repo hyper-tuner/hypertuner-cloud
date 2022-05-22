@@ -127,6 +127,12 @@ const passwordUpdateFailed = (err: Error) => notification.error({
   ...baseOptions,
 });
 
+const databaseGenericError = (err: Error) => notification.error({
+  message: 'Database Error',
+  description: err.message,
+  ...baseOptions,
+});
+
 export {
   emailNotVerified,
   magicLinkSent,
@@ -148,4 +154,5 @@ export {
   profileUpdateFailed,
   passwordUpdateSuccess,
   passwordUpdateFailed,
+  databaseGenericError,
 };

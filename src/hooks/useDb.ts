@@ -13,16 +13,15 @@ import {
   orderBy,
   getFirestore,
 } from 'firebase/firestore/lite';
-import { Models } from 'appwrite';
+import { Models, Query } from 'appwrite';
 import appwrite from '../appwrite';
-import { TuneDbData } from '../types/dbData';
+import { TuneDbData, UsersBucket } from '../types/dbData';
+import { databaseGenericError } from '../pages/auth/notifications';
 
 const TUNES_PATH = 'publicTunes';
 const COLLECTION_ID_TUNES = import.meta.env.VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES;
-
+const COLLECTION_ID_USERS_BUCKETS = import.meta.env.VITE_APPWRITE_COLLECTION_ID_USERS_BUCKETS;
 const db = getFirestore();
-
-const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
 
 const useDb = () => {
   const getTuneData = async (tuneId: string) => {
@@ -38,7 +37,7 @@ const useDb = () => {
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
-      genericError(error as Error);
+      databaseGenericError(error as Error);
 
       return Promise.reject(error);
     }
@@ -58,7 +57,7 @@ const useDb = () => {
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
-      genericError(error as Error);
+      databaseGenericError(error as Error);
 
       return Promise.reject(error);
     }
@@ -72,7 +71,7 @@ const useDb = () => {
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
-      genericError(error as Error);
+      databaseGenericError(error as Error);
 
       return Promise.reject(error);
     }
@@ -92,7 +91,32 @@ const useDb = () => {
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
-      genericError(error as Error);
+      databaseGenericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const getBucketId = async (userId: string) => {
+    try {
+      const buckets = await appwrite.database.listDocuments(
+        COLLECTION_ID_USERS_BUCKETS,
+        [
+          Query.equal('userId', userId),
+          Query.equal('visibility', 'public'),
+        ],
+        1,
+      );
+
+      if (buckets.total === 0) {
+        throw new Error('No public bucket found');
+      }
+
+      return Promise.resolve((buckets.documents[0] as unknown as UsersBucket)!.bucketId);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      databaseGenericError(error as Error);
 
       return Promise.reject(error);
     }
@@ -104,6 +128,7 @@ const useDb = () => {
     getTune: (tuneId: string): Promise<TuneDbData> => getTuneData(tuneId),
     // listTunes: (): Promise<QuerySnapshot<TuneDbData>> => listTunesData(),
     listTunes: (): Promise<QuerySnapshot<any>> => listTunesData(),
+    getBucketId: (userId: string): Promise<string> => getBucketId(userId),
   };
 };
 

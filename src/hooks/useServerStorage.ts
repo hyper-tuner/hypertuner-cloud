@@ -8,6 +8,8 @@ import {
   uploadBytesResumable,
   getStorage,
 } from 'firebase/storage';
+import { Models } from 'appwrite';
+import appwrite from '../appwrite';
 
 const PUBLIC_PATH = 'public';
 const USERS_PATH = `${PUBLIC_PATH}/users`;
@@ -15,6 +17,8 @@ const INI_PATH = `${PUBLIC_PATH}/ini`;
 export const CDN_URL = import.meta.env.VITE_CDN_URL;
 
 const storage = getStorage();
+
+export type ServerFile = Models.File;
 
 const genericError = (error: Error) => notification.error({ message: 'Storage Error', description: error.message });
 
@@ -52,7 +56,7 @@ const useServerStorage = () => {
 
       notification.warning({
         message: 'INI not found',
-        description: `INI version: "${version}" not found. Trying base version: "${baseVersion}"!` ,
+        description: `INI version: "${version}" not found. Trying base version: "${baseVersion}"!`,
       });
 
       try {
@@ -63,7 +67,7 @@ const useServerStorage = () => {
 
         notification.error({
           message: 'INI not found',
-          description: `INI version: "${baseVersion}" not found. Try uploading custom INI file!` ,
+          description: `INI version: "${baseVersion}" not found. Try uploading custom INI file!`,
         });
       }
 
@@ -85,20 +89,41 @@ const useServerStorage = () => {
     }
   };
 
-  const uploadFile = (path: string, file: File, data: Uint8Array) =>
-    uploadBytesResumable(ref(storage, path), data, {
-      customMetadata: {
-        name: file.name,
-        size: `${file.size}`,
-      },
-    });
+  // const uploadFile = (path: string, file: File, data: Uint8Array) =>
+  //   uploadBytesResumable(ref(storage, path), data, {
+  //     customMetadata: {
+  //       name: file.name,
+  //       size: `${file.size}`,
+  //     },
+  //   });
+
+  const uploadFile = async (userId: string, bucketId: string, file: File) => {
+    try {
+      const createdFile = await appwrite.storage.createFile(
+        bucketId,
+        'unique()',
+        file,
+        ['role:all'],
+        [`user:${userId}`],
+      );
+
+      return Promise.resolve(createdFile);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      genericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
 
   return {
     getFile: (path: string): Promise<ArrayBuffer> => getFile(path),
     getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
     removeFile: (path: string): Promise<void> => removeFile(path),
-    uploadFile: (path: string, file: File, data: Uint8Array): UploadTask => uploadFile(path, file, data),
+    // uploadFile: (path: string, file: File, data: Uint8Array): UploadTask => uploadFile(path, file, data),
     basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${USERS_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
+    uploadFile: (userId: string, bucketId: string, file: File): Promise<ServerFile> => uploadFile(userId, bucketId, file),
   };
 };
 

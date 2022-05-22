@@ -52,7 +52,7 @@ import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
-import useServerStorage from '../hooks/useServerStorage';
+import useServerStorage, { ServerFile } from '../hooks/useServerStorage';
 import { buildFullUrl } from '../utils/url';
 import Loader from '../components/Loader';
 
@@ -112,7 +112,7 @@ const UploadPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
-  const { updateData, createTune } = useDb();
+  const { updateData, createTune, getBucketId } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
@@ -162,7 +162,7 @@ const UploadPage = () => {
     message: `File should not be larger than ${maxFileSizeMB}MB!`,
   });
 
-  const upload = async (path: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
+  const upload = async (bucketId: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
     const { onError, onSuccess, onProgress, file } = options;
 
     const validation = await validate(file as File);
@@ -178,17 +178,18 @@ const UploadPage = () => {
       const pako = await import('pako');
       const buffer = await (file as File).arrayBuffer();
       const compressed = pako.deflate(new Uint8Array(buffer));
-      const uploadTask = uploadFile(path, file as File, compressed);
+      const fileCreated: ServerFile = await uploadFile(currentUser!.$id, bucketId, new File([compressed], (file as File).name));
 
-      uploadTask.on(
-        'state_changed',
-        (snap) => onProgress!({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
-        (err) => onError!(err),
-        () => {
-          onSuccess!(file);
-          if (done) done();
-        },
-      );
+      done(fileCreated);
+      // uploadTask.on(
+      //   'state_changed',
+      //   (snap) => onProgress!({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
+      //   (err) => onError!(err),
+      //   () => {
+      //     onSuccess!(file);
+      //     if (done) done();
+      //   },
+      // );
     } catch (error) {
       Sentry.captureException(error);
       console.error('Upload error:', error);
@@ -226,7 +227,9 @@ const UploadPage = () => {
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
 
-    upload(path, options, () => {
+    const bucketId = await getBucketId(currentUser!.$id);
+    upload(bucketId, options, (fileCreated: ServerFile) => {
+      console.log(fileCreated);
       // initialize data
       createTune({
         tuneId: newTuneId!,
@@ -235,7 +238,7 @@ const UploadPage = () => {
         updatedAt: Date.now(),
         isPublished: false,
         isListed: true,
-        tuneFileId: 'testId',
+        tuneFileId: fileCreated.$id,
         logFileIds: [],
         toothLogFileIds: [],
         readme: '',
