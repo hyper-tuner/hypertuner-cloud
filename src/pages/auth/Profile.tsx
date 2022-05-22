@@ -34,6 +34,13 @@ import { passwordRules } from '../../utils/password';
 
 const { Item } = Form;
 
+const MAX_LOGS = 10;
+
+const parseLogEvent = (raw: string) => {
+  const split = raw.split('.');
+  return [split[0], split[2], split[4]].join(' ');
+};
+
 const Profile = () => {
   const [formProfile] = Form.useForm();
   const [formPassword] = Form.useForm();
@@ -68,9 +75,9 @@ const Profile = () => {
   };
 
   const fetchLogs = useCallback(async () => getLogs()
-    .then((list) => setLogs(list.logs.map((log) => [
+    .then((list) => setLogs(list.logs.slice(0, MAX_LOGS).map((log) => [
       new Date(log.time * 1000).toLocaleString(),
-      log.event,
+      parseLogEvent(log.event),
       log.clientName,
       log.osName,
       log.deviceName,
@@ -125,114 +132,118 @@ const Profile = () => {
   }, [currentUser, fetchLogs, getLogs, getSessions, navigate]);
 
   return (
-    <div className="auth-container">
-      {!currentUser?.emailVerification && (<>
-        <Divider>Email verification</Divider>
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
-          <Alert message="Your email address is not verified!" type="error" showIcon />
-          <Button
-            type="primary"
-            style={{ width: '100%' }}
-            icon={<MailOutlined />}
-            disabled={isVerificationSent}
-            loading={isSendingVerification}
-            onClick={resendEmailVerification}
-          >
-            Resend confirmation
-          </Button>
-        </Space>
-      </>)}
-      <Divider>Your Profile</Divider>
-      <Form
-        validateMessages={validateMessages}
-        form={formProfile}
-        onFinish={onUpdateProfile}
-        fields={[
-          {
-            name: 'username',
-            value: currentUser?.name,
-          },
-          {
-            name: 'email',
-            value: currentUser?.email,
-          },
-        ]}
-      >
-        <Item
-          name="username"
-          rules={[{ required: true }]}
-          hasFeedback
+    <>
+      <div className="auth-container">
+        {!currentUser?.emailVerification && (<>
+          <Divider>Email verification</Divider>
+          <Space direction="vertical" style={{ width: '100%' }} size="large">
+            <Alert message="Your email address is not verified!" type="error" showIcon />
+            <Button
+              type="primary"
+              style={{ width: '100%' }}
+              icon={<MailOutlined />}
+              disabled={isVerificationSent}
+              loading={isSendingVerification}
+              onClick={resendEmailVerification}
+            >
+              Resend confirmation
+            </Button>
+          </Space>
+        </>)}
+        <Divider>Your Profile</Divider>
+        <Form
+          validateMessages={validateMessages}
+          form={formProfile}
+          onFinish={onUpdateProfile}
+          fields={[
+            {
+              name: 'username',
+              value: currentUser?.name,
+            },
+            {
+              name: 'email',
+              value: currentUser?.email,
+            },
+          ]}
         >
-          <Input prefix={<UserOutlined />} placeholder="Username" />
-        </Item>
-        <Item name="email">
-          <Input prefix={<MailOutlined />} placeholder="Email" disabled />
-        </Item>
-        <Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            icon={<UserOutlined />}
-            loading={isProfileLoading}
+          <Item
+            name="username"
+            rules={[{ required: true }]}
+            hasFeedback
           >
-            Update
-          </Button>
-        </Item>
-      </Form>
-      <Divider>Password</Divider>
-      <Form
-        validateMessages={validateMessages}
-        form={formPassword}
-        onFinish={onUpdatePassword}
-      >
-        <Item
-          name="oldPassword"
-          rules={[{ required: true }]}
-          hasFeedback
+            <Input prefix={<UserOutlined />} placeholder="Username" />
+          </Item>
+          <Item name="email">
+            <Input prefix={<MailOutlined />} placeholder="Email" disabled />
+          </Item>
+          <Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{ width: '100%' }}
+              icon={<UserOutlined />}
+              loading={isProfileLoading}
+            >
+              Update
+            </Button>
+          </Item>
+        </Form>
+        <Divider>Password</Divider>
+        <Form
+          validateMessages={validateMessages}
+          form={formPassword}
+          onFinish={onUpdatePassword}
         >
-          <Input.Password
-            placeholder="Old password"
-            prefix={<LockOutlined />}
-          />
-        </Item>
-        <Item
-          name="password"
-          rules={passwordRules}
-          hasFeedback
-        >
-          <Input.Password
-            placeholder="New password"
-            prefix={<LockOutlined />}
-          />
-        </Item>
-        <Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            icon={<LockOutlined />}
-            loading={isPasswordLoading}
+          <Item
+            name="oldPassword"
+            rules={[{ required: true }]}
+            hasFeedback
           >
-            Change
-          </Button>
-        </Item>
-      </Form>
-      <Divider>Active sessions</Divider>
-      <List
-        size="small"
-        bordered
-        dataSource={sessions}
-        renderItem={item => <List.Item>{item}</List.Item>}
-      />
-      <Divider>Audit logs</Divider>
-      <List
-        size="small"
-        bordered
-        dataSource={logs}
-        renderItem={item => <List.Item>{item}</List.Item>}
-      />
-    </div>
+            <Input.Password
+              placeholder="Old password"
+              prefix={<LockOutlined />}
+            />
+          </Item>
+          <Item
+            name="password"
+            rules={passwordRules}
+            hasFeedback
+          >
+            <Input.Password
+              placeholder="New password"
+              prefix={<LockOutlined />}
+            />
+          </Item>
+          <Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{ width: '100%' }}
+              icon={<LockOutlined />}
+              loading={isPasswordLoading}
+            >
+              Change
+            </Button>
+          </Item>
+        </Form>
+      </div>
+      <div className="large-container">
+        <Divider>Active sessions</Divider>
+        <List
+          size="small"
+          bordered
+          dataSource={sessions}
+          renderItem={item => <List.Item>{item}</List.Item>}
+        />
+        <Divider>Audit logs</Divider>
+        <List
+          size="small"
+          bordered
+          dataSource={logs}
+          renderItem={item => <List.Item>{item}</List.Item>}
+        />
+      </div>
+    </>
   );
 };
 
