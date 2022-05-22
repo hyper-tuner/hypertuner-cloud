@@ -147,7 +147,7 @@ const Logs = ({
       };
     }).filter((val) => !!val);
 
-  }, [config.datalog, findOutputChannel, isConfigReady]);
+  }, [config?.datalog, findOutputChannel, isConfigReady]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
@@ -213,7 +213,7 @@ const Logs = ({
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [calculateCanvasSize, config.datalog, config.outputChannels, loadedLogs, ui.sidebarCollapsed]);
+  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, loadedLogs, ui.sidebarCollapsed]);
 
   return (
     <>
