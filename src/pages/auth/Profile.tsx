@@ -146,7 +146,7 @@ const Profile = () => {
               loading={isSendingVerification}
               onClick={resendEmailVerification}
             >
-              Resend confirmation
+              Resend verification
             </Button>
           </Space>
         </>)}

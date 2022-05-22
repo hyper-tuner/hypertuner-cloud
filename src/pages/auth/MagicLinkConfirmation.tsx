@@ -6,7 +6,10 @@ import {
 import Loader from '../../components/Loader';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
-import { magicLinkConfirmationFailed } from './notifications';
+import {
+  logInSuccessful,
+  magicLinkConfirmationFailed,
+} from './notifications';
 
 const MagicLinkConfirmation = () => {
   const { confirmMagicLink } = useAuth();
@@ -18,7 +21,7 @@ const MagicLinkConfirmation = () => {
   useEffect(() => {
     if (userId && secret) {
       confirmMagicLink(userId, secret)
-        .then()
+        .then(() => logInSuccessful())
         .catch((error) => {
           console.error(error);
           magicLinkConfirmationFailed(error);

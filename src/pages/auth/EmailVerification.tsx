@@ -6,7 +6,10 @@ import {
 import Loader from '../../components/Loader';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
-import { emailVerificationFailed } from './notifications';
+import {
+  emailVerificationFailed,
+  emailVerificationSuccess,
+} from './notifications';
 
 const EmailVerification = () => {
   const { confirmEmailVerification } = useAuth();
@@ -18,7 +21,7 @@ const EmailVerification = () => {
   useEffect(() => {
     if (userId && secret) {
       confirmEmailVerification(userId, secret)
-        .then()
+        .then(() => emailVerificationSuccess())
         .catch((error) => {
           console.error(error);
           emailVerificationFailed(error);

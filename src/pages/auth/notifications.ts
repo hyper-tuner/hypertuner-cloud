@@ -97,6 +97,12 @@ const emailVerificationFailed = (err: Error) => notification.error({
   ...baseOptions,
 });
 
+const emailVerificationSuccess = () => notification.success({
+  message: 'Email verified',
+  description: 'Your email has been verified!',
+  ...baseOptions,
+});
+
 const profileUpdateSuccess = () => notification.success({
   message: 'Profile updated',
   description: 'Your profile has been updated!',
@@ -137,6 +143,7 @@ export {
   sendingEmailVerificationFailed,
   emailVerificationSent,
   emailVerificationFailed,
+  emailVerificationSuccess,
   profileUpdateSuccess,
   profileUpdateFailed,
   passwordUpdateSuccess,
