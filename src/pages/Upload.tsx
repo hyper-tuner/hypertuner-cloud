@@ -112,7 +112,7 @@ const UploadPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
-  const { updateData } = useDb();
+  const { updateData, createTune } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
@@ -134,28 +134,25 @@ const UploadPage = () => {
 
   const publish = async (values: any) => {
     setIsLoading(true);
-    await updateData(newTuneId!, {
-      id: newTuneId!,
-      userUid: currentUser!.$id,
-      updatedAt: new Date(),
-      isPublished: true,
-      isListed: values.isListed,
-      details: {
-        readme: readme || null,
-        make: values.make || null,
-        model: values.model || null,
-        displacement: values.displacement || null,
-        year: values.year || null,
-        hp: values.hp || null,
-        stockHp: values.stockHp || null,
-        engineCode: values.engineCode || null,
-        cylindersCount: values.cylindersCount || null,
-        aspiration: values.aspiration || null,
-        fuel: values.fuel || null,
-        injectorsSize: values.injectorsSize || null,
-        coils: values.coils || null,
-      },
-    });
+    // await updateData(newTuneId!, {
+    //   tuneId: newTuneId!,
+    //   userId: currentUser!.$id,
+    //   updatedAt: Date.now(),
+    //   isPublished: true,
+    //   isListed: values.isListed,
+    //   readme,
+    //   make: values.make,
+    //   model: values.model,
+    //   displacement: values.displacement,
+    //   year: values.year,
+    //   hp: values.hp || null,
+    //   stockHp: values.stockHp || null,
+    //   engineCode: values.engineCode || null,
+    //   cylindersCount: values.cylindersCount || null,
+    //   aspiration: values.aspiration || null,
+    //   fuel: values.fuel || null,
+    //   injectorsSize: values.injectorsSize || null,
+    //   coils: values.coils || null,
     setIsLoading(false);
     setIsPublished(true);
   };
@@ -230,18 +227,22 @@ const UploadPage = () => {
     tune[(options.file as UploadFile).uid] = path;
 
     upload(path, options, () => {
-      // TODO:
-      // this is `create` for firebase
       // initialize data
-      updateData(newTuneId!, {
-        id: newTuneId!,
-        userUid: currentUser!.$id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+      createTune({
+        tuneId: newTuneId!,
+        userId: currentUser!.$id,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
         isPublished: false,
         isListed: true,
-        details: {},
-        tuneFile: path,
+        tuneFileId: 'testId',
+        logFileIds: [],
+        toothLogFileIds: [],
+        readme: '',
+        make: '',
+        model: '',
+        displacement: 0,
+        year: 2000,
       });
     }, async (file) => {
       const { result, message } = await validateSize(file);
@@ -490,12 +491,12 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="make" rules={requiredRules}>
-            <Input addonBefore="Make"/>
+            <Input addonBefore="Make" />
           </Item>
         </Col>
         <Col {...colProps}>
           <Item name="model" rules={requiredRules}>
-            <Input addonBefore="Model"/>
+            <Input addonBefore="Model" />
           </Item>
         </Col>
       </Row>
@@ -526,7 +527,7 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="engineCode">
-            <Input addonBefore="Engine code"/>
+            <Input addonBefore="Engine code" />
           </Item>
         </Col>
         <Col {...colProps}>
