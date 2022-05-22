@@ -34,7 +34,7 @@ import { passwordRules } from '../../utils/password';
 
 const { Item } = Form;
 
-const MAX_LOGS = 10;
+const MAX_LIST_SIZE = 10;
 
 const parseLogEvent = (raw: string) => {
   const split = raw.split('.');
@@ -75,7 +75,7 @@ const Profile = () => {
   };
 
   const fetchLogs = useCallback(async () => getLogs()
-    .then((list) => setLogs(list.logs.slice(0, MAX_LOGS).map((log) => [
+    .then((list) => setLogs(list.logs.slice(0, MAX_LIST_SIZE).map((log) => [
       new Date(log.time * 1000).toLocaleString(),
       parseLogEvent(log.event),
       log.clientName,
@@ -115,7 +115,7 @@ const Profile = () => {
   useEffect(() => {
     if (currentUser) {
       getSessions()
-        .then((list) => setSessions(list.sessions.map((ses) => [
+        .then((list) => setSessions(list.sessions.slice(0, MAX_LIST_SIZE).map((ses) => [
           ses.clientName,
           ses.osName,
           ses.deviceName,
