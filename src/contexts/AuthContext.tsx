@@ -8,6 +8,7 @@ import {
 } from 'react';
 import appwrite from '../appwrite';
 import Loader from '../components/Loader';
+// TODO: remove firebase
 import { auth } from '../firebase';
 import { Routes } from '../routes';
 import {

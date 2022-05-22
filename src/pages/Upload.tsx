@@ -109,7 +109,7 @@ const UploadPage = () => {
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
   const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
   const hasNavigatorShare = navigator.share !== undefined;
-  const { currentUser, refreshToken } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
   const { updateData } = useDb();
@@ -230,6 +230,7 @@ const UploadPage = () => {
     tune[(options.file as UploadFile).uid] = path;
 
     upload(path, options, () => {
+      // TODO:
       // this is `create` for firebase
       // initialize data
       updateData(newTuneId!, {
@@ -412,7 +413,6 @@ const UploadPage = () => {
     }
 
     try {
-      await refreshToken();
       if (!currentUser.emailVerification) {
         emailNotVerified();
         navigate(Routes.LOGIN);
@@ -429,11 +429,11 @@ const UploadPage = () => {
     const tuneId = nanoidCustom();
     setNewTuneId(tuneId);
     console.info('New tuneId:', tuneId);
-  }, [currentUser, navigate, refreshToken]);
+  }, [currentUser, navigate]);
 
   useEffect(() => {
     prepareData();
-  }, [currentUser, prepareData, refreshToken]);
+  }, [currentUser, prepareData]);
 
   const uploadButton = (
     <Space direction="vertical">
