@@ -514,12 +514,12 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="hp">
-            <InputNumber addonBefore="HP" style={{ width: '100%' }} min={0} />
+            <InputNumber addonBefore="HP" style={{ width: '100%' }} min={0} max={100_000} />
           </Item>
         </Col>
         <Col {...colProps}>
           <Item name="stockHp">
-            <InputNumber addonBefore="Stock HP" style={{ width: '100%' }} min={0} />
+            <InputNumber addonBefore="Stock HP" style={{ width: '100%' }} min={0} max={100_000} />
           </Item>
         </Col>
       </Row>
@@ -531,7 +531,7 @@ const UploadPage = () => {
         </Col>
         <Col {...colProps}>
           <Item name="cylindersCount">
-            <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} />
+            <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} max={16} />
           </Item>
         </Col>
       </Row>
@@ -554,7 +554,7 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="injectorsSize">
-            <InputNumber addonBefore="Injectors size" addonAfter="cc" min={0} />
+            <InputNumber addonBefore="Injectors size" addonAfter="cc" min={0} max={100_000} />
           </Item>
         </Col>
         <Col {...colProps}>
