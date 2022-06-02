@@ -21,6 +21,8 @@ export interface TuneDbData {
   updatedAt: number;
   isPublished: boolean;
   isListed: boolean;
+  firmwareVersion: string;
+  board: string;
   tuneFileId: string | null;
   logFileIds: string[];
   toothLogFileIds: string[];
