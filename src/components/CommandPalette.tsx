@@ -39,7 +39,7 @@ import {
   Config as ConfigType,
   Tune as TuneType,
   Menus as MenusType,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -78,6 +78,7 @@ interface CommandPaletteProps {
   config: ConfigType;
   tune: TuneType;
   navigation: NavigationState;
+  // eslint-disable-next-line react/no-unused-prop-types
   children?: ReactNode;
 };
 

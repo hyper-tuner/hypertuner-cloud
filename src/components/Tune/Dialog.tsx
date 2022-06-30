@@ -25,7 +25,7 @@ import {
   ScalarConstant as ScalarConstantType,
   ConstantTypes,
   Tune as TuneType,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 import {
   AppState,
   UIState,

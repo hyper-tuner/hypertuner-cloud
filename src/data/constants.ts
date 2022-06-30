@@ -1,7 +1,7 @@
 import {
   ConstantTypes,
   ScalarConstant,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 
 // eslint-disable-next-line import/prefer-default-export
 export const divider: ScalarConstant = {

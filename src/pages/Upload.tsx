@@ -30,7 +30,7 @@ import {
   FileTextOutlined,
 } from '@ant-design/icons';
 import * as Sentry from '@sentry/browser';
-import { INI } from '@speedy-tuner/ini';
+import { INI } from '@hyper-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import {

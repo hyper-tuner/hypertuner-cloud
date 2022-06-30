@@ -4,7 +4,7 @@ import {
   Page as ConfigPageType,
   SimpleConstant as SimpleConstantType,
   TuneConstants as TuneConstantsType,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 
 export const isExpression = (val: any) => `${val}`.startsWith('{') && `${val}`.endsWith('}');
 

@@ -18,7 +18,7 @@ import {
   Config as ConfigType,
   Menus as MenusType,
   Tune as TuneType,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 import store from '../../store';
 import Icon from '../SideBar/Icon';
 import { Routes } from '../../routes';
