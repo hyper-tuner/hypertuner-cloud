@@ -56,7 +56,7 @@ const StatusBar = ({ tune }: { tune: TuneState }) => (
       </Col>
       <Col span={4} style={{ textAlign: 'right' }}>
         <a
-          href="https://github.com/speedy-tuner/speedy-tuner-cloud"
+          href="https://github.com/hyper-tuner/hyper-tuner-cloud"
           target="__blank"
           rel="noopener noreferrer"
         >

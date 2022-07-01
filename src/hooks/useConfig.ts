@@ -6,7 +6,7 @@ import {
   OutputChannel,
   SimpleConstant,
   DatalogEntry,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 
 const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => {
   const foundPage = config

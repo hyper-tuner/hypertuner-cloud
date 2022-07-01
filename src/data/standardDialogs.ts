@@ -1,4 +1,4 @@
-import { Dialogs as DialogsType } from '@speedy-tuner/types';
+import { Dialogs as DialogsType } from '@hyper-tuner/types';
 
 const standardDialogs: DialogsType = {
   std_injection: {

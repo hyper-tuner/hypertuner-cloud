@@ -30,7 +30,7 @@ import {
   Logs as LogsType,
   DatalogEntry,
   Tune as TuneType,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from '../workers/mlgParser?worker';
 import { loadLogs } from '../utils/api';

@@ -2,7 +2,7 @@ import {
   Config,
   Logs,
   TuneWithDetails,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 import { TuneDbData } from './dbData';
 
 export interface ConfigState extends Config {}

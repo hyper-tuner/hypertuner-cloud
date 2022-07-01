@@ -1,7 +1,7 @@
 {
-  "short_name": "SpeedyTuner",
-  "name": "SpeedyTuner Cloud",
-  "description": "SpeedyTuner Cloud - Share your Speeduino tune and logs",
+  "short_name": "HyperTuner",
+  "name": "HyperTuner Cloud",
+  "description": "HyperTuner Cloud - Share your tunes and logs",
   "icons": [
     {
       "src": "/icons/icon.ico",

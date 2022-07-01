@@ -1,4 +1,4 @@
-import { TuneWithDetails } from '@speedy-tuner/types';
+import { TuneWithDetails } from '@hyper-tuner/types';
 
 class TuneParser {
   private isTuneValid = false;

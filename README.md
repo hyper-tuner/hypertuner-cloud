@@ -1,35 +1,44 @@
-# SpeedyTuner Cloud
+<p align="center">
+  <img src="/public/icons/icon.png" alt="HyperTuner" width="100">
+</p>
 
-![master](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master)
-[![CodeQL](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/speedy-tuner/speedy-tuner-cloud/actions/workflows/codeql-analysis.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability)](https://codeclimate.com/github/speedy-tuner/speedy-tuner-cloud/maintainability)
-![License](https://img.shields.io/github/license/speedy-tuner/speedy-tuner-cloud)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fspeedy-tuner%2Fspeedy-tuner-cloud.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fspeedy-tuner%2Fspeedy-tuner-cloud?ref=badge_shield)
+<h1 align="center">HyperTuner Cloud</h1>
 
-Share your [Speeduino](https://speeduino.com/) tune and logs.
+<div align="center">
+  <p><a href="https://hypertuner.cloud"><strong>hypertuner.cloud</strong></a></p>
+  <p><sub>Best way to share your tunes and logs</sub></p>
+</div>
 
-## 🚧 Work in progress 🚧
+<br/>
 
-## [https://speedytuner.cloud](https://speedytuner.cloud)
+<div align="center">
+  <p>
+    <img alt="GitHub lint" src="https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master">
+    <img alt="GitHub Code Analysis" src="https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg">
+    <a href="https://codeclimate.com/github/hyper-tuner/hyper-tuner-cloud/maintainability">
+      <img alt="Maintainability" src="https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability">
+    </a>
+    <img alt="License" src="https://img.shields.io/github/license/hyper-tuner/hyper-tuner-cloud">
+  </p>
+</div>
 
-![Screenshot VE Table](https://speedytuner.cloud/img/screen1.png)
-![Screenshot Logs](https://speedytuner.cloud/img/screen2.png)
+<div align="center"><p>🚧 Work in progress 🚧</p></div>
 
-## ECU firmware
+<br/>
 
-- Documentation: [wiki.speeduino.com](https://wiki.speeduino.com/)
+![Screenshot VE Table](/public/img/screen1.png)
+
+<br/>
+
+![Screenshot Logs](/public/img/screen2.png)
+
+## Supported ECUs
+
+### Speeduino
+
 - Source code: [noisymime/speeduino](https://github.com/noisymime/speeduino)
-
-## Contributing 🤝
-
-There are many ways in which you can participate in the project and every bit of help is greatly appreciated.
-
-- 👋 Say Hi and start a conversation over at [Discussions](https://github.com/speedy-tuner/speedy-tuner-cloud/discussions)
-- 🐞 [Submit bugs and feature requests](https://github.com/speedy-tuner/speedy-tuner-cloud/issues)
-- 🧪 Test on different platforms, hardware and Speeduino firmware
-- 👓 Review source code
-- ⌨️ Write tests and refactor code according to best practices
+- Documentation: [wiki.speeduino.com](https://wiki.speeduino.com/)
 
 ## Development
 
-Before you begin please see [Development guide](https://github.com/speedy-tuner/speedy-tuner-cloud/blob/master/DEVELOPMENT.md).
+Before you begin please see [Development guide](https://github.com/hyper-tuner/hyper-tuner-cloud/blob/master/DEVELOPMENT.md).

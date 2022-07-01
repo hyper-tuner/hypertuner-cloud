@@ -1,6 +1,6 @@
 {
-  "name": "speedy-tuner-cloud",
-  "description": "SpeedyTuner Cloud - Share your Speeduino tune and logs",
+  "name": "hyper-tuner-cloud",
+  "description": "HyperTuner Cloud - Share your tunes and logs",
   "version": "1.0.0",
   "author": "Piotr Rogowski <piotr.rogowski0@gmail.com>",
   "private": true,
@@ -8,7 +8,7 @@
   "homepage": "./",
   "repository": {
     "type": "git",
-    "url": "https://github.com/speedy-tuner/speedy-tuner-cloud"
+    "url": "https://github.com/hyper-tuner/hyper-tuner-cloud"
   },
   "scripts": {
     "start": "vite",
@@ -21,8 +21,8 @@
     "@reduxjs/toolkit": "^1.7.2",
     "@sentry/react": "^6.18.0",
     "@sentry/tracing": "^6.18.0",
-    "@speedy-tuner/ini": "^0.3.0",
-    "@speedy-tuner/types": "^0.3.0",
+    "@hyper-tuner/ini": "^0.3.0",
+    "@hyper-tuner/types": "^0.3.0",
     "antd": "^4.18.8",
     "appwrite": "^7.0.0",
     "firebase": "^9.6.7",
@@ -41,7 +41,7 @@
     "vite": "^2.8.4"
   },
   "devDependencies": {
-    "@speedy-tuner/eslint-config": "^0.1.5",
+    "@hyper-tuner/eslint-config": "^0.1.5",
     "@types/node": "^17.0.19",
     "@types/pako": "^2.0.0",
     "@types/react": "^18.0.3",

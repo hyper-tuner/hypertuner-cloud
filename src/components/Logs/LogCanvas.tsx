@@ -3,7 +3,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Logs } from '@speedy-tuner/types';
+import { Logs } from '@hyper-tuner/types';
 import {
   Grid,
   Space,

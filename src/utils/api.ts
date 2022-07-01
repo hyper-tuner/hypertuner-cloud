@@ -1,4 +1,4 @@
-import { INI } from '@speedy-tuner/ini';
+import { INI } from '@hyper-tuner/ini';
 import { notification } from 'antd';
 import store from '../store';
 import stdDialogs from '../data/standardDialogs';

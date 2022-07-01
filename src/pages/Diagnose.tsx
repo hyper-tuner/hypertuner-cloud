@@ -25,7 +25,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
   Config,
   Logs,
-} from '@speedy-tuner/types';
+} from '@hyper-tuner/types';
 import {
   AppState,
   UIState,
