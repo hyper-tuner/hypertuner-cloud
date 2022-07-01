@@ -20,7 +20,7 @@ cp .env .env.local
 
 ### Authenticate to GitHub Packages
 
-Project uses shared packages (`@speedy-tuner/...`).
+Project uses shared packages (`@hyper-tuner/...`).
 
 They are hosted using `GitHub Packages`, to install them you need to [authenticate to GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-to-github-packages) first.
 
