@@ -24,11 +24,11 @@
 
 <br/>
 
-![Screenshot VE Table](https://hypertuner.cloud/img/screen1.png)
+![Screenshot VE Table](/public/img/screen1.png)
 
 <br/>
 
-![Screenshot Logs](https://hypertuner.cloud/img/screen2.png)
+![Screenshot Logs](/public/img/screen2.png)
 
 ## Supported ECUs
 
