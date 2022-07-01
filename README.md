@@ -1,15 +1,33 @@
-# HyperTuner Cloud
+<p align="center">
+  <img src="/public/icons/icon.png" alt="HyperTuner" width="100">
+</p>
 
-![master](https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master)
-[![CodeQL](https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/codeql-analysis.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability)](https://codeclimate.com/github/hyper-tuner/hyper-tuner-cloud/maintainability)
-![License](https://img.shields.io/github/license/hyper-tuner/hyper-tuner-cloud)
+<h1 align="center">HyperTuner Cloud</h1>
 
-Share your tunes and logs.
+<div align="center">
+  <p><a href="https://hypertuner.cloud"><strong>hypertuner.cloud</strong></a></p>
+  <p><sub>Best way to share your tunes and logs</sub></p>
+</div>
 
-## [https://hypertuner.cloud](https://hypertuner.cloud)
+<br/>
+
+<div align="center">
+  <p>
+    <img alt="GitHub lint" src="https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master">
+    <img alt="GitHub Code Analysis" src="https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg">
+    <a href="https://codeclimate.com/github/hyper-tuner/hyper-tuner-cloud/maintainability">
+      <img alt="Maintainability" src="https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability">
+    </a>
+    <img alt="License" src="https://img.shields.io/github/license/hyper-tuner/hyper-tuner-cloud">
+  </p>
+</div>
+
+<br/>
 
 ![Screenshot VE Table](https://hypertuner.cloud/img/screen1.png)
+
+<br/>
+
 ![Screenshot Logs](https://hypertuner.cloud/img/screen2.png)
 
 ## Supported ECUs
