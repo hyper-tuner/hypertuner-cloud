@@ -43,19 +43,3 @@ npm install
 # run development server
 npm start
 ```
-
-## Firebase
-
-### Storage
-
-Authenticate:
-
-```bash
-gcloud auth login
-```
-
-Set up CORS:
-
-```bash
-gsutil cors set firebase/cors.json gs://<YOUR-BUCKET>
-```
