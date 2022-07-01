@@ -15,13 +15,11 @@ export interface TuneDataDetails {
 }
 
 export interface TuneDbData {
-  tuneId: string,
   userId: string;
-  createdAt: number;
-  updatedAt: number;
+  tuneId: string;
+  signature: string;
   isPublished: boolean;
   isListed: boolean;
-  firmwareVersion: string;
   board: string;
   tuneFileId: string | null;
   logFileIds: string[];
@@ -40,6 +38,7 @@ export interface TuneDbData {
   fuel?: string | null;
   injectorsSize?: number | null;
   coils?: string | null;
+  compression?: number | null;
 }
 
 export interface UsersBucket {

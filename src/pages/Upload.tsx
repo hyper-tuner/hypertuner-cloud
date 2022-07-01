@@ -232,10 +232,9 @@ const UploadPage = () => {
       console.log(fileCreated);
       // initialize data
       createTune({
-        tuneId: newTuneId!,
         userId: currentUser!.$id,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
+        tuneId: newTuneId!,
+        signature: 'speeduino-123',
         isPublished: false,
         isListed: true,
         tuneFileId: fileCreated.$id,
@@ -246,6 +245,7 @@ const UploadPage = () => {
         model: '',
         displacement: 0,
         year: 2000,
+        compression: 10.05,
       });
     }, async (file) => {
       const { result, message } = await validateSize(file);
