@@ -6,7 +6,7 @@
 
 <div align="center">
   <p><a href="https://hypertuner.cloud"><strong>hypertuner.cloud</strong></a></p>
-  <p><sub>Best way to share your tunes and logs</sub></p>
+  <p><sub>The best way to share your tunes and logs</sub></p>
 </div>
 
 <br/>
