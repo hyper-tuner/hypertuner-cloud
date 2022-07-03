@@ -20,7 +20,6 @@ export interface TuneDbData {
   signature: string;
   isPublished: boolean;
   isListed: boolean;
-  board: string;
   tuneFileId: string | null;
   logFileIds: string[];
   toothLogFileIds: string[];
