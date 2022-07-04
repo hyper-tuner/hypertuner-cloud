@@ -25,19 +25,19 @@ export interface TuneDbData {
   toothLogFileIds?: string[];
   customIniFileId?: string | null;
   vehicleName: string | null;
-  displacement: number | null;
-  cylindersCount: number | null;
   engineMake: string | null;
   engineCode: string | null;
-  aspiration: 'na' | 'turbocharged' | 'supercharged';
-  readme: string | null;
+  displacement: number | null;
+  cylindersCount: number | null;
   compression?: number | null;
-  year?: number | null;
-  hp?: number | null;
-  stockHp?: number | null;
+  aspiration: 'na' | 'turbocharged' | 'supercharged';
   fuel?: string | null;
   ignition?: string | null;
   injectorsSize?: number | null;
+  year?: number | null;
+  hp?: number | null;
+  stockHp?: number | null;
+  readme: string | null;
 }
 
 export interface UsersBucket {

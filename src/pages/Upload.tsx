@@ -38,10 +38,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import {
-  customAlphabet,
-  nanoid,
-} from 'nanoid';
+import { nanoid } from 'nanoid';
 import {
   emailNotVerified,
   restrictedPage,
@@ -491,26 +488,73 @@ const UploadPage = () => {
         <Space>Details</Space>
       </Divider>
       <Row {...rowProps}>
-        <Col {...colProps}>
-          <Item name="make" rules={requiredRules}>
-            <Input addonBefore="Make" />
-          </Item>
-        </Col>
-        <Col {...colProps}>
-          <Item name="model" rules={requiredRules}>
-            <Input addonBefore="Model" />
+        <Col span={24} sm={24}>
+          <Item name="vehicleName" rules={requiredRules}>
+            <Input addonBefore="Vehicle name" />
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
         <Col {...colProps}>
-          <Item name="year" rules={requiredRules}>
-            <InputNumber addonBefore="Year" style={{ width: '100%' }} min={1886} max={thisYear} />
+          <Item name="engineMake" rules={requiredRules}>
+            <Input addonBefore="Engine make" />
           </Item>
         </Col>
         <Col {...colProps}>
+          <Item name="engineCode" rules={requiredRules}>
+            <Input addonBefore="Engine code" />
+          </Item>
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col {...colProps}>
           <Item name="displacement" rules={requiredRules}>
-            <InputNumber addonBefore="Displacement" addonAfter="l" min={0} max={100} />
+            <InputNumber addonBefore="Displacement" addonAfter="L" min={0} max={100} />
+          </Item>
+        </Col>
+        <Col {...colProps}>
+          <Item name="cylindersCount">
+            <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} max={16} />
+          </Item>
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col {...colProps}>
+          <Item name="compression">
+            <InputNumber addonBefore="Compression" style={{ width: '100%' }} min={0} max={1000} step={0.1} addonAfter=":1" />
+          </Item>
+        </Col>
+        <Col {...colProps}>
+          <Item name="aspiration">
+            <Select placeholder="Aspiration" style={{ width: '100%' }}>
+              <Select.Option value="na">Naturally aspirated</Select.Option>
+              <Select.Option value="turbocharger">Turbocharged</Select.Option>
+              <Select.Option value="supercharger">Supercharged</Select.Option>
+            </Select>
+          </Item>
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col {...colProps}>
+          <Item name="fuel">
+            <Input addonBefore="Fuel" />
+          </Item>
+        </Col>
+        <Col {...colProps}>
+          <Item name="ignition">
+            <Input addonBefore="Ignition" />
+          </Item>
+        </Col>
+      </Row>
+      <Row {...rowProps}>
+        <Col {...colProps}>
+          <Item name="injectorsSize">
+            <InputNumber addonBefore="Injectors size" addonAfter="cc" min={0} max={100_000} />
+          </Item>
+        </Col>
+        <Col {...colProps}>
+          <Item name="year" rules={requiredRules}>
+            <InputNumber addonBefore="Year" style={{ width: '100%' }} min={1886} max={thisYear} />
           </Item>
         </Col>
       </Row>
@@ -523,46 +567,6 @@ const UploadPage = () => {
         <Col {...colProps}>
           <Item name="stockHp">
             <InputNumber addonBefore="Stock HP" style={{ width: '100%' }} min={0} max={100_000} />
-          </Item>
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col {...colProps}>
-          <Item name="engineCode">
-            <Input addonBefore="Engine code" />
-          </Item>
-        </Col>
-        <Col {...colProps}>
-          <Item name="cylindersCount">
-            <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} max={16} />
-          </Item>
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col {...colProps}>
-          <Item name="aspiration">
-            <Select placeholder="Aspiration" style={{ width: '100%' }}>
-              <Select.Option value="na">Naturally aspirated</Select.Option>
-              <Select.Option value="turbocharger">Turbocharged</Select.Option>
-              <Select.Option value="supercharger">Supercharged</Select.Option>
-            </Select>
-          </Item>
-        </Col>
-        <Col {...colProps}>
-          <Item name="fuel">
-            <Input addonBefore="Fuel" />
-          </Item>
-        </Col>
-      </Row>
-      <Row {...rowProps}>
-        <Col {...colProps}>
-          <Item name="injectorsSize">
-            <InputNumber addonBefore="Injectors size" addonAfter="cc" min={0} max={100_000} />
-          </Item>
-        </Col>
-        <Col {...colProps}>
-          <Item name="coils">
-            <Input addonBefore="Coils" />
           </Item>
         </Col>
       </Row>
