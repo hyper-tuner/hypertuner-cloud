@@ -20,24 +20,24 @@ export interface TuneDbData {
   signature: string;
   isPublished: boolean;
   isListed: boolean;
-  tuneFileId: string | null;
-  logFileIds: string[];
-  toothLogFileIds: string[];
+  tuneFileId: string;
+  logFileIds?: string[];
+  toothLogFileIds?: string[];
   customIniFileId?: string | null;
-  readme: string | null;
-  make: string | null;
-  model: string | null;
+  vehicleName: string | null;
   displacement: number | null;
-  year: number | null;
+  cylindersCount: number | null;
+  engineMake: string | null;
+  engineCode: string | null;
+  aspiration: 'na' | 'turbocharged' | 'supercharged';
+  readme: string | null;
+  compression?: number | null;
+  year?: number | null;
   hp?: number | null;
   stockHp?: number | null;
-  engineCode?: string | null;
-  cylindersCount?: number | null;
-  aspiration?: string | null;
   fuel?: string | null;
+  ignition?: string | null;
   injectorsSize?: number | null;
-  coils?: string | null;
-  compression?: number | null;
 }
 
 export interface UsersBucket {

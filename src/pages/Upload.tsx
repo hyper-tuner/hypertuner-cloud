@@ -88,7 +88,7 @@ const colProps = { span: 24, sm: 12 };
 const maxFileSizeMB = 50;
 const descriptionEditorHeight = 260;
 const thisYear = (new Date()).getFullYear();
-const nanoidCustom = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 10);
+const generateTuneId = () => nanoid(10);
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
@@ -238,14 +238,13 @@ const UploadPage = () => {
         isPublished: false,
         isListed: true,
         tuneFileId: fileCreated.$id,
-        logFileIds: [],
-        toothLogFileIds: [],
-        readme: '',
-        make: '',
-        model: '',
+        vehicleName: '',
         displacement: 0,
-        year: 2000,
-        compression: 10.05,
+        cylindersCount: 0,
+        engineMake: '',
+        engineCode: '',
+        aspiration: 'na',
+        readme: '',
       });
     }, async (file) => {
       const { result, message } = await validateSize(file);
@@ -430,7 +429,7 @@ const UploadPage = () => {
       genericError(error as Error);
     }
 
-    const tuneId = nanoidCustom();
+    const tuneId = generateTuneId();
     setNewTuneId(tuneId);
     console.info('New tuneId:', tuneId);
   }, [currentUser, navigate]);
@@ -596,7 +595,7 @@ const UploadPage = () => {
       <Divider>
         Visibility
       </Divider>
-      <Item name="isListed" label="Listed:" valuePropName="checked">
+      <Item name="isListed" label="Listed on Hub" valuePropName="checked">
         <Switch />
       </Item>
     </>
