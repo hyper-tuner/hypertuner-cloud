@@ -27,7 +27,7 @@ import {
 } from 'react-router';
 import { Timestamp } from 'firebase/firestore/lite';
 import useDb from '../hooks/useDb';
-import { TuneDbData } from '../types/dbData';
+import { TuneDbDataLegacy } from '../types/dbData';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 
@@ -53,7 +53,7 @@ const Hub = () => {
   const { md } = useBreakpoint();
   const { listTunes } = useDb();
   const navigate = useNavigate();
-  const [tunes, setTunes] = useState<TuneDbData[]>([]);
+  const [tunes, setTunes] = useState<TuneDbDataLegacy[]>([]);
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +68,7 @@ const Hub = () => {
 
   const loadData = useCallback(() => {
     listTunes().then((data) => {
-      const temp: TuneDbData[] = [];
+      const temp: TuneDbDataLegacy[] = [];
 
       data.forEach((tuneSnapshot) => {
         temp.push(tuneSnapshot.data());

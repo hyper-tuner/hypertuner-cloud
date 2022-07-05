@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore/lite';
 import { Models, Query } from 'appwrite';
 import appwrite from '../appwrite';
-import { TuneDbData, UsersBucket } from '../types/dbData';
+import { TuneDbDataLegacy, TuneDbData, UsersBucket } from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
 
 const TUNES_PATH = 'publicTunes';
@@ -26,7 +26,7 @@ const db = getFirestore();
 const useDb = () => {
   const getTuneData = async (tuneId: string) => {
     try {
-      const tune = (await getDoc(doc(db, TUNES_PATH, tuneId))).data() as TuneDbData;
+      const tune = (await getDoc(doc(db, TUNES_PATH, tuneId))).data() as TuneDbDataLegacy;
       const processed = {
         ...tune,
         createdAt: (tune?.createdAt as Timestamp)?.toDate().toISOString(),
@@ -125,7 +125,7 @@ const useDb = () => {
   return {
     updateData: (tuneId: string, data: TuneDbData): Promise<void> => updateData(tuneId, data),
     createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
-    getTune: (tuneId: string): Promise<TuneDbData> => getTuneData(tuneId),
+    getTune: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneData(tuneId),
     // listTunes: (): Promise<QuerySnapshot<TuneDbData>> => listTunesData(),
     listTunes: (): Promise<QuerySnapshot<any>> => listTunesData(),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),

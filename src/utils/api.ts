@@ -9,10 +9,10 @@ import {
   onProgress as onProgressType,
 } from './http';
 import TuneParser from './tune/TuneParser';
-import { TuneDbData } from '../types/dbData';
+import { TuneDbDataLegacy } from '../types/dbData';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
 
-export const loadTune = async (tuneData: TuneDbData | null) => {
+export const loadTune = async (tuneData: TuneDbDataLegacy | null) => {
   if (tuneData === null) {
     store.dispatch({ type: 'config/load', payload: null });
     store.dispatch({ type: 'tune/load', payload: null });
