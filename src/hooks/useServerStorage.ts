@@ -1,11 +1,9 @@
 import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
 import {
-  UploadTask,
   ref,
   getBytes,
   deleteObject,
-  uploadBytesResumable,
   getStorage,
 } from 'firebase/storage';
 import { Models } from 'appwrite';

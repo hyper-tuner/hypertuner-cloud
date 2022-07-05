@@ -109,7 +109,7 @@ const UploadPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
-  const { updateData, createTune, getBucketId } = useDb();
+  const { createTune, getBucketId } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
@@ -160,7 +160,7 @@ const UploadPage = () => {
   });
 
   const upload = async (bucketId: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
-    const { onError, onSuccess, onProgress, file } = options;
+    const { onError, file } = options;
 
     const validation = await validate(file as File);
     if (!validation.result) {
@@ -271,7 +271,7 @@ const UploadPage = () => {
     tune[uuid] = path;
     const newValues = { ...logFiles, ...tune };
     upload(path, options, () => {
-      updateData(newTuneId!, { logFiles: Object.values(newValues) });
+      // updateData(newTuneId!, { logFiles: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -312,7 +312,7 @@ const UploadPage = () => {
     tune[(options.file as UploadFile).uid] = path;
     const newValues = { ...toothLogFiles, ...tune };
     upload(path, options, () => {
-      updateData(newTuneId!, { toothLogFiles: Object.values(newValues) });
+      // updateData(newTuneId!, { toothLogFiles: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -338,7 +338,7 @@ const UploadPage = () => {
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
     upload(path, options, () => {
-      updateData(newTuneId!, { customIniFile: path });
+      // updateData(newTuneId!, { customIniFile: path });
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -371,7 +371,7 @@ const UploadPage = () => {
       removeFile(tuneFile[file.uid]);
     }
     setTuneFile(null);
-    updateData(newTuneId!, { tuneFile: null });
+    // updateData(newTuneId!, { tuneFile: null });
   };
 
   const removeLogFile = async (file: UploadFile) => {
@@ -382,7 +382,7 @@ const UploadPage = () => {
     const newValues = { ...logFiles };
     delete newValues[uid];
     setLogFiles(newValues);
-    updateData(newTuneId!, { logFiles: Object.values(newValues) });
+    // updateData(newTuneId!, { logFiles: Object.values(newValues) });
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
@@ -393,7 +393,7 @@ const UploadPage = () => {
     const newValues = { ...toothLogFiles };
     delete newValues[uid];
     setToothLogFiles(newValues);
-    updateData(newTuneId!, { toothLogFiles: Object.values(newValues) });
+    // updateData(newTuneId!, { toothLogFiles: Object.values(newValues) });
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
@@ -401,7 +401,7 @@ const UploadPage = () => {
       removeFile(customIniFile![file.uid]);
     }
     setCustomIniFile(null);
-    updateData(newTuneId!, { customIniFile: null });
+    // updateData(newTuneId!, { customIniFile: null });
   };
 
   const prepareData = useCallback(async () => {
@@ -708,7 +708,8 @@ const UploadPage = () => {
         >
           {tuneFile === null && uploadButton}
         </Upload>
-        {tuneFile && optionalSection}
+        {/* {tuneFile && optionalSection} */}
+        {optionalSection}
       </Form>
     </div>
   );

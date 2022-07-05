@@ -1,4 +1,3 @@
-import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
 import {
   Timestamp,
@@ -13,9 +12,16 @@ import {
   orderBy,
   getFirestore,
 } from 'firebase/firestore/lite';
-import { Models, Query } from 'appwrite';
+import {
+  Models,
+  Query,
+} from 'appwrite';
 import appwrite from '../appwrite';
-import { TuneDbDataLegacy, TuneDbData, UsersBucket } from '../types/dbData';
+import {
+  TuneDbDataLegacy,
+  TuneDbData,
+  UsersBucket,
+} from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
 
 const TUNES_PATH = 'publicTunes';
