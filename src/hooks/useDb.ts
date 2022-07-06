@@ -16,7 +16,7 @@ import {
   Models,
   Query,
 } from 'appwrite';
-import appwrite from '../appwrite';
+import { database } from '../appwrite';
 import {
   TuneDbDataLegacy,
   TuneDbData,
@@ -85,7 +85,7 @@ const useDb = () => {
 
   const createTune = async (data: TuneDbData) => {
     try {
-      const tune = await appwrite.database.createDocument(
+      const tune = await database.createDocument(
         COLLECTION_ID_TUNES,
         'unique()',
         data,
@@ -105,7 +105,7 @@ const useDb = () => {
 
   const getBucketId = async (userId: string) => {
     try {
-      const buckets = await appwrite.database.listDocuments(
+      const buckets = await database.listDocuments(
         COLLECTION_ID_USERS_BUCKETS,
         [
           Query.equal('userId', userId),

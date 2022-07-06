@@ -7,14 +7,14 @@ import {
   getStorage,
 } from 'firebase/storage';
 import { Models } from 'appwrite';
-import appwrite from '../appwrite';
+import { storage } from '../appwrite';
 
 const PUBLIC_PATH = 'public';
 const USERS_PATH = `${PUBLIC_PATH}/users`;
 const INI_PATH = `${PUBLIC_PATH}/ini`;
 export const CDN_URL = import.meta.env.VITE_CDN_URL;
 
-const storage = getStorage();
+const fireBaseStorage = getStorage();
 
 export type ServerFile = Models.File;
 
@@ -26,7 +26,7 @@ const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
     return Promise.resolve(response.arrayBuffer());
   }
 
-  return Promise.resolve(await getBytes(ref(storage, path)));
+  return Promise.resolve(await getBytes(ref(fireBaseStorage, path)));
 };
 
 const useServerStorage = () => {
@@ -75,7 +75,7 @@ const useServerStorage = () => {
 
   const removeFile = async (path: string) => {
     try {
-      await deleteObject(ref(storage, path));
+      await deleteObject(ref(fireBaseStorage, path));
 
       return Promise.resolve();
     } catch (error) {
@@ -97,7 +97,7 @@ const useServerStorage = () => {
 
   const uploadFile = async (userId: string, bucketId: string, file: File) => {
     try {
-      const createdFile = await appwrite.storage.createFile(
+      const createdFile = await storage.createFile(
         bucketId,
         'unique()',
         file,

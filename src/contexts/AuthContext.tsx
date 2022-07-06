@@ -6,7 +6,10 @@ import {
   useMemo,
   useState,
 } from 'react';
-import appwrite from '../appwrite';
+import {
+  account,
+  client,
+} from '../appwrite';
 import Loader from '../components/Loader';
 // TODO: remove firebase
 import { auth } from '../firebase';
@@ -131,9 +134,9 @@ const AuthProvider = (props: { children: ReactNode }) => {
     currentUser,
     signUp: async (email: string, password: string, username: string) => {
       try {
-        await appwrite.account.create('unique()', email, password, username);
-        await appwrite.account.createSession(email, password);
-        const user = await appwrite.account.get();
+        await account.create('unique()', email, password, username);
+        await account.createEmailSession(email, password);
+        const user = await account.get();
         setCurrentUser(user);
         return Promise.resolve(user);
       } catch (error) {
@@ -142,8 +145,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     login: async (email: string, password: string) => {
       try {
-        await appwrite.account.createSession(email, password);
-        const user = await appwrite.account.get();
+        await account.createEmailSession(email, password);
+        const user = await account.get();
         setCurrentUser(user);
         return Promise.resolve(user);
       } catch (error) {
@@ -152,7 +155,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     sendMagicLink: async (email: string) => {
       try {
-        await appwrite.account.createMagicURLSession('unique()', email, MAGIC_LINK_REDIRECT_URL);
+        await account.createMagicURLSession('unique()', email, MAGIC_LINK_REDIRECT_URL);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
@@ -160,8 +163,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     confirmMagicLink: async (userId: string, secret: string) => {
       try {
-        await appwrite.account.updateMagicURLSession(userId, secret);
-        const user = await appwrite.account.get();
+        await account.updateMagicURLSession(userId, secret);
+        const user = await account.get();
         setCurrentUser(user);
         return Promise.resolve(user);
       } catch (error) {
@@ -170,7 +173,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     sendEmailVerification: async () => {
       try {
-        await appwrite.account.createVerification(EMAIL_VERIFICATION_REDIRECT_URL);
+        await account.createVerification(EMAIL_VERIFICATION_REDIRECT_URL);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
@@ -178,8 +181,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     confirmEmailVerification: async (userId: string, secret: string) => {
       try {
-        await appwrite.account.updateVerification(userId, secret);
-        const user = await appwrite.account.get();
+        await account.updateVerification(userId, secret);
+        const user = await account.get();
         setCurrentUser(user);
         return Promise.resolve();
       } catch (error) {
@@ -188,7 +191,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     confirmResetPassword: async (userId: string, secret: string, password: string) => {
       try {
-        await appwrite.account.updateRecovery(userId, secret, password, password);
+        await account.updateRecovery(userId, secret, password, password);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
@@ -196,7 +199,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     logout: async () => {
       try {
-        await appwrite.account.deleteSession('current');
+        await account.deleteSession('current');
         setCurrentUser(null);
         return Promise.resolve();
       } catch (error) {
@@ -205,14 +208,14 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     initResetPassword: async (email: string) => {
       try {
-        await appwrite.account.createRecovery(email, RESET_PASSWORD_REDIRECT_URL);
+        await account.createRecovery(email, RESET_PASSWORD_REDIRECT_URL);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
       }
     },
     googleAuth: async () => {
-      appwrite.account.createOAuth2Session(
+      account.createOAuth2Session(
         'google',
         OAUTH_REDIRECT_URL,
         OAUTH_REDIRECT_URL,
@@ -220,7 +223,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
       );
     },
     githubAuth: async () => {
-      appwrite.account.createOAuth2Session(
+      account.createOAuth2Session(
         'github',
         OAUTH_REDIRECT_URL,
         OAUTH_REDIRECT_URL,
@@ -228,7 +231,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
       );
     },
     facebookAuth: async () => {
-      appwrite.account.createOAuth2Session(
+      account.createOAuth2Session(
         'facebook',
         OAUTH_REDIRECT_URL,
         OAUTH_REDIRECT_URL,
@@ -237,8 +240,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     updateUsername: async (username: string) => {
       try {
-        await appwrite.account.updateName(username);
-        const user = await appwrite.account.get();
+        await account.updateName(username);
+        const user = await account.get();
         setCurrentUser(user);
         return Promise.resolve();
       } catch (error) {
@@ -247,19 +250,19 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     updatePassword: async (password: string, oldPassword: string) => {
       try {
-        await appwrite.account.updatePassword(password, oldPassword);
+        await account.updatePassword(password, oldPassword);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
       }
     },
     refreshToken: () => auth.currentUser?.getIdToken(true),
-    getSessions: () => appwrite.account.getSessions(),
-    getLogs: () => appwrite.account.getLogs(),
+    getSessions: () => account.getSessions(),
+    getLogs: () => account.getLogs(),
   }), [currentUser]);
 
   useEffect(() => {
-    appwrite.account.get().then((user) => {
+    account.get().then((user) => {
       console.info('Logged as:', user.name || 'Unknown');
       setCurrentUser(user);
       setIsLoading(false);
@@ -267,7 +270,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
       console.info('User not logged in');
     }).finally(() => setIsLoading(false));
 
-    const unsubscribe = appwrite.subscribe('account', (event) => {
+    const unsubscribe = client.subscribe('account', (event) => {
       console.info('Account event', event);
     });
 
