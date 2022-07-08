@@ -24,7 +24,7 @@
     "@hyper-tuner/ini": "^0.3.0",
     "@hyper-tuner/types": "^0.3.0",
     "antd": "^4.18.8",
-    "firebase": "^9.6.7",
+    "firebase": "^9.9.0",
     "kbar": "^0.1.0-beta.34",
     "mlg-converter": "^0.5.1",
     "nanoid": "^3.3.1",
