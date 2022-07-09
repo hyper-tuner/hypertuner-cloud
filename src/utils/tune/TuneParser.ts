@@ -20,8 +20,14 @@ class TuneParser {
     const raw = (new TextDecoder()).decode(buffer);
     const xml = (new DOMParser()).parseFromString(raw, 'text/xml');
     const xmlPages = xml.getElementsByTagName('page');
-    const bibliography = xml.getElementsByTagName('bibliography')[0].attributes as any;
-    const versionInfo = xml.getElementsByTagName('versionInfo')[0].attributes as any;
+    const bibliography = xml.getElementsByTagName('bibliography')[0]?.attributes as any;
+    const versionInfo = xml.getElementsByTagName('versionInfo')[0]?.attributes as any;
+
+    if (!xmlPages || !bibliography || !versionInfo) {
+      this.isTuneValid = false;
+
+      return this;
+    }
 
     this.tune.details = {
       author: bibliography.author.value,
