@@ -54,7 +54,6 @@ export interface TuneDbData {
   hp?: number | null;
   stockHp?: number | null;
   readme: string | null;
-  stars?: number;
 }
 
 export interface UsersBucket {
