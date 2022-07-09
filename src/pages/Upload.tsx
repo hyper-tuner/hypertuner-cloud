@@ -159,8 +159,8 @@ const UploadPage = () => {
     message: `File should not be larger than ${maxFileSizeMB}MB!`,
   });
 
-  const upload = async (bucketId: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
-    const { onError, file } = options;
+  const upload = async (userId: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
+    const { onError, onSuccess, file } = options;
 
     const validation = await validate(file as File);
     if (!validation.result) {
@@ -168,6 +168,7 @@ const UploadPage = () => {
       const errorMessage = validation.message;
       notification.error({ message: errorName, description: errorMessage });
       onError!({ name: errorName, message: errorMessage });
+
       return false;
     }
 
@@ -175,23 +176,18 @@ const UploadPage = () => {
       const pako = await import('pako');
       const buffer = await (file as File).arrayBuffer();
       const compressed = pako.deflate(new Uint8Array(buffer));
-      const fileCreated: ServerFile = await uploadFile(currentUser!.$id, bucketId, new File([compressed], (file as File).name));
+      const bucketId = await getBucketId(userId);
+      const fileCreated: ServerFile = await uploadFile(userId, bucketId, new File([compressed], (file as File).name));
 
       done(fileCreated);
-      // uploadTask.on(
-      //   'state_changed',
-      //   (snap) => onProgress!({ percent: (snap.bytesTransferred / snap.totalBytes) * 100 }),
-      //   (err) => onError!(err),
-      //   () => {
-      //     onSuccess!(file);
-      //     if (done) done();
-      //   },
-      // );
+      onSuccess!(null);
     } catch (error) {
       Sentry.captureException(error);
       console.error('Upload error:', error);
       notification.error({ message: 'Upload error', description: (error as Error).message });
       onError!(error as Error);
+
+      return false;
     }
 
     return true;
@@ -224,10 +220,7 @@ const UploadPage = () => {
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
 
-    const bucketId = await getBucketId(currentUser!.$id);
-    upload(bucketId, options, (fileCreated: ServerFile) => {
-      console.log(fileCreated);
-      // initialize data
+    upload(currentUser!.$id, options, (fileCreated: ServerFile) => {
       createTune({
         userId: currentUser!.$id,
         tuneId: newTuneId!,
@@ -247,6 +240,7 @@ const UploadPage = () => {
       const { result, message } = await validateSize(file);
       if (!result) {
         setTuneFile(false);
+
         return { result, message };
       }
 
