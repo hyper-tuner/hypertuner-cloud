@@ -78,6 +78,7 @@ interface ValidationResult {
 }
 
 type ValidateFile = (file: File) => Promise<ValidationResult>;
+type UploadDone = (fileCreated: ServerFile, file: File) => void;
 
 const rowProps = { gutter: 10 };
 const colProps = { span: 24, sm: 12 };
@@ -159,7 +160,7 @@ const UploadPage = () => {
     message: `File should not be larger than ${maxFileSizeMB}MB!`,
   });
 
-  const upload = async (userId: string, options: UploadRequestOption, done: Function, validate: ValidateFile) => {
+  const upload = async (userId: string, options: UploadRequestOption, done: UploadDone, validate: ValidateFile) => {
     const { onError, onSuccess, file } = options;
 
     const validation = await validate(file as File);
@@ -179,7 +180,7 @@ const UploadPage = () => {
       const bucketId = await getBucketId(userId);
       const fileCreated: ServerFile = await uploadFile(userId, bucketId, new File([compressed], (file as File).name));
 
-      done(fileCreated);
+      done(fileCreated, file as File);
       onSuccess!(null);
     } catch (error) {
       Sentry.captureException(error);
@@ -220,11 +221,12 @@ const UploadPage = () => {
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
 
-    upload(currentUser!.$id, options, (fileCreated: ServerFile) => {
+    upload(currentUser!.$id, options, async (fileCreated: ServerFile, file: File) => {
+      const parsedTune = (new TuneParser()).parse(await file.arrayBuffer()).getTune();
       createTune({
         userId: currentUser!.$id,
         tuneId: newTuneId!,
-        signature: 'speeduino-123',
+        signature: parsedTune.details.signature,
         isPublished: false,
         isListed: true,
         tuneFileId: fileCreated.$id,

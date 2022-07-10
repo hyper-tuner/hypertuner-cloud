@@ -70,7 +70,7 @@ class TuneParser {
       this.isTuneValid = true;
     }
 
-    if (this.tune.details.signature.match(/^speeduino \d+$/) === null) {
+    if (this.isSignatureSupported()) {
       this.isTuneValid = false;
     }
 
@@ -83,6 +83,10 @@ class TuneParser {
 
   isValid(): boolean {
     return this.isTuneValid;
+  }
+
+  private isSignatureSupported(): boolean {
+    return this.tune.details.signature.match(/^speeduino \d+$/) === null;
   }
 }
 
