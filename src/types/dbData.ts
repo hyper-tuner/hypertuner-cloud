@@ -1,5 +1,9 @@
 import { Timestamp } from 'firebase/firestore/lite';
 
+type Partial<T> = {
+  [A in keyof T]?: T[A];
+};
+
 export interface TuneDataDetails {
   readme?: string | null;
   make?: string | null;
@@ -55,6 +59,8 @@ export interface TuneDbData {
   stockHp?: number | null;
   readme: string | null;
 }
+
+export type TuneDbDataPartial = Partial<TuneDbData>;
 
 export interface UsersBucket {
   userId: string;

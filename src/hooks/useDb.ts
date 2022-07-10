@@ -3,7 +3,6 @@ import {
   Timestamp,
   doc,
   getDoc,
-  setDoc,
   collection,
   where,
   query,
@@ -21,6 +20,7 @@ import {
   TuneDbDataLegacy,
   TuneDbData,
   UsersBucket,
+  TuneDbDataPartial,
 } from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
 
@@ -69,9 +69,9 @@ const useDb = () => {
     }
   };
 
-  const updateData = async (tuneId: string, data: TuneDbData) => {
+  const updateTune = async (documentId: string, data: TuneDbDataPartial) => {
     try {
-      await setDoc(doc(db, TUNES_PATH, tuneId), data, { merge: true });
+      await database.updateDocument(COLLECTION_ID_TUNES, documentId, data);
 
       return Promise.resolve();
     } catch (error) {
@@ -129,7 +129,7 @@ const useDb = () => {
   };
 
   return {
-    updateData: (tuneId: string, data: TuneDbData): Promise<void> => updateData(tuneId, data),
+    updateTune: (tuneId: string, data: TuneDbDataPartial): Promise<void> => updateTune(tuneId, data),
     createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
     getTune: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneData(tuneId),
     // listTunes: (): Promise<QuerySnapshot<TuneDbData>> => listTunesData(),
