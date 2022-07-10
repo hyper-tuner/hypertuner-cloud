@@ -11,6 +11,7 @@ export enum Routes {
   TUNE_DIAGNOSE = '/t/:tuneId/diagnose',
 
   UPLOAD = '/upload',
+  UPLOAD_WITH_TUNE_ID = '/upload/:tuneId',
 
   LOGIN = '/auth/login',
   LOGOUT = '/auth/logout',

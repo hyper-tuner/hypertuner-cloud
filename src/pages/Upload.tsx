@@ -35,6 +35,7 @@ import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import {
   generatePath,
+  useMatch,
   useNavigate,
 } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
@@ -96,6 +97,7 @@ const iniIcon = () => <FileTextOutlined />;
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const UploadPage = () => {
+  const routeMatch = useMatch(Routes.UPLOAD_WITH_TUNE_ID);
   const [newTuneId, setNewTuneId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>();
@@ -422,10 +424,16 @@ const UploadPage = () => {
       genericError(error as Error);
     }
 
-    const tuneId = generateTuneId();
-    setNewTuneId(tuneId);
-    console.info('New tuneId:', tuneId);
-  }, [currentUser, navigate]);
+    const currentTuneId = routeMatch?.params.tuneId;
+    if (currentTuneId) {
+      setNewTuneId(currentTuneId);
+      console.info('Using tuneId:', currentTuneId);
+    } else {
+      navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+        tuneId: generateTuneId(),
+      }), { replace: true });
+    }
+  }, [currentUser, navigate, routeMatch?.params.tuneId]);
 
   useEffect(() => {
     prepareData();
