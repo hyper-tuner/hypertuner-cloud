@@ -3,7 +3,6 @@ import * as Sentry from '@sentry/browser';
 import {
   ref,
   getBytes,
-  deleteObject,
   getStorage,
 } from 'firebase/storage';
 import { Models } from 'appwrite';
@@ -73,10 +72,9 @@ const useServerStorage = () => {
     }
   };
 
-  const removeFile = async (path: string) => {
+  const removeFile = async (bucketId: string, fileId: string) => {
     try {
-      await deleteObject(ref(fireBaseStorage, path));
-
+      await storage.deleteFile(bucketId, fileId);
       return Promise.resolve();
     } catch (error) {
       Sentry.captureException(error);
@@ -86,14 +84,6 @@ const useServerStorage = () => {
       return Promise.reject(error);
     }
   };
-
-  // const uploadFile = (path: string, file: File, data: Uint8Array) =>
-  //   uploadBytesResumable(ref(storage, path), data, {
-  //     customMetadata: {
-  //       name: file.name,
-  //       size: `${file.size}`,
-  //     },
-  //   });
 
   const uploadFile = async (userId: string, bucketId: string, file: File) => {
     try {
@@ -118,8 +108,7 @@ const useServerStorage = () => {
   return {
     getFile: (path: string): Promise<ArrayBuffer> => getFile(path),
     getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
-    removeFile: (path: string): Promise<void> => removeFile(path),
-    // uploadFile: (path: string, file: File, data: Uint8Array): UploadTask => uploadFile(path, file, data),
+    removeFile: (bucketId: string, fileId: string): Promise<void> => removeFile(bucketId, fileId),
     basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${USERS_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
     uploadFile: (userId: string, bucketId: string, file: File): Promise<ServerFile> => uploadFile(userId, bucketId, file),
   };

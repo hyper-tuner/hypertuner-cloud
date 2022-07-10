@@ -220,11 +220,10 @@ const UploadPage = () => {
   const uploadTune = async (options: UploadRequestOption) => {
     setShareUrl(buildFullUrl([tunePath(newTuneId!)]));
 
-    const { path } = (options.data as unknown as UploadFileData);
-    const tune: UploadedFile = {};
-    tune[(options.file as UploadFile).uid] = path;
-
     upload(currentUser!.$id, options, async (fileCreated: ServerFile, file: File) => {
+      const tune: UploadedFile = {};
+      tune[(options.file as UploadFile).uid] = fileCreated.$id;
+      setTuneFile(tune);
       const parsedTune = (new TuneParser()).parse(await file.arrayBuffer()).getTune();
       const document = await createTune({
         userId: currentUser!.$id,
@@ -245,20 +244,11 @@ const UploadPage = () => {
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
-        setTuneFile(false);
-
         return { result, message };
       }
 
-      const valid = (new TuneParser()).parse(await file.arrayBuffer()).isValid();
-      if (!valid) {
-        setTuneFile(false);
-      } else {
-        setTuneFile(tune);
-      }
-
       return {
-        result: valid,
+        result: (new TuneParser()).parse(await file.arrayBuffer()).isValid(),
         message: 'Tune file is not valid!',
       };
     });
@@ -368,7 +358,7 @@ const UploadPage = () => {
 
   const removeTuneFile = async (file: UploadFile) => {
     if (tuneFile) {
-      removeFile(tuneFile[file.uid]);
+      removeFile(await getBucketId(currentUser!.$id), tuneFile[file.uid]);
     }
     setTuneFile(null);
     updateTune(tuneDocumentId!, { tuneFileId: '' });
@@ -377,7 +367,7 @@ const UploadPage = () => {
   const removeLogFile = async (file: UploadFile) => {
     const { uid } = file;
     if (logFiles[file.uid]) {
-      removeFile(logFiles[file.uid]);
+      // removeFile(logFiles[file.uid]);
     }
     const newValues = { ...logFiles };
     delete newValues[uid];
@@ -388,7 +378,7 @@ const UploadPage = () => {
   const removeToothLogFile = async (file: UploadFile) => {
     const { uid } = file;
     if (toothLogFiles[file.uid]) {
-      removeFile(toothLogFiles[file.uid]);
+      // removeFile(toothLogFiles[file.uid]);
     }
     const newValues = { ...toothLogFiles };
     delete newValues[uid];
@@ -398,7 +388,7 @@ const UploadPage = () => {
 
   const removeCustomIniFile = async (file: UploadFile) => {
     if (customIniFile) {
-      removeFile(customIniFile![file.uid]);
+      // removeFile(customIniFile![file.uid]);
     }
     setCustomIniFile(null);
     // updateTune(tuneDocumentId!, { customIniFile: null });
