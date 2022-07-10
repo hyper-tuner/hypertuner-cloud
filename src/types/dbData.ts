@@ -1,3 +1,4 @@
+import { Models } from 'appwrite';
 import { Timestamp } from 'firebase/firestore/lite';
 
 type Partial<T> = {
@@ -59,6 +60,8 @@ export interface TuneDbData {
   stockHp?: number | null;
   readme: string | null;
 }
+
+export interface TuneDbDocument extends TuneDbData, Models.Document {}
 
 export type TuneDbDataPartial = Partial<TuneDbData>;
 

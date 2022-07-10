@@ -95,6 +95,7 @@ const toothLogIcon = () => <SettingOutlined />;
 const iniIcon = () => <FileTextOutlined />;
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
+const tuneParser = new TuneParser();
 
 const UploadPage = () => {
   const routeMatch = useMatch(Routes.UPLOAD_WITH_TUNE_ID);
@@ -113,7 +114,7 @@ const UploadPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, basePathForFile } = useServerStorage();
-  const { createTune, getBucketId, updateTune } = useDb();
+  const { createTune, getBucketId, updateTune, findUnpublishedTune } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
@@ -224,11 +225,10 @@ const UploadPage = () => {
       const tune: UploadedFile = {};
       tune[(options.file as UploadFile).uid] = fileCreated.$id;
       setTuneFile(tune);
-      const parsedTune = (new TuneParser()).parse(await file.arrayBuffer()).getTune();
       const document = await createTune({
         userId: currentUser!.$id,
         tuneId: newTuneId!,
-        signature: parsedTune.details.signature,
+        signature: tuneParser.parse(await file.arrayBuffer()).getTune().details.signature,
         isPublished: false,
         isListed: true,
         tuneFileId: fileCreated.$id,
@@ -248,7 +248,7 @@ const UploadPage = () => {
       }
 
       return {
-        result: (new TuneParser()).parse(await file.arrayBuffer()).isValid(),
+        result: tuneParser.parse(await file.arrayBuffer()).isValid(),
         message: 'Tune file is not valid!',
       };
     });
@@ -418,9 +418,15 @@ const UploadPage = () => {
 
     const currentTuneId = routeMatch?.params.tuneId;
     if (currentTuneId) {
-      // TODO: handle update later when reusing tuneId
       setNewTuneId(currentTuneId);
       console.info('Using tuneId:', currentTuneId);
+
+      const existingTune = await findUnpublishedTune(currentTuneId);
+      if (existingTune) {
+        const tune: UploadedFile = {};
+        tune[`rc-upload-${existingTune.tuneFileId}`] = existingTune.tuneFileId;
+        setTuneFile(tune);
+      }
     } else {
       navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
         tuneId: generateTuneId(),
@@ -705,8 +711,7 @@ const UploadPage = () => {
         >
           {tuneFile === null && uploadButton}
         </Upload>
-        {/* {tuneFile && optionalSection} */}
-        {optionalSection}
+        {tuneFile && optionalSection}
       </Form>
     </div>
   );

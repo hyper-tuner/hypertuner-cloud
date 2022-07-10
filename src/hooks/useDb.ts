@@ -21,6 +21,7 @@ import {
   TuneDbData,
   UsersBucket,
   TuneDbDataPartial,
+  TuneDbDocument,
 } from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
 
@@ -103,6 +104,27 @@ const useDb = () => {
     }
   };
 
+  const findUnpublishedTune = async (tuneId: string) => {
+    try {
+      const tune = await database.listDocuments(
+        COLLECTION_ID_TUNES,
+        [
+          Query.equal('tuneId', tuneId),
+          Query.equal('isPublished', false),
+        ],
+        1,
+      );
+
+      return Promise.resolve(tune.total > 0 ? tune.documents[0] as unknown as TuneDbDocument : null);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      databaseGenericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
   const getBucketId = async (userId: string) => {
     try {
       const buckets = await database.listDocuments(
@@ -132,6 +154,7 @@ const useDb = () => {
     updateTune: (tuneId: string, data: TuneDbDataPartial): Promise<void> => updateTune(tuneId, data),
     createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
     getTune: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneData(tuneId),
+    findUnpublishedTune: (tuneId: string): Promise<TuneDbDocument | null> => findUnpublishedTune(tuneId),
     // listTunes: (): Promise<QuerySnapshot<TuneDbData>> => listTunesData(),
     listTunes: (): Promise<QuerySnapshot<any>> => listTunesData(),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),
