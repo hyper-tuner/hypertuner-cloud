@@ -32,7 +32,7 @@ import {
 import * as Sentry from '@sentry/browser';
 import { INI } from '@hyper-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
-import { UploadFile } from 'antd/lib/upload/interface';
+import { UploadFile, UploadProps } from 'antd/lib/upload/interface';
 import {
   generatePath,
   useMatch,
@@ -99,6 +99,7 @@ const tuneParser = new TuneParser();
 
 const UploadPage = () => {
   const routeMatch = useMatch(Routes.UPLOAD_WITH_TUNE_ID);
+
   const [newTuneId, setNewTuneId] = useState<string>();
   const [tuneDocumentId, setTuneDocumentId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
@@ -107,16 +108,18 @@ const UploadPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [tuneFile, setTuneFile] = useState<UploadedFile | null | false>(null);
+  const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [logFiles, setLogFiles] = useState<UploadedFile>({});
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
   const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
+  const [readme, setReadme] = useState('# My Tune\n\ndescription');
+
   const hasNavigatorShare = navigator.share !== undefined;
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const { removeFile, uploadFile, basePathForFile } = useServerStorage();
+  const { removeFile, uploadFile, basePathForFile, getFile } = useServerStorage();
   const { createTune, getBucketId, updateTune, findUnpublishedTune } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
-  const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
   const noop = () => { };
 
@@ -357,6 +360,7 @@ const UploadPage = () => {
   };
 
   const removeTuneFile = async (file: UploadFile) => {
+    console.log(file);
     if (tuneFile) {
       removeFile(await getBucketId(currentUser!.$id), tuneFile[file.uid]);
     }
@@ -422,10 +426,14 @@ const UploadPage = () => {
       console.info('Using tuneId:', currentTuneId);
 
       const existingTune = await findUnpublishedTune(currentTuneId);
-      if (existingTune) {
-        const tune: UploadedFile = {};
-        tune[`rc-upload-${existingTune.tuneFileId}`] = existingTune.tuneFileId;
-        setTuneFile(tune);
+      if (existingTune && existingTune.tuneFileId) {
+        const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
+
+        setDefaultTuneFileList([{
+          uid: file.$id,
+          name: file.name,
+          status: 'done',
+        }]);
       }
     } else {
       navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
@@ -700,6 +708,7 @@ const UploadPage = () => {
           </Space>
         </Divider>
         <Upload
+          key={defaultTuneFileList[0]?.uid}
           listType="picture-card"
           customRequest={uploadTune}
           data={tuneFileData}
@@ -707,11 +716,12 @@ const UploadPage = () => {
           iconRender={tuneIcon}
           disabled={isPublished}
           onPreview={noop}
+          defaultFileList={defaultTuneFileList}
           accept=".msq"
         >
           {tuneFile === null && uploadButton}
         </Upload>
-        {tuneFile && optionalSection}
+        {(tuneFile || defaultTuneFileList.length > 0) && optionalSection}
       </Form>
     </div>
   );

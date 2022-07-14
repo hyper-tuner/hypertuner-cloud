@@ -29,7 +29,7 @@ const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
 };
 
 const useServerStorage = () => {
-  const getFile = async (path: string) => {
+  const getFileLegacy = async (path: string) => {
 
     try {
       return fetchFromServer(path);
@@ -105,8 +105,23 @@ const useServerStorage = () => {
     }
   };
 
+  const getFile = async (id: string, bucketId: string) => {
+    try {
+      const file = await storage.getFile(bucketId, id);
+
+      return Promise.resolve(file);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      genericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
   return {
-    getFile: (path: string): Promise<ArrayBuffer> => getFile(path),
+    getFileLegacy: (path: string): Promise<ArrayBuffer> => getFileLegacy(path),
+    getFile: (id: string, bucketId: string): Promise<Models.File> => getFile(id, bucketId),
     getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
     removeFile: (bucketId: string, fileId: string): Promise<void> => removeFile(bucketId, fileId),
     basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${USERS_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,

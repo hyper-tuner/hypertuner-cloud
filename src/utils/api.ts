@@ -21,9 +21,9 @@ export const loadTune = async (tuneData: TuneDbDataLegacy | null) => {
 
   const pako = await import('pako');
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { getFile, getINIFile } = useServerStorage();
+  const { getFileLegacy, getINIFile } = useServerStorage();
   const started = new Date();
-  const tuneRaw = getFile(tuneData.tuneFile!);
+  const tuneRaw = getFileLegacy(tuneData.tuneFile!);
   const tuneParser = new TuneParser()
     .parse(pako.inflate(new Uint8Array(await tuneRaw)));
 
@@ -35,7 +35,7 @@ export const loadTune = async (tuneData: TuneDbDataLegacy | null) => {
   }
 
   const tune = tuneParser.getTune();
-  const iniRaw = tuneData.customIniFile ? getFile(tuneData.customIniFile) : getINIFile(tune.details.signature);
+  const iniRaw = tuneData.customIniFile ? getFileLegacy(tuneData.customIniFile) : getINIFile(tune.details.signature);
   const buff = pako.inflate(new Uint8Array(await iniRaw));
   const config = new INI(buff).parse().getResults();
 
