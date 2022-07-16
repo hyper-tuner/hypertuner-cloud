@@ -111,8 +111,10 @@ const UploadPage = () => {
   const [tuneFileId, setTuneFileId] = useState<string | null>(null);
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);
+  const [defaultToothLogFilesList, setDefaultToothLogFilesList] = useState<UploadFile[]>([]);
+  const [defaultIniFileList, setDefaultIniFileList] = useState<UploadFile[]>([]);
   const [logFileIds, setLogFileIds] = useState<Map<string, string>>(new Map());
-  const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
+  const [toothLogFileIds, setToothLogFileIds] = useState<Map<string, string>>(new Map());
   const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
 
@@ -283,12 +285,10 @@ const UploadPage = () => {
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
-    const { path } = (options.data as unknown as UploadFileData);
-    const tune: UploadedFile = {};
-    tune[(options.file as UploadFile).uid] = path;
-    const newValues = { ...toothLogFiles, ...tune };
-    upload(options, () => {
-      // updateTune(tuneDocumentId!, { toothLogFileIds: Object.values(newValues) });
+    upload(options, async (fileCreated) => {
+      const newValues = new Map(toothLogFileIds.set((options.file as UploadFile).uid, fileCreated.$id));
+      await updateTune(tuneDocumentId!, { toothLogFileIds: Array.from(newValues.values()) });
+      setToothLogFileIds(newValues);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -296,14 +296,9 @@ const UploadPage = () => {
       }
 
       const parser = new TriggerLogsParser(await file.arrayBuffer());
-      const valid = parser.isComposite() || parser.isTooth();
-
-      if (valid) {
-        setToothLogFiles(newValues);
-      }
 
       return {
-        result: valid,
+        result: parser.isComposite() || parser.isTooth(),
         message: 'Tooth logs file is empty or not valid!',
       };
     });
@@ -361,14 +356,11 @@ const UploadPage = () => {
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
-    const { uid } = file;
-    if (toothLogFiles[file.uid]) {
-      // removeFile(toothLogFiles[file.uid]);
-    }
-    const newValues = { ...toothLogFiles };
-    delete newValues[uid];
-    setToothLogFiles(newValues);
-    // updateTune(tuneDocumentId!, { toothLogFiles: Object.values(newValues) });
+    await removeFileFromStorage(toothLogFileIds.get(file.uid)!);
+    toothLogFileIds.delete(file.uid);
+    const newValues = new Map(toothLogFileIds);
+    setToothLogFileIds(newValues);
+    updateTune(tuneDocumentId!, { toothLogFileIds: Array.from(newValues.values()) });
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
@@ -379,7 +371,7 @@ const UploadPage = () => {
     // updateTune(tuneDocumentId!, { customIniFile: null });
   };
 
-  const handleExistingTune = useCallback(async (currentTuneId: string) => {
+  const loadExistingTune = useCallback(async (currentTuneId: string) => {
     setNewTuneId(currentTuneId);
     console.info('Using tuneId:', currentTuneId);
 
@@ -399,9 +391,18 @@ const UploadPage = () => {
 
       existingTune.logFileIds?.forEach(async (fileId: string) => {
         const file = await getFile(fileId, await getBucketId(currentUser!.$id));
-
         setLogFileIds((prev) => new Map(prev).set(fileId, fileId));
         setDefaultLogFilesList((prev) => [...prev, {
+          uid: file.$id,
+          name: file.name,
+          status: 'done',
+        }]);
+      });
+
+      existingTune.toothLogFileIds?.forEach(async (fileId: string) => {
+        const file = await getFile(fileId, await getBucketId(currentUser!.$id));
+        setToothLogFileIds((prev) => new Map(prev).set(fileId, fileId));
+        setDefaultToothLogFilesList((prev) => [...prev, {
           uid: file.$id,
           name: file.name,
           status: 'done',
@@ -437,13 +438,13 @@ const UploadPage = () => {
 
     const currentTuneId = routeMatch?.params.tuneId;
     if (currentTuneId) {
-      handleExistingTune(currentTuneId);
+      loadExistingTune(currentTuneId);
     } else {
       navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
         tuneId: generateTuneId(),
       }), { replace: true });
     }
-  }, [currentUser, handleExistingTune, navigate, routeMatch?.params.tuneId]);
+  }, [currentUser, loadExistingTune, navigate, routeMatch?.params.tuneId]);
 
   useEffect(() => {
     prepareData();
@@ -628,7 +629,7 @@ const UploadPage = () => {
         </Space>
       </Divider>
       <Upload
-        key={defaultLogFilesList.map((file) => file.uid).join('-')}
+        key={defaultLogFilesList.map((file) => file.uid).join('-') || 'logs'}
         listType="picture-card"
         customRequest={uploadLogs}
         onRemove={removeLogFile}
@@ -640,7 +641,7 @@ const UploadPage = () => {
         defaultFileList={defaultLogFilesList}
         accept=".mlg,.csv,.msl"
       >
-        {Object.keys(logFileIds).length < MaxFiles.LOG_FILES && uploadButton}
+        {logFileIds.size < MaxFiles.LOG_FILES && uploadButton}
       </Upload>
       <Divider>
         <Space>
@@ -649,6 +650,7 @@ const UploadPage = () => {
         </Space>
       </Divider>
       <Upload
+        key={defaultToothLogFilesList.map((file) => file.uid).join('-') || 'toothLogs'}
         listType="picture-card"
         customRequest={uploadToothLogs}
         onRemove={removeToothLogFile}
@@ -656,9 +658,10 @@ const UploadPage = () => {
         multiple
         maxCount={MaxFiles.TOOTH_LOG_FILES}
         onPreview={noop}
+        defaultFileList={defaultToothLogFilesList}
         accept=".csv"
       >
-        {Object.keys(toothLogFiles).length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
+        {toothLogFileIds.size < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
       <Divider>
         <Space>
@@ -667,6 +670,7 @@ const UploadPage = () => {
         </Space>
       </Divider>
       <Upload
+        key={defaultIniFileList[0]?.uid || 'customIni'}
         listType="picture-card"
         customRequest={uploadCustomIni}
         onRemove={removeCustomIniFile}
@@ -710,7 +714,7 @@ const UploadPage = () => {
           </Space>
         </Divider>
         <Upload
-          key={defaultTuneFileList[0]?.uid}
+          key={defaultTuneFileList[0]?.uid || 'tuneFile'}
           listType="picture-card"
           customRequest={uploadTune}
           onRemove={removeTuneFile}
