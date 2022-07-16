@@ -249,7 +249,7 @@ const UploadPage = () => {
 
   const uploadLogs = async (options: UploadRequestOption) => {
     upload(options, async (fileCreated) => {
-      const newValues = new Map(logFileIds.set(fileCreated.$id, fileCreated.$id));
+      const newValues = new Map(logFileIds.set((options.file as UploadFile).uid, fileCreated.$id));
       await updateTune(tuneDocumentId!, { logFileIds: Array.from(newValues.values()) });
       setLogFileIds(newValues);
     }, async (file) => {
