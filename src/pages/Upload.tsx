@@ -100,12 +100,13 @@ const tuneParser = new TuneParser();
 const UploadPage = () => {
   const routeMatch = useMatch(Routes.UPLOAD_WITH_TUNE_ID);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTuneLoading, setTuneIsLoading] = useState(true);
   const [newTuneId, setNewTuneId] = useState<string>();
   const [tuneDocumentId, setTuneDocumentId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [tuneFile, setTuneFile] = useState<UploadedFile | null | false>(null);
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
@@ -431,6 +432,8 @@ const UploadPage = () => {
       }]);
       setTuneFile(tune);
     }
+
+    setTuneIsLoading(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -704,7 +707,7 @@ const UploadPage = () => {
     </>
   );
 
-  if (!isUserAuthorized) {
+  if (!isUserAuthorized || isTuneLoading) {
     return <Loader />;
   }
 
