@@ -227,23 +227,33 @@ const UploadPage = () => {
     upload(currentUser!.$id, options, async (fileCreated: ServerFile, file: File) => {
       const tune: UploadedFile = {};
       tune[(options.file as UploadFile).uid] = fileCreated.$id;
+      const { signature } = tuneParser.parse(await file.arrayBuffer()).getTune().details;
+
+      if (tuneDocumentId) {
+        await updateTune(tuneDocumentId, {
+          signature,
+          tuneFileId: fileCreated.$id,
+        });
+      } else {
+        const document = await createTune({
+          userId: currentUser!.$id,
+          tuneId: newTuneId!,
+          signature,
+          isPublished: false,
+          isListed: true,
+          tuneFileId: fileCreated.$id,
+          vehicleName: '',
+          displacement: 0,
+          cylindersCount: 0,
+          engineMake: '',
+          engineCode: '',
+          aspiration: 'na',
+          readme: '',
+        });
+        setTuneDocumentId(document.$id);
+      }
+
       setTuneFile(tune);
-      const document = await createTune({
-        userId: currentUser!.$id,
-        tuneId: newTuneId!,
-        signature: tuneParser.parse(await file.arrayBuffer()).getTune().details.signature,
-        isPublished: false,
-        isListed: true,
-        tuneFileId: fileCreated.$id,
-        vehicleName: '',
-        displacement: 0,
-        cylindersCount: 0,
-        engineMake: '',
-        engineCode: '',
-        aspiration: 'na',
-        readme: '',
-      });
-      setTuneDocumentId(document.$id);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -360,12 +370,14 @@ const UploadPage = () => {
   };
 
   const removeTuneFile = async (file: UploadFile) => {
-    console.log(file);
-    if (tuneFile) {
-      removeFile(await getBucketId(currentUser!.$id), tuneFile[file.uid]);
+    if (tuneFile && tuneFile[file.uid]) {
+      await removeFile(await getBucketId(currentUser!.$id), tuneFile[file.uid]);
+    } else {
+      await removeFile(await getBucketId(currentUser!.$id), file.uid);
     }
+
+    await updateTune(tuneDocumentId!, { tuneFileId: null });
     setTuneFile(null);
-    updateTune(tuneDocumentId!, { tuneFileId: '' });
   };
 
   const removeLogFile = async (file: UploadFile) => {
@@ -426,14 +438,21 @@ const UploadPage = () => {
       console.info('Using tuneId:', currentTuneId);
 
       const existingTune = await findUnpublishedTune(currentTuneId);
+      if (existingTune) {
+        setTuneDocumentId(existingTune.$id);
+      }
+
       if (existingTune && existingTune.tuneFileId) {
         const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
+        const tune: UploadedFile = {};
+        tune[file.$id] = file.$id;
 
         setDefaultTuneFileList([{
           uid: file.$id,
           name: file.name,
           status: 'done',
         }]);
+        setTuneFile(tune);
       }
     } else {
       navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
@@ -708,7 +727,7 @@ const UploadPage = () => {
           </Space>
         </Divider>
         <Upload
-          key={defaultTuneFileList[0]?.uid}
+          key={defaultTuneFileList[0]?.uid} // TODO: investigate this after useEffect dependencies is resolved
           listType="picture-card"
           customRequest={uploadTune}
           data={tuneFileData}

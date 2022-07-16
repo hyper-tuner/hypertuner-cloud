@@ -41,7 +41,7 @@ export interface TuneDbData {
   signature: string;
   isPublished: boolean;
   isListed: boolean;
-  tuneFileId: string;
+  tuneFileId?: string | null;
   logFileIds?: string[];
   toothLogFileIds?: string[];
   customIniFileId?: string | null;
