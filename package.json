@@ -15,7 +15,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "tsc && eslint --max-warnings=0 src",
-    "lint:fix": "eslint --fix src"
+    "lint:fix": "eslint --fix src",
+    "stats:bundle": "npm run build && open stats.html"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.2",
