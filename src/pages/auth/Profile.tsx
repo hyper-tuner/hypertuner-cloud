@@ -79,11 +79,12 @@ const Profile = () => {
       new Date(log.time * 1000).toLocaleString(),
       parseLogEvent(log.event),
       log.clientName,
+      log.clientEngineVersion,
       log.osName,
       log.deviceName,
       log.countryName,
       log.ip,
-    ].join(' ')))), [getLogs]);
+    ].join(' | ')))), [getLogs]);
 
   const onUpdateProfile = async ({ username }: { username: string }) => {
     setIsProfileLoading(true);
@@ -121,7 +122,7 @@ const Profile = () => {
           ses.deviceName,
           ses.countryName,
           ses.ip,
-        ].join(' '))));
+        ].join(' | '))));
 
       fetchLogs();
       return;
@@ -234,6 +235,7 @@ const Profile = () => {
           bordered
           dataSource={sessions}
           renderItem={item => <List.Item>{item}</List.Item>}
+          loading={sessions.length === 0}
         />
         <Divider>Audit logs</Divider>
         <List
@@ -241,6 +243,7 @@ const Profile = () => {
           bordered
           dataSource={logs}
           renderItem={item => <List.Item>{item}</List.Item>}
+          loading={logs.length === 0}
         />
       </div>
     </>
