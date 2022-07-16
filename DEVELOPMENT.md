@@ -4,7 +4,7 @@ This guide will help you set up this project.
 
 ## Requirements
 
-- [Node](https://nodejs.org/) 16.x.x (Node Version Manager: [nvm](https://github.com/nvm-sh/nvm))
+- Node Version Manager: [nvm](https://github.com/nvm-sh/nvm)
 - [Firebase](https://console.firebase.google.com/)
   - Authentication
   - Storage
@@ -32,6 +32,12 @@ Private token can be assign to ENV when running `npm install` in the same shell:
 
 ```bash
 export NPM_GITHUB_TOKEN=YOUR_PRIVATE_GITHUB_TOKEN
+```
+
+### Setup correct Node.js version
+
+```bash
+nvm use
 ```
 
 ### Install dependencies and run in development mode
