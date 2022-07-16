@@ -29,7 +29,10 @@ export default defineConfig({
       },
     },
   },
-  server: { open: true },
+  server: {
+    open: true,
+    host: '0.0.0.0',
+  },
   css: {
     preprocessorOptions: {
       less: { javascriptEnabled: true },

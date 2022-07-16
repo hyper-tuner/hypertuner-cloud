@@ -13,7 +13,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
+    "serve": "vite preview",
     "lint": "tsc && eslint --max-warnings=0 src",
     "lint:fix": "eslint --fix src",
     "stats:bundle": "npm run build && open stats.html"
@@ -39,7 +39,7 @@
     "react-router-dom": "^6.2.1",
     "uplot": "^1.6.19",
     "uplot-react": "^1.1.1",
-    "vite": "^2.8.4"
+    "vite": "^3.0.0"
   },
   "devDependencies": {
     "@hyper-tuner/eslint-config": "^0.1.5",
