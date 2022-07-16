@@ -410,6 +410,30 @@ const UploadPage = () => {
     // updateTune(tuneDocumentId!, { customIniFile: null });
   };
 
+  const handleExistingTune = useCallback(async (currentTuneId: string) => {
+    setNewTuneId(currentTuneId);
+    console.info('Using tuneId:', currentTuneId);
+
+    const existingTune = await findUnpublishedTune(currentTuneId);
+    if (existingTune) {
+      setTuneDocumentId(existingTune.$id);
+    }
+
+    if (existingTune && existingTune.tuneFileId) {
+      const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
+      const tune: UploadedFile = {};
+      tune[file.$id] = file.$id;
+
+      setDefaultTuneFileList([{
+        uid: file.$id,
+        name: file.name,
+        status: 'done',
+      }]);
+      setTuneFile(tune);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const prepareData = useCallback(async () => {
     if (!currentUser) {
       restrictedPage();
@@ -434,32 +458,13 @@ const UploadPage = () => {
 
     const currentTuneId = routeMatch?.params.tuneId;
     if (currentTuneId) {
-      setNewTuneId(currentTuneId);
-      console.info('Using tuneId:', currentTuneId);
-
-      const existingTune = await findUnpublishedTune(currentTuneId);
-      if (existingTune) {
-        setTuneDocumentId(existingTune.$id);
-      }
-
-      if (existingTune && existingTune.tuneFileId) {
-        const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
-        const tune: UploadedFile = {};
-        tune[file.$id] = file.$id;
-
-        setDefaultTuneFileList([{
-          uid: file.$id,
-          name: file.name,
-          status: 'done',
-        }]);
-        setTuneFile(tune);
-      }
+      handleExistingTune(currentTuneId);
     } else {
       navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
         tuneId: generateTuneId(),
       }), { replace: true });
     }
-  }, [currentUser, navigate, routeMatch?.params.tuneId]);
+  }, [currentUser, handleExistingTune, navigate, routeMatch?.params.tuneId]);
 
   useEffect(() => {
     prepareData();
@@ -727,7 +732,7 @@ const UploadPage = () => {
           </Space>
         </Divider>
         <Upload
-          key={defaultTuneFileList[0]?.uid} // TODO: investigate this after useEffect dependencies is resolved
+          key={defaultTuneFileList[0]?.uid}
           listType="picture-card"
           customRequest={uploadTune}
           data={tuneFileData}
