@@ -32,7 +32,7 @@ import {
 import * as Sentry from '@sentry/browser';
 import { INI } from '@hyper-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
-import { UploadFile, UploadProps } from 'antd/lib/upload/interface';
+import { UploadFile } from 'antd/lib/upload/interface';
 import {
   generatePath,
   useMatch,
