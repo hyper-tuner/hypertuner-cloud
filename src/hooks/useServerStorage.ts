@@ -9,7 +9,6 @@ import { Models } from 'appwrite';
 import { storage } from '../appwrite';
 
 const PUBLIC_PATH = 'public';
-const USERS_PATH = `${PUBLIC_PATH}/users`;
 const INI_PATH = `${PUBLIC_PATH}/ini`;
 export const CDN_URL = import.meta.env.VITE_CDN_URL;
 
@@ -124,7 +123,6 @@ const useServerStorage = () => {
     getFile: (id: string, bucketId: string): Promise<Models.File> => getFile(id, bucketId),
     getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
     removeFile: (bucketId: string, fileId: string): Promise<void> => removeFile(bucketId, fileId),
-    basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${USERS_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
     uploadFile: (userId: string, bucketId: string, file: File): Promise<ServerFile> => uploadFile(userId, bucketId, file),
   };
 };

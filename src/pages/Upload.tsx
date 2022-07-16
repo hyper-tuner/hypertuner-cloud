@@ -108,7 +108,7 @@ const UploadPage = () => {
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-  const [tuneFile, setTuneFile] = useState<UploadedFile | null | false>(null);
+  const [tuneFile, setTuneFile] = useState<string | null>(null);
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [logFiles, setLogFiles] = useState<UploadedFile>({});
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
@@ -118,7 +118,7 @@ const UploadPage = () => {
   const hasNavigatorShare = navigator.share !== undefined;
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  const { removeFile, uploadFile, basePathForFile, getFile } = useServerStorage();
+  const { removeFile, uploadFile, getFile } = useServerStorage();
   const { createTune, getBucketId, updateTune, findUnpublishedTune } = useDb();
   const requiredRules = [{ required: true, message: 'This field is required!' }];
 
@@ -168,8 +168,10 @@ const UploadPage = () => {
     message: `File should not be larger than ${maxFileSizeMB}MB!`,
   });
 
-  const upload = async (userId: string, options: UploadRequestOption, done: UploadDone, validate: ValidateFile) => {
+  const upload = async (options: UploadRequestOption, done: UploadDone, validate: ValidateFile) => {
     const { onError, onSuccess, file } = options;
+
+    console.log(options);
 
     const validation = await validate(file as File);
     if (!validation.result) {
@@ -185,8 +187,8 @@ const UploadPage = () => {
       const pako = await import('pako');
       const buffer = await (file as File).arrayBuffer();
       const compressed = pako.deflate(new Uint8Array(buffer));
-      const bucketId = await getBucketId(userId);
-      const fileCreated: ServerFile = await uploadFile(userId, bucketId, new File([compressed], (file as File).name));
+      const bucketId = await getBucketId(currentUser!.$id);
+      const fileCreated: ServerFile = await uploadFile(currentUser!.$id, bucketId, new File([compressed], (file as File).name));
 
       done(fileCreated, file as File);
       onSuccess!(null);
@@ -202,32 +204,10 @@ const UploadPage = () => {
     return true;
   };
 
-  const tuneFileData = () => ({
-    path: basePathForFile(currentUser!.$id, newTuneId!, `tune/${nanoid()}.msq.gz`),
-  });
-
-  const logFileData = (file: UploadFile) => {
-    const { name } = file;
-    const extension = name.split('.').pop();
-    return {
-      path: basePathForFile(currentUser!.$id, newTuneId!, `logs/${nanoid()}.${extension}.gz`),
-    };
-  };
-
-  const toothLogFilesData = () => ({
-    path: basePathForFile(currentUser!.$id, newTuneId!, `tooth-logs/${nanoid()}.csv.gz`),
-  });
-
-  const customIniFileData = () => ({
-    path: basePathForFile(currentUser!.$id, newTuneId!, `ini/${nanoid()}.ini.gz`),
-  });
-
   const uploadTune = async (options: UploadRequestOption) => {
     setShareUrl(buildFullUrl([tunePath(newTuneId!)]));
 
-    upload(currentUser!.$id, options, async (fileCreated: ServerFile, file: File) => {
-      const tune: UploadedFile = {};
-      tune[(options.file as UploadFile).uid] = fileCreated.$id;
+    upload(options, async (fileCreated: ServerFile, file: File) => {
       const { signature } = tuneParser.parse(await file.arrayBuffer()).getTune().details;
 
       if (tuneDocumentId) {
@@ -254,7 +234,7 @@ const UploadPage = () => {
         setTuneDocumentId(document.$id);
       }
 
-      setTuneFile(tune);
+      setTuneFile(fileCreated.$id);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -274,7 +254,7 @@ const UploadPage = () => {
     const uuid = (options.file as UploadFile).uid;
     tune[uuid] = path;
     const newValues = { ...logFiles, ...tune };
-    upload(path, options, () => {
+    upload(options, () => {
       // updateTune(tuneDocumentId!, { logFileIds: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
@@ -315,7 +295,7 @@ const UploadPage = () => {
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
     const newValues = { ...toothLogFiles, ...tune };
-    upload(path, options, () => {
+    upload(options, () => {
       // updateTune(tuneDocumentId!, { toothLogFileIds: Object.values(newValues) });
     }, async (file) => {
       const { result, message } = await validateSize(file);
@@ -341,7 +321,7 @@ const UploadPage = () => {
     const { path } = (options.data as unknown as UploadFileData);
     const tune: UploadedFile = {};
     tune[(options.file as UploadFile).uid] = path;
-    upload(path, options, () => {
+    upload(options, () => {
       // updateTune(tuneDocumentId!, { customIniFileId: path });
     }, async (file) => {
       const { result, message } = await validateSize(file);
@@ -370,26 +350,22 @@ const UploadPage = () => {
     });
   };
 
-  const removeTuneFile = async (file: UploadFile) => {
-    if (tuneFile && tuneFile[file.uid]) {
-      await removeFile(await getBucketId(currentUser!.$id), tuneFile[file.uid]);
-    } else {
-      await removeFile(await getBucketId(currentUser!.$id), file.uid);
-    }
+  const removeFileFromStorage = async (fileId: string) => {
+    await removeFile(await getBucketId(currentUser!.$id), fileId);
+  };
 
+  const removeTuneFile = async (file: UploadFile) => {
+    await removeFileFromStorage(tuneFile!);
     await updateTune(tuneDocumentId!, { tuneFileId: null });
     setTuneFile(null);
   };
 
   const removeLogFile = async (file: UploadFile) => {
-    const { uid } = file;
-    if (logFiles[file.uid]) {
-      // removeFile(logFiles[file.uid]);
-    }
+    // await removeFileFromStorage(file);
     const newValues = { ...logFiles };
-    delete newValues[uid];
+    delete newValues[file.uid];
     setLogFiles(newValues);
-    // updateTune(tuneDocumentId!, { logFiles: Object.values(newValues) });
+    updateTune(tuneDocumentId!, { logFileIds: Object.values(newValues) });
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
@@ -422,15 +398,12 @@ const UploadPage = () => {
 
     if (existingTune && existingTune.tuneFileId) {
       const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
-      const tune: UploadedFile = {};
-      tune[file.$id] = file.$id;
-
+      setTuneFile(existingTune.tuneFileId);
       setDefaultTuneFileList([{
         uid: file.$id,
         name: file.name,
         status: 'done',
       }]);
-      setTuneFile(tune);
     }
 
     setTuneIsLoading(false);
@@ -654,7 +627,6 @@ const UploadPage = () => {
       <Upload
         listType="picture-card"
         customRequest={uploadLogs}
-        data={logFileData}
         onRemove={removeLogFile}
         iconRender={logIcon}
         multiple
@@ -674,7 +646,6 @@ const UploadPage = () => {
       <Upload
         listType="picture-card"
         customRequest={uploadToothLogs}
-        data={toothLogFilesData}
         onRemove={removeToothLogFile}
         iconRender={toothLogIcon}
         multiple
@@ -693,7 +664,6 @@ const UploadPage = () => {
       <Upload
         listType="picture-card"
         customRequest={uploadCustomIni}
-        data={customIniFileData}
         onRemove={removeCustomIniFile}
         iconRender={iniIcon}
         disabled={isPublished}
@@ -738,7 +708,6 @@ const UploadPage = () => {
           key={defaultTuneFileList[0]?.uid}
           listType="picture-card"
           customRequest={uploadTune}
-          data={tuneFileData}
           onRemove={removeTuneFile}
           iconRender={tuneIcon}
           disabled={isPublished}
