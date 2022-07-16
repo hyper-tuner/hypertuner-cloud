@@ -108,15 +108,17 @@ const UploadPage = () => {
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-  const [tuneFileId, setTuneFileId] = useState<string | null>(null);
+  const [readme, setReadme] = useState('# My Tune\n\ndescription');
+
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);
   const [defaultToothLogFilesList, setDefaultToothLogFilesList] = useState<UploadFile[]>([]);
-  const [defaultIniFileList, setDefaultIniFileList] = useState<UploadFile[]>([]);
+  const [defaultCustomIniFileList, setDefaultCustomIniFileList] = useState<UploadFile[]>([]);
+
+  const [tuneFileId, setTuneFileId] = useState<string | null>(null);
   const [logFileIds, setLogFileIds] = useState<Map<string, string>>(new Map());
   const [toothLogFileIds, setToothLogFileIds] = useState<Map<string, string>>(new Map());
-  const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
-  const [readme, setReadme] = useState('# My Tune\n\ndescription');
+  const [customIniFileId, setCustomIniFileId] = useState<string | null>(null);
 
   const hasNavigatorShare = navigator.share !== undefined;
   const { currentUser } = useAuth();
@@ -305,11 +307,9 @@ const UploadPage = () => {
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
-    const { path } = (options.data as unknown as UploadFileData);
-    const tune: UploadedFile = {};
-    tune[(options.file as UploadFile).uid] = path;
-    upload(options, () => {
-      // updateTune(tuneDocumentId!, { customIniFileId: path });
+    upload(options, async (fileCreated) => {
+      await updateTune(tuneDocumentId!, { customIniFileId: fileCreated.$id });
+      setCustomIniFileId(fileCreated.$id);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -324,10 +324,6 @@ const UploadPage = () => {
       } catch (error) {
         valid = false;
         validationMessage = (error as Error).message;
-      }
-
-      if (valid) {
-        setCustomIniFile(tune);
       }
 
       return {
@@ -364,11 +360,9 @@ const UploadPage = () => {
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
-    if (customIniFile) {
-      // removeFile(customIniFile![file.uid]);
-    }
-    setCustomIniFile(null);
-    // updateTune(tuneDocumentId!, { customIniFile: null });
+    await removeFileFromStorage(customIniFileId!);
+    await updateTune(tuneDocumentId!, { customIniFileId: null });
+    setCustomIniFileId(null);
   };
 
   const loadExistingTune = useCallback(async (currentTuneId: string) => {
@@ -383,6 +377,16 @@ const UploadPage = () => {
         const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
         setTuneFileId(existingTune.tuneFileId);
         setDefaultTuneFileList([{
+          uid: file.$id,
+          name: file.name,
+          status: 'done',
+        }]);
+      }
+
+      if (existingTune.customIniFileId) {
+        const file = await getFile(existingTune.customIniFileId, await getBucketId(currentUser!.$id));
+        setCustomIniFileId(existingTune.customIniFileId);
+        setDefaultCustomIniFileList([{
           uid: file.$id,
           name: file.name,
           status: 'done',
@@ -670,16 +674,17 @@ const UploadPage = () => {
         </Space>
       </Divider>
       <Upload
-        key={defaultIniFileList[0]?.uid || 'customIni'}
+        key={defaultCustomIniFileList[0]?.uid || 'customIni'}
         listType="picture-card"
         customRequest={uploadCustomIni}
         onRemove={removeCustomIniFile}
         iconRender={iniIcon}
         disabled={isPublished}
         onPreview={noop}
+        defaultFileList={defaultCustomIniFileList}
         accept=".ini"
       >
-        {!customIniFile && uploadButton}
+        {!customIniFileId && uploadButton}
       </Upload>
       {detailsSection}
       {shareUrl && tuneFileId && shareSection}
