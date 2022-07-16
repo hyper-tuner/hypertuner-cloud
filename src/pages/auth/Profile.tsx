@@ -172,7 +172,11 @@ const Profile = () => {
             rules={[{ required: true }]}
             hasFeedback
           >
-            <Input prefix={<UserOutlined />} placeholder="Username" />
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="Username"
+              autoComplete="name"
+            />
           </Item>
           <Item name="email">
             <Input prefix={<MailOutlined />} placeholder="Email" disabled />
@@ -202,6 +206,7 @@ const Profile = () => {
           >
             <Input.Password
               placeholder="Old password"
+              autoComplete="current-password"
               prefix={<LockOutlined />}
             />
           </Item>
@@ -212,6 +217,7 @@ const Profile = () => {
           >
             <Input.Password
               placeholder="New password"
+              autoComplete="new-password"
               prefix={<LockOutlined />}
             />
           </Item>

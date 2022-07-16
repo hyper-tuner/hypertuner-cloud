@@ -57,6 +57,7 @@ const ResetPassword = () => {
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
+            autoComplete="email"
           />
         </Item>
         <Item>

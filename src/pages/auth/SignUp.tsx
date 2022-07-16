@@ -159,6 +159,7 @@ const SignUp = () => {
             prefix={<MailOutlined />}
             placeholder="Email"
             id="email-magic-link"
+            autoComplete="email"
             disabled={isAnythingLoading}
           />
         </Item>
@@ -185,6 +186,7 @@ const SignUp = () => {
           <Input
             prefix={<UserOutlined />}
             placeholder="Username"
+            autoComplete="name"
             disabled={isAnythingLoading}
           />
         </Item>
@@ -192,6 +194,7 @@ const SignUp = () => {
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
+            autoComplete="email"
             disabled={isAnythingLoading}
           />
         </Item>
@@ -202,6 +205,7 @@ const SignUp = () => {
         >
           <Input.Password
             placeholder="Password"
+            autoComplete="new-password"
             prefix={<LockOutlined />}
             disabled={isAnythingLoading}
           />

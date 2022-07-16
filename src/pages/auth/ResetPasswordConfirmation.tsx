@@ -72,6 +72,7 @@ const ResetPasswordConfirmation = () => {
         >
           <Input.Password
             placeholder="New password"
+            autoComplete="new-password"
             prefix={<LockOutlined />}
           />
         </Item>

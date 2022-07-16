@@ -145,6 +145,7 @@ const Login = () => {
             prefix={<MailOutlined />}
             placeholder="Email"
             id="email-magic-link"
+            autoComplete="email"
             disabled={isAnythingLoading}
           />
         </Item>
@@ -171,6 +172,7 @@ const Login = () => {
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
+            autoComplete="email"
             disabled={isAnythingLoading}
           />
         </Item>
@@ -181,6 +183,7 @@ const Login = () => {
         >
           <Input.Password
             placeholder="Password"
+            autoComplete="current-password"
             prefix={<LockOutlined />}
             disabled={isAnythingLoading}
           />
