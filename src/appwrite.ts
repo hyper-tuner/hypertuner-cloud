@@ -4,15 +4,16 @@ import {
   Databases,
   Storage,
 } from 'appwrite';
+import { fetchEnv } from './utils/env';
 
 const client = new Client();
 
 client
-  .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT as string)
-  .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID as string);
+  .setEndpoint(fetchEnv('VITE_APPWRITE_ENDPOINT'))
+  .setProject(fetchEnv('VITE_APPWRITE_PROJECT_ID'));
 
 const account = new Account(client);
-const database = new Databases(client, import.meta.env.VITE_APPWRITE_DATABASE_ID as string);
+const database = new Databases(client, fetchEnv('VITE_APPWRITE_DATABASE_ID'));
 const storage = new Storage(client);
 
 export {

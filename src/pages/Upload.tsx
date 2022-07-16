@@ -63,16 +63,6 @@ enum MaxFiles {
   CUSTOM_INI_FILES = 1,
 }
 
-type Uid = string;
-
-interface UploadedFile {
-  [uid: string]: Uid;
-}
-
-interface UploadFileData {
-  path: string;
-}
-
 interface ValidationResult {
   result: boolean;
   message: string;

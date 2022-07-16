@@ -7,10 +7,11 @@ import {
 } from 'firebase/storage';
 import { Models } from 'appwrite';
 import { storage } from '../appwrite';
+import { fetchEnv } from '../utils/env';
 
 const PUBLIC_PATH = 'public';
 const INI_PATH = `${PUBLIC_PATH}/ini`;
-export const CDN_URL = import.meta.env.VITE_CDN_URL;
+export const CDN_URL = fetchEnv('VITE_CDN_URL');
 
 const fireBaseStorage = getStorage();
 

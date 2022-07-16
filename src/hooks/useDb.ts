@@ -24,10 +24,12 @@ import {
   TuneDbDocument,
 } from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
+import { fetchEnv } from '../utils/env';
 
 const TUNES_PATH = 'publicTunes';
-const COLLECTION_ID_TUNES = import.meta.env.VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES;
-const COLLECTION_ID_USERS_BUCKETS = import.meta.env.VITE_APPWRITE_COLLECTION_ID_USERS_BUCKETS;
+const COLLECTION_ID_TUNES = fetchEnv('VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES');
+const COLLECTION_ID_USERS_BUCKETS = fetchEnv('VITE_APPWRITE_COLLECTION_ID_USERS_BUCKETS');
+
 const db = getFirestore();
 
 const useDb = () => {
