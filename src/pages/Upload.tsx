@@ -63,10 +63,10 @@ enum MaxFiles {
   CUSTOM_INI_FILES = 1,
 }
 
-type Path = string;
+type Uid = string;
 
 interface UploadedFile {
-  [autoUid: string]: Path;
+  [uid: string]: Uid;
 }
 
 interface UploadFileData {
@@ -108,9 +108,10 @@ const UploadPage = () => {
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-  const [tuneFile, setTuneFile] = useState<string | null>(null);
+  const [tuneFileId, setTuneFileId] = useState<string | null>(null);
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
-  const [logFiles, setLogFiles] = useState<UploadedFile>({});
+  const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);
+  const [logFileIds, setLogFileIds] = useState<Map<string, string>>(new Map());
   const [toothLogFiles, setToothLogFiles] = useState<UploadedFile>({});
   const [customIniFile, setCustomIniFile] = useState<UploadedFile | null>(null);
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
@@ -170,8 +171,6 @@ const UploadPage = () => {
 
   const upload = async (options: UploadRequestOption, done: UploadDone, validate: ValidateFile) => {
     const { onError, onSuccess, file } = options;
-
-    console.log(options);
 
     const validation = await validate(file as File);
     if (!validation.result) {
@@ -234,7 +233,7 @@ const UploadPage = () => {
         setTuneDocumentId(document.$id);
       }
 
-      setTuneFile(fileCreated.$id);
+      setTuneFileId(fileCreated.$id);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -249,13 +248,10 @@ const UploadPage = () => {
   };
 
   const uploadLogs = async (options: UploadRequestOption) => {
-    const { path } = (options.data as unknown as UploadFileData);
-    const tune: UploadedFile = {};
-    const uuid = (options.file as UploadFile).uid;
-    tune[uuid] = path;
-    const newValues = { ...logFiles, ...tune };
-    upload(options, () => {
-      // updateTune(tuneDocumentId!, { logFileIds: Object.values(newValues) });
+    upload(options, async (fileCreated) => {
+      const newValues = new Map(logFileIds.set(fileCreated.$id, fileCreated.$id));
+      await updateTune(tuneDocumentId!, { logFileIds: Array.from(newValues.values()) });
+      setLogFileIds(newValues);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -277,10 +273,6 @@ const UploadPage = () => {
         default:
           valid = false;
           break;
-      }
-
-      if (valid) {
-        setLogFiles(newValues);
       }
 
       return {
@@ -354,18 +346,18 @@ const UploadPage = () => {
     await removeFile(await getBucketId(currentUser!.$id), fileId);
   };
 
-  const removeTuneFile = async (file: UploadFile) => {
-    await removeFileFromStorage(tuneFile!);
+  const removeTuneFile = async () => {
+    await removeFileFromStorage(tuneFileId!);
     await updateTune(tuneDocumentId!, { tuneFileId: null });
-    setTuneFile(null);
+    setTuneFileId(null);
   };
 
   const removeLogFile = async (file: UploadFile) => {
-    // await removeFileFromStorage(file);
-    const newValues = { ...logFiles };
-    delete newValues[file.uid];
-    setLogFiles(newValues);
-    updateTune(tuneDocumentId!, { logFileIds: Object.values(newValues) });
+    await removeFileFromStorage(logFileIds.get(file.uid)!);
+    logFileIds.delete(file.uid);
+    const newValues = new Map(logFileIds);
+    setLogFileIds(newValues);
+    updateTune(tuneDocumentId!, { logFileIds: Array.from(newValues.values()) });
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
@@ -394,16 +386,27 @@ const UploadPage = () => {
     const existingTune = await findUnpublishedTune(currentTuneId);
     if (existingTune) {
       setTuneDocumentId(existingTune.$id);
-    }
 
-    if (existingTune && existingTune.tuneFileId) {
-      const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
-      setTuneFile(existingTune.tuneFileId);
-      setDefaultTuneFileList([{
-        uid: file.$id,
-        name: file.name,
-        status: 'done',
-      }]);
+      if (existingTune.tuneFileId) {
+        const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
+        setTuneFileId(existingTune.tuneFileId);
+        setDefaultTuneFileList([{
+          uid: file.$id,
+          name: file.name,
+          status: 'done',
+        }]);
+      }
+
+      existingTune.logFileIds?.forEach(async (fileId: string) => {
+        const file = await getFile(fileId, await getBucketId(currentUser!.$id));
+
+        setLogFileIds((prev) => new Map(prev).set(fileId, fileId));
+        setDefaultLogFilesList((prev) => [...prev, {
+          uid: file.$id,
+          name: file.name,
+          status: 'done',
+        }]);
+      });
     }
 
     setTuneIsLoading(false);
@@ -625,6 +628,7 @@ const UploadPage = () => {
         </Space>
       </Divider>
       <Upload
+        key={defaultLogFilesList.map((file) => file.uid).join('-')}
         listType="picture-card"
         customRequest={uploadLogs}
         onRemove={removeLogFile}
@@ -633,9 +637,10 @@ const UploadPage = () => {
         maxCount={MaxFiles.LOG_FILES}
         disabled={isPublished}
         onPreview={noop}
+        defaultFileList={defaultLogFilesList}
         accept=".mlg,.csv,.msl"
       >
-        {Object.keys(logFiles).length < MaxFiles.LOG_FILES && uploadButton}
+        {Object.keys(logFileIds).length < MaxFiles.LOG_FILES && uploadButton}
       </Upload>
       <Divider>
         <Space>
@@ -673,7 +678,7 @@ const UploadPage = () => {
         {!customIniFile && uploadButton}
       </Upload>
       {detailsSection}
-      {shareUrl && tuneFile && shareSection}
+      {shareUrl && tuneFileId && shareSection}
     </>
   );
 
@@ -715,9 +720,9 @@ const UploadPage = () => {
           defaultFileList={defaultTuneFileList}
           accept=".msq"
         >
-          {tuneFile === null && uploadButton}
+          {tuneFileId === null && uploadButton}
         </Upload>
-        {(tuneFile || defaultTuneFileList.length > 0) && optionalSection}
+        {(tuneFileId || defaultTuneFileList.length > 0) && optionalSection}
       </Form>
     </div>
   );
