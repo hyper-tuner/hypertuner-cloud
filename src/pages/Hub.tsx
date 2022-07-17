@@ -1,5 +1,6 @@
 import {
   Button,
+  Grid,
   Input,
   Space,
   Table,
@@ -13,7 +14,6 @@ import {
   ArrowRightOutlined,
 } from '@ant-design/icons';
 import {
-  Fragment,
   useCallback,
   useEffect,
   useState,
@@ -29,9 +29,12 @@ import { buildFullUrl } from '../utils/url';
 import { aspirationMapper } from '../utils/tune/mappers';
 import { TuneDbDocument } from '../types/dbData';
 
+const { useBreakpoint } = Grid;
+
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Hub = () => {
+  const { xs } = useBreakpoint();
   const { searchTunes } = useDb();
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<any>([]);
@@ -58,7 +61,7 @@ const Hub = () => {
       author: '?',
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
-      updatedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
+      publishedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
       stars: 0,
     })));
     setIsLoading(false);
@@ -76,77 +79,78 @@ const Hub = () => {
       title: 'Tune',
       render: (tune: TuneDbDocument) => (
         <>
-          {tune.vehicleName} ({tune.signature})
+          {tune.vehicleName} ({tune.signature}), published: {tune.publishedAt}
           <br />
           {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}
           <br />
           author: ? 0 <StarOutlined />
         </>
       ),
-      responsive: ['xs', 'sm', 'md'],
+      responsive: ['xs'],
     },
     {
       title: 'Vehicle name',
       dataIndex: 'vehicleName',
       key: 'vehicleName',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
-      title: 'Engine make',
+      title: 'Make',
       dataIndex: 'engineMake',
       key: 'engineMake',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
       title: 'Engine code',
       dataIndex: 'engineCode',
       key: 'engineCode',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
-      title: 'Displacement',
+      title: '',
       dataIndex: 'displacement',
       key: 'displacement',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
       title: 'Cylinders',
       dataIndex: 'cylindersCount',
       key: 'cylindersCount',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
       title: 'Aspiration',
       dataIndex: 'aspiration',
       key: 'aspiration',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
       title: 'Author',
       dataIndex: 'author',
       key: 'author',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
       title: 'Signature',
       dataIndex: 'signature',
       key: 'author',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
       title: 'Published',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
-      responsive: ['lg'],
+      dataIndex: 'publishedAt',
+      key: 'publishedAt',
+      responsive: ['sm'],
     },
     {
       title: <StarOutlined />,
       dataIndex: 'stars',
       key: 'stars',
-      responsive: ['lg'],
+      responsive: ['sm'],
     },
     {
       dataIndex: 'tuneId',
+      fixed: 'right',
       render: (tuneId: string) => (
         <Space>
           <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
@@ -172,6 +176,7 @@ const Hub = () => {
         dataSource={dataSource}
         columns={columns}
         loading={isLoading}
+        scroll={xs ? undefined : { x: 1360 }}
         pagination={false}
       />
     </div>

@@ -56,7 +56,10 @@ import {
   requiredTextRules,
   requiredRules,
 } from '../utils/form';
-import { TuneDbDataPartial, TuneDbDocument } from '../types/dbData';
+import {
+  TuneDbDataPartial,
+  TuneDbDocument,
+} from '../types/dbData';
 import { aspirationMapper } from '../utils/tune/mappers';
 
 const { Item } = Form;
@@ -396,22 +399,22 @@ const UploadPage = () => {
     setNewTuneId(currentTuneId);
     console.info('Using tuneId:', currentTuneId);
 
-    const existingTune = await getTune(currentTuneId);
-    if (existingTune) {
+    const oldTune = await getTune(currentTuneId);
+    if (oldTune) {
       // this is someone elses tune
-      if (existingTune.userId !== currentUser?.$id) {
+      if (oldTune.userId !== currentUser?.$id) {
         navigateToNewTuneId();
         return;
       }
 
-      setExistingTune(existingTune);
-      setInitialValues(existingTune);
+      setExistingTune(oldTune);
+      setInitialValues(oldTune);
       setIsEditMode(true);
-      setTuneDocumentId(existingTune.$id);
+      setTuneDocumentId(oldTune.$id);
 
-      if (existingTune.tuneFileId) {
-        const file = await getFile(existingTune.tuneFileId, await getBucketId(currentUser!.$id));
-        setTuneFileId(existingTune.tuneFileId);
+      if (oldTune.tuneFileId) {
+        const file = await getFile(oldTune.tuneFileId, await getBucketId(currentUser!.$id));
+        setTuneFileId(oldTune.tuneFileId);
         setDefaultTuneFileList([{
           uid: file.$id,
           name: file.name,
@@ -419,9 +422,9 @@ const UploadPage = () => {
         }]);
       }
 
-      if (existingTune.customIniFileId) {
-        const file = await getFile(existingTune.customIniFileId, await getBucketId(currentUser!.$id));
-        setCustomIniFileId(existingTune.customIniFileId);
+      if (oldTune.customIniFileId) {
+        const file = await getFile(oldTune.customIniFileId, await getBucketId(currentUser!.$id));
+        setCustomIniFileId(oldTune.customIniFileId);
         setDefaultCustomIniFileList([{
           uid: file.$id,
           name: file.name,
@@ -429,7 +432,7 @@ const UploadPage = () => {
         }]);
       }
 
-      existingTune.logFileIds?.forEach(async (fileId: string) => {
+      oldTune.logFileIds?.forEach(async (fileId: string) => {
         const file = await getFile(fileId, await getBucketId(currentUser!.$id));
         setLogFileIds((prev) => new Map(prev).set(fileId, fileId));
         setDefaultLogFilesList((prev) => [...prev, {
@@ -439,7 +442,7 @@ const UploadPage = () => {
         }]);
       });
 
-      existingTune.toothLogFileIds?.forEach(async (fileId: string) => {
+      oldTune.toothLogFileIds?.forEach(async (fileId: string) => {
         const file = await getFile(fileId, await getBucketId(currentUser!.$id));
         setToothLogFileIds((prev) => new Map(prev).set(fileId, fileId));
         setDefaultToothLogFilesList((prev) => [...prev, {
