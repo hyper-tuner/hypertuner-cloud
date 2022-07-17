@@ -2,6 +2,7 @@ import {
   Routes as ReactRoutes,
   Route,
   useMatch,
+  useNavigate,
 } from 'react-router-dom';
 import {
   Layout,
@@ -35,7 +36,6 @@ import Hub from './pages/Hub';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './css/App.less';
-import { useAuth } from './contexts/AuthContext';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -68,7 +68,7 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   const redirectPage = searchParams.get('redirectPage');
   const [isLoading, setIsLoading] = useState(false);
   const { getBucketId } = useDb();
-  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   // TODO: refactor this
   switch (redirectPage) {
@@ -102,7 +102,13 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
       }
 
       getTune(tuneId).then(async (tune) => {
-        getBucketId(currentUser?.$id!).then((bucketId) => {
+        if (!tune) {
+          console.warn('Tune not found');
+          navigate(Routes.HUB);
+          return;
+        }
+
+        getBucketId(tune.userId).then((bucketId) => {
           loadTune(tune!, bucketId);
         });
         store.dispatch({ type: 'tuneData/load', payload: tune });
