@@ -12,7 +12,7 @@ import TuneParser from './tune/TuneParser';
 import { TuneDbDocument } from '../types/dbData';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
 
-  // TODO: refactor this!!
+// TODO: refactor this!!
 export const loadTune = async (tuneData: TuneDbDocument | null, bucketId: string) => {
   if (tuneData === null) {
     store.dispatch({ type: 'config/load', payload: null });
@@ -28,7 +28,7 @@ export const loadTune = async (tuneData: TuneDbDocument | null, bucketId: string
   const tuneRaw = await getFileForDownload(tuneData.tuneFileId!, bucketId);
 
   const tuneParser = new TuneParser()
-    .parse(pako.inflate(new Uint8Array(await tuneRaw)));
+    .parse(pako.inflate(new Uint8Array(tuneRaw)));
 
   if (!tuneParser.isValid()) {
     console.error('Invalid tune');
