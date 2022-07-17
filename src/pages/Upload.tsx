@@ -134,24 +134,58 @@ const UploadPage = () => {
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
 
   const publishTune = async (values: any) => {
+    /* eslint-disable prefer-destructuring */
+    const isListed = values.isListed;
+    const vehicleName = values.vehicleName.trim();
+    const engineMake = values.engineMake.trim();
+    const engineCode = values.engineCode.trim();
+    const displacement = values.displacement;
+    const cylindersCount = values.cylindersCount;
+    const aspiration = values.aspiration.trim();
+    const compression = values.compression || null;
+    const fuel = values.fuel?.trim() || null;
+    const ignition = values.ignition?.trim() || null;
+    const injectorsSize = values.injectorsSize || null;
+    const year = values.year || null;
+    const hp = values.hp || null;
+    const stockHp = values.stockHp || null;
+    /* eslint-enable prefer-destructuring */
+
+    const aspirationMap: { [key:string]: string } = {
+      na: 'N/A',
+      turbocharged: 'Turbocharged',
+      supercharged: 'Supercharged',
+    };
+
     setIsLoading(true);
-    // await updateTune(tuneDocumentId!, {
-    //   updatedAt: Date.now(),
-    //   isPublished: true,
-    //   isListed: values.isListed,
-    //   readme: readme.trim(),
-    //   make: values.make.trim(),
-    //   model: values.model.trim(),
-    //   displacement: values.displacement.trim(),
-    //   year: values.year.trim(),
-    //   hp: values.hp || null,
-    //   stockHp: values.stockHp || null,
-    //   engineCode: values.engineCode || null,
-    //   cylindersCount: values.cylindersCount || null,
-    //   aspiration: values.aspiration || null,
-    //   fuel: values.fuel || null,
-    //   injectorsSize: values.injectorsSize || null,
-    //   coils: values.coils || null,
+    await updateTune(tuneDocumentId!, {
+      isPublished: true,
+      isListed,
+      vehicleName,
+      engineMake,
+      engineCode,
+      displacement,
+      cylindersCount,
+      aspiration,
+      compression,
+      fuel,
+      ignition,
+      injectorsSize,
+      year,
+      hp,
+      stockHp,
+      readme: readme?.trim(),
+      textSearch: [
+        vehicleName,
+        engineMake,
+        engineCode,
+        `${displacement}l`,
+        aspirationMap[aspiration] || null,
+        fuel,
+        ignition,
+        year,
+      ].filter((field) => field !== null && `${field}`.length > 1).join(' '),
+    });
     setIsLoading(false);
     setIsPublished(true);
   };
@@ -520,7 +554,7 @@ const UploadPage = () => {
         </Col>
         <Col {...colProps}>
           <Item name="cylindersCount" rules={requiredRules}>
-            <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} max={16} />
+            <InputNumber addonBefore="Cylinders" style={{ width: '100%' }} min={0} max={16} />
           </Item>
         </Col>
       </Row>
@@ -529,14 +563,14 @@ const UploadPage = () => {
           <Item name="aspiration" rules={requiredRules}>
             <Select placeholder="Aspiration" style={{ width: '100%' }}>
               <Select.Option value="na">Naturally aspirated</Select.Option>
-              <Select.Option value="turbocharger">Turbocharged</Select.Option>
-              <Select.Option value="supercharger">Supercharged</Select.Option>
+              <Select.Option value="turbocharged">Turbocharged</Select.Option>
+              <Select.Option value="supercharged">Supercharged</Select.Option>
             </Select>
           </Item>
         </Col>
         <Col {...colProps}>
           <Item name="compression">
-            <InputNumber addonBefore="Compression" style={{ width: '100%' }} min={0} max={1000} step={0.1} addonAfter=":1" />
+            <InputNumber addonBefore="Compression" style={{ width: '100%' }} min={0} max={100} step={0.1} addonAfter=":1" />
           </Item>
         </Col>
       </Row>
@@ -695,7 +729,7 @@ const UploadPage = () => {
       <Form
         onFinish={publishTune}
         initialValues={{
-          readme: '# My Tune\n\ndescription',
+          readme,
           isListed: true,
         }}
       >

@@ -59,6 +59,7 @@ export interface TuneDbData {
   hp?: number | null;
   stockHp?: number | null;
   readme: string | null;
+  textSearch?: string | null;
 }
 
 export interface TuneDbDocument extends TuneDbData, Models.Document {}
