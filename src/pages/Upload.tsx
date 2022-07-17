@@ -56,7 +56,7 @@ import {
   requiredTextRules,
   requiredRules,
 } from '../utils/form';
-import { TuneDbDataPartial } from '../types/dbData';
+import { TuneDbDataPartial, TuneDbDocument } from '../types/dbData';
 import { aspirationMapper } from '../utils/tune/mappers';
 
 const { Item } = Form;
@@ -105,6 +105,7 @@ const UploadPage = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
+  const [existingTune, setExistingTune] = useState<TuneDbDocument>();
   const [initialValues, setInitialValues] = useState<TuneDbDataPartial>({
     readme,
   });
@@ -175,6 +176,7 @@ const UploadPage = () => {
       stockHp,
       readme: readme?.trim(),
       textSearch: [
+        existingTune?.signature,
         vehicleName,
         engineMake,
         engineCode,
@@ -402,6 +404,7 @@ const UploadPage = () => {
         return;
       }
 
+      setExistingTune(existingTune);
       setInitialValues(existingTune);
       setIsEditMode(true);
       setTuneDocumentId(existingTune.$id);

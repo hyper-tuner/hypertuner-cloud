@@ -128,6 +128,11 @@ const Hub = () => {
       key: 'author',
     },
     {
+      title: 'Signature',
+      dataIndex: 'signature',
+      key: 'author',
+    },
+    {
       title: 'Published',
       dataIndex: 'updatedAt',
       key: 'updatedAt',
