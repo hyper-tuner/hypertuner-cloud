@@ -5,12 +5,6 @@ This guide will help you set up this project.
 ## Requirements
 
 - Node Version Manager: [nvm](https://github.com/nvm-sh/nvm)
-- [Firebase](https://console.firebase.google.com/)
-  - Authentication
-  - Storage
-  - Firestore Database
-- [Firebase CLI](https://firebase.google.com/docs/cli)
-- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) (`brew install --cask google-cloud-sdk`)
 
 ### Setup local environment variables
 

@@ -1,10 +1,5 @@
 import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
-import {
-  ref,
-  getBytes,
-  getStorage,
-} from 'firebase/storage';
 import { Models } from 'appwrite';
 import { storage } from '../appwrite';
 import { fetchEnv } from '../utils/env';
@@ -13,19 +8,13 @@ const PUBLIC_PATH = 'public';
 const INI_PATH = `${PUBLIC_PATH}/ini`;
 export const CDN_URL = fetchEnv('VITE_CDN_URL');
 
-const fireBaseStorage = getStorage();
-
 export type ServerFile = Models.File;
 
 const genericError = (error: Error) => notification.error({ message: 'Storage Error', description: error.message });
 
 const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
-  if (CDN_URL) {
-    const response = await fetch(`${CDN_URL}/${path}`);
-    return Promise.resolve(response.arrayBuffer());
-  }
-
-  return Promise.resolve(await getBytes(ref(fireBaseStorage, path)));
+  const response = await fetch(`${CDN_URL}/${path}`);
+  return Promise.resolve(response.arrayBuffer());
 };
 
 const useServerStorage = () => {

@@ -11,8 +11,6 @@ import {
   client,
 } from '../appwrite';
 import Loader from '../components/Loader';
-// TODO: remove firebase
-import { auth } from '../firebase';
 import { Routes } from '../routes';
 import {
   buildFullUrl,
@@ -107,7 +105,6 @@ interface AuthValue {
   facebookAuth: () => Promise<void>,
   updateUsername: (username: string) => Promise<void>,
   updatePassword: (password: string, oldPassword: string) => Promise<void>,
-  refreshToken: () => Promise<string> | undefined,
   getSessions: () => Promise<SessionList>,
   getLogs: () => Promise<LogList>,
 }
@@ -256,7 +253,6 @@ const AuthProvider = (props: { children: ReactNode }) => {
         return Promise.reject(error);
       }
     },
-    refreshToken: () => auth.currentUser?.getIdToken(true),
     getSessions: () => account.getSessions(),
     getLogs: () => account.getLogs(),
   }), [currentUser]);
