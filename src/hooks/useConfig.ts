@@ -48,12 +48,12 @@ const findDatalog = (config: ConfigType, name: string): DatalogEntry => {
   return result;
 };
 
-const useConfig = (config: ConfigType) => useMemo(() => ({
-  isConfigReady: !!config.constants,
-  findOutputChannel: (name: string) => findOutputChannel(config, name),
-  findConstantOnPage: (name: string) => findConstantOnPage(config, name),
-  findDatalogNameByLabel: (label: string) => findDatalogNameByLabel(config, label),
-  findDatalog: (name: string) => findDatalog(config, name),
+const useConfig = (config: ConfigType | null) => useMemo(() => ({
+  isConfigReady: !!config?.constants,
+  findOutputChannel: (name: string) => findOutputChannel(config!, name),
+  findConstantOnPage: (name: string) => findConstantOnPage(config!, name),
+  findDatalogNameByLabel: (label: string) => findDatalogNameByLabel(config!, label),
+  findDatalog: (name: string) => findDatalog(config!, name),
 }), [config]);
 
 export default useConfig;

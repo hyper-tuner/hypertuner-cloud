@@ -25,11 +25,12 @@ import {
   generatePath,
   useNavigate,
 } from 'react-router';
-import { Timestamp } from 'firebase/firestore/lite';
+import debounce from 'lodash.debounce';
 import useDb from '../hooks/useDb';
-import { TuneDbData } from '../types/dbData';
+import { TuneDbDocument } from '../types/dbData';
 import { Routes } from '../routes';
-import { generateShareUrl } from '../utils/url';
+import { buildFullUrl } from '../utils/url';
+import { aspirationMapper } from '../utils/tune/mappers';
 
 const { useBreakpoint } = Grid;
 
@@ -47,16 +48,15 @@ const loadingCards = (
   </>
 );
 
+const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
+
 const Hub = () => {
   const { md } = useBreakpoint();
-  const { listTunes } = useDb();
+  const { searchTunes } = useDb();
   const navigate = useNavigate();
-  const [tunes, setTunes] = useState<TuneDbData[]>([]);
-  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [dataSource, setDataSource] = useState<any>([]);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const goToTune = (tuneId: string) => navigate(generatePath(Routes.TUNE_TUNE, { tuneId }));
 
   const copyToClipboard = async (shareUrl: string) => {
     if (navigator.clipboard) {
@@ -66,44 +66,61 @@ const Hub = () => {
     }
   };
 
-  const loadData = useCallback(() => {
-    listTunes().then((data) => {
-      const temp: TuneDbData[] = [];
+  const loadData = debounce(async (searchText?: string) => {
+    setIsLoading(true);
+    const list = await searchTunes(searchText);
+    // TODO: create `unpublishedTunes` collection for this
+    const filtered = list.documents.filter((tune) => !!tune.vehicleName);
+    setDataSource(filtered.map((tune) => ({
+      ...tune,
+      key: tune.tuneId,
+      year: tune.year,
+      author: '?',
+      displacement: `${tune.displacement}l`,
+      aspiration: aspirationMapper[tune.aspiration],
+      updatedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
+      stars: 0,
+    })));
+    setIsLoading(false);
+  }, 300);
 
-      data.forEach((tuneSnapshot) => {
-        temp.push(tuneSnapshot.data());
-      });
+  const debounceLoadData = useCallback((value: string) => loadData(value), [loadData]);
 
-      setTunes(temp);
-      setDataSource(temp.map((tune) => ({
-        key: tune.id,
-        tuneId: tune.id,
-        make: tune.details!.make,
-        model: tune.details!.model,
-        year: tune.details!.year,
-        author: 'karniv00l',
-        publishedAt: new Date((tune.createdAt as Timestamp).seconds * 1000).toLocaleString(),
-        stars: 0,
-      })));
-      setIsLoading(false);
-    });
-  }, [listTunes]);
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // TODO: fix this
 
   const columns = [
     {
-      title: 'Make',
-      dataIndex: 'make',
-      key: 'make',
+      title: 'Vehicle name',
+      dataIndex: 'vehicleName',
+      key: 'vehicleName',
     },
     {
-      title: 'Model',
-      dataIndex: 'model',
-      key: 'model',
+      title: 'Engine make',
+      dataIndex: 'engineMake',
+      key: 'engineMake',
     },
     {
-      title: 'Year',
-      dataIndex: 'year',
-      key: 'year',
+      title: 'Engine code',
+      dataIndex: 'engineCode',
+      key: 'engineCode',
+    },
+    {
+      title: 'Displacement',
+      dataIndex: 'displacement',
+      key: 'displacement',
+    },
+    {
+      title: 'Cylinders',
+      dataIndex: 'cylindersCount',
+      key: 'cylindersCount',
+    },
+    {
+      title: 'Aspiration',
+      dataIndex: 'aspiration',
+      key: 'aspiration',
     },
     {
       title: 'Author',
@@ -112,8 +129,8 @@ const Hub = () => {
     },
     {
       title: 'Published',
-      dataIndex: 'publishedAt',
-      key: 'publishedAt',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
     },
     {
       title: <StarOutlined />,
@@ -125,45 +142,45 @@ const Hub = () => {
       render: (tuneId: string) => (
         <Space>
           <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-            <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(generateShareUrl(tuneId))} />
+            <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />
           </Tooltip>
-          <Button icon={<ArrowRightOutlined />} onClick={() => goToTune(tuneId)} />
+          <Button type="primary" icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
         </Space>
       ),
       key: 'tuneId',
     },
   ];
 
-  useEffect(() => {
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // TODO: fix this
-
   return (
     <div className="large-container">
       <Typography.Title>Hub</Typography.Title>
-      <Input style={{ marginBottom: 10, height: 40 }} placeholder="Search..." />
+      <Input
+        tabIndex={0}
+        style={{ marginBottom: 10, height: 40 }}
+        placeholder="Search..."
+        onChange={({ target }) => debounceLoadData(target.value)}
+      />
       {md ?
-        <Table dataSource={dataSource} columns={columns} loading={isLoading} />
+        <Table dataSource={dataSource} columns={columns} loading={isLoading} pagination={false} />
         :
         <Row gutter={[16, 16]}>
           {isLoading ? loadingCards : (
-            tunes.map((tune) => (
+            dataSource.map((tune: TuneDbDocument) => (
               <Col span={16} sm={8} key={tune.tuneFile}>
                 <Card
-                  title={tune.details!.model}
+                  title={tune.vehicleName}
                   actions={[
                     <Badge count={0} showZero size="small" color="gold">
                       <StarOutlined />
                     </Badge>,
                     <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-                      <CopyOutlined onClick={() => copyToClipboard(generateShareUrl(tune.id!))} />
+                      <CopyOutlined onClick={() => copyToClipboard(buildFullUrl([tunePath(tune.id!)]))} />
                     </Tooltip>,
-                    <ArrowRightOutlined onClick={() => goToTune(tune.id!)} />,
+                    <ArrowRightOutlined onClick={() => navigate(tunePath(tune.id!))} />,
                   ]}
                 >
                   <Typography.Text ellipsis>
-                    {tune.details!.make} {tune.details!.model} {tune.details!.year}
+                    {tune.engineMake} {tune.engineCode} {tune.year}
                   </Typography.Text>
                 </Card>
               </Col>

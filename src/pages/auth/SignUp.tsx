@@ -1,13 +1,23 @@
-import { useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {
   Form,
   Input,
   Button,
   Divider,
+  Space,
 } from 'antd';
 import {
   MailOutlined,
   LockOutlined,
+  UserOutlined,
+  GoogleOutlined,
+  GithubOutlined,
+  FacebookOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import {
   Link,
@@ -19,85 +29,142 @@ import validateMessages from './validateMessages';
 import {
   emailNotVerified,
   signUpFailed,
+  magicLinkSent,
   signUpSuccessful,
 } from './notifications';
+import {
+  emailRules,
+  passwordRules,
+  requiredRules,
+} from '../../utils/form';
 
 const { Item } = Form;
 
-const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
-
 const SignUp = () => {
-  const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const { signUp } = useAuth();
+  const [formMagicLink] = Form.useForm();
+  const [formEmail] = Form.useForm();
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [isFacebookLoading, setIsFacebookLoading] = useState(false);
+  const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false);
+  const {
+    currentUser,
+    signUp,
+    sendEmailVerification,
+    googleAuth,
+    githubAuth,
+    facebookAuth,
+    sendMagicLink,
+  } = useAuth();
   const navigate = useNavigate();
+  const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading || isMagicLinkLoading;
 
-  const onFinish = async ({ email, password }: { email: string, password: string }) => {
-    setIsLoading(true);
+  const googleLogin = useCallback(async () => {
+    setIsGoogleLoading(true);
     try {
-      await signUp(email, password);
+      await googleAuth();
+    } catch (error) {
+      signUpFailed(error as Error);
+    }
+  }, [googleAuth]);
+
+  const githubLogin = useCallback(async () => {
+    setIsGithubLoading(true);
+    try {
+      await githubAuth();
+    } catch (error) {
+      signUpFailed(error as Error);
+    }
+  }, [githubAuth]);
+
+  const facebookLogin = useCallback(async () => {
+    setIsFacebookLoading(true);
+    try {
+      await facebookAuth();
+    } catch (error) {
+      signUpFailed(error as Error);
+    }
+  }, [facebookAuth]);
+
+  const emailSignUp = async ({ email, password, username }: { email: string, password: string, username: string }) => {
+    setIsEmailLoading(true);
+    try {
+      const user = await signUp(email, password, username);
+      await sendEmailVerification();
       signUpSuccessful();
-      emailNotVerified();
+      if (!user.emailVerification) {
+        emailNotVerified();
+      }
       navigate(Routes.HUB);
     } catch (error) {
-      form.resetFields();
       console.warn(error);
       signUpFailed(error as Error);
-      setIsLoading(false);
+      formMagicLink.resetFields();
+      formEmail.resetFields();
+      setIsEmailLoading(false);
     }
   };
 
+  const magicLinkLogin = async ({ email }: { email: string }) => {
+    setIsMagicLinkLoading(true);
+    try {
+      await sendMagicLink(email);
+      magicLinkSent();
+    } catch (error) {
+      signUpFailed(error as Error);
+    } finally {
+      setIsMagicLinkLoading(false);
+      formMagicLink.resetFields();
+      formEmail.resetFields();
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate(Routes.HUB);
+    }
+  }, [currentUser, navigate]);
+
   return (
-    <div className="small-container">
+    <div className="auth-container">
       <Divider>Sign Up</Divider>
-      <Form
-        onFinish={onFinish}
-        validateMessages={validateMessages}
-        autoComplete="off"
-        form={form}
-      >
-        <Item
-          name="email"
-          rules={[{ required: true, type: 'email' }]}
-          hasFeedback
+      <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
+        <Button
+          loading={isGoogleLoading}
+          onClick={googleLogin}
+          disabled={isAnythingLoading}
         >
+          <GoogleOutlined />Google
+        </Button>
+        <Button
+          loading={isGithubLoading}
+          onClick={githubLogin}
+          disabled={isAnythingLoading}
+        >
+          <GithubOutlined />GitHub
+        </Button>
+        <Button
+          loading={isFacebookLoading}
+          onClick={facebookLogin}
+          disabled={isAnythingLoading}
+        >
+          <FacebookOutlined />Facebook
+        </Button>
+      </Space>
+      <Divider />
+      <Form
+        onFinish={magicLinkLogin}
+        validateMessages={validateMessages}
+        form={formMagicLink}
+      >
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
-          />
-        </Item>
-        <Item
-          name="password"
-          rules={[
-            { required: true },
-            { pattern: passwordPattern, message: 'Password is too weak!' },
-          ]}
-          hasFeedback
-        >
-          <Input.Password
-            placeholder="Password"
-            prefix={<LockOutlined />}
-          />
-        </Item>
-        <Item
-          name="passwordConfirmation"
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-
-                return Promise.reject(new Error('Passwords don\'t match!'));
-              },
-            }),
-          ]}
-          hasFeedback
-        >
-          <Input.Password
-            placeholder="Password confirmation"
-            prefix={<LockOutlined />}
+            id="email-magic-link"
+            autoComplete="email"
+            disabled={isAnythingLoading}
           />
         </Item>
         <Item>
@@ -105,15 +172,64 @@ const SignUp = () => {
             type="primary"
             htmlType="submit"
             style={{ width: '100%' }}
-            loading={isLoading}
+            loading={isMagicLinkLoading}
+            disabled={isAnythingLoading}
+            icon={<MailOutlined />}
           >
-            Sign Up
+            Send me a Magic Link
           </Button>
         </Item>
       </Form>
-      <Link to={Routes.LOGIN} style={{ float: 'right' }}>
-        Log In
-      </Link>
+      <Form
+        onFinish={emailSignUp}
+        validateMessages={validateMessages}
+        form={formEmail}
+      >
+        <Divider />
+        <Item name="username" rules={requiredRules} hasFeedback>
+          <Input
+            prefix={<UserOutlined />}
+            placeholder="Username"
+            autoComplete="name"
+            disabled={isAnythingLoading}
+          />
+        </Item>
+        <Item name="email" rules={emailRules} hasFeedback>
+          <Input
+            prefix={<MailOutlined />}
+            placeholder="Email"
+            autoComplete="email"
+            disabled={isAnythingLoading}
+          />
+        </Item>
+        <Item
+          name="password"
+          rules={passwordRules}
+          hasFeedback
+        >
+          <Input.Password
+            placeholder="Password"
+            autoComplete="new-password"
+            prefix={<LockOutlined />}
+            disabled={isAnythingLoading}
+          />
+        </Item>
+        <Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ width: '100%' }}
+            loading={isEmailLoading}
+            disabled={isAnythingLoading}
+            icon={<UserAddOutlined />}
+          >
+            Sign Up using password
+          </Button>
+        </Item>
+        <Link to={Routes.LOGIN} style={{ float: 'right' }}>
+          Log In
+        </Link>
+      </Form>
     </div>
   );
 };

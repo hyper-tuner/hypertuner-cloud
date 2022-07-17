@@ -166,6 +166,28 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     return list.length ? list : null;
   }, [lg, sm]);
 
+  const userMenuItems = useMemo(() => currentUser ? [{
+    key: 'profile',
+    icon: <UserOutlined />,
+    label: 'Profile',
+    onClick: () => navigate(Routes.PROFILE),
+  }, {
+    key: 'logout',
+    icon: <LogoutOutlined />,
+    label: 'Logout',
+    onClick: logoutClick,
+  }] : [{
+    key: 'login',
+    icon: <LoginOutlined />,
+    label: 'Login',
+    onClick: () => navigate(Routes.LOGIN),
+  }, {
+    key: 'sign-up',
+    icon: <UserAddOutlined />,
+    label: 'Sign Up',
+    onClick: () => navigate(Routes.SIGN_UP),
+  }], [currentUser, logoutClick, navigate]);
+
   return (
     <Header className="app-top-bar">
       <Row>
@@ -225,30 +247,8 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
               </Button>
             </Dropdown>
             <Dropdown
-              overlay={
-                <Menu>
-                  {currentUser ? (
-                    <>
-                      <Menu.Item key="profile" icon={<UserOutlined />}>
-                        <Link to={Routes.PROFILE}>Profile</Link>
-                      </Menu.Item>
-                      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={logoutClick}>
-                        Logout
-                      </Menu.Item>
-                    </>
-                  ) : (
-                    <>
-                      <Menu.Item key="login" icon={<LoginOutlined />}>
-                        <Link to={Routes.LOGIN}>Login</Link>
-                      </Menu.Item>
-                      <Menu.Item key="sign-up" icon={<UserAddOutlined />}>
-                        <Link to={Routes.SIGN_UP}>Sign Up</Link>
-                      </Menu.Item>
-                    </>
-                  )}
-                </Menu>
-              }
-              placement="bottom"
+              overlay={<Menu items={userMenuItems} />}
+              placement="bottomRight"
               trigger={['click']}
             >
               <Button icon={<UserOutlined />}>

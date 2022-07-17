@@ -30,9 +30,9 @@ export const msToTime = (input: number) => {
 export const remap = (x: number, inMin: number, inMax: number, outMin: number, outMax: number) => (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 
 export const colorHsl = (min: number, max: number, value: number): HslType => {
-  const saturation = 60;
-  const lightness = 40;
-  const coldDeg = 220;
+  const saturation = 80;
+  const lightness = 45;
+  const coldDeg = 225;
   const hotDeg = 0;
   let hue = remap(value, min, max, coldDeg, hotDeg);
 

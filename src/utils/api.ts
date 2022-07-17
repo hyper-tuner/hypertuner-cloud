@@ -9,17 +9,26 @@ import {
   onProgress as onProgressType,
 } from './http';
 import TuneParser from './tune/TuneParser';
-import { TuneDbData } from '../types/dbData';
+import { TuneDbDocument } from '../types/dbData';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
 
-export const loadTune = async (tuneData: TuneDbData) => {
+// TODO: refactor this!!
+export const loadTune = async (tuneData: TuneDbDocument | null, bucketId: string) => {
+  if (tuneData === null) {
+    store.dispatch({ type: 'config/load', payload: null });
+    store.dispatch({ type: 'tune/load', payload: null });
+    return;
+  }
+
   const pako = await import('pako');
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { getFile, getINIFile } = useServerStorage();
+  const { getFileForDownload, getINIFile } = useServerStorage();
+
   const started = new Date();
-  const tuneRaw = getFile(tuneData.tuneFile!);
+  const tuneRaw = await getFileForDownload(tuneData.tuneFileId!, bucketId);
+
   const tuneParser = new TuneParser()
-    .parse(pako.inflate(new Uint8Array(await tuneRaw)));
+    .parse(pako.inflate(new Uint8Array(tuneRaw)));
 
   if (!tuneParser.isValid()) {
     console.error('Invalid tune');
@@ -29,7 +38,7 @@ export const loadTune = async (tuneData: TuneDbData) => {
   }
 
   const tune = tuneParser.getTune();
-  const iniRaw = tuneData.customIniFile ? getFile(tuneData.customIniFile) : getINIFile(tune.details.signature);
+  const iniRaw = tuneData.customIniFileId ? getFileForDownload(tuneData.customIniFileId, bucketId) : getINIFile(tuneData.signature);
   const buff = pako.inflate(new Uint8Array(await iniRaw));
   const config = new INI(buff).parse().getResults();
 
@@ -45,7 +54,7 @@ export const loadTune = async (tuneData: TuneDbData) => {
   config.constants.pages[0].data.divider = divider;
 
   const loadingTimeInfo = `Tune loaded in ${(new Date().getTime() - started.getTime())}ms`;
-  console.log(loadingTimeInfo);
+  console.info(loadingTimeInfo);
 
   store.dispatch({ type: 'config/load', payload: config });
   store.dispatch({ type: 'tune/load', payload: tune });

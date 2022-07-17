@@ -1,84 +1,126 @@
-import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
 import {
-  Timestamp,
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  where,
-  query,
-  getDocs,
-  QuerySnapshot,
-  orderBy,
-  getFirestore,
-} from 'firebase/firestore/lite';
-import { TuneDbData } from '../types/dbData';
+  Models,
+  Query,
+} from 'appwrite';
+import { database } from '../appwrite';
+import {
+  TuneDbData,
+  UsersBucket,
+  TuneDbDataPartial,
+  TuneDbDocument,
+} from '../types/dbData';
+import { databaseGenericError } from '../pages/auth/notifications';
+import { fetchEnv } from '../utils/env';
 
-const TUNES_PATH = 'publicTunes';
-
-const db = getFirestore();
-
-const genericError = (error: Error) => notification.error({ message: 'Database Error', description: error.message });
+const COLLECTION_ID_PUBLIC_TUNES = fetchEnv('VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES');
+const COLLECTION_ID_USERS_BUCKETS = fetchEnv('VITE_APPWRITE_COLLECTION_ID_USERS_BUCKETS');
 
 const useDb = () => {
-  const getTuneData = async (tuneId: string) => {
+  const updateTune = async (documentId: string, data: TuneDbDataPartial) => {
     try {
-      const tune = (await getDoc(doc(db, TUNES_PATH, tuneId))).data() as TuneDbData;
-      const processed = {
-        ...tune,
-        createdAt: (tune?.createdAt as Timestamp)?.toDate().toISOString(),
-        updatedAt: (tune?.updatedAt as Timestamp)?.toDate().toISOString(),
-      };
-
-      return Promise.resolve(processed);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      genericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
-  const listTunesData = async () => {
-    try {
-      const tunesRef = collection(db, TUNES_PATH);
-      const q = query(
-        tunesRef,
-        where('isPublished', '==', true),
-        where('isListed', '==', true),
-        orderBy('createdAt', 'desc'),
-      );
-
-      return Promise.resolve(await getDocs(q));
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      genericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
-  const updateData = async (tuneId: string, data: TuneDbData) => {
-    try {
-      await setDoc(doc(db, TUNES_PATH, tuneId), data, { merge: true });
+      await database.updateDocument(COLLECTION_ID_PUBLIC_TUNES, documentId, data);
 
       return Promise.resolve();
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
-      genericError(error as Error);
+      databaseGenericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const createTune = async (data: TuneDbData) => {
+    try {
+      const tune = await database.createDocument(
+        COLLECTION_ID_PUBLIC_TUNES,
+        'unique()',
+        data,
+        ['role:all'],
+        [`user:${data.userId}`],
+      );
+
+      return Promise.resolve(tune);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      databaseGenericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const getTune = async (tuneId: string) => {
+    try {
+      const tune = await database.listDocuments(
+        COLLECTION_ID_PUBLIC_TUNES,
+        [Query.equal('tuneId', tuneId)],
+        1,
+      );
+
+      return Promise.resolve(tune.total > 0 ? tune.documents[0] as unknown as TuneDbDocument : null);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      databaseGenericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const getBucketId = async (userId: string) => {
+    try {
+      const buckets = await database.listDocuments(
+        COLLECTION_ID_USERS_BUCKETS,
+        [
+          Query.equal('userId', userId),
+          Query.equal('visibility', 'public'),
+        ],
+        1,
+      );
+
+      if (buckets.total === 0) {
+        throw new Error('No public bucket found');
+      }
+
+      return Promise.resolve((buckets.documents[0] as unknown as UsersBucket)!.bucketId);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      databaseGenericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const searchTunes = async (search?: string) => {
+    // TODO: add pagination
+    const limit = 100;
+
+    try {
+      const list: Models.DocumentList<TuneDbDocument> = await (
+        search
+          ? database.listDocuments(COLLECTION_ID_PUBLIC_TUNES, [Query.search('textSearch', search)], limit)
+          : database.listDocuments(COLLECTION_ID_PUBLIC_TUNES, [], limit)
+      );
+
+      return Promise.resolve(list);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      databaseGenericError(error as Error);
 
       return Promise.reject(error);
     }
   };
 
   return {
-    updateData: (tuneId: string, data: TuneDbData): Promise<void> => updateData(tuneId, data),
-    getTune: (tuneId: string): Promise<TuneDbData> => getTuneData(tuneId),
-    listTunes: (): Promise<QuerySnapshot<TuneDbData>> => listTunesData(),
+    updateTune: (tuneId: string, data: TuneDbDataPartial): Promise<void> => updateTune(tuneId, data),
+    createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
+    getTune: (tuneId: string): Promise<TuneDbDocument | null> => getTune(tuneId),
+    searchTunes: (search?: string): Promise<Models.DocumentList<TuneDbDocument>> => searchTunes(search),
+    getBucketId: (userId: string): Promise<string> => getBucketId(userId),
   };
 };
 

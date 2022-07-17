@@ -1,46 +1,23 @@
 import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
-import {
-  UploadTask,
-  ref,
-  getBytes,
-  deleteObject,
-  uploadBytesResumable,
-  getStorage,
-} from 'firebase/storage';
+import { Models } from 'appwrite';
+import { storage } from '../appwrite';
+import { fetchEnv } from '../utils/env';
 
 const PUBLIC_PATH = 'public';
-const USERS_PATH = `${PUBLIC_PATH}/users`;
 const INI_PATH = `${PUBLIC_PATH}/ini`;
-export const CDN_URL = import.meta.env.VITE_CDN_URL;
+export const CDN_URL = fetchEnv('VITE_CDN_URL');
 
-const storage = getStorage();
+export type ServerFile = Models.File;
 
 const genericError = (error: Error) => notification.error({ message: 'Storage Error', description: error.message });
 
 const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
-  if (CDN_URL) {
-    const response = await fetch(`${CDN_URL}/${path}`);
-    return Promise.resolve(response.arrayBuffer());
-  }
-
-  return Promise.resolve(await getBytes(ref(storage, path)));
+  const response = await fetch(`${CDN_URL}/${path}`);
+  return Promise.resolve(response.arrayBuffer());
 };
 
 const useServerStorage = () => {
-  const getFile = async (path: string) => {
-
-    try {
-      return fetchFromServer(path);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      genericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
   const getINIFile = async (signature: string) => {
     const { version, baseVersion } = /.+?(?<version>(?<baseVersion>\d+)(-\w+)*)/.exec(signature)?.groups || { version: null, baseVersion: null };
 
@@ -52,7 +29,7 @@ const useServerStorage = () => {
 
       notification.warning({
         message: 'INI not found',
-        description: `INI version: "${version}" not found. Trying base version: "${baseVersion}"!` ,
+        description: `INI version: "${version}" not found. Trying base version: "${baseVersion}"!`,
       });
 
       try {
@@ -63,7 +40,7 @@ const useServerStorage = () => {
 
         notification.error({
           message: 'INI not found',
-          description: `INI version: "${baseVersion}" not found. Try uploading custom INI file!` ,
+          description: `INI version: "${baseVersion}" not found. Try uploading custom INI file!`,
         });
       }
 
@@ -71,10 +48,9 @@ const useServerStorage = () => {
     }
   };
 
-  const removeFile = async (path: string) => {
+  const removeFile = async (bucketId: string, fileId: string) => {
     try {
-      await deleteObject(ref(storage, path));
-
+      await storage.deleteFile(bucketId, fileId);
       return Promise.resolve();
     } catch (error) {
       Sentry.captureException(error);
@@ -85,20 +61,61 @@ const useServerStorage = () => {
     }
   };
 
-  const uploadFile = (path: string, file: File, data: Uint8Array) =>
-    uploadBytesResumable(ref(storage, path), data, {
-      customMetadata: {
-        name: file.name,
-        size: `${file.size}`,
-      },
-    });
+  const uploadFile = async (userId: string, bucketId: string, file: File) => {
+    try {
+      const createdFile = await storage.createFile(
+        bucketId,
+        'unique()',
+        file,
+        ['role:all'],
+        [`user:${userId}`],
+      );
+
+      return Promise.resolve(createdFile);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      genericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const getFile = async (id: string, bucketId: string) => {
+    try {
+      const file = await storage.getFile(bucketId, id);
+
+      return Promise.resolve(file);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      genericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
+  const getFileForDownload = async (id: string, bucketId: string) => {
+    try {
+      const file = storage.getFileView(bucketId, id);
+      const response = await fetch(file.href);
+
+      return Promise.resolve(response.arrayBuffer());
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      genericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
 
   return {
-    getFile: (path: string): Promise<ArrayBuffer> => getFile(path),
+    getFile: (id: string, bucketId: string): Promise<Models.File> => getFile(id, bucketId),
     getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
-    removeFile: (path: string): Promise<void> => removeFile(path),
-    uploadFile: (path: string, file: File, data: Uint8Array): UploadTask => uploadFile(path, file, data),
-    basePathForFile: (userUuid: string, tuneId: string, fileName: string): string => `${USERS_PATH}/${userUuid}/tunes/${tuneId}/${fileName}`,
+    removeFile: (bucketId: string, fileId: string): Promise<void> => removeFile(bucketId, fileId),
+    getFileForDownload: (bucketId: string, fileId: string): Promise<ArrayBuffer> => getFileForDownload(bucketId, fileId),
+    uploadFile: (userId: string, bucketId: string, file: File): Promise<ServerFile> => uploadFile(userId, bucketId, file),
   };
 };
 

@@ -23,7 +23,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
-  if (!tuneData.details) {
+  if (!tuneData?.vehicleName) {
     return <Loader />;
   }
 
@@ -32,89 +32,96 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       <Divider>Details</Divider>
       <Form>
         <Row {...rowProps}>
-          <Col {...colProps}>
+          <Col span={24} sm={24}>
             <Item>
-              <Input value={tuneData.details.make!} addonBefore="Make" />
-            </Item>
-          </Col>
-          <Col {...colProps}>
-            <Item>
-              <Input value={tuneData.details.model!} addonBefore="Model" />
+              <Input value={tuneData.vehicleName!} addonBefore="Vehicle name" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.details.year!} addonBefore="Year" style={{ width: '100%' }} />
+              <Input value={tuneData.engineMake!} addonBefore="Engine make" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.details.displacement!} addonBefore="Displacement" addonAfter="l" />
-            </Item>
-          </Col>
-        </Row>
-        <Row {...rowProps}>
-          <Col {...colProps}>
-            <Item>
-              <Input value={tuneData.details.hp!} addonBefore="HP" style={{ width: '100%' }} />
-            </Item>
-          </Col>
-          <Col {...colProps}>
-            <Item>
-              <Input value={tuneData.details.stockHp!} addonBefore="Stock HP" style={{ width: '100%' }} />
+              <Input value={tuneData.engineCode!} addonBefore="Engine code" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.details.engineCode!} addonBefore="Engine code" />
+              <Input value={tuneData.displacement!} addonBefore="Displacement" addonAfter="l" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.details.cylindersCount!} addonBefore="No of cylinders" style={{ width: '100%' }} />
+              <Input value={tuneData.cylindersCount!} addonBefore="Cylinders" style={{ width: '100%' }} />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Select placeholder="Aspiration" style={{ width: '100%' }} value={tuneData.details.aspiration}>
+              <Select placeholder="Aspiration" style={{ width: '100%' }} value={tuneData.aspiration}>
                 <Select.Option value="na">Naturally aspirated</Select.Option>
-                <Select.Option value="turbocharger">Turbocharged</Select.Option>
-                <Select.Option value="supercharger">Supercharged</Select.Option>
+                <Select.Option value="turbocharged">Turbocharged</Select.Option>
+                <Select.Option value="supercharged">Supercharged</Select.Option>
               </Select>
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.details.fuel!} addonBefore="Fuel" />
+              <Input value={tuneData.compression!} addonBefore="Compression" style={{ width: '100%' }} addonAfter=":1" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.details.injectorsSize!} addonBefore="Injectors size" addonAfter="cc" />
+              <Input value={tuneData.fuel!} addonBefore="Fuel" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.details.coils!} addonBefore="Coils" />
+              <Input value={tuneData.ignition!} addonBefore="Ignition" />
+            </Item>
+          </Col>
+        </Row>
+        <Row {...rowProps}>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.injectorsSize!} addonBefore="Injectors size" addonAfter="cc" />
+            </Item>
+          </Col>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.year!} addonBefore="Year" />
+            </Item>
+          </Col>
+        </Row>
+        <Row {...rowProps}>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.hp!} addonBefore="HP" style={{ width: '100%' }} />
+            </Item>
+          </Col>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.stockHp!} addonBefore="Stock HP" style={{ width: '100%' }} />
             </Item>
           </Col>
         </Row>
       </Form>
       <Divider>README</Divider>
       <div className="markdown-preview" style={{ height: '100%' }}>
-        {tuneData.details?.readme && <ReactMarkdown>
-          {`${tuneData.details?.readme}`}
+        {tuneData.readme && <ReactMarkdown>
+          {`${tuneData.readme}`}
         </ReactMarkdown>}
       </div>
-    </div>
+    </div >
   );
 };
 

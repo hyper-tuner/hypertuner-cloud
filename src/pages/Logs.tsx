@@ -147,7 +147,7 @@ const Logs = ({
       };
     }).filter((val) => !!val);
 
-  }, [config.datalog, findOutputChannel, isConfigReady]);
+  }, [config?.datalog, findOutputChannel, isConfigReady]);
 
   useEffect(() => {
     const worker = new MlgParserWorker();
@@ -178,7 +178,7 @@ const Logs = ({
               store.dispatch({ type: 'logs/load', payload: data.result.records });
               break;
             case 'metrics':
-              console.log(`Log parsed in ${data.elapsed}ms`);
+              console.info(`Log parsed in ${data.elapsed}ms`);
               setParseElapsed(msToTime(data.elapsed));
               setSamplesCount(data.records);
               setStep(2);
@@ -213,7 +213,7 @@ const Logs = ({
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [calculateCanvasSize, config.datalog, config.outputChannels, loadedLogs, ui.sidebarCollapsed]);
+  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, loadedLogs, ui.sidebarCollapsed]);
 
   return (
     <>

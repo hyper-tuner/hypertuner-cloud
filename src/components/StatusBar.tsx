@@ -52,7 +52,7 @@ const StatusBar = ({ tune }: { tune: TuneState }) => (
   <Footer className="app-status-bar">
     <Row>
       <Col span={20}>
-        {tune.details.author && <Firmware tune={tune} />}
+        {tune?.details?.author && <Firmware tune={tune} />}
       </Col>
       <Col span={4} style={{ textAlign: 'right' }}>
         <a

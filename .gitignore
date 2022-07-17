@@ -12,7 +12,6 @@ node_modules
 /build
 
 # misc
-.DS_Store
 .env.local
 .env.development.local
 .env.test.local
@@ -24,8 +23,17 @@ yarn-error.log*
 
 .eslintcache
 
-# custom ts builds
-/src/**/*.js
+# Editor directories and files
+# .vscode/*
+# !.vscode/extensions.json
+# !.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # rollup-plugin-visualizer generated files
 stats.html

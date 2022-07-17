@@ -4,14 +4,7 @@
 @import './themes/dark.less';
 @import './themes/common.less';
 @import './themes/ant.less';
-
-:root {
-  --background: @component-background;
-  --foreground: @text;
-  --a1: @main;
-  --border: @border-color-split;
-  --shadow: @shadow-2;
-}
+@import './overrides.less';
 
 body {
   overflow: hidden;
@@ -36,13 +29,6 @@ html, body {
   z-index: @bars-z-index;
 }
 
-.app-sidebar {
-  height: calc(100vh - @layout-header-height - @layout-footer-height);
-  position: fixed;
-  left: 0;
-  user-select: none;
-}
-
 .app-status-bar {
   position: fixed;
   bottom: 0;
@@ -58,8 +44,21 @@ html, body {
   }
 }
 
+.app-sidebar {
+  height: calc(100vh - @layout-header-height - @layout-footer-height);
+  position: fixed;
+  left: 0;
+  user-select: none;
+}
+
 .app-content {
   height: calc(100vh - @layout-header-height - @layout-footer-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ant-tabs-tabpane {
+  height: calc(100vh - @layout-header-height - @layout-footer-height - @layout-trigger-height - @tabs-nav-height);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -83,23 +82,8 @@ html, body {
   max-width: 1400px;
 }
 
-.ant-tabs-tabpane {
-  height: calc(100vh - @layout-header-height - @layout-footer-height - @layout-trigger-height - @tabs-nav-height);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 .ant-checkbox-wrapper {
   user-select: none;
-}
-
-.ant-upload-list-picture-card
-.ant-upload-list-item-actions
-.anticon-delete,
-.ant-upload-list-picture-card
-.ant-upload-list-item-actions
-.anticon-eye {
-  color: @text;
 }
 
 .table {

@@ -17,19 +17,20 @@ import {
   resetFailed,
   resetSuccessful,
 } from './notifications';
+import { emailRules } from '../../utils/form';
 
 const { Item } = Form;
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const { resetPassword } = useAuth();
+  const { initResetPassword } = useAuth();
   const navigate = useNavigate();
 
   const onFinish = async ({ email }: { form: any, email: string }) => {
     setIsLoading(true);
     try {
-      await resetPassword(email);
+      await initResetPassword(email);
       resetSuccessful();
       navigate(Routes.LOGIN);
     } catch (error) {
@@ -41,23 +42,23 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="small-container">
+    <div className="auth-container">
       <Divider>Reset password</Divider>
       <Form
         initialValues={{ remember: true }}
         onFinish={onFinish}
         validateMessages={validateMessages}
-        autoComplete="off"
         form={form}
       >
         <Item
           name="email"
-          rules={[{ required: true, type: 'email' }]}
+          rules={emailRules}
           hasFeedback
         >
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
+            autoComplete="email"
           />
         </Item>
         <Item>

@@ -4,13 +4,7 @@ This guide will help you set up this project.
 
 ## Requirements
 
-- [Node](https://nodejs.org/) 16.x.x (Node Version Manager: [nvm](https://github.com/nvm-sh/nvm))
-- [Firebase](https://console.firebase.google.com/)
-  - Authentication
-  - Storage
-  - Firestore Database
-- [Firebase CLI](https://firebase.google.com/docs/cli)
-- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) (`brew install --cask google-cloud-sdk`)
+- Node Version Manager: [nvm](https://github.com/nvm-sh/nvm)
 
 ### Setup local environment variables
 
@@ -34,6 +28,12 @@ Private token can be assign to ENV when running `npm install` in the same shell:
 export NPM_GITHUB_TOKEN=YOUR_PRIVATE_GITHUB_TOKEN
 ```
 
+### Setup correct Node.js version
+
+```bash
+nvm use
+```
+
 ### Install dependencies and run in development mode
 
 ```bash
@@ -42,20 +42,4 @@ npm install
 
 # run development server
 npm start
-```
-
-## Firebase
-
-### Storage
-
-Authenticate:
-
-```bash
-gcloud auth login
-```
-
-Set up CORS:
-
-```bash
-gsutil cors set firebase/cors.json gs://<YOUR-BUCKET>
 ```

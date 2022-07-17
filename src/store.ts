@@ -38,7 +38,7 @@ const initialState: AppState = {
     constants: {},
     details: {} as any,
   },
-  tuneData: {},
+  tuneData: {} as any,
   logs: [],
   config: {} as any,
   ui: {

@@ -96,7 +96,7 @@ const Dialog = ({
   name: string,
   url: string,
 }) => {
-  const isDataReady = Object.keys(tune.constants).length && Object.keys(config.constants).length;
+  const isDataReady = tune && config && Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useBrowserStorage();
   const { findConstantOnPage } = useConfig(config);
   const [panelsComponents, setPanelsComponents] = useState<any[]>([]);
@@ -138,7 +138,7 @@ const Dialog = ({
         yData={parseXy(y.value as string)}
       />
     );
-  }, [config.help, findConstantOnPage, tune.constants]);
+  }, [config?.help, findConstantOnPage, tune?.constants]);
 
   const renderTable = useCallback((table: TableType | RenderedPanel) => {
     const x = tune.constants[table.xBins[0]];
@@ -157,7 +157,7 @@ const Dialog = ({
         yUnits={y.units as string}
       />
     </div>;
-  }, [tune.constants]);
+  }, [tune?.constants]);
 
   const calculateSpan = (type: PanelTypes, dialogsCount: number) => {
     let xxl = 24;
@@ -221,7 +221,7 @@ const Dialog = ({
     });
   };
 
-  if (config.dialogs) {
+  if (config?.dialogs) {
     resolveDialogs(config.dialogs, name);
   }
 
@@ -340,7 +340,7 @@ const Dialog = ({
         {panel.type === PanelTypes.TABLE && renderTable(panel)}
       </Col>
     );
-  }), [config, findConstantOnPage, panels, renderCurve, renderTable, tune.constants]);
+  }), [config, findConstantOnPage, panels, renderCurve, renderTable, tune?.constants]);
 
   useEffect(() => {
     storageSet('lastDialog', url);

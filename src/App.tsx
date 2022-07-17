@@ -2,6 +2,7 @@ import {
   Routes as ReactRoutes,
   Route,
   useMatch,
+  useNavigate,
 } from 'react-router-dom';
 import {
   Layout,
@@ -14,6 +15,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useState,
 } from 'react';
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
@@ -25,6 +27,7 @@ import Loader from './components/Loader';
 import {
   AppState,
   NavigationState,
+  TuneDataState,
   UIState,
 } from './types/state';
 import useDb from './hooks/useDb';
@@ -32,7 +35,7 @@ import Info from './pages/Info';
 import Hub from './pages/Hub';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import './App.less';
+import './css/App.less';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -40,11 +43,14 @@ import './App.less';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Diagnose = lazy(() => import('./pages/Diagnose'));
+const Upload = lazy(() => import('./pages/Upload'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Profile = lazy(() => import('./pages/auth/Profile'));
 const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
-const Upload = lazy(() => import('./pages/Upload'));
+const MagicLinkConfirmation = lazy(() => import('./pages/auth/MagicLinkConfirmation'));
+const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
+const ResetPasswordConfirmation = lazy(() => import('./pages/auth/ResetPasswordConfirmation'));
 
 const { Content } = Layout;
 
@@ -52,11 +58,32 @@ const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
   navigation: state.navigation,
+  tuneData: state.tuneData,
 });
 
-const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) => {
+const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: NavigationState, tuneData: TuneDataState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   const { getTune } = useDb();
+  const searchParams = new URLSearchParams(window.location.search);
+  const redirectPage = searchParams.get('redirectPage');
+  const [isLoading, setIsLoading] = useState(false);
+  const { getBucketId } = useDb();
+  const navigate = useNavigate();
+
+  // TODO: refactor this
+  switch (redirectPage) {
+    case Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION:
+      window.location.href = `/#${Routes.MAGIC_LINK_CONFIRMATION}?${searchParams.toString()}`;
+      break;
+    case Routes.REDIRECT_PAGE_EMAIL_VERIFICATION:
+      window.location.href = `/#${Routes.EMAIL_VERIFICATION}?${searchParams.toString()}`;
+      break;
+    case Routes.REDIRECT_PAGE_RESET_PASSWORD:
+      window.location.href = `/#${Routes.RESET_PASSWORD_CONFIRMATION}?${searchParams.toString()}`;
+      break;
+    default:
+      break;
+  }
 
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   // const lastDialogPath = storageGetSync('lastDialog');
@@ -66,9 +93,25 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
 
   useEffect(() => {
     if (tuneId) {
-      getTune(tuneId).then(async (tuneData) => {
-        loadTune(tuneData);
-        store.dispatch({ type: 'tuneData/load', payload: tuneData });
+      // clear out last state
+      if (tuneData && tuneId !== tuneData.tuneId) {
+        setIsLoading(true);
+        loadTune(null, '');
+        store.dispatch({ type: 'tuneData/load', payload: null });
+        setIsLoading(false);
+      }
+
+      getTune(tuneId).then(async (tune) => {
+        if (!tune) {
+          console.warn('Tune not found');
+          navigate(Routes.HUB);
+          return;
+        }
+
+        getBucketId(tune.userId).then((bucketId) => {
+          loadTune(tune!, bucketId);
+        });
+        store.dispatch({ type: 'tuneData/load', payload: tune });
       });
 
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });
@@ -92,14 +135,16 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
       <Layout style={{ marginLeft }}>
         <Layout className="app-content">
           <Content>
-            <Suspense fallback={<Loader />}>
-              {element}
-            </Suspense>
+            <Suspense fallback={<Loader />}>{element}</Suspense>
           </Content>
         </Layout>
       </Layout>
     );
   }, []);
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -111,11 +156,16 @@ const App = ({ ui, navigation }: { ui: UIState, navigation: NavigationState }) =
           <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
           <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
           <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
+          <Route path={`${Routes.UPLOAD}/*`} element={<ContentFor element={<Upload />} />} />
+
           <Route path={Routes.LOGIN} element={<ContentFor element={<Login />} />} />
           <Route path={Routes.PROFILE} element={<ContentFor element={<Profile />} />} />
           <Route path={Routes.SIGN_UP} element={<ContentFor element={<SignUp />} />} />
           <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
-          <Route path={Routes.UPLOAD} element={<ContentFor element={<Upload />} />} />
+
+          <Route path={Routes.MAGIC_LINK_CONFIRMATION} element={<ContentFor element={<MagicLinkConfirmation />} />} />
+          <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
+          <Route path={Routes.RESET_PASSWORD_CONFIRMATION} element={<ContentFor element={<ResetPasswordConfirmation />} />} />
         </ReactRoutes>
         <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>

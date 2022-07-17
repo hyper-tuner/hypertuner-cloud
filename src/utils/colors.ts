@@ -8,10 +8,10 @@ export enum Colors {
   BLUE = '#2fe3ff',
   GREY = '#334455',
 
-  // dark theme
-  ACCENT = '#1e88ea',
-  TEXT = '#ddd',
-  MAIN = '#222629',
+  // dark theme - keep this in sync with: src/themes/dark.less and common.less
+  ACCENT = '#2F49D1',
+  TEXT = '#CECECE',
+  MAIN = '#1E1E1E',
   MAIN_DARK = '#191C1E',
-  MAIN_LIGHT = '#2E3338',
+  MAIN_LIGHT = '#252525',
 }

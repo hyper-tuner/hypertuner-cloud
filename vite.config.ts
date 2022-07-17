@@ -9,14 +9,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          firebase: [
-            'firebase/app',
-            'firebase/performance',
-            'firebase/auth',
-            'firebase/analytics',
-            'firebase/storage',
-            'firebase/firestore/lite',
-          ],
           react: ['react', 'react-dom'],
           antdResult: ['antd/es/result'],
           antdTable: ['antd/es/table'],
@@ -29,7 +21,10 @@ export default defineConfig({
       },
     },
   },
-  server: { open: true },
+  server: {
+    open: true,
+    host: '0.0.0.0',
+  },
   css: {
     preprocessorOptions: {
       less: { javascriptEnabled: true },
