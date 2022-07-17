@@ -3,12 +3,6 @@ import {
   Timestamp,
   doc,
   getDoc,
-  collection,
-  where,
-  query,
-  getDocs,
-  QuerySnapshot,
-  orderBy,
   getFirestore,
 } from 'firebase/firestore/lite';
 import {
@@ -43,26 +37,6 @@ const useDb = () => {
       };
 
       return Promise.resolve(processed);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      databaseGenericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
-  const listTunesData = async () => {
-    try {
-      const tunesRef = collection(db, TUNES_PATH);
-      const q = query(
-        tunesRef,
-        where('isPublished', '==', true),
-        where('isListed', '==', true),
-        orderBy('createdAt', 'desc'),
-      );
-
-      return Promise.resolve(await getDocs(q));
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
@@ -149,13 +123,32 @@ const useDb = () => {
     }
   };
 
+  const searchTunes = async () => {
+    try {
+      const list = await database.listDocuments(
+        COLLECTION_ID_TUNES,
+        [
+          Query.equal('isListed', true),
+          Query.equal('isPublished', true),
+        ],
+      );
+
+      return Promise.resolve(list as Models.DocumentList<TuneDbDocument>);
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      databaseGenericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
   return {
     updateTune: (tuneId: string, data: TuneDbDataPartial): Promise<void> => updateTune(tuneId, data),
     createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
     getTuneLegacy: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneLegacy(tuneId),
     getTune: (tuneId: string): Promise<TuneDbDocument | null> => getTune(tuneId),
-    // listTunes: (): Promise<QuerySnapshot<TuneDbData>> => listTunesData(),
-    listTunes: (): Promise<QuerySnapshot<any>> => listTunesData(),
+    searchTunes: (): Promise<Models.DocumentList<TuneDbDocument>> => searchTunes(),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),
   };
 };

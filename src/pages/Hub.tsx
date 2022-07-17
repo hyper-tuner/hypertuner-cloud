@@ -25,9 +25,8 @@ import {
   generatePath,
   useNavigate,
 } from 'react-router';
-import { Timestamp } from 'firebase/firestore/lite';
 import useDb from '../hooks/useDb';
-import { TuneDbDataLegacy } from '../types/dbData';
+import { TuneDbDocument } from '../types/dbData';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 
@@ -51,10 +50,10 @@ const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Hub = () => {
   const { md } = useBreakpoint();
-  const { listTunes } = useDb();
+  const { searchTunes } = useDb();
   const navigate = useNavigate();
-  const [tunes, setTunes] = useState<TuneDbDataLegacy[]>([]);
-  const [dataSource, setDataSource] = useState<any[]>([]);
+
+  const [dataSource, setDataSource] = useState<any>([]);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -67,43 +66,45 @@ const Hub = () => {
   };
 
   const loadData = useCallback(() => {
-    listTunes().then((data) => {
-      const temp: TuneDbDataLegacy[] = [];
-
-      data.forEach((tuneSnapshot) => {
-        temp.push(tuneSnapshot.data());
-      });
-
-      setTunes(temp);
-      setDataSource(temp.map((tune) => ({
-        key: tune.id,
-        tuneId: tune.id,
-        make: tune.details!.make,
-        model: tune.details!.model,
-        year: tune.details!.year,
+    searchTunes().then((list) => {
+      setDataSource(list.documents.map((tune) => ({
+        ...tune,
+        key: tune.tuneId,
+        year: tune.year,
         author: 'karniv00l',
-        publishedAt: new Date((tune.createdAt as Timestamp).seconds * 1000).toLocaleString(),
+        displacement: `${tune.displacement}l`,
+        publishedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
         stars: 0,
       })));
       setIsLoading(false);
     });
-  }, [listTunes]);
+  }, [searchTunes]);
 
   const columns = [
     {
-      title: 'Make',
-      dataIndex: 'make',
-      key: 'make',
+      title: 'Vehicle name',
+      dataIndex: 'vehicleName',
+      key: 'vehicleName',
     },
     {
-      title: 'Model',
-      dataIndex: 'model',
-      key: 'model',
+      title: 'Engine make',
+      dataIndex: 'engineMake',
+      key: 'engineMake',
     },
     {
-      title: 'Year',
-      dataIndex: 'year',
-      key: 'year',
+      title: 'Engine code',
+      dataIndex: 'engineCode',
+      key: 'engineCode',
+    },
+    {
+      title: 'Displacement',
+      dataIndex: 'displacement',
+      key: 'displacement',
+    },
+    {
+      title: 'Cylinders',
+      dataIndex: 'cylindersCount',
+      key: 'cylindersCount',
     },
     {
       title: 'Author',
@@ -148,10 +149,10 @@ const Hub = () => {
         :
         <Row gutter={[16, 16]}>
           {isLoading ? loadingCards : (
-            tunes.map((tune) => (
+            dataSource.map((tune: TuneDbDocument) => (
               <Col span={16} sm={8} key={tune.tuneFile}>
                 <Card
-                  title={tune.details!.model}
+                  title={tune.vehicleName}
                   actions={[
                     <Badge count={0} showZero size="small" color="gold">
                       <StarOutlined />
@@ -163,7 +164,7 @@ const Hub = () => {
                   ]}
                 >
                   <Typography.Text ellipsis>
-                    {tune.details!.make} {tune.details!.model} {tune.details!.year}
+                    {tune.engineMake} {tune.engineCode} {tune.year}
                   </Typography.Text>
                 </Card>
               </Col>

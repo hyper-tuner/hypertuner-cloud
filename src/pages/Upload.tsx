@@ -575,7 +575,7 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="displacement" rules={requiredRules}>
-            <InputNumber addonBefore="Displacement" addonAfter="L" min={0} max={100} />
+            <InputNumber addonBefore="Displacement" addonAfter="l" min={0} max={100} />
           </Item>
         </Col>
         <Col {...colProps}>
