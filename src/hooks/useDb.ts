@@ -1,17 +1,10 @@
 import * as Sentry from '@sentry/browser';
 import {
-  Timestamp,
-  doc,
-  getDoc,
-  getFirestore,
-} from 'firebase/firestore/lite';
-import {
   Models,
   Query,
 } from 'appwrite';
 import { database } from '../appwrite';
 import {
-  TuneDbDataLegacy,
   TuneDbData,
   UsersBucket,
   TuneDbDataPartial,
@@ -20,32 +13,10 @@ import {
 import { databaseGenericError } from '../pages/auth/notifications';
 import { fetchEnv } from '../utils/env';
 
-const TUNES_PATH = 'publicTunes';
 const COLLECTION_ID_PUBLIC_TUNES = fetchEnv('VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES');
 const COLLECTION_ID_USERS_BUCKETS = fetchEnv('VITE_APPWRITE_COLLECTION_ID_USERS_BUCKETS');
 
-const db = getFirestore();
-
 const useDb = () => {
-  const getTuneLegacy = async (tuneId: string) => {
-    try {
-      const tune = (await getDoc(doc(db, TUNES_PATH, tuneId))).data() as TuneDbDataLegacy;
-      const processed = {
-        ...tune,
-        createdAt: (tune?.createdAt as Timestamp)?.toDate().toISOString(),
-        updatedAt: (tune?.updatedAt as Timestamp)?.toDate().toISOString(),
-      };
-
-      return Promise.resolve(processed);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      databaseGenericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
   const updateTune = async (documentId: string, data: TuneDbDataPartial) => {
     try {
       await database.updateDocument(COLLECTION_ID_PUBLIC_TUNES, documentId, data);
@@ -147,7 +118,6 @@ const useDb = () => {
   return {
     updateTune: (tuneId: string, data: TuneDbDataPartial): Promise<void> => updateTune(tuneId, data),
     createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
-    getTuneLegacy: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneLegacy(tuneId),
     getTune: (tuneId: string): Promise<TuneDbDocument | null> => getTune(tuneId),
     searchTunes: (search?: string): Promise<Models.DocumentList<TuneDbDocument>> => searchTunes(search),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),

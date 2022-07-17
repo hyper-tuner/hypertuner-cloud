@@ -35,6 +35,7 @@ import Hub from './pages/Hub';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './css/App.less';
+import { useAuth } from './contexts/AuthContext';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
@@ -62,10 +63,12 @@ const mapStateToProps = (state: AppState) => ({
 
 const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: NavigationState, tuneData: TuneDataState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
-  const { getTuneLegacy } = useDb();
+  const { getTune } = useDb();
   const searchParams = new URLSearchParams(window.location.search);
   const redirectPage = searchParams.get('redirectPage');
   const [isLoading, setIsLoading] = useState(false);
+  const { getBucketId } = useDb();
+  const { currentUser } = useAuth();
 
   // TODO: refactor this
   switch (redirectPage) {
@@ -91,15 +94,17 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   useEffect(() => {
     if (tuneId) {
       // clear out last state
-      if (tuneData && tuneId !== tuneData.id) {
+      if (tuneData && tuneId !== tuneData.tuneId) {
         setIsLoading(true);
-        loadTune(null);
+        loadTune(null, '');
         store.dispatch({ type: 'tuneData/load', payload: null });
         setIsLoading(false);
       }
 
-      getTuneLegacy(tuneId).then(async (tune) => {
-        loadTune(tune);
+      getTune(tuneId).then(async (tune) => {
+        getBucketId(currentUser?.$id!).then((bucketId) => {
+          loadTune(tune!, bucketId);
+        });
         store.dispatch({ type: 'tuneData/load', payload: tune });
       });
 

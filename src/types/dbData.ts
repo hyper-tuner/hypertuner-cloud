@@ -1,5 +1,4 @@
 import { Models } from 'appwrite';
-import { Timestamp } from 'firebase/firestore/lite';
 
 type Partial<T> = {
   [A in keyof T]?: T[A];
@@ -19,18 +18,6 @@ export interface TuneDataDetails {
   fuel?: string | null;
   injectorsSize?: number | null;
   coils?: string | null;
-}
-
-export interface TuneDbDataLegacy {
-  id?: string,
-  userUid?: string;
-  createdAt?: Date | Timestamp | string;
-  updatedAt?: Date | Timestamp | string;
-  tuneFile?: string | null;
-  logFiles?: string[];
-  toothLogFiles?: string[];
-  customIniFile?: string | null;
-  details?: TuneDataDetails;
 }
 
 export interface TuneDbData {

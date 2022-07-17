@@ -29,19 +29,6 @@ const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
 };
 
 const useServerStorage = () => {
-  const getFileLegacy = async (path: string) => {
-
-    try {
-      return fetchFromServer(path);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      genericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
   const getINIFile = async (signature: string) => {
     const { version, baseVersion } = /.+?(?<version>(?<baseVersion>\d+)(-\w+)*)/.exec(signature)?.groups || { version: null, baseVersion: null };
 
@@ -119,11 +106,26 @@ const useServerStorage = () => {
     }
   };
 
+  const getFileForDownload = async (id: string, bucketId: string) => {
+    try {
+      const file = storage.getFileView(bucketId, id);
+      const response = await fetch(file.href);
+
+      return Promise.resolve(response.arrayBuffer());
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error(error);
+      genericError(error as Error);
+
+      return Promise.reject(error);
+    }
+  };
+
   return {
-    getFileLegacy: (path: string): Promise<ArrayBuffer> => getFileLegacy(path),
     getFile: (id: string, bucketId: string): Promise<Models.File> => getFile(id, bucketId),
     getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
     removeFile: (bucketId: string, fileId: string): Promise<void> => removeFile(bucketId, fileId),
+    getFileForDownload: (bucketId: string, fileId: string): Promise<ArrayBuffer> => getFileForDownload(bucketId, fileId),
     uploadFile: (userId: string, bucketId: string, file: File): Promise<ServerFile> => uploadFile(userId, bucketId, file),
   };
 };

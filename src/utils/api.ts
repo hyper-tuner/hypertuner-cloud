@@ -9,10 +9,11 @@ import {
   onProgress as onProgressType,
 } from './http';
 import TuneParser from './tune/TuneParser';
-import { TuneDbDataLegacy } from '../types/dbData';
+import { TuneDbDocument } from '../types/dbData';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
 
-export const loadTune = async (tuneData: TuneDbDataLegacy | null) => {
+  // TODO: refactor this!!
+export const loadTune = async (tuneData: TuneDbDocument | null, bucketId: string) => {
   if (tuneData === null) {
     store.dispatch({ type: 'config/load', payload: null });
     store.dispatch({ type: 'tune/load', payload: null });
@@ -21,9 +22,11 @@ export const loadTune = async (tuneData: TuneDbDataLegacy | null) => {
 
   const pako = await import('pako');
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { getFileLegacy, getINIFile } = useServerStorage();
+  const { getFileForDownload, getINIFile } = useServerStorage();
+
   const started = new Date();
-  const tuneRaw = getFileLegacy(tuneData.tuneFile!);
+  const tuneRaw = await getFileForDownload(tuneData.tuneFileId!, bucketId);
+
   const tuneParser = new TuneParser()
     .parse(pako.inflate(new Uint8Array(await tuneRaw)));
 
@@ -35,7 +38,7 @@ export const loadTune = async (tuneData: TuneDbDataLegacy | null) => {
   }
 
   const tune = tuneParser.getTune();
-  const iniRaw = tuneData.customIniFile ? getFileLegacy(tuneData.customIniFile) : getINIFile(tune.details.signature);
+  const iniRaw = tuneData.customIniFileId ? getFileForDownload(tuneData.customIniFileId, bucketId) : getINIFile(tuneData.signature);
   const buff = pako.inflate(new Uint8Array(await iniRaw));
   const config = new INI(buff).parse().getResults();
 
