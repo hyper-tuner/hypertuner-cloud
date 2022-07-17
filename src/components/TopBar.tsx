@@ -61,7 +61,7 @@ const { useBreakpoint } = Grid;
 const { SubMenu } = Menu;
 
 const TopBar = ({ tuneId }: { tuneId: string | null }) => {
-  const { sm, lg } = useBreakpoint();
+  const { xs, sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
@@ -189,7 +189,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   }], [currentUser, logoutClick, navigate]);
 
   return (
-    <Header className="app-top-bar">
+    <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {} }>
       <Row>
         {tuneId ? tabs : (
           <Col span={10} md={14} sm={16}>
