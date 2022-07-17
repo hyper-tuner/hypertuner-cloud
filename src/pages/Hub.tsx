@@ -1,22 +1,19 @@
 import {
-  Badge,
   Button,
-  Card,
-  Col,
-  Grid,
   Input,
-  Row,
   Space,
   Table,
   Tooltip,
   Typography,
 } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import {
   CopyOutlined,
   StarOutlined,
   ArrowRightOutlined,
 } from '@ant-design/icons';
 import {
+  Fragment,
   useCallback,
   useEffect,
   useState,
@@ -27,31 +24,14 @@ import {
 } from 'react-router';
 import debounce from 'lodash.debounce';
 import useDb from '../hooks/useDb';
-import { TuneDbDocument } from '../types/dbData';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 import { aspirationMapper } from '../utils/tune/mappers';
-
-const { useBreakpoint } = Grid;
-
-const loadingCards = (
-  <>
-    <Col span={8}>
-      <Card loading />
-    </Col>
-    <Col span={8}>
-      <Card loading />
-    </Col>
-    <Col span={8}>
-      <Card loading />
-    </Col>
-  </>
-);
+import { TuneDbDocument } from '../types/dbData';
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Hub = () => {
-  const { md } = useBreakpoint();
   const { searchTunes } = useDb();
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<any>([]);
@@ -91,56 +71,79 @@ const Hub = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // TODO: fix this
 
-  const columns = [
+  const columns: ColumnsType<any> = [
+    {
+      title: 'Tune',
+      render: (tune: TuneDbDocument) => (
+        <>
+          {tune.vehicleName} ({tune.signature})
+          <br />
+          {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}
+          <br />
+          author: ? 0 <StarOutlined />
+        </>
+      ),
+      responsive: ['xs', 'sm', 'md'],
+    },
     {
       title: 'Vehicle name',
       dataIndex: 'vehicleName',
       key: 'vehicleName',
+      responsive: ['lg'],
     },
     {
       title: 'Engine make',
       dataIndex: 'engineMake',
       key: 'engineMake',
+      responsive: ['lg'],
     },
     {
       title: 'Engine code',
       dataIndex: 'engineCode',
       key: 'engineCode',
+      responsive: ['lg'],
     },
     {
       title: 'Displacement',
       dataIndex: 'displacement',
       key: 'displacement',
+      responsive: ['lg'],
     },
     {
       title: 'Cylinders',
       dataIndex: 'cylindersCount',
       key: 'cylindersCount',
+      responsive: ['lg'],
     },
     {
       title: 'Aspiration',
       dataIndex: 'aspiration',
       key: 'aspiration',
+      responsive: ['lg'],
     },
     {
       title: 'Author',
       dataIndex: 'author',
       key: 'author',
+      responsive: ['lg'],
     },
     {
       title: 'Signature',
       dataIndex: 'signature',
       key: 'author',
+      responsive: ['lg'],
     },
     {
       title: 'Published',
       dataIndex: 'updatedAt',
       key: 'updatedAt',
+      responsive: ['lg'],
     },
     {
       title: <StarOutlined />,
       dataIndex: 'stars',
       key: 'stars',
+      responsive: ['lg'],
     },
     {
       dataIndex: 'tuneId',
@@ -165,32 +168,12 @@ const Hub = () => {
         placeholder="Search..."
         onChange={({ target }) => debounceLoadData(target.value)}
       />
-      {md ?
-        <Table dataSource={dataSource} columns={columns} loading={isLoading} pagination={false} />
-        :
-        <Row gutter={[16, 16]}>
-          {isLoading ? loadingCards : (
-            dataSource.map((tune: TuneDbDocument) => (
-              <Col span={16} sm={8} key={tune.tuneFile}>
-                <Card
-                  title={tune.vehicleName}
-                  actions={[
-                    <Badge count={0} showZero size="small" color="gold">
-                      <StarOutlined />
-                    </Badge>,
-                    <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-                      <CopyOutlined onClick={() => copyToClipboard(buildFullUrl([tunePath(tune.id!)]))} />
-                    </Tooltip>,
-                    <ArrowRightOutlined onClick={() => navigate(tunePath(tune.id!))} />,
-                  ]}
-                >
-                  <Typography.Text ellipsis>
-                    {tune.engineMake} {tune.engineCode} {tune.year}
-                  </Typography.Text>
-                </Card>
-              </Col>
-            )))}
-        </Row>}
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        loading={isLoading}
+        pagination={false}
+      />
     </div>
   );
 };
