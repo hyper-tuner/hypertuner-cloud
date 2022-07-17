@@ -107,11 +107,10 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
         key: `/${menuName}`,
         icon: <Icon name={menuName} />,
         label: types[menuName].title,
-        onClick: () => ui.sidebarCollapsed && store.dispatch({ type: 'ui/sidebarCollapsed', payload: false }),
         children: subMenuItems,
       };
     })
-  ), [navigate, navigation.tuneId, ui.sidebarCollapsed]);
+  ), [navigate, navigation.tuneId]);
 
   useEffect(() => {
     if (tune && config && Object.keys(tune.constants).length) {
