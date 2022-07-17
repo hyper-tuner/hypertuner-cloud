@@ -133,19 +133,17 @@ const UploadPage = () => {
 
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
 
-  const publish = async (values: any) => {
+  const publishTune = async (values: any) => {
     setIsLoading(true);
     // await updateTune(tuneDocumentId!, {
-    //   tuneId: newTuneId!,
-    //   userId: currentUser!.$id,
     //   updatedAt: Date.now(),
     //   isPublished: true,
     //   isListed: values.isListed,
-    //   readme,
-    //   make: values.make,
-    //   model: values.model,
-    //   displacement: values.displacement,
-    //   year: values.year,
+    //   readme: readme.trim(),
+    //   make: values.make.trim(),
+    //   model: values.model.trim(),
+    //   displacement: values.displacement.trim(),
+    //   year: values.year.trim(),
     //   hp: values.hp || null,
     //   stockHp: values.stockHp || null,
     //   engineCode: values.engineCode || null,
@@ -198,8 +196,6 @@ const UploadPage = () => {
   };
 
   const uploadTune = async (options: UploadRequestOption) => {
-    setShareUrl(buildFullUrl([tunePath(newTuneId!)]));
-
     upload(options, async (fileCreated: ServerFile, file: File) => {
       const { signature } = tuneParser.parse(await file.arrayBuffer()).getTune().details;
 
@@ -433,6 +429,7 @@ const UploadPage = () => {
     const currentTuneId = routeMatch?.params.tuneId;
     if (currentTuneId) {
       loadExistingTune(currentTuneId);
+      setShareUrl(buildFullUrl([tunePath(currentTuneId)]));
     } else {
       navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
         tuneId: generateTuneId(),
@@ -696,7 +693,7 @@ const UploadPage = () => {
   return (
     <div className="small-container">
       <Form
-        onFinish={publish}
+        onFinish={publishTune}
         initialValues={{
           readme: '# My Tune\n\ndescription',
           isListed: true,
