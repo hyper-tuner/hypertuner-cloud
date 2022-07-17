@@ -50,8 +50,8 @@ export interface TuneDbData {
   engineCode: string | null;
   displacement: number | null;
   cylindersCount: number | null;
-  compression?: number | null;
   aspiration: 'na' | 'turbocharged' | 'supercharged';
+  compression?: number | null;
   fuel?: string | null;
   ignition?: string | null;
   injectorsSize?: number | null;

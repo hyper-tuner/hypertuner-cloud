@@ -401,7 +401,7 @@ const UploadPage = () => {
     }
 
     setTuneIsLoading(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const prepareData = useCallback(async () => {
@@ -519,24 +519,24 @@ const UploadPage = () => {
           </Item>
         </Col>
         <Col {...colProps}>
-          <Item name="cylindersCount">
+          <Item name="cylindersCount" rules={requiredRules}>
             <InputNumber addonBefore="No of cylinders" style={{ width: '100%' }} min={0} max={16} />
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
         <Col {...colProps}>
-          <Item name="compression">
-            <InputNumber addonBefore="Compression" style={{ width: '100%' }} min={0} max={1000} step={0.1} addonAfter=":1" />
-          </Item>
-        </Col>
-        <Col {...colProps}>
-          <Item name="aspiration">
+          <Item name="aspiration" rules={requiredRules}>
             <Select placeholder="Aspiration" style={{ width: '100%' }}>
               <Select.Option value="na">Naturally aspirated</Select.Option>
               <Select.Option value="turbocharger">Turbocharged</Select.Option>
               <Select.Option value="supercharger">Supercharged</Select.Option>
             </Select>
+          </Item>
+        </Col>
+        <Col {...colProps}>
+          <Item name="compression">
+            <InputNumber addonBefore="Compression" style={{ width: '100%' }} min={0} max={1000} step={0.1} addonAfter=":1" />
           </Item>
         </Col>
       </Row>
@@ -559,7 +559,7 @@ const UploadPage = () => {
           </Item>
         </Col>
         <Col {...colProps}>
-          <Item name="year" rules={requiredRules}>
+          <Item name="year">
             <InputNumber addonBefore="Year" style={{ width: '100%' }} min={1886} max={thisYear} />
           </Item>
         </Col>
