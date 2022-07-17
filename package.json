@@ -19,15 +19,16 @@
     "stats:bundle": "npm run build && open stats.html"
   },
   "dependencies": {
+    "@hyper-tuner/ini": "^0.3.1",
+    "@hyper-tuner/types": "^0.3.3",
     "@reduxjs/toolkit": "^1.8.3",
     "@sentry/react": "^7.7.0",
     "@sentry/tracing": "^7.7.0",
-    "@hyper-tuner/ini": "^0.3.1",
-    "@hyper-tuner/types": "^0.3.3",
     "antd": "^4.21.6",
     "appwrite": "^9.0.1",
     "firebase": "^9.9.0",
     "kbar": "^0.1.0-beta.36",
+    "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.5.1",
     "nanoid": "^4.0.0",
     "pako": "^2.0.4",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@hyper-tuner/eslint-config": "^0.1.6",
+    "@types/lodash.debounce": "^4.0.7",
     "@types/node": "^18.0.5",
     "@types/pako": "^2.0.0",
     "@types/react": "^18.0.15",

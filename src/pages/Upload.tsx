@@ -188,7 +188,9 @@ const UploadPage = () => {
         fuel,
         ignition,
         year,
-      ].filter((field) => field !== null && `${field}`.length > 1).join(' '),
+      ].filter((field) => field !== null && `${field}`.length > 1)
+        .join(' ')
+        .replace(/[^A-z\d ]/g, ''),
     });
     setIsLoading(false);
     setIsPublished(true);

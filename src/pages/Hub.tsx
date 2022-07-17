@@ -25,6 +25,7 @@ import {
   generatePath,
   useNavigate,
 } from 'react-router';
+import debounce from 'lodash.debounce';
 import useDb from '../hooks/useDb';
 import { TuneDbDocument } from '../types/dbData';
 import { Routes } from '../routes';
@@ -52,11 +53,9 @@ const Hub = () => {
   const { md } = useBreakpoint();
   const { searchTunes } = useDb();
   const navigate = useNavigate();
-
   const [dataSource, setDataSource] = useState<any>([]);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchText, setSearchText] = useState<string | undefined>();
 
   const copyToClipboard = async (shareUrl: string) => {
     if (navigator.clipboard) {
@@ -66,20 +65,29 @@ const Hub = () => {
     }
   };
 
-  const loadData = useCallback(() => {
-    searchTunes(searchText).then((list) => {
-      setDataSource(list.documents.map((tune) => ({
-        ...tune,
-        key: tune.tuneId,
-        year: tune.year,
-        author: 'karniv00l',
-        displacement: `${tune.displacement}l`,
-        publishedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
-        stars: 0,
-      })));
-      setIsLoading(false);
-    });
-  }, [searchText, searchTunes]);
+  const loadData = debounce(async (searchText?: string) => {
+    setIsLoading(true);
+    const list = await searchTunes(searchText);
+    // TODO: create `unpublishedTunes` collection for this
+    const filtered = list.documents.filter((tune) => !!tune.vehicleName);
+    setDataSource(filtered.map((tune) => ({
+      ...tune,
+      key: tune.tuneId,
+      year: tune.year,
+      author: '?',
+      displacement: `${tune.displacement}l`,
+      publishedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
+      stars: 0,
+    })));
+    setIsLoading(false);
+  }, 300);
+
+  const debounceLoadData = useCallback((value: string) => loadData(value), [loadData]);
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // TODO: fix this
 
   const columns = [
     {
@@ -136,21 +144,17 @@ const Hub = () => {
     },
   ];
 
-  useEffect(() => {
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchText]); // TODO: fix this
-
   return (
     <div className="large-container">
       <Typography.Title>Hub</Typography.Title>
       <Input
+        tabIndex={0}
         style={{ marginBottom: 10, height: 40 }}
         placeholder="Search..."
-        onChange={({ target }) => setSearchText(target.value)}
+        onChange={({ target }) => debounceLoadData(target.value)}
       />
       {md ?
-        <Table dataSource={dataSource} columns={columns} loading={isLoading} />
+        <Table dataSource={dataSource} columns={columns} loading={isLoading} pagination={false} />
         :
         <Row gutter={[16, 16]}>
           {isLoading ? loadingCards : (

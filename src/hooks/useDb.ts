@@ -21,7 +21,7 @@ import { databaseGenericError } from '../pages/auth/notifications';
 import { fetchEnv } from '../utils/env';
 
 const TUNES_PATH = 'publicTunes';
-const COLLECTION_ID_TUNES = fetchEnv('VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES');
+const COLLECTION_ID_PUBLIC_TUNES = fetchEnv('VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES');
 const COLLECTION_ID_USERS_BUCKETS = fetchEnv('VITE_APPWRITE_COLLECTION_ID_USERS_BUCKETS');
 
 const db = getFirestore();
@@ -48,7 +48,7 @@ const useDb = () => {
 
   const updateTune = async (documentId: string, data: TuneDbDataPartial) => {
     try {
-      await database.updateDocument(COLLECTION_ID_TUNES, documentId, data);
+      await database.updateDocument(COLLECTION_ID_PUBLIC_TUNES, documentId, data);
 
       return Promise.resolve();
     } catch (error) {
@@ -63,7 +63,7 @@ const useDb = () => {
   const createTune = async (data: TuneDbData) => {
     try {
       const tune = await database.createDocument(
-        COLLECTION_ID_TUNES,
+        COLLECTION_ID_PUBLIC_TUNES,
         'unique()',
         data,
         ['role:all'],
@@ -83,7 +83,7 @@ const useDb = () => {
   const getTune = async (tuneId: string) => {
     try {
       const tune = await database.listDocuments(
-        COLLECTION_ID_TUNES,
+        COLLECTION_ID_PUBLIC_TUNES,
         [Query.equal('tuneId', tuneId)],
         1,
       );
@@ -124,16 +124,17 @@ const useDb = () => {
   };
 
   const searchTunes = async (search?: string) => {
+    // TODO: add pagination
+    const limit = 100;
+
     try {
-      const queries = [];
+      const list: Models.DocumentList<TuneDbDocument> = await (
+        search
+          ? database.listDocuments(COLLECTION_ID_PUBLIC_TUNES, [Query.search('textSearch', search)], limit)
+          : database.listDocuments(COLLECTION_ID_PUBLIC_TUNES, [], limit)
+      );
 
-      if (search) {
-        queries.push(Query.search('textSearch', search));
-      }
-
-      const list = await database.listDocuments(COLLECTION_ID_TUNES, queries);
-
-      return Promise.resolve(list as Models.DocumentList<TuneDbDocument>);
+      return Promise.resolve(list);
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
