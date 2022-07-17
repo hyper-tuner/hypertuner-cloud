@@ -13,7 +13,6 @@ import {
   Row,
   Select,
   Space,
-  Switch,
   Tabs,
   Tooltip,
   Typography,
@@ -106,7 +105,6 @@ const UploadPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
   const [initialValues, setInitialValues] = useState<TuneDbDataPartial>({
-    isListed: true,
     readme,
   });
 
@@ -144,7 +142,6 @@ const UploadPage = () => {
 
   const publishTune = async (values: any) => {
     /* eslint-disable prefer-destructuring */
-    const isListed = values.isListed;
     const vehicleName = values.vehicleName.trim();
     const engineMake = values.engineMake.trim();
     const engineCode = values.engineCode.trim();
@@ -168,8 +165,6 @@ const UploadPage = () => {
 
     setIsLoading(true);
     await updateTune(tuneDocumentId!, {
-      isPublished: true,
-      isListed,
       vehicleName,
       engineMake,
       engineCode,
@@ -258,8 +253,6 @@ const UploadPage = () => {
           userId: currentUser!.$id,
           tuneId: newTuneId!,
           signature,
-          isPublished: false,
-          isListed: true,
           tuneFileId: fileCreated.$id,
           vehicleName: '',
           displacement: 0,
@@ -412,13 +405,8 @@ const UploadPage = () => {
         return;
       }
 
-      // allow editing already published tunes
-      if (existingTune.isPublished) {
-        // form.setFields()
-        setInitialValues(existingTune);
-        setIsEditMode(true);
-      }
-
+      setInitialValues(existingTune);
+      setIsEditMode(true);
       setTuneDocumentId(existingTune.$id);
 
       if (existingTune.tuneFileId) {
@@ -662,12 +650,6 @@ const UploadPage = () => {
           </div>
         </Tabs.TabPane>
       </Tabs>
-      <Divider>
-        Visibility
-      </Divider>
-      <Item name="isListed" label="Listed on Hub" valuePropName="checked">
-        <Switch />
-      </Item>
     </>
   );
 

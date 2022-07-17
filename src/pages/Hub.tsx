@@ -56,6 +56,7 @@ const Hub = () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchText, setSearchText] = useState<string | undefined>();
 
   const copyToClipboard = async (shareUrl: string) => {
     if (navigator.clipboard) {
@@ -66,7 +67,7 @@ const Hub = () => {
   };
 
   const loadData = useCallback(() => {
-    searchTunes().then((list) => {
+    searchTunes(searchText).then((list) => {
       setDataSource(list.documents.map((tune) => ({
         ...tune,
         key: tune.tuneId,
@@ -78,7 +79,7 @@ const Hub = () => {
       })));
       setIsLoading(false);
     });
-  }, [searchTunes]);
+  }, [searchText, searchTunes]);
 
   const columns = [
     {
@@ -138,12 +139,16 @@ const Hub = () => {
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // TODO: fix this
+  }, [searchText]); // TODO: fix this
 
   return (
     <div className="large-container">
       <Typography.Title>Hub</Typography.Title>
-      <Input style={{ marginBottom: 10, height: 40 }} placeholder="Search..." />
+      <Input
+        style={{ marginBottom: 10, height: 40 }}
+        placeholder="Search..."
+        onChange={({ target }) => setSearchText(target.value)}
+      />
       {md ?
         <Table dataSource={dataSource} columns={columns} loading={isLoading} />
         :

@@ -26,8 +26,6 @@ export interface TuneDbDataLegacy {
   userUid?: string;
   createdAt?: Date | Timestamp | string;
   updatedAt?: Date | Timestamp | string;
-  isPublished?: boolean;
-  isListed?: boolean;
   tuneFile?: string | null;
   logFiles?: string[];
   toothLogFiles?: string[];
@@ -39,8 +37,6 @@ export interface TuneDbData {
   userId: string;
   tuneId: string;
   signature: string;
-  isPublished: boolean;
-  isListed: boolean;
   tuneFileId?: string | null;
   logFileIds?: string[];
   toothLogFileIds?: string[];

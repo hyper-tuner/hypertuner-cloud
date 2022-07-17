@@ -123,15 +123,15 @@ const useDb = () => {
     }
   };
 
-  const searchTunes = async () => {
+  const searchTunes = async (search?: string) => {
     try {
-      const list = await database.listDocuments(
-        COLLECTION_ID_TUNES,
-        [
-          Query.equal('isListed', true),
-          Query.equal('isPublished', true),
-        ],
-      );
+      const queries = [];
+
+      if (search) {
+        queries.push(Query.search('textSearch', search));
+      }
+
+      const list = await database.listDocuments(COLLECTION_ID_TUNES, queries);
 
       return Promise.resolve(list as Models.DocumentList<TuneDbDocument>);
     } catch (error) {
@@ -148,7 +148,7 @@ const useDb = () => {
     createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
     getTuneLegacy: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneLegacy(tuneId),
     getTune: (tuneId: string): Promise<TuneDbDocument | null> => getTune(tuneId),
-    searchTunes: (): Promise<Models.DocumentList<TuneDbDocument>> => searchTunes(),
+    searchTunes: (search?: string): Promise<Models.DocumentList<TuneDbDocument>> => searchTunes(search),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),
   };
 };
