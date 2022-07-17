@@ -17,6 +17,7 @@ import {
   resetFailed,
   resetSuccessful,
 } from './notifications';
+import { emailRules } from '../../utils/form';
 
 const { Item } = Form;
 
@@ -51,7 +52,7 @@ const ResetPassword = () => {
       >
         <Item
           name="email"
-          rules={[{ required: true, type: 'email' }]}
+          rules={emailRules}
           hasFeedback
         >
           <Input

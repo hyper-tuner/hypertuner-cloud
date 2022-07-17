@@ -32,7 +32,11 @@ import {
   magicLinkSent,
   signUpSuccessful,
 } from './notifications';
-import { passwordRules } from '../../utils/password';
+import {
+  emailRules,
+  passwordRules,
+  requiredRules,
+} from '../../utils/form';
 
 const { Item } = Form;
 
@@ -154,7 +158,7 @@ const SignUp = () => {
         validateMessages={validateMessages}
         form={formMagicLink}
       >
-        <Item name="email" rules={[{ required: true, type: 'email' }]} hasFeedback>
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
@@ -182,7 +186,7 @@ const SignUp = () => {
         form={formEmail}
       >
         <Divider />
-        <Item name="username" rules={[{ required: true }]} hasFeedback>
+        <Item name="username" rules={requiredRules} hasFeedback>
           <Input
             prefix={<UserOutlined />}
             placeholder="Username"
@@ -190,7 +194,7 @@ const SignUp = () => {
             disabled={isAnythingLoading}
           />
         </Item>
-        <Item name="email" rules={[{ required: true, type: 'email' }]} hasFeedback>
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"

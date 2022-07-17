@@ -33,7 +33,7 @@ const COLLECTION_ID_USERS_BUCKETS = fetchEnv('VITE_APPWRITE_COLLECTION_ID_USERS_
 const db = getFirestore();
 
 const useDb = () => {
-  const getTuneData = async (tuneId: string) => {
+  const getTuneLegacy = async (tuneId: string) => {
     try {
       const tune = (await getDoc(doc(db, TUNES_PATH, tuneId))).data() as TuneDbDataLegacy;
       const processed = {
@@ -106,14 +106,11 @@ const useDb = () => {
     }
   };
 
-  const findUnpublishedTune = async (tuneId: string) => {
+  const getTune = async (tuneId: string) => {
     try {
       const tune = await database.listDocuments(
         COLLECTION_ID_TUNES,
-        [
-          Query.equal('tuneId', tuneId),
-          Query.equal('isPublished', false),
-        ],
+        [Query.equal('tuneId', tuneId)],
         1,
       );
 
@@ -155,8 +152,8 @@ const useDb = () => {
   return {
     updateTune: (tuneId: string, data: TuneDbDataPartial): Promise<void> => updateTune(tuneId, data),
     createTune: (data: TuneDbData): Promise<Models.Document> => createTune(data),
-    getTune: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneData(tuneId),
-    findUnpublishedTune: (tuneId: string): Promise<TuneDbDocument | null> => findUnpublishedTune(tuneId),
+    getTuneLegacy: (tuneId: string): Promise<TuneDbDataLegacy> => getTuneLegacy(tuneId),
+    getTune: (tuneId: string): Promise<TuneDbDocument | null> => getTune(tuneId),
     // listTunes: (): Promise<QuerySnapshot<TuneDbData>> => listTunesData(),
     listTunes: (): Promise<QuerySnapshot<any>> => listTunesData(),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),

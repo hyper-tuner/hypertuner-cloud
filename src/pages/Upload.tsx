@@ -53,6 +53,11 @@ import useDb from '../hooks/useDb';
 import useServerStorage, { ServerFile } from '../hooks/useServerStorage';
 import { buildFullUrl } from '../utils/url';
 import Loader from '../components/Loader';
+import {
+  requiredTextRules,
+  requiredRules,
+} from '../utils/form';
+import { TuneDbDataPartial } from '../types/dbData';
 
 const { Item } = Form;
 
@@ -98,7 +103,12 @@ const UploadPage = () => {
   const [shareUrl, setShareUrl] = useState<string>();
   const [copied, setCopied] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
+  const [initialValues, setInitialValues] = useState<TuneDbDataPartial>({
+    isListed: true,
+    readme,
+  });
 
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);
@@ -114,8 +124,7 @@ const UploadPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, getFile } = useServerStorage();
-  const { createTune, getBucketId, updateTune, findUnpublishedTune } = useDb();
-  const requiredRules = [{ required: true, message: 'This field is required!' }];
+  const { createTune, getBucketId, updateTune, getTune } = useDb();
 
   const noop = () => { };
 
@@ -194,6 +203,12 @@ const UploadPage = () => {
     result: (file.size / 1024 / 1024) <= maxFileSizeMB,
     message: `File should not be larger than ${maxFileSizeMB}MB!`,
   });
+
+  const navigateToNewTuneId = useCallback(() => {
+    navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+      tuneId: generateTuneId(),
+    }), { replace: true });
+  }, [navigate]);
 
   const upload = async (options: UploadRequestOption, done: UploadDone, validate: ValidateFile) => {
     const { onError, onSuccess, file } = options;
@@ -389,8 +404,21 @@ const UploadPage = () => {
     setNewTuneId(currentTuneId);
     console.info('Using tuneId:', currentTuneId);
 
-    const existingTune = await findUnpublishedTune(currentTuneId);
+    const existingTune = await getTune(currentTuneId);
     if (existingTune) {
+      // this is someone elses tune
+      if (existingTune.userId !== currentUser?.$id) {
+        navigateToNewTuneId();
+        return;
+      }
+
+      // allow editing already published tunes
+      if (existingTune.isPublished) {
+        // form.setFields()
+        setInitialValues(existingTune);
+        setIsEditMode(true);
+      }
+
       setTuneDocumentId(existingTune.$id);
 
       if (existingTune.tuneFileId) {
@@ -465,11 +493,9 @@ const UploadPage = () => {
       loadExistingTune(currentTuneId);
       setShareUrl(buildFullUrl([tunePath(currentTuneId)]));
     } else {
-      navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
-        tuneId: generateTuneId(),
-      }), { replace: true });
+      navigateToNewTuneId();
     }
-  }, [currentUser, loadExistingTune, navigate, routeMatch?.params.tuneId]);
+  }, [currentUser, loadExistingTune, navigate, navigateToNewTuneId, routeMatch?.params.tuneId]);
 
   useEffect(() => {
     prepareData();
@@ -509,7 +535,7 @@ const UploadPage = () => {
             loading={isLoading}
             htmlType="submit"
           >
-            Publish
+            {isEditMode ? 'Update' : 'Publish'}
           </Button> : <Button
             type="primary"
             block
@@ -529,19 +555,19 @@ const UploadPage = () => {
       </Divider>
       <Row {...rowProps}>
         <Col span={24} sm={24}>
-          <Item name="vehicleName" rules={requiredRules}>
+          <Item name="vehicleName" rules={requiredTextRules}>
             <Input addonBefore="Vehicle name" />
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
         <Col {...colProps}>
-          <Item name="engineMake" rules={requiredRules}>
+          <Item name="engineMake" rules={requiredTextRules}>
             <Input addonBefore="Engine make" />
           </Item>
         </Col>
         <Col {...colProps}>
-          <Item name="engineCode" rules={requiredRules}>
+          <Item name="engineCode" rules={requiredTextRules}>
             <Input addonBefore="Engine code" />
           </Item>
         </Col>
@@ -560,7 +586,7 @@ const UploadPage = () => {
       </Row>
       <Row {...rowProps}>
         <Col {...colProps}>
-          <Item name="aspiration" rules={requiredRules}>
+          <Item name="aspiration" rules={requiredTextRules}>
             <Select placeholder="Aspiration" style={{ width: '100%' }}>
               <Select.Option value="na">Naturally aspirated</Select.Option>
               <Select.Option value="turbocharged">Turbocharged</Select.Option>
@@ -726,13 +752,7 @@ const UploadPage = () => {
 
   return (
     <div className="small-container">
-      <Form
-        onFinish={publishTune}
-        initialValues={{
-          readme,
-          isListed: true,
-        }}
-      >
+      <Form onFinish={publishTune} initialValues={initialValues}>
         <Divider>
           <Space>
             Upload Tune

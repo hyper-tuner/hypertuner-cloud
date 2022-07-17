@@ -62,7 +62,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: NavigationState, tuneData: TuneDataState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
-  const { getTune } = useDb();
+  const { getTuneLegacy } = useDb();
   const searchParams = new URLSearchParams(window.location.search);
   const redirectPage = searchParams.get('redirectPage');
   const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +98,7 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
         setIsLoading(false);
       }
 
-      getTune(tuneId).then(async (tune) => {
+      getTuneLegacy(tuneId).then(async (tune) => {
         loadTune(tune);
         store.dispatch({ type: 'tuneData/load', payload: tune });
       });

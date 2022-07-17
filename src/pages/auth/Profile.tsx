@@ -30,7 +30,10 @@ import {
   passwordUpdateFailed,
 } from './notifications';
 import { Routes } from '../../routes';
-import { passwordRules } from '../../utils/password';
+import {
+  passwordRules,
+  requiredRules,
+} from '../../utils/form';
 
 const { Item } = Form;
 
@@ -169,7 +172,7 @@ const Profile = () => {
         >
           <Item
             name="username"
-            rules={[{ required: true }]}
+            rules={requiredRules}
             hasFeedback
           >
             <Input
@@ -201,7 +204,7 @@ const Profile = () => {
         >
           <Item
             name="oldPassword"
-            rules={[{ required: true }]}
+            rules={requiredRules}
             hasFeedback
           >
             <Input.Password

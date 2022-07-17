@@ -20,7 +20,7 @@ import {
   passwordUpdateFailed,
   passwordUpdateSuccess,
 } from './notifications';
-import { passwordRules } from '../../utils/password';
+import { passwordRules } from '../../utils/form';
 import validateMessages from './validateMessages';
 
 const { Item } = Form;

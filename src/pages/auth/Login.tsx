@@ -30,6 +30,10 @@ import {
   logInSuccessful,
   magicLinkSent,
 } from './notifications';
+import {
+  emailRules,
+  requiredRules,
+} from '../../utils/form';
 
 const { Item } = Form;
 
@@ -140,7 +144,7 @@ const Login = () => {
         validateMessages={validateMessages}
         form={formMagicLink}
       >
-        <Item name="email" rules={[{ required: true, type: 'email' }]} hasFeedback>
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
@@ -168,7 +172,7 @@ const Login = () => {
         form={formEmail}
       >
         <Divider />
-        <Item name="email" rules={[{ required: true, type: 'email' }]} hasFeedback>
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
@@ -178,7 +182,7 @@ const Login = () => {
         </Item>
         <Item
           name="password"
-          rules={[{ required: true }]}
+          rules={requiredRules}
           hasFeedback
         >
           <Input.Password
