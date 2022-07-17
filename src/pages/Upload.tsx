@@ -57,6 +57,7 @@ import {
   requiredRules,
 } from '../utils/form';
 import { TuneDbDataPartial } from '../types/dbData';
+import { aspirationMapper } from '../utils/tune/mappers';
 
 const { Item } = Form;
 
@@ -157,12 +158,6 @@ const UploadPage = () => {
     const stockHp = values.stockHp || null;
     /* eslint-enable prefer-destructuring */
 
-    const aspirationMap: { [key:string]: string } = {
-      na: 'N/A',
-      turbocharged: 'Turbocharged',
-      supercharged: 'Supercharged',
-    };
-
     setIsLoading(true);
     await updateTune(tuneDocumentId!, {
       vehicleName,
@@ -184,7 +179,7 @@ const UploadPage = () => {
         engineMake,
         engineCode,
         `${displacement}l`,
-        aspirationMap[aspiration] || null,
+        aspirationMapper[aspiration] || null,
         fuel,
         ignition,
         year,

@@ -30,6 +30,7 @@ import useDb from '../hooks/useDb';
 import { TuneDbDocument } from '../types/dbData';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
+import { aspirationMapper } from '../utils/tune/mappers';
 
 const { useBreakpoint } = Grid;
 
@@ -76,7 +77,8 @@ const Hub = () => {
       year: tune.year,
       author: '?',
       displacement: `${tune.displacement}l`,
-      publishedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
+      aspiration: aspirationMapper[tune.aspiration],
+      updatedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
       stars: 0,
     })));
     setIsLoading(false);
@@ -116,14 +118,19 @@ const Hub = () => {
       key: 'cylindersCount',
     },
     {
+      title: 'Aspiration',
+      dataIndex: 'aspiration',
+      key: 'aspiration',
+    },
+    {
       title: 'Author',
       dataIndex: 'author',
       key: 'author',
     },
     {
       title: 'Published',
-      dataIndex: 'publishedAt',
-      key: 'publishedAt',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
     },
     {
       title: <StarOutlined />,
