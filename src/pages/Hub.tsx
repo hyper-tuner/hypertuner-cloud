@@ -1,4 +1,5 @@
 import {
+  Badge,
   Button,
   Grid,
   Input,
@@ -33,6 +34,7 @@ import {
 } from '../utils/clipboard';
 
 const { useBreakpoint } = Grid;
+const { Text, Title } = Typography;
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
@@ -52,7 +54,7 @@ const Hub = () => {
       ...tune,
       key: tune.tuneId,
       year: tune.year,
-      author: '?',
+      author: 'John Doe',
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
       publishedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
@@ -70,14 +72,15 @@ const Hub = () => {
 
   const columns: ColumnsType<any> = [
     {
-      title: 'Tune',
+      title: 'Tunes',
       render: (tune: TuneDbDocument) => (
         <>
-          {tune.vehicleName} ({tune.signature}), published: {tune.publishedAt}
-          <br />
-          {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}
-          <br />
-          author: ? 0 <StarOutlined />
+          <Title level={5}>{tune.vehicleName}</Title>
+          <Space direction="vertical">
+            <Text type="secondary">John Doe, {tune.publishedAt}</Text>
+            <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
+            <Text code>{tune.signature}</Text>
+          </Space>
         </>
       ),
       responsive: ['xs'],
@@ -157,7 +160,7 @@ const Hub = () => {
 
   return (
     <div className="large-container">
-      <Typography.Title>Hub</Typography.Title>
+      <Title>Hub</Title>
       <Input
         tabIndex={0}
         style={{ marginBottom: 10, height: 40 }}
