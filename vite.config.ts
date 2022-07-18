@@ -17,6 +17,7 @@ export default defineConfig({
           sentry: ['@sentry/react', '@sentry/browser', '@sentry/tracing'],
           kbar: ['kbar'],
           perfectScrollbar: ['perfect-scrollbar'],
+          appwrite: ['appwrite'],
         },
       },
     },
