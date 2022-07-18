@@ -165,6 +165,7 @@ const Hub = () => {
         style={{ marginBottom: 10, height: 40 }}
         placeholder="Search..."
         onChange={({ target }) => debounceLoadData(target.value)}
+        allowClear
       />
       <Table
         dataSource={dataSource}
