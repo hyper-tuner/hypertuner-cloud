@@ -4,7 +4,6 @@ import {
   Input,
   Space,
   Table,
-  Tooltip,
   Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -28,6 +27,10 @@ import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 import { aspirationMapper } from '../utils/tune/mappers';
 import { TuneDbDocument } from '../types/dbData';
+import {
+  copyToClipboard,
+  isClipboardSupported,
+} from '../utils/clipboard';
 
 const { useBreakpoint } = Grid;
 
@@ -38,16 +41,7 @@ const Hub = () => {
   const { searchTunes } = useDb();
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<any>([]);
-  const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  const copyToClipboard = async (shareUrl: string) => {
-    if (navigator.clipboard) {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
-    }
-  };
 
   const loadData = debounce(async (searchText?: string) => {
     setIsLoading(true);
@@ -153,9 +147,7 @@ const Hub = () => {
       fixed: 'right',
       render: (tuneId: string) => (
         <Space>
-          <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-            <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />
-          </Tooltip>
+          {isClipboardSupported && <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />}
           <Button type="primary" icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
         </Space>
       ),

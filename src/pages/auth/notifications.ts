@@ -133,6 +133,11 @@ const databaseGenericError = (err: Error) => notification.error({
   ...baseOptions,
 });
 
+const copiedToClipboard = () => notification.success({
+  message: 'Copied to clipboard',
+  ...baseOptions,
+});
+
 export {
   emailNotVerified,
   magicLinkSent,
@@ -155,4 +160,5 @@ export {
   passwordUpdateSuccess,
   passwordUpdateFailed,
   databaseGenericError,
+  copiedToClipboard,
 };

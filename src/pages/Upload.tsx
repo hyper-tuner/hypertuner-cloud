@@ -61,6 +61,7 @@ import {
   TuneDbDocument,
 } from '../types/dbData';
 import { aspirationMapper } from '../utils/tune/mappers';
+import { copyToClipboard } from '../utils/clipboard';
 
 const { Item } = Form;
 
@@ -104,7 +105,6 @@ const UploadPage = () => {
   const [tuneDocumentId, setTuneDocumentId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>();
-  const [copied, setCopied] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [readme, setReadme] = useState('# My Tune\n\ndescription');
@@ -123,7 +123,7 @@ const UploadPage = () => {
   const [toothLogFileIds, setToothLogFileIds] = useState<Map<string, string>>(new Map());
   const [customIniFileId, setCustomIniFileId] = useState<string | null>(null);
 
-  const hasNavigatorShare = navigator.share !== undefined;
+  const shareSupported = 'share' in navigator;
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, getFile } = useServerStorage();
@@ -134,14 +134,6 @@ const UploadPage = () => {
   const goToNewTune = () => navigate(generatePath(Routes.TUNE_ROOT, {
     tuneId: newTuneId!,
   }));
-
-  const copyToClipboard = async () => {
-    if (navigator.clipboard) {
-      await navigator.clipboard.writeText(shareUrl!);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
-    }
-  };
 
   const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
 
@@ -503,13 +495,13 @@ const UploadPage = () => {
       <Divider>Publish & Share</Divider>
       {isPublished && <Row>
         <Input
-          style={{ width: `calc(100% - ${hasNavigatorShare ? 65 : 35}px)` }}
+          style={{ width: `calc(100% - ${shareSupported ? 65 : 35}px)` }}
           value={shareUrl!}
         />
-        <Tooltip title={copied ? 'Copied!' : 'Copy URL'}>
-          <Button icon={<CopyOutlined />} onClick={copyToClipboard} />
+        <Tooltip title="Copy URL">
+          <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(shareUrl!)} />
         </Tooltip>
-        {hasNavigatorShare && (
+        {shareSupported && (
           <Tooltip title="Share">
             <Button
               icon={<ShareAltOutlined />}
