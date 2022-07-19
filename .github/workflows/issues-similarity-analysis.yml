@@ -13,5 +13,5 @@ jobs:
         with:
           show-footer: false
           comment-body: '${index}. ${similarity} #${number}'
-          filter-threshold: 0.5
+          filter-threshold: 0.6
           since-days: 730
