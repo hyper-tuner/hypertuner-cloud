@@ -2,6 +2,7 @@ import {
   Button,
   Grid,
   Input,
+  InputRef,
   Space,
   Table,
   Typography,
@@ -15,6 +16,7 @@ import {
 import {
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -43,6 +45,7 @@ const Hub = () => {
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const searchRef = useRef<InputRef | null>(null);
 
   const loadData = debounce(async (searchText?: string) => {
     setIsLoading(true);
@@ -66,8 +69,9 @@ const Hub = () => {
 
   useEffect(() => {
     loadData();
+    searchRef.current?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // TODO: fix this
+  }, []);
 
   const columns: ColumnsType<any> = [
     {
@@ -162,6 +166,7 @@ const Hub = () => {
       <Title>Hub</Title>
       <Input
         tabIndex={0}
+        ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
         placeholder="Search..."
         onChange={({ target }) => debounceLoadData(target.value)}
