@@ -11,10 +11,9 @@ import {
   TuneDbDocument,
 } from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
-import { fetchEnv } from '../utils/env';
 
-const COLLECTION_ID_PUBLIC_TUNES = fetchEnv('VITE_APPWRITE_COLLECTION_ID_PUBLIC_TUNES');
-const COLLECTION_ID_USERS_BUCKETS = fetchEnv('VITE_APPWRITE_COLLECTION_ID_USERS_BUCKETS');
+const COLLECTION_ID_PUBLIC_TUNES = 'tunes';
+const COLLECTION_ID_USERS_BUCKETS = 'usersBuckets';
 
 const useDb = () => {
   const updateTune = async (documentId: string, data: TuneDbDataPartial) => {
