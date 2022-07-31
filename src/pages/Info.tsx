@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import {
+  Button,
   Col,
   Divider,
   Form,
@@ -9,10 +10,16 @@ import {
   Select,
 } from 'antd';
 import {
+  generatePath,
+  useNavigate,
+} from 'react-router-dom';
+import {
   AppState,
   TuneDataState,
 } from '../types/state';
 import Loader from '../components/Loader';
+import { Routes } from '../routes';
+import { useAuth } from '../contexts/AuthContext';
 
 const { Item } = Form;
 const rowProps = { gutter: 10 };
@@ -23,6 +30,32 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  const goToEdit = () => navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+    tuneId: tuneData.tuneId,
+  }));
+
+  const canManage = tuneData?.userId === currentUser?.$id;
+
+  const manageSection = (
+    <>
+      <Divider>Manage</Divider>
+      <Row style={{ marginTop: 10 }}>
+        <Item style={{ width: '100%' }}>
+          <Button
+            type="primary"
+            block
+            onClick={goToEdit}
+          >
+            Edit
+          </Button>
+        </Item>
+      </Row>
+    </>
+  );
+
   if (!tuneData?.vehicleName) {
     return <Loader />;
   }
@@ -121,6 +154,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
           {`${tuneData.readme}`}
         </ReactMarkdown>}
       </div>
+      {canManage && manageSection}
     </div >
   );
 };

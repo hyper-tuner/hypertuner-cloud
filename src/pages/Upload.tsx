@@ -56,14 +56,11 @@ import {
   requiredTextRules,
   requiredRules,
 } from '../utils/form';
-import {
-  TuneDbDataPartial,
-  TuneDbDocument,
-} from '../types/dbData';
+import { TuneDbDocument } from '../types/dbData';
 import { aspirationMapper } from '../utils/tune/mappers';
 import { copyToClipboard } from '../utils/clipboard';
 
-const { Item } = Form;
+const { Item, useForm } = Form;
 
 enum MaxFiles {
   TUNE_FILES = 1,
@@ -87,6 +84,7 @@ const maxFileSizeMB = 50;
 const descriptionEditorHeight = 260;
 const thisYear = (new Date()).getFullYear();
 const generateTuneId = () => nanoid(10);
+const defaultReadme = '# My Tune\n\ndescription';
 
 const tuneIcon = () => <ToolOutlined />;
 const logIcon = () => <FundOutlined />;
@@ -97,6 +95,7 @@ const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 const tuneParser = new TuneParser();
 
 const UploadPage = () => {
+  const [form] = useForm();
   const routeMatch = useMatch(Routes.UPLOAD_WITH_TUNE_ID);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -107,11 +106,8 @@ const UploadPage = () => {
   const [shareUrl, setShareUrl] = useState<string>();
   const [isPublished, setIsPublished] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [readme, setReadme] = useState('# My Tune\n\ndescription');
+  const [readme, setReadme] = useState(defaultReadme);
   const [existingTune, setExistingTune] = useState<TuneDbDocument>();
-  const [initialValues, setInitialValues] = useState<TuneDbDataPartial>({
-    readme,
-  });
 
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);
@@ -400,7 +396,7 @@ const UploadPage = () => {
       }
 
       setExistingTune(oldTune);
-      setInitialValues(oldTune);
+      form.setFieldsValue(oldTune);
       setIsEditMode(true);
       setTuneDocumentId(oldTune.$id);
 
@@ -443,13 +439,33 @@ const UploadPage = () => {
           status: 'done',
         }]);
       });
+    } else {
+      // reset state
+      form.resetFields();
+      setReadme(defaultReadme);
+      setTuneFileId(null);
+      setCustomIniFileId(null);
+      setDefaultTuneFileList([]);
+      setDefaultLogFilesList([]);
+      setDefaultToothLogFilesList([]);
+      setDefaultCustomIniFileList([]);
     }
 
     setTuneIsLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, form, navigateToNewTuneId]);
 
   const prepareData = useCallback(async () => {
+    const currentTuneId = routeMatch?.params.tuneId;
+    if (currentTuneId) {
+      loadExistingTune(currentTuneId);
+      setShareUrl(buildFullUrl([tunePath(currentTuneId)]));
+    } else {
+      navigateToNewTuneId();
+    }
+  }, [loadExistingTune, navigateToNewTuneId, routeMatch?.params.tuneId]);
+
+  useEffect(() => {
     if (!currentUser) {
       restrictedPage();
       navigate(Routes.LOGIN);
@@ -471,18 +487,8 @@ const UploadPage = () => {
       genericError(error as Error);
     }
 
-    const currentTuneId = routeMatch?.params.tuneId;
-    if (currentTuneId) {
-      loadExistingTune(currentTuneId);
-      setShareUrl(buildFullUrl([tunePath(currentTuneId)]));
-    } else {
-      navigateToNewTuneId();
-    }
-  }, [currentUser, loadExistingTune, navigate, navigateToNewTuneId, routeMatch?.params.tuneId]);
-
-  useEffect(() => {
     prepareData();
-  }, [currentUser, prepareData]);
+  }, [currentUser, navigate, prepareData, routeMatch?.params.tuneId]);
 
   const uploadButton = (
     <Space direction="vertical">
@@ -729,7 +735,7 @@ const UploadPage = () => {
 
   return (
     <div className="small-container">
-      <Form onFinish={publishTune} initialValues={initialValues}>
+      <Form onFinish={publishTune} initialValues={{ readme }} form={form}>
         <Divider>
           <Space>
             Upload Tune
