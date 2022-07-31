@@ -22,9 +22,9 @@
     "@hyper-tuner/ini": "^0.3.1",
     "@hyper-tuner/types": "^0.3.3",
     "@reduxjs/toolkit": "^1.8.3",
-    "@sentry/react": "^7.7.0",
-    "@sentry/tracing": "^7.7.0",
-    "antd": "^4.22.0",
+    "@sentry/react": "^7.8.0",
+    "@sentry/tracing": "^7.8.0",
+    "antd": "^4.22.2",
     "appwrite": "^9.0.1",
     "kbar": "^0.1.0-beta.36",
     "lodash.debounce": "^4.0.8",
@@ -39,12 +39,12 @@
     "react-router-dom": "^6.3.0",
     "uplot": "^1.6.22",
     "uplot-react": "^1.1.1",
-    "vite": "^3.0.3"
+    "vite": "^3.0.4"
   },
   "devDependencies": {
     "@hyper-tuner/eslint-config": "^0.1.6",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/node": "^18.6.1",
+    "@types/node": "^18.6.3",
     "@types/pako": "^2.0.0",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
