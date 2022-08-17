@@ -60,8 +60,8 @@ const Profile = () => {
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
-  const [sessions, setSessions] = useState<string[]>([]);
-  const [logs, setLogs] = useState<string[]>([]);
+  const [sessions, setSessions] = useState<string[] | null>(null);
+  const [logs, setLogs] = useState<string[] | null>(null);
 
   const resendEmailVerification = async () => {
     setIsSendingVerification(true);
@@ -242,17 +242,17 @@ const Profile = () => {
         <List
           size="small"
           bordered
-          dataSource={sessions}
+          dataSource={sessions || []}
           renderItem={item => <List.Item>{item}</List.Item>}
-          loading={sessions.length === 0}
+          loading={sessions === null}
         />
         <Divider>Audit logs</Divider>
         <List
           size="small"
           bordered
-          dataSource={logs}
+          dataSource={logs || []}
           renderItem={item => <List.Item>{item}</List.Item>}
-          loading={logs.length === 0}
+          loading={logs === null}
         />
       </div>
     </>
