@@ -2,7 +2,7 @@
 
 import { Grid } from 'antd';
 import LandscapeNotice from './LandscapeNotice';
-import { colorHsl } from '../../../utils/number';
+import { colorHsl } from '../../../utils/numbers';
 
 const { useBreakpoint } = Grid;
 

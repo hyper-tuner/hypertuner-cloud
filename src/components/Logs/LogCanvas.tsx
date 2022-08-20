@@ -13,7 +13,7 @@ import uPlot from 'uplot';
 import {
   colorHsl,
   formatNumber,
-} from '../../utils/number';
+} from '../../utils/numbers';
 import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { Colors } from '../../utils/colors';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';

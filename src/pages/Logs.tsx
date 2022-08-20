@@ -39,7 +39,7 @@ import store from '../store';
 import {
   formatBytes,
   msToTime,
-} from '../utils/number';
+} from '../utils/numbers';
 import useConfig from '../hooks/useConfig';
 import {
   isExpression,

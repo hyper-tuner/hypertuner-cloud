@@ -35,7 +35,7 @@ import {
   loadToothLogs,
 } from '../utils/api';
 import store from '../store';
-import { formatBytes } from '../utils/number';
+import { formatBytes } from '../utils/numbers';
 import CompositeCanvas from '../components/TriggerLogs/CompositeCanvas';
 import TriggerLogsParser, {
   CompositeLogEntry,
