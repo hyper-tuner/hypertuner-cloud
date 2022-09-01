@@ -23,7 +23,7 @@
     "@hyper-tuner/types": "^0.3.3",
     "@reduxjs/toolkit": "^1.8.4",
     "@sentry/react": "^7.11.1",
-    "@sentry/tracing": "^7.11.1",
+    "@sentry/tracing": "^7.12.0",
     "antd": "^4.22.6",
     "appwrite": "^9.0.1",
     "kbar": "^0.1.0-beta.36",
