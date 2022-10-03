@@ -44,7 +44,6 @@ import TriggerLogsParser, {
 import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
 import Loader from '../components/Loader';
 
-const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Step } = Steps;
 

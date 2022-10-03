@@ -51,7 +51,6 @@ import {
 } from '../types/state';
 import Loader from '../components/Loader';
 
-const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Step } = Steps;
 const edgeUnknown = 'Unknown';
@@ -269,7 +268,7 @@ const Logs = ({
                     some_tune.mlg
                   </PerfectScrollbar>
                 ),
-              }
+              },
             ]}
           />
         }
