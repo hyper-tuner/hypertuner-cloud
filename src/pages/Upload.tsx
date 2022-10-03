@@ -452,7 +452,7 @@ const UploadPage = () => {
     }
 
     setTuneIsLoading(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, form, navigateToNewTuneId]);
 
   const prepareData = useCallback(async () => {
@@ -631,26 +631,38 @@ const UploadPage = () => {
           <Typography.Text type="secondary">(markdown)</Typography.Text>
         </Space>
       </Divider>
-      <Tabs defaultActiveKey="source" className="upload-readme">
-        <Tabs.TabPane tab="Edit" key="source" style={{ height: descriptionEditorHeight }}>
-          <Item name="readme">
-            <Input.TextArea
-              rows={10}
-              showCount
-              value={readme}
-              onChange={(e) => setReadme(e.target.value)}
-              maxLength={3_000}
-            />
-          </Item>
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="Preview" key="preview" style={{ height: descriptionEditorHeight }}>
-          <div className="markdown-preview">
-            <ReactMarkdown>
-              {readme}
-            </ReactMarkdown>
-          </div>
-        </Tabs.TabPane>
-      </Tabs>
+      <Tabs
+        defaultActiveKey="source"
+        className="upload-readme"
+        items={[
+          {
+            label: 'Edit',
+            key: 'source',
+            style: { height: descriptionEditorHeight },
+            children: (
+              <Input.TextArea
+                rows={10}
+                showCount
+                value={readme}
+                onChange={(e) => setReadme(e.target.value)}
+                maxLength={3_000}
+              />
+            ),
+          },
+          {
+            label: 'Preview',
+            key: 'preview',
+            style: { height: descriptionEditorHeight },
+            children: (
+              <div className="markdown-preview">
+                <ReactMarkdown>
+                  {readme}
+                </ReactMarkdown>
+              </div>
+            ),
+          },
+        ]}
+      />
     </>
   );
 

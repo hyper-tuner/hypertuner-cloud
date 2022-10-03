@@ -44,7 +44,6 @@ import TriggerLogsParser, {
 import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
 import Loader from '../components/Loader';
 
-const { TabPane } = Tabs;
 const { Content } = Layout;
 const { Step } = Steps;
 
@@ -148,14 +147,22 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
           <Loader />
           :
           !ui.sidebarCollapsed &&
-          <Tabs defaultActiveKey="files" style={{ marginLeft: 20 }}>
-            <TabPane tab={<FileTextOutlined />} key="files">
-              <PerfectScrollbar options={{ suppressScrollX: true }}>
-                <Typography.Paragraph>tooth.csv</Typography.Paragraph>
-                <Typography.Paragraph>composite.csv</Typography.Paragraph>
-              </PerfectScrollbar>
-            </TabPane>
-          </Tabs>
+          <Tabs
+            defaultActiveKey="files"
+            style={{ marginLeft: 20 }}
+            items={[
+              {
+                label: <FileTextOutlined />,
+                key: 'files',
+                children: (
+                  <PerfectScrollbar options={{ suppressScrollX: true }}>
+                    <Typography.Paragraph>tooth.csv</Typography.Paragraph>
+                    <Typography.Paragraph>composite.csv</Typography.Paragraph>
+                  </PerfectScrollbar>
+                ),
+              },
+            ]}
+          />
         }
       </Sider>
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>

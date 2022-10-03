@@ -35,7 +35,7 @@ const Tune = ({ config, tune }: { config: ConfigType | null, tune: TuneState }) 
   const tuneId = tunePathMatch?.params.tuneId;
 
   useEffect(() => {
-    if (tune && config && tuneRootMatch) {
+    if (tune && config && tuneRootMatch && tuneId) {
       const firstCategory = Object.keys(config!.menus)[0];
       const firstDialog = Object.keys(config!.menus[firstCategory].subMenus)[0];
 
