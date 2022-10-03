@@ -222,42 +222,56 @@ const Logs = ({
           <Loader />
           :
           !ui.sidebarCollapsed &&
-          <Tabs defaultActiveKey="fields" style={{ marginLeft: 20 }}>
-            <TabPane tab={<EditOutlined />} key="fields">
-              <div style={{ height: '45%' }}>
-                <PerfectScrollbar options={{ suppressScrollX: true }}>
-                  <Checkbox.Group onChange={setSelectedFields1} value={selectedFields1}>
-                    {fields.map((field) => (
-                      <Row key={field.name}>
-                        <Checkbox key={field.name} value={field.name}>
-                          {isExpression(field.label) ? stripExpression(field.label) : field.label}
-                        </Checkbox>
-                      </Row>
-                    ))}
-                  </Checkbox.Group>
-                </PerfectScrollbar>
-              </div>
-              <Divider />
-              <div style={{ height: '45%' }}>
-                <PerfectScrollbar options={{ suppressScrollX: true }}>
-                  <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
-                    {fields.map((field) => (
-                      <Row key={field.name}>
-                        <Checkbox key={field.name} value={field.name}>
-                          {isExpression(field.label) ? stripExpression(field.label) : field.label}
-                        </Checkbox>
-                      </Row>
-                    ))}
-                  </Checkbox.Group>
-                </PerfectScrollbar>
-              </div>
-            </TabPane>
-            <TabPane tab={<FileTextOutlined />} key="files">
-              <PerfectScrollbar options={{ suppressScrollX: true }}>
-                some_tune.mlg
-              </PerfectScrollbar>
-            </TabPane>
-          </Tabs>
+          <Tabs
+            defaultActiveKey="fields"
+            style={{ marginLeft: 20 }}
+            items={[
+              {
+                label: <EditOutlined />,
+                key: 'fields',
+                children: (
+                  <>
+                    <div style={{ height: '45%' }}>
+                      <PerfectScrollbar options={{ suppressScrollX: true }}>
+                        <Checkbox.Group onChange={setSelectedFields1} value={selectedFields1}>
+                          {fields.map((field) => (
+                            <Row key={field.name}>
+                              <Checkbox key={field.name} value={field.name}>
+                                {isExpression(field.label) ? stripExpression(field.label) : field.label}
+                              </Checkbox>
+                            </Row>
+                          ))}
+                        </Checkbox.Group>
+                      </PerfectScrollbar>
+                    </div>
+                    <Divider />
+                    <div style={{ height: '45%' }}>
+                      <PerfectScrollbar options={{ suppressScrollX: true }}>
+                        <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
+                          {fields.map((field) => (
+                            <Row key={field.name}>
+                              <Checkbox key={field.name} value={field.name}>
+                                {isExpression(field.label) ? stripExpression(field.label) : field.label}
+                              </Checkbox>
+                            </Row>
+                          ))}
+                        </Checkbox.Group>
+                      </PerfectScrollbar>
+                    </div>
+                  </>
+                ),
+              },
+              {
+                label: <FileTextOutlined />,
+                key: 'files',
+                children: (
+                  <PerfectScrollbar options={{ suppressScrollX: true }}>
+                    some_tune.mlg
+                  </PerfectScrollbar>
+                ),
+              }
+            ]}
+          />
         }
       </Sider>
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
