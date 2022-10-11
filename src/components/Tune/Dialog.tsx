@@ -206,6 +206,7 @@ const Dialog = ({
           return;
         }
 
+        // TODO: Sentry?
         console.info('Unable to resolve panel:', panelName);
 
         return;

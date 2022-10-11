@@ -78,30 +78,34 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
   const [menus, setMenus] = useState<ItemType[]>([]);
   const navigate = useNavigate();
 
+  const mapSubMenuItems = useCallback((menuName: string, types: MenusType): ItemType[] => Object
+    .keys(types[menuName].subMenus)
+    .map((subMenuName: string) => {
+      if (subMenuName === 'std_separator') {
+        return { type: 'divider' };
+      }
+
+      if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
+        return null;
+      }
+
+      const subMenu = types[menuName].subMenus[subMenuName];
+
+      return {
+        key: buildUrl(navigation.tuneId!, menuName, subMenuName),
+        icon: <Icon name={subMenuName} />,
+        label: subMenu.title,
+        onClick: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
+      };
+    }), [navigate, navigation.tuneId]);
+
   const menusList = useCallback((types: MenusType): ItemType[] => (
     Object.keys(types).map((menuName: string) => {
       if (SKIP_MENUS.includes(menuName)) {
         return null;
       }
 
-      const subMenuItems: ItemType[] = Object.keys(types[menuName].subMenus).map((subMenuName: string) => {
-        if (subMenuName === 'std_separator') {
-          return { type: 'divider' };
-        }
-
-        if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
-          return null;
-        }
-
-        const subMenu = types[menuName].subMenus[subMenuName];
-
-        return {
-          key: buildUrl(navigation.tuneId!, menuName, subMenuName),
-          icon: <Icon name={subMenuName} />,
-          label: subMenu.title,
-          onClick: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
-        };
-      });
+      const subMenuItems: ItemType[] = mapSubMenuItems(menuName, types);
 
       return {
         key: `/${menuName}`,
@@ -110,7 +114,7 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
         children: subMenuItems,
       };
     })
-  ), [navigate, navigation.tuneId]);
+  ), [mapSubMenuItems]);
 
   useEffect(() => {
     if (tune && config && Object.keys(tune.constants).length) {
