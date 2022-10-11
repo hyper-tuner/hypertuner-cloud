@@ -5,6 +5,7 @@ import {
   SimpleConstant as SimpleConstantType,
   TuneConstants as TuneConstantsType,
 } from '@hyper-tuner/types';
+import * as Sentry from '@sentry/browser';
 
 export const isExpression = (val: any) => `${val}`.startsWith('{') && `${val}`.endsWith('}');
 
@@ -38,8 +39,11 @@ export const prepareConstDeclarations = (tuneConstants: TuneConstantsType, confi
       val = `'${val}'`;
     }
 
-    return `const ${constName} = ${val};`;
-  })
+    // some names may have invalid characters, we can fix it or skip it
+    const name = constName.replace('-', '_');
+
+    return `const ${name} = ${val};`;
+  }).filter((val) => val !== null)
 );
 
 const prepareChannelsDeclarations = (configOutputChannels: OutputChannelsType) => (
@@ -76,7 +80,6 @@ export const evaluateExpression = (expression: string, tuneConstants: TuneConsta
         boardFuelOutputs: 4,
         boardIgnOutputs: 4,
       };
-
       const coolantRaw = 21;
       const iatRaw = 21;
       const fuelTempRaw = 21;
@@ -96,13 +99,19 @@ export const evaluateExpression = (expression: string, tuneConstants: TuneConsta
       const baro = 0;
       const vss = 0;
       const CLIdleTarget = 0;
+      const fuelPressure = 0;
+      const oilPressure = 0;
+      const halfSync = 0;
+      const sync = 0;
 
       ${constDeclarations.join('')}
       ${channelsDeclarations.join('')}
       ${stripExpression(expression)};
     `);
   } catch (error) {
-    console.info('Condition evaluation failed with:', (error as Error).message);
+    const msg = `Condition evaluation failed with: ${(error as Error).message}`;
+    console.warn(msg);
+    Sentry.captureMessage(msg);
   }
 
   return undefined;

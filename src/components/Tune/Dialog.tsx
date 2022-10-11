@@ -279,6 +279,7 @@ const Dialog = ({
           let enabled = true;
 
           if (field.condition) {
+            // TODO: optimize it
             enabled = evaluateExpression(field.condition, tune.constants, config);
           }
 
