@@ -19,6 +19,9 @@ import {
   Config as ConfigType,
   Menus as MenusType,
   Tune as TuneType,
+  SubMenu as SubMenuType,
+  GroupMenu as GroupMenuType,
+  GroupChildMenu as GroupChildMenuType,
 } from '@hyper-tuner/types';
 import store from '../../store';
 import Icon from '../SideBar/Icon';
@@ -78,39 +81,55 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
   const [menus, setMenus] = useState<ItemType[]>([]);
   const navigate = useNavigate();
 
-  const mapSubMenuItems = useCallback((menuName: string, types: MenusType): ItemType[] => Object
-    .keys(types[menuName].subMenus)
-    .map((subMenuName: string) => {
-      if (subMenuName === 'std_separator') {
-        return { type: 'divider' };
-      }
+  const mapSubMenuItems = useCallback((menuName: string, subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType }): ItemType[] => {
+    const items: ItemType[] = [];
 
-      if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
-        return null;
-      }
+    Object
+      .keys(subMenus)
+      .forEach((subMenuName: string) => {
+        if (subMenuName === 'std_separator') {
+          items.push({
+            type: 'divider',
+          });
 
-      const subMenu = types[menuName].subMenus[subMenuName];
+          return;
+        }
 
-      return {
-        key: buildUrl(navigation.tuneId!, menuName, subMenuName),
-        icon: <Icon name={subMenuName} />,
-        label: subMenu.title,
-        onClick: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
-      };
-    }), [navigate, navigation.tuneId]);
+        if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
+          return;
+        }
 
-  const menusList = useCallback((types: MenusType): ItemType[] => (
-    Object.keys(types).map((menuName: string) => {
+        const subMenu = subMenus[subMenuName];
+
+        if ((subMenu as any).type === 'groupMenu') {
+          items.push(...mapSubMenuItems(subMenuName, (subMenu as GroupMenuType).groupChildMenus));
+
+          return;
+        }
+
+        items.push({
+          key: buildUrl(navigation.tuneId!, menuName, subMenuName),
+          icon: <Icon name={subMenuName} />,
+          label: subMenu.title,
+          onClick: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
+        });
+      });
+
+    return items;
+  }, [navigate, navigation.tuneId]);
+
+  const menusList = useCallback((menusObject: MenusType): ItemType[] => (
+    Object.keys(menusObject).map((menuName: string) => {
       if (SKIP_MENUS.includes(menuName)) {
         return null;
       }
 
-      const subMenuItems: ItemType[] = mapSubMenuItems(menuName, types);
+      const subMenuItems: ItemType[] = mapSubMenuItems(menuName, menusObject[menuName].subMenus);
 
       return {
         key: `/${menuName}`,
         icon: <Icon name={menuName} />,
-        label: types[menuName].title,
+        label: menusObject[menuName].title,
         children: subMenuItems,
       };
     })
