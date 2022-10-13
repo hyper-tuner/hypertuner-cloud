@@ -278,6 +278,12 @@ const ActionsProvider = (props: CommandPaletteProps) => {
 
           const subMenu = subMenus[subMenuName];
 
+          if ((subMenu as GroupMenuType).type === 'groupMenu') {
+            mapSubMenuItems(rootMenuName, rootMenu, (subMenu as GroupMenuType).groupChildMenus);
+
+            return;
+          }
+
           newActions.push({
             id: buildUrl(navigation.tuneId!, rootMenuName, subMenuName),
             section: rootMenu.title,
