@@ -40,9 +40,9 @@ const SmartNumber = ({
         step={10**-digits}
         disabled={disabled}
         marks={sliderMarks}
-        tipFormatter={(val) => `${val}${units}`}
-        // tooltipVisible
-        // tooltipPlacement="bottom"
+        tooltip={{
+          formatter: (val) => `${val}${units}`,
+        }}
       />
     );
   }

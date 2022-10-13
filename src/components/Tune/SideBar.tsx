@@ -19,6 +19,9 @@ import {
   Config as ConfigType,
   Menus as MenusType,
   Tune as TuneType,
+  SubMenu as SubMenuType,
+  GroupMenu as GroupMenuType,
+  GroupChildMenu as GroupChildMenuType,
 } from '@hyper-tuner/types';
 import store from '../../store';
 import Icon from '../SideBar/Icon';
@@ -78,39 +81,59 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
   const [menus, setMenus] = useState<ItemType[]>([]);
   const navigate = useNavigate();
 
-  const menusList = useCallback((types: MenusType): ItemType[] => (
-    Object.keys(types).map((menuName: string) => {
+  const mapSubMenuItems = useCallback((rootMenuName: string, subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType }): ItemType[] => {
+    const items: ItemType[] = [];
+
+    Object
+      .keys(subMenus)
+      .forEach((subMenuName: string) => {
+        if (SKIP_SUB_MENUS.includes(`${rootMenuName}/${subMenuName}`)) {
+          return;
+        }
+
+        if (subMenuName === 'std_separator') {
+          items.push({
+            type: 'divider',
+          });
+
+          return;
+        }
+
+        const subMenu = subMenus[subMenuName];
+
+        if ((subMenu as GroupMenuType).type === 'groupMenu') {
+          items.push(...mapSubMenuItems(rootMenuName, (subMenu as GroupMenuType).groupChildMenus));
+
+          return;
+        }
+
+        items.push({
+          key: buildUrl(navigation.tuneId!, rootMenuName, subMenuName),
+          icon: <Icon name={subMenuName} />,
+          label: subMenu.title,
+          onClick: () => navigate(buildUrl(navigation.tuneId!, rootMenuName, subMenuName)),
+        });
+      });
+
+    return items;
+  }, [navigate, navigation.tuneId]);
+
+  const menusList = useCallback((menusObject: MenusType): ItemType[] => (
+    Object.keys(menusObject).map((menuName: string) => {
       if (SKIP_MENUS.includes(menuName)) {
         return null;
       }
 
-      const subMenuItems: ItemType[] = Object.keys(types[menuName].subMenus).map((subMenuName: string) => {
-        if (subMenuName === 'std_separator') {
-          return { type: 'divider' };
-        }
-
-        if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
-          return null;
-        }
-
-        const subMenu = types[menuName].subMenus[subMenuName];
-
-        return {
-          key: buildUrl(navigation.tuneId!, menuName, subMenuName),
-          icon: <Icon name={subMenuName} />,
-          label: subMenu.title,
-          onClick: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
-        };
-      });
+      const subMenuItems: ItemType[] = mapSubMenuItems(menuName, menusObject[menuName].subMenus);
 
       return {
         key: `/${menuName}`,
         icon: <Icon name={menuName} />,
-        label: types[menuName].title,
+        label: menusObject[menuName].title,
         children: subMenuItems,
       };
     })
-  ), [navigate, navigation.tuneId]);
+  ), [mapSubMenuItems]);
 
   useEffect(() => {
     if (tune && config && Object.keys(tune.constants).length) {

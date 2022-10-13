@@ -39,6 +39,10 @@ import {
   Config as ConfigType,
   Tune as TuneType,
   Menus as MenusType,
+  Menu as MenuType,
+  SubMenu as SubMenuType,
+  GroupMenu as GroupMenuType,
+  GroupChildMenu as GroupChildMenuType,
 } from '@hyper-tuner/types';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
@@ -76,7 +80,7 @@ const mapStateToProps = (state: AppState) => ({
 
 interface CommandPaletteProps {
   config: ConfigType | null;
-  tune: TuneType  | null;
+  tune: TuneType | null;
   navigation: NavigationState;
   // eslint-disable-next-line react/no-unused-prop-types
   children?: ReactNode;
@@ -260,29 +264,42 @@ const ActionsProvider = (props: CommandPaletteProps) => {
       },
     ];
 
-    Object.keys(types).forEach((menuName: string) => {
-      if (SKIP_MENUS.includes(menuName)) {
+    const mapSubMenuItems = (rootMenuName: string, rootMenu: MenuType, subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType }) => {
+      Object
+        .keys(subMenus)
+        .forEach((subMenuName: string) => {
+          if (SKIP_SUB_MENUS.includes(`${rootMenuName}/${subMenuName}`)) {
+            return;
+          }
+
+          if (subMenuName === 'std_separator') {
+            return;
+          }
+
+          const subMenu = subMenus[subMenuName];
+
+          if ((subMenu as GroupMenuType).type === 'groupMenu') {
+            mapSubMenuItems(rootMenuName, rootMenu, (subMenu as GroupMenuType).groupChildMenus);
+
+            return;
+          }
+
+          newActions.push({
+            id: buildUrl(navigation.tuneId!, rootMenuName, subMenuName),
+            section: rootMenu.title,
+            name: subMenu.title,
+            icon: <Icon name={subMenuName} />,
+            perform: () => navigate(buildUrl(navigation.tuneId!, rootMenuName, subMenuName)),
+          });
+        });
+    };
+
+    Object.keys(types).forEach((rootMenuName: string) => {
+      if (SKIP_MENUS.includes(rootMenuName)) {
         return;
       }
 
-      Object.keys(types[menuName].subMenus).forEach((subMenuName: string) => {
-        if (subMenuName === 'std_separator') {
-          return;
-        }
-
-        if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
-          return;
-        }
-        const subMenu = types[menuName].subMenus[subMenuName];
-
-        newActions.push({
-          id: buildUrl(navigation.tuneId!, menuName, subMenuName),
-          section: types[menuName].title,
-          name: subMenu.title,
-          icon: <Icon name={subMenuName} />,
-          perform: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
-        });
-      });
+      mapSubMenuItems(rootMenuName, types[rootMenuName], types[rootMenuName].subMenus);
     });
 
     return newActions;
