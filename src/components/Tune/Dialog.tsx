@@ -278,6 +278,7 @@ const Dialog = ({
           const help = config.help[field.name];
           let input;
           let enabled = true;
+          const fieldKey = `${panel.name}-${field.title}`;
 
           if (field.condition) {
             // TODO: optimize it
@@ -285,7 +286,7 @@ const Dialog = ({
           }
 
           if (field.name === '_fieldText_' && enabled) {
-            return <TextField key={`${panel.name}-${field.title}`} title={field.title} />;
+            return <TextField key={fieldKey} title={field.title} />;
           }
 
           if (!tuneField) {
@@ -321,7 +322,7 @@ const Dialog = ({
 
           return (
             <Form.Item
-              key={field.name}
+              key={fieldKey}
               label={
                 <Space>
                   {field.title}
