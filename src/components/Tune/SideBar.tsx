@@ -81,7 +81,7 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
   const [menus, setMenus] = useState<ItemType[]>([]);
   const navigate = useNavigate();
 
-  const mapSubMenuItems = useCallback((menuName: string, subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType }): ItemType[] => {
+  const mapSubMenuItems = useCallback((rootMenuName: string, subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType }): ItemType[] => {
     const items: ItemType[] = [];
 
     Object
@@ -95,23 +95,23 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
           return;
         }
 
-        if (SKIP_SUB_MENUS.includes(`${menuName}/${subMenuName}`)) {
+        if (SKIP_SUB_MENUS.includes(`${rootMenuName}/${subMenuName}`)) {
           return;
         }
 
         const subMenu = subMenus[subMenuName];
 
         if ((subMenu as any).type === 'groupMenu') {
-          items.push(...mapSubMenuItems(subMenuName, (subMenu as GroupMenuType).groupChildMenus));
+          items.push(...mapSubMenuItems(rootMenuName, (subMenu as GroupMenuType).groupChildMenus));
 
           return;
         }
 
         items.push({
-          key: buildUrl(navigation.tuneId!, menuName, subMenuName),
+          key: buildUrl(navigation.tuneId!, rootMenuName, subMenuName),
           icon: <Icon name={subMenuName} />,
           label: subMenu.title,
-          onClick: () => navigate(buildUrl(navigation.tuneId!, menuName, subMenuName)),
+          onClick: () => navigate(buildUrl(navigation.tuneId!, rootMenuName, subMenuName)),
         });
       });
 
