@@ -87,6 +87,10 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
     Object
       .keys(subMenus)
       .forEach((subMenuName: string) => {
+        if (SKIP_SUB_MENUS.includes(`${rootMenuName}/${subMenuName}`)) {
+          return;
+        }
+
         if (subMenuName === 'std_separator') {
           items.push({
             type: 'divider',
@@ -95,13 +99,9 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
           return;
         }
 
-        if (SKIP_SUB_MENUS.includes(`${rootMenuName}/${subMenuName}`)) {
-          return;
-        }
-
         const subMenu = subMenus[subMenuName];
 
-        if ((subMenu as any).type === 'groupMenu') {
+        if ((subMenu as GroupMenuType).type === 'groupMenu') {
           items.push(...mapSubMenuItems(rootMenuName, (subMenu as GroupMenuType).groupChildMenus));
 
           return;
