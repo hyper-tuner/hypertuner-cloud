@@ -354,18 +354,30 @@ const UploadPage = () => {
     });
   };
 
-  const removeFileFromStorage = async (fileId: string) => {
+  const removeFileFromStorage = async (fileId: string | null): Promise<boolean> => {
+    if (!fileId) {
+      return false;
+    }
+
     await removeFile(await getBucketId(currentUser!.$id), fileId);
+
+    return true;
   };
 
   const removeTuneFile = async () => {
-    await removeFileFromStorage(tuneFileId!);
+    if (!await removeFileFromStorage(tuneFileId!)) {
+      return;
+    }
+
     await updateTune(tuneDocumentId!, { tuneFileId: null });
     setTuneFileId(null);
   };
 
   const removeLogFile = async (file: UploadFile) => {
-    await removeFileFromStorage(logFileIds.get(file.uid)!);
+    if (!await removeFileFromStorage(logFileIds.get(file.uid)!)) {
+      return;
+    }
+
     logFileIds.delete(file.uid);
     const newValues = new Map(logFileIds);
     setLogFileIds(newValues);
@@ -373,7 +385,10 @@ const UploadPage = () => {
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
-    await removeFileFromStorage(toothLogFileIds.get(file.uid)!);
+    if (!await removeFileFromStorage(toothLogFileIds.get(file.uid)!)) {
+      return;
+    }
+
     toothLogFileIds.delete(file.uid);
     const newValues = new Map(toothLogFileIds);
     setToothLogFileIds(newValues);
@@ -381,7 +396,10 @@ const UploadPage = () => {
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
-    await removeFileFromStorage(customIniFileId!);
+    if (!await removeFileFromStorage(customIniFileId!)) {
+      return;
+    }
+
     await updateTune(tuneDocumentId!, { customIniFileId: null });
     setCustomIniFileId(null);
   };
