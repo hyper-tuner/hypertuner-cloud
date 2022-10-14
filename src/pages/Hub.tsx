@@ -69,7 +69,7 @@ const Hub = () => {
 
   useEffect(() => {
     loadData();
-    searchRef.current?.focus();
+    // searchRef.current?.focus(); // autofocus
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -165,7 +165,8 @@ const Hub = () => {
     <div className="large-container">
       <Title>Hub</Title>
       <Input
-        tabIndex={0}
+        // eslint-disable-next-line jsx-a11y/tabindex-no-positive
+        tabIndex={1}
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
         placeholder="Search..."
