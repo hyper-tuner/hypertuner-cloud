@@ -1,9 +1,12 @@
 import * as Sentry from '@sentry/browser';
 import {
+  ID,
   Models,
+  Permission,
   Query,
+  Role,
 } from 'appwrite';
-import { database } from '../appwrite';
+import { databases } from '../appwrite';
 import {
   TuneDbData,
   UsersBucket,
@@ -12,13 +15,14 @@ import {
 } from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
 
+const DB_ID = 'public';
 const COLLECTION_ID_PUBLIC_TUNES = 'tunes';
 const COLLECTION_ID_USERS_BUCKETS = 'usersBuckets';
 
 const useDb = () => {
   const updateTune = async (documentId: string, data: TuneDbDataPartial) => {
     try {
-      await database.updateDocument(COLLECTION_ID_PUBLIC_TUNES, documentId, data);
+      await databases.updateDocument(DB_ID, COLLECTION_ID_PUBLIC_TUNES, documentId, data);
 
       return Promise.resolve();
     } catch (error) {
@@ -32,12 +36,15 @@ const useDb = () => {
 
   const createTune = async (data: TuneDbData) => {
     try {
-      const tune = await database.createDocument(
+      const tune = await databases.createDocument(
+        DB_ID,
         COLLECTION_ID_PUBLIC_TUNES,
-        'unique()',
+        ID.unique(),
         data,
-        ['role:all'],
-        [`user:${data.userId}`],
+        [
+          Permission.read(Role.any()),
+          Permission.write(Role.user(data.userId, 'verified')),
+        ],
       );
 
       return Promise.resolve(tune);
@@ -52,10 +59,13 @@ const useDb = () => {
 
   const getTune = async (tuneId: string) => {
     try {
-      const tune = await database.listDocuments(
+      const tune = await databases.listDocuments(
+        DB_ID,
         COLLECTION_ID_PUBLIC_TUNES,
-        [Query.equal('tuneId', tuneId)],
-        1,
+        [
+          Query.equal('tuneId', tuneId),
+          Query.limit(1),
+        ],
       );
 
       return Promise.resolve(tune.total > 0 ? tune.documents[0] as unknown as TuneDbDocument : null);
@@ -70,13 +80,14 @@ const useDb = () => {
 
   const getBucketId = async (userId: string) => {
     try {
-      const buckets = await database.listDocuments(
+      const buckets = await databases.listDocuments(
+        DB_ID,
         COLLECTION_ID_USERS_BUCKETS,
         [
           Query.equal('userId', userId),
           Query.equal('visibility', 'public'),
+          Query.limit(1),
         ],
-        1,
       );
 
       if (buckets.total === 0) {
@@ -100,8 +111,8 @@ const useDb = () => {
     try {
       const list: Models.DocumentList<TuneDbDocument> = await (
         search
-          ? database.listDocuments(COLLECTION_ID_PUBLIC_TUNES, [Query.search('textSearch', search)], limit)
-          : database.listDocuments(COLLECTION_ID_PUBLIC_TUNES, [], limit)
+          ? databases.listDocuments(DB_ID, COLLECTION_ID_PUBLIC_TUNES, [Query.search('textSearch', search), Query.limit(limit)])
+          : databases.listDocuments(DB_ID, COLLECTION_ID_PUBLIC_TUNES, [Query.limit(limit)])
       );
 
       return Promise.resolve(list);

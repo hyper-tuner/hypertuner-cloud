@@ -79,7 +79,7 @@ const Profile = () => {
 
   const fetchLogs = useCallback(async () => getLogs()
     .then((list) => setLogs(list.logs.slice(0, MAX_LIST_SIZE).map((log) => [
-      new Date(log.time * 1000).toLocaleString(),
+      new Date(log.time).toLocaleString(),
       parseLogEvent(log.event),
       log.clientName,
       log.clientEngineVersion,

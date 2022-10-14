@@ -1,6 +1,11 @@
 import { notification } from 'antd';
 import * as Sentry from '@sentry/browser';
-import { Models } from 'appwrite';
+import {
+  ID,
+  Models,
+  Permission,
+  Role,
+} from 'appwrite';
 import { storage } from '../appwrite';
 import { fetchEnv } from '../utils/env';
 
@@ -65,10 +70,12 @@ const useServerStorage = () => {
     try {
       const createdFile = await storage.createFile(
         bucketId,
-        'unique()',
+        ID.unique(),
         file,
-        ['role:all'],
-        [`user:${userId}`],
+        [
+          Permission.read(Role.any()),
+          Permission.write(Role.user(userId, 'verified')),
+        ],
       );
 
       return Promise.resolve(createdFile);

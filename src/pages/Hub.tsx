@@ -59,7 +59,7 @@ const Hub = () => {
       author: 'John Doe',
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
-      publishedAt: new Date(tune.$updatedAt * 1000).toLocaleString(),
+      publishedAt: new Date(tune.$updatedAt).toLocaleString(),
       stars: 0,
     })));
     setIsLoading(false);
