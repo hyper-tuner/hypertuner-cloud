@@ -9,6 +9,7 @@ import {
   Row,
   Select,
 } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import {
   generatePath,
   useNavigate,
@@ -48,6 +49,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
             type="primary"
             block
             onClick={goToEdit}
+            icon={<EditOutlined />}
           >
             Edit
           </Button>

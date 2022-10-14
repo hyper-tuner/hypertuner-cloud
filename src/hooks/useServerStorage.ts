@@ -60,9 +60,9 @@ const useServerStorage = () => {
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
-      genericError(error as Error);
 
-      return Promise.reject(error);
+      // suppress error, may happen on mobile
+      return Promise.resolve();
     }
   };
 

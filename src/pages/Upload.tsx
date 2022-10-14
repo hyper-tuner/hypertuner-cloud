@@ -27,6 +27,9 @@ import {
   CopyOutlined,
   ShareAltOutlined,
   FileTextOutlined,
+  EditOutlined,
+  CheckOutlined,
+  SendOutlined,
 } from '@ant-design/icons';
 import * as Sentry from '@sentry/browser';
 import { INI } from '@hyper-tuner/ini';
@@ -127,7 +130,7 @@ const UploadPage = () => {
 
   const noop = () => { };
 
-  const goToNewTune = () => navigate(generatePath(Routes.TUNE_ROOT, {
+  const goToNewTune = () => navigate(generatePath(Routes.TUNE_TUNE, {
     tuneId: newTuneId!,
   }));
 
@@ -524,12 +527,14 @@ const UploadPage = () => {
             block
             loading={isLoading}
             htmlType="submit"
+            icon={isEditMode ? <EditOutlined /> : <CheckOutlined />}
           >
             {isEditMode ? 'Update' : 'Publish'}
           </Button> : <Button
             type="primary"
             block
             onClick={goToNewTune}
+            icon={<SendOutlined />}
           >
             Open
           </Button>}
