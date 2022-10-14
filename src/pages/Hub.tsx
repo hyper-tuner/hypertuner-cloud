@@ -12,6 +12,7 @@ import {
   CopyOutlined,
   StarOutlined,
   ArrowRightOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -37,13 +38,20 @@ import {
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
+interface ListUsersResponse {
+  users: [{
+    id: string;
+    name: string;
+  }];
+}
+
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Hub = () => {
   const { xs } = useBreakpoint();
-  const { searchTunes } = useDb();
+  const { searchTunes, listUsers } = useDb();
   const navigate = useNavigate();
-  const [dataSource, setDataSource] = useState<any>([]);
+  const [dataSource, setDataSource] = useState<{}[]>([]); // TODO: fix this type
   const [isLoading, setIsLoading] = useState(true);
   const searchRef = useRef<InputRef | null>(null);
 
@@ -52,17 +60,26 @@ const Hub = () => {
     const list = await searchTunes(searchText);
     // TODO: create `unpublishedTunes` collection for this
     const filtered = list.documents.filter((tune) => !!tune.vehicleName);
+
+    // set initial list
     setDataSource(filtered.map((tune) => ({
       ...tune,
       key: tune.tuneId,
       year: tune.year,
-      author: 'John Doe',
+      author: <LoadingOutlined spin />,
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
       publishedAt: new Date(tune.$updatedAt).toLocaleString(),
       stars: 0,
     })));
     setIsLoading(false);
+
+    // update list with users
+    const userList: ListUsersResponse = JSON.parse((await listUsers(filtered.map((tune) => tune.userId))).response);
+    setDataSource((prev) => prev.map((item: any) => ({
+      ...item,
+      author: userList.users.find((el) => el.id === item.userId)?.name,
+    })));
   }, 300);
 
   const debounceLoadData = useCallback((value: string) => loadData(value), [loadData]);
@@ -80,7 +97,7 @@ const Hub = () => {
         <>
           <Title level={5}>{tune.vehicleName}</Title>
           <Space direction="vertical">
-            <Text type="secondary">John Doe, {tune.publishedAt}</Text>
+            <Text type="secondary">{tune.author}, {tune.publishedAt}</Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
             <Text code>{tune.signature}</Text>
           </Space>

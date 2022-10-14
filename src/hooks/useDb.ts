@@ -6,7 +6,10 @@ import {
   Query,
   Role,
 } from 'appwrite';
-import { databases } from '../appwrite';
+import {
+  databases,
+  functions,
+} from '../appwrite';
 import {
   TuneDbData,
   UsersBucket,
@@ -131,6 +134,9 @@ const useDb = () => {
     getTune: (tuneId: string): Promise<TuneDbDocument | null> => getTune(tuneId),
     searchTunes: (search?: string): Promise<Models.DocumentList<TuneDbDocument>> => searchTunes(search),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),
+    // TODO: refactor those executions
+    getUser: (userId: string) => functions.createExecution('getUser', JSON.stringify({ userId })),
+    listUsers: (userIds: string[]) => functions.createExecution('listUsers', JSON.stringify({ userIds })),
   };
 };
 
