@@ -10,15 +10,15 @@ const client = new Client();
 
 client
   .setEndpoint(fetchEnv('VITE_APPWRITE_ENDPOINT'))
-  .setProject('hyper-tuner-cloud');
+  .setProject('hyper-tuner-api');
 
 const account = new Account(client);
-const database = new Databases(client, 'public');
+const databases = new Databases(client);
 const storage = new Storage(client);
 
 export {
   client,
   account,
-  database,
+  databases,
   storage,
 };

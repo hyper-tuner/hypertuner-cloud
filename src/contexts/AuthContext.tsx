@@ -1,4 +1,8 @@
 import {
+  ID,
+  Models,
+} from 'appwrite';
+import {
   createContext,
   ReactNode,
   useContext,
@@ -17,84 +21,16 @@ import {
   buildRedirectUrl,
 } from '../utils/url';
 
-export interface User {
-  $id: string;
-  name: string;
-  registration: number;
-  status: boolean;
-  passwordUpdate: number;
-  email: string;
-  emailVerification: boolean;
-  prefs: {};
-}
-
-export interface Session {
-  $id: string;
-  userId: string;
-  expire: number;
-  provider: string;
-  providerUid: string;
-  providerAccessToken: string;
-  providerAccessTokenExpiry: number;
-  providerRefreshToken: string;
-  ip: string;
-  osCode: string;
-  osName: string;
-  osVersion: string;
-  clientType: string;
-  clientCode: string;
-  clientName: string;
-  clientVersion: string;
-  clientEngine: string;
-  clientEngineVersion: string;
-  deviceName: string;
-  deviceBrand: string;
-  deviceModel: string;
-  countryCode: string;
-  countryName: string;
-  current: boolean;
-};
-
-export interface SessionList {
-  sessions: Session[];
-  total: number;
-};
-
-export interface Log {
-  event: string;
-  userId: string;
-  userEmail: string;
-  userName: string;
-  mode: string;
-  ip: string;
-  time: number;
-  osCode: string;
-  osName: string;
-  osVersion: string;
-  clientType: string;
-  clientCode: string;
-  clientName: string;
-  clientVersion: string;
-  clientEngine: string;
-  clientEngineVersion: string;
-  deviceName: string;
-  deviceBrand: string;
-  deviceModel: string;
-  countryCode: string;
-  countryName: string;
-};
-
-export interface LogList {
-  logs: Log[];
-  total: number;
-}
+export type SessionList = Models.SessionList;
+export type LogList = Models.LogList;
+export type Account = Models.Account<Models.Preferences>;
 
 interface AuthValue {
-  currentUser: User | null,
-  signUp: (email: string, password: string, username: string) => Promise<User>,
-  login: (email: string, password: string) => Promise<User>,
+  currentUser: Account | null,
+  signUp: (email: string, password: string, username: string) => Promise<Account>,
+  login: (email: string, password: string) => Promise<Account>,
   sendMagicLink: (email: string) => Promise<void>,
-  confirmMagicLink: (userId: string, secret: string) => Promise<User>,
+  confirmMagicLink: (userId: string, secret: string) => Promise<Account>,
   sendEmailVerification: () => Promise<void>,
   confirmEmailVerification: (userId: string, secret: string) => Promise<void>,
   confirmResetPassword: (userId: string, secret: string, password: string) => Promise<void>,
@@ -124,14 +60,14 @@ const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const AuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<Account | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const value = useMemo(() => ({
     currentUser,
     signUp: async (email: string, password: string, username: string) => {
       try {
-        await account.create('unique()', email, password, username);
+        await account.create(ID.unique(), email, password, username);
         await account.createEmailSession(email, password);
         const user = await account.get();
         setCurrentUser(user);
@@ -152,7 +88,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     sendMagicLink: async (email: string) => {
       try {
-        await account.createMagicURLSession('unique()', email, MAGIC_LINK_REDIRECT_URL);
+        await account.createMagicURLSession(ID.unique(), email, MAGIC_LINK_REDIRECT_URL);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(error);
@@ -253,8 +189,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
         return Promise.reject(error);
       }
     },
-    getSessions: () => account.getSessions(),
-    getLogs: () => account.getLogs(),
+    getSessions: () => account.listSessions(),
+    getLogs: () => account.listLogs(),
   }), [currentUser]);
 
   useEffect(() => {

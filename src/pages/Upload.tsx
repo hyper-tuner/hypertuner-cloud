@@ -399,6 +399,7 @@ const UploadPage = () => {
       form.setFieldsValue(oldTune);
       setIsEditMode(true);
       setTuneDocumentId(oldTune.$id);
+      setReadme(oldTune.readme!);
 
       if (oldTune.tuneFileId) {
         const file = await getFile(oldTune.tuneFileId, await getBucketId(currentUser!.$id));
