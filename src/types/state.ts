@@ -3,13 +3,13 @@ import {
   Logs,
   TuneWithDetails,
 } from '@hyper-tuner/types';
-import { TuneDbDocument } from './dbData';
+import { TunesRecord } from '../@types/pocketbase-types';
 
 export interface ConfigState extends Config {}
 
 export interface TuneState extends TuneWithDetails {}
 
-export interface TuneDataState extends TuneDbDocument {}
+export interface TuneDataState extends TunesRecord {}
 
 export interface LogsState extends Logs {}
 

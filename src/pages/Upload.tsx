@@ -59,9 +59,9 @@ import {
   requiredTextRules,
   requiredRules,
 } from '../utils/form';
-import { TuneDbDocument } from '../types/dbData';
 import { aspirationMapper } from '../utils/tune/mappers';
 import { copyToClipboard } from '../utils/clipboard';
+import { TunesRecord } from '../@types/pocketbase-types';
 
 const { Item, useForm } = Form;
 
@@ -110,7 +110,7 @@ const UploadPage = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [readme, setReadme] = useState(defaultReadme);
-  const [existingTune, setExistingTune] = useState<TuneDbDocument>();
+  const [existingTune, setExistingTune] = useState<TunesRecord>();
 
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);

@@ -8,6 +8,8 @@ import {
 } from 'appwrite';
 import { storage } from '../appwrite';
 import { fetchEnv } from '../utils/env';
+import { API_URL } from '../pocketbase';
+import { Collections } from '../@types/pocketbase-types';
 
 const PUBLIC_PATH = 'public';
 const INI_PATH = `${PUBLIC_PATH}/ini`;
@@ -19,6 +21,11 @@ const genericError = (error: Error) => notification.error({ message: 'Storage Er
 
 const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
   const response = await fetch(`${CDN_URL}/${path}`);
+  return Promise.resolve(response.arrayBuffer());
+};
+
+const fetchFileFromServer = async (recordId: string, filename: string): Promise<ArrayBuffer> => {
+  const response = await fetch(`${API_URL}/api/files/${Collections.Tunes}/${recordId}/${filename}`);
   return Promise.resolve(response.arrayBuffer());
 };
 
@@ -100,27 +107,12 @@ const useServerStorage = () => {
     }
   };
 
-  const getFileForDownload = async (id: string, bucketId: string) => {
-    try {
-      const file = storage.getFileView(bucketId, id);
-      const response = await fetch(file.href);
-
-      return Promise.resolve(response.arrayBuffer());
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      genericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
   return {
     getFile: (id: string, bucketId: string): Promise<Models.File> => getFile(id, bucketId),
     getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
     removeFile: (bucketId: string, fileId: string): Promise<void> => removeFile(bucketId, fileId),
-    getFileForDownload: (bucketId: string, fileId: string): Promise<ArrayBuffer> => getFileForDownload(bucketId, fileId),
     uploadFile: (userId: string, bucketId: string, file: File): Promise<ServerFile> => uploadFile(userId, bucketId, file),
+    fetchFileFromServer: (recordId: string, filename: string): Promise<ArrayBuffer> => fetchFileFromServer(recordId, filename),
   };
 };
 

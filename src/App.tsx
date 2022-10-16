@@ -67,7 +67,6 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   const searchParams = new URLSearchParams(window.location.search);
   const redirectPage = searchParams.get('redirectPage');
   const [isLoading, setIsLoading] = useState(false);
-  const { getBucketId } = useDb();
   const navigate = useNavigate();
 
   // TODO: refactor this
@@ -96,7 +95,7 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
       // clear out last state
       if (tuneData && tuneId !== tuneData.tuneId) {
         setIsLoading(true);
-        loadTune(null, '');
+        loadTune(null);
         store.dispatch({ type: 'tuneData/load', payload: null });
         setIsLoading(false);
       }
@@ -108,10 +107,8 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
           return;
         }
 
-        getBucketId(tune.userId).then((bucketId) => {
-          loadTune(tune!, bucketId);
-        });
-        store.dispatch({ type: 'tuneData/load', payload: tune });
+        loadTune(tune!);
+        store.dispatch({ type: 'tuneData/load', payload: JSON.parse(JSON.stringify(tune)) });
       });
 
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });

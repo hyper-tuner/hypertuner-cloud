@@ -9,11 +9,11 @@ import {
   onProgress as onProgressType,
 } from './http';
 import TuneParser from './tune/TuneParser';
-import { TuneDbDocument } from '../types/dbData';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
+import { TunesRecord } from '../@types/pocketbase-types';
 
 // TODO: refactor this!!
-export const loadTune = async (tuneData: TuneDbDocument | null, bucketId: string) => {
+export const loadTune = async (tuneData: TunesRecord | null) => {
   if (tuneData === null) {
     store.dispatch({ type: 'config/load', payload: null });
     store.dispatch({ type: 'tune/load', payload: null });
@@ -22,13 +22,13 @@ export const loadTune = async (tuneData: TuneDbDocument | null, bucketId: string
 
   const pako = await import('pako');
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { getFileForDownload, getINIFile } = useServerStorage();
+  const { getINIFile, fetchFileFromServer } = useServerStorage();
 
   const started = new Date();
-  const tuneRaw = await getFileForDownload(tuneData.tuneFileId!, bucketId);
+  const tuneRaw = await fetchFileFromServer(tuneData.id, tuneData.tuneFile);
 
   const tuneParser = new TuneParser()
-    .parse(pako.inflate(new Uint8Array(tuneRaw)));
+    .parse(pako.inflate(tuneRaw));
 
   if (!tuneParser.isValid()) {
     console.error('Invalid tune');
@@ -38,7 +38,7 @@ export const loadTune = async (tuneData: TuneDbDocument | null, bucketId: string
   }
 
   const tune = tuneParser.getTune();
-  const iniRaw = tuneData.customIniFileId ? getFileForDownload(tuneData.customIniFileId, bucketId) : getINIFile(tuneData.signature);
+  const iniRaw = tuneData.customIniFile ? fetchFileFromServer(tuneData.id, tuneData.customIniFile) : getINIFile(tuneData.signature);
   const buff = pako.inflate(new Uint8Array(await iniRaw));
   const config = new INI(buff).parse().getResults();
 
