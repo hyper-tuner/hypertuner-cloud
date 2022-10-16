@@ -5,14 +5,11 @@ import {
   Input,
 } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 import {
   Link,
+  useMatch,
   useNavigate,
-  useSearchParams,
 } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
@@ -28,32 +25,22 @@ const { Item } = Form;
 const ResetPasswordConfirmation = () => {
   const { confirmResetPassword } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get('userId');
-  const secret = searchParams.get('secret');
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
+  const routeMatch = useMatch(Routes.RESET_PASSWORD_CONFIRMATION);
 
   const changePassword = async ({ password }: { password: string }) => {
     setIsLoading(true);
     try {
-      await confirmResetPassword(userId!, secret!, password);
+      await confirmResetPassword(routeMatch!.params.token!, password);
       passwordUpdateSuccess();
       navigate(Routes.LOGIN);
     } catch (error) {
-      console.warn(error);
       passwordUpdateFailed(error as Error);
       form.resetFields();
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!userId || !secret) {
-      passwordUpdateFailed(new Error('Invalid URL'));
-      navigate(Routes.HUB);
-    }
-  }, [navigate, secret, userId]);
 
   return (
     <div className="auth-container">

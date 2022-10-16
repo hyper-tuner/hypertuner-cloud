@@ -21,8 +21,8 @@ interface AuthValue {
   login: (email: string, password: string) => Promise<User>,
   refreshUser: () => Promise<User | null>,
   sendEmailVerification: () => Promise<void>,
-  confirmEmailVerification: (secret: string) => Promise<void>,
-  confirmResetPassword: (userId: string, secret: string, password: string) => Promise<void>,
+  confirmEmailVerification: (token: string) => Promise<void>,
+  confirmResetPassword: (token: string, password: string) => Promise<void>,
   logout: () => Promise<void>,
   initResetPassword: (email: string) => Promise<void>,
   googleAuth: () => Promise<void>,
@@ -96,9 +96,9 @@ const AuthProvider = (props: { children: ReactNode }) => {
         return Promise.reject(new Error(formatError(error)));
       }
     },
-    confirmResetPassword: async (userId: string, secret: string, password: string) => {
+    confirmResetPassword: async (token: string, password: string) => {
       try {
-        await account.updateRecovery(userId, secret, password, password);
+        await client.users.confirmPasswordReset(token, password, password);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));

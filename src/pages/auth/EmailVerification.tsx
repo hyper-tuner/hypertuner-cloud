@@ -14,20 +14,17 @@ import {
 const EmailVerification = () => {
   const { confirmEmailVerification } = useAuth();
   const navigate = useNavigate();
-  const rootMatch = useMatch(Routes.EMAIL_VERIFICATION);
+  const routeMatch = useMatch(Routes.EMAIL_VERIFICATION);
 
   useEffect(() => {
-    if (rootMatch?.params.token) {
-      confirmEmailVerification(rootMatch?.params.token)
-        .then(() => emailVerificationSuccess())
-        .catch((error) => {
-          console.error(error);
-          emailVerificationFailed(error);
-        });
+    confirmEmailVerification(routeMatch!.params.token!)
+      .then(() => emailVerificationSuccess())
+      .catch((error) => {
+        emailVerificationFailed(error);
+      });
 
-      navigate(Routes.HUB);
-    }
-  });
+    navigate(Routes.HUB);
+  }, [confirmEmailVerification, navigate, routeMatch]);
 
   return <Loader />;
 };

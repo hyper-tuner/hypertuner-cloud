@@ -19,6 +19,6 @@ export enum Routes {
   SIGN_UP = '/auth/sign-up',
   FORGOT_PASSWORD = '/auth/forgot-password',
   RESET_PASSWORD = '/auth/reset-password',
-  RESET_PASSWORD_CONFIRMATION = '/auth/reset-password-confirmation',
+  RESET_PASSWORD_CONFIRMATION = '/auth/reset-password-confirmation/:token',
   EMAIL_VERIFICATION = '/auth/email-verification/:token',
 }
