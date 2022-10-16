@@ -101,6 +101,13 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col span={24} sm={24}>
             <Item>
+              <Input value={tuneData.signature} addonBefore="Signature" />
+            </Item>
+          </Col>
+        </Row>
+        <Row {...rowProps}>
+          <Col span={24} sm={24}>
+            <Item>
               <Input value={tuneData.vehicleName!} addonBefore="Vehicle name" />
             </Item>
           </Col>
