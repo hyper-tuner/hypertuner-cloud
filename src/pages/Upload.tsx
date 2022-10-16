@@ -181,7 +181,7 @@ const UploadPage = () => {
         year,
       ].filter((field) => field !== null && `${field}`.length > 1)
         .join(' ')
-        .replace(/[^A-z\d ]/g, ''),
+        .replace(/[^A-z.\-\d ]/g, ''),
     });
     setIsLoading(false);
     setIsPublished(true);
