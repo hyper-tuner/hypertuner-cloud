@@ -38,18 +38,11 @@ import {
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
-interface ListUsersResponse {
-  users: [{
-    id: string;
-    name: string;
-  }];
-}
-
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Hub = () => {
   const { xs } = useBreakpoint();
-  const { searchTunes, listUsers } = useDb();
+  const { searchTunes, listProfiles } = useDb();
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<{}[]>([]); // TODO: fix this type
   const [isLoading, setIsLoading] = useState(true);
@@ -58,27 +51,26 @@ const Hub = () => {
   const loadData = debounce(async (searchText?: string) => {
     setIsLoading(true);
     const list = await searchTunes(searchText);
-    // TODO: create `unpublishedTunes` collection for this
-    const filtered = list.documents.filter((tune) => !!tune.vehicleName);
 
     // set initial list
-    setDataSource(filtered.map((tune) => ({
+    setDataSource(list.map((tune) => ({
       ...tune,
       key: tune.tuneId,
       year: tune.year,
       author: <LoadingOutlined spin />,
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
-      publishedAt: new Date(tune.$updatedAt).toLocaleString(),
+      created: new Date(tune.created).toLocaleString(),
       stars: 0,
     })));
     setIsLoading(false);
 
     // update list with users
-    const userList: ListUsersResponse = JSON.parse((await listUsers(filtered.map((tune) => tune.userId))).response);
-    setDataSource((prev) => prev.map((item: any) => ({
-      ...item,
-      author: userList.users.find((el) => el.id === item.userId)?.name,
+    const userList = await listProfiles(list.map((tune) => tune.user));
+
+    setDataSource((prev) => prev.map((tune) => ({
+      ...tune,
+      author: userList.find((profile) => profile.userId === (tune as any).user)?.username, // TODO: fix types
     })));
   }, 300);
 
@@ -97,7 +89,7 @@ const Hub = () => {
         <>
           <Title level={5}>{tune.vehicleName}</Title>
           <Space direction="vertical">
-            <Text type="secondary">{tune.author}, {tune.publishedAt}</Text>
+            <Text type="secondary">{tune.author}, {tune.created}</Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
             <Text code>{tune.signature}</Text>
           </Space>
@@ -155,8 +147,8 @@ const Hub = () => {
     },
     {
       title: 'Published',
-      dataIndex: 'publishedAt',
-      key: 'publishedAt',
+      dataIndex: 'created',
+      key: 'created',
       responsive: ['sm'],
     },
     {
