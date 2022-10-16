@@ -47,7 +47,6 @@ const SignUp = () => {
   const {
     currentUser,
     signUp,
-    sendEmailVerification,
     googleAuth,
     githubAuth,
     facebookAuth,
@@ -86,14 +85,14 @@ const SignUp = () => {
     setIsEmailLoading(true);
     try {
       const user = await signUp(email, password);
-      await sendEmailVerification();
       signUpSuccessful();
+
       if (!user.verified) {
         emailNotVerified();
       }
+
       navigate(Routes.HUB);
     } catch (error) {
-      console.warn(error);
       signUpFailed(error as Error);
       formMagicLink.resetFields();
       formEmail.resetFields();

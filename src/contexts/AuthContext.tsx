@@ -55,8 +55,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
           password,
           passwordConfirm: password,
         });
-        await client.users.authViaEmail(email, password);
-        await client.users.requestVerification(user.email);
+        client.users.requestVerification(user.email);
+        await client.users.authViaEmail(user.email, password);
 
         return Promise.resolve(user);
       } catch (error) {
