@@ -38,7 +38,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
     tuneId: tuneData.tuneId,
   }));
 
-  const canManage = tuneData?.userId === currentUser?.$id;
+  const canManage = tuneData?.userId === currentUser?.id;
 
   const manageSection = (
     <>

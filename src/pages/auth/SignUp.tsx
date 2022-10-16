@@ -13,7 +13,6 @@ import {
 import {
   MailOutlined,
   LockOutlined,
-  UserOutlined,
   GoogleOutlined,
   GithubOutlined,
   FacebookOutlined,
@@ -29,13 +28,11 @@ import validateMessages from './validateMessages';
 import {
   emailNotVerified,
   signUpFailed,
-  magicLinkSent,
   signUpSuccessful,
 } from './notifications';
 import {
   emailRules,
   passwordRules,
-  requiredRules,
 } from '../../utils/form';
 
 const { Item } = Form;
@@ -47,7 +44,6 @@ const SignUp = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
-  const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false);
   const {
     currentUser,
     signUp,
@@ -55,10 +51,9 @@ const SignUp = () => {
     googleAuth,
     githubAuth,
     facebookAuth,
-    sendMagicLink,
   } = useAuth();
   const navigate = useNavigate();
-  const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading || isMagicLinkLoading;
+  const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading;
 
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
@@ -87,13 +82,13 @@ const SignUp = () => {
     }
   }, [facebookAuth]);
 
-  const emailSignUp = async ({ email, password, username }: { email: string, password: string, username: string }) => {
+  const emailSignUp = async ({ email, password }: { email: string, password: string }) => {
     setIsEmailLoading(true);
     try {
-      const user = await signUp(email, password, username);
+      const user = await signUp(email, password);
       await sendEmailVerification();
       signUpSuccessful();
-      if (!user.emailVerification) {
+      if (!user.verified) {
         emailNotVerified();
       }
       navigate(Routes.HUB);
@@ -103,20 +98,6 @@ const SignUp = () => {
       formMagicLink.resetFields();
       formEmail.resetFields();
       setIsEmailLoading(false);
-    }
-  };
-
-  const magicLinkLogin = async ({ email }: { email: string }) => {
-    setIsMagicLinkLoading(true);
-    try {
-      await sendMagicLink(email);
-      magicLinkSent();
-    } catch (error) {
-      signUpFailed(error as Error);
-    } finally {
-      setIsMagicLinkLoading(false);
-      formMagicLink.resetFields();
-      formEmail.resetFields();
     }
   };
 
@@ -152,48 +133,12 @@ const SignUp = () => {
           <FacebookOutlined />Facebook
         </Button>
       </Space>
-      <Divider />
-      <Form
-        onFinish={magicLinkLogin}
-        validateMessages={validateMessages}
-        form={formMagicLink}
-      >
-        <Item name="email" rules={emailRules} hasFeedback>
-          <Input
-            prefix={<MailOutlined />}
-            placeholder="Email"
-            id="email-magic-link"
-            autoComplete="email"
-            disabled={isAnythingLoading}
-          />
-        </Item>
-        <Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            loading={isMagicLinkLoading}
-            disabled={isAnythingLoading}
-            icon={<MailOutlined />}
-          >
-            Send me a Magic Link
-          </Button>
-        </Item>
-      </Form>
       <Form
         onFinish={emailSignUp}
         validateMessages={validateMessages}
         form={formEmail}
       >
         <Divider />
-        <Item name="username" rules={requiredRules} hasFeedback>
-          <Input
-            prefix={<UserOutlined />}
-            placeholder="Username"
-            autoComplete="name"
-            disabled={isAnythingLoading}
-          />
-        </Item>
         <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}

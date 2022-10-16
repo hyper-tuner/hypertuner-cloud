@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -11,7 +10,6 @@ import {
   Divider,
   Alert,
   Space,
-  List,
 } from 'antd';
 import {
   UserOutlined,
@@ -33,16 +31,10 @@ import { Routes } from '../../routes';
 import {
   passwordRules,
   requiredRules,
+  usernameRules,
 } from '../../utils/form';
 
 const { Item } = Form;
-
-const MAX_LIST_SIZE = 10;
-
-const parseLogEvent = (raw: string) => {
-  const split = raw.split('.');
-  return [split[0], split[2], split[4]].join(' ');
-};
 
 const Profile = () => {
   const [formProfile] = Form.useForm();
@@ -52,16 +44,13 @@ const Profile = () => {
     sendEmailVerification,
     updateUsername,
     updatePassword,
-    getSessions,
-    getLogs,
+    refreshUser,
   } = useAuth();
   const navigate = useNavigate();
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
-  const [sessions, setSessions] = useState<string[] | null>(null);
-  const [logs, setLogs] = useState<string[] | null>(null);
 
   const resendEmailVerification = async () => {
     setIsSendingVerification(true);
@@ -77,24 +66,12 @@ const Profile = () => {
     }
   };
 
-  const fetchLogs = useCallback(async () => getLogs()
-    .then((list) => setLogs(list.logs.slice(0, MAX_LIST_SIZE).map((log) => [
-      new Date(log.time).toLocaleString(),
-      parseLogEvent(log.event),
-      log.clientName,
-      log.clientEngineVersion,
-      log.osName,
-      log.deviceName,
-      log.countryName,
-      log.ip,
-    ].join(' | ')))), [getLogs]);
-
   const onUpdateProfile = async ({ username }: { username: string }) => {
     setIsProfileLoading(true);
     try {
       await updateUsername(username);
       profileUpdateSuccess();
-      fetchLogs();
+      refreshUser();
     } catch (error) {
       profileUpdateFailed(error as Error);
     } finally {
@@ -107,7 +84,6 @@ const Profile = () => {
     try {
       await updatePassword(password, oldPassword);
       passwordUpdateSuccess();
-      fetchLogs();
       formPassword.resetFields();
     } catch (error) {
       passwordUpdateFailed(error as Error);
@@ -117,44 +93,43 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (currentUser) {
-      getSessions()
-        .then((list) => setSessions(list.sessions.slice(0, MAX_LIST_SIZE).map((ses) => [
-          ses.clientName,
-          ses.osName,
-          ses.deviceName,
-          ses.countryName,
-          ses.ip,
-        ].join(' | '))));
+    if (!currentUser) {
+      restrictedPage();
+      navigate(Routes.LOGIN);
 
-      fetchLogs();
       return;
     }
 
-    restrictedPage();
-    navigate(Routes.LOGIN);
-  }, [currentUser, fetchLogs, getLogs, getSessions, navigate]);
+    refreshUser().then((user) => {
+      if (currentUser === null || user === null) {
+        restrictedPage();
+        navigate(Routes.LOGIN);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <>
-      <div className="auth-container">
-        {!currentUser?.emailVerification && (<>
-          <Divider>Email verification</Divider>
-          <Space direction="vertical" style={{ width: '100%' }} size="large">
-            <Alert message="Your email address is not verified!" type="error" showIcon />
-            <Button
-              type="primary"
-              style={{ width: '100%' }}
-              icon={<MailOutlined />}
-              disabled={isVerificationSent}
-              loading={isSendingVerification}
-              onClick={resendEmailVerification}
-            >
-              Resend verification
-            </Button>
-          </Space>
-        </>)}
-        <Divider>Your Profile</Divider>
+    <div className="auth-container">
+      {!currentUser?.verified && (<>
+        <Divider>Email verification</Divider>
+        <Space direction="vertical" style={{ width: '100%' }} size="large">
+          <Alert message="Your email address is not verified!" type="error" showIcon />
+          <Button
+            type="primary"
+            style={{ width: '100%' }}
+            icon={<MailOutlined />}
+            disabled={isVerificationSent}
+            loading={isSendingVerification}
+            onClick={resendEmailVerification}
+          >
+            Resend verification
+          </Button>
+        </Space>
+      </>)}
+      <Divider>Your Profile</Divider>
+      <Space direction="vertical" style={{ width: '100%' }} size="large">
+        {currentUser?.profile?.username.length < 1 && <Alert message="Remember to set your username!" type="error" showIcon />}
         <Form
           validateMessages={validateMessages}
           form={formProfile}
@@ -162,7 +137,7 @@ const Profile = () => {
           fields={[
             {
               name: 'username',
-              value: currentUser?.name,
+              value: currentUser?.profile?.username,
             },
             {
               name: 'email',
@@ -172,7 +147,7 @@ const Profile = () => {
         >
           <Item
             name="username"
-            rules={requiredRules}
+            rules={usernameRules}
             hasFeedback
           >
             <Input
@@ -196,66 +171,48 @@ const Profile = () => {
             </Button>
           </Item>
         </Form>
-        <Divider>Password</Divider>
-        <Form
-          validateMessages={validateMessages}
-          form={formPassword}
-          onFinish={onUpdatePassword}
+      </Space>
+      <Divider>Password</Divider>
+      <Form
+        validateMessages={validateMessages}
+        form={formPassword}
+        onFinish={onUpdatePassword}
+      >
+        <Item
+          name="oldPassword"
+          rules={requiredRules}
+          hasFeedback
         >
-          <Item
-            name="oldPassword"
-            rules={requiredRules}
-            hasFeedback
+          <Input.Password
+            placeholder="Old password"
+            autoComplete="current-password"
+            prefix={<LockOutlined />}
+          />
+        </Item>
+        <Item
+          name="password"
+          rules={passwordRules}
+          hasFeedback
+        >
+          <Input.Password
+            placeholder="New password"
+            autoComplete="new-password"
+            prefix={<LockOutlined />}
+          />
+        </Item>
+        <Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ width: '100%' }}
+            icon={<LockOutlined />}
+            loading={isPasswordLoading}
           >
-            <Input.Password
-              placeholder="Old password"
-              autoComplete="current-password"
-              prefix={<LockOutlined />}
-            />
-          </Item>
-          <Item
-            name="password"
-            rules={passwordRules}
-            hasFeedback
-          >
-            <Input.Password
-              placeholder="New password"
-              autoComplete="new-password"
-              prefix={<LockOutlined />}
-            />
-          </Item>
-          <Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ width: '100%' }}
-              icon={<LockOutlined />}
-              loading={isPasswordLoading}
-            >
-              Change
-            </Button>
-          </Item>
-        </Form>
-      </div>
-      <div className="large-container">
-        <Divider>Active sessions</Divider>
-        <List
-          size="small"
-          bordered
-          dataSource={sessions || []}
-          renderItem={item => <List.Item>{item}</List.Item>}
-          loading={sessions === null}
-        />
-        <Divider>Audit logs</Divider>
-        <List
-          size="small"
-          bordered
-          dataSource={logs || []}
-          renderItem={item => <List.Item>{item}</List.Item>}
-          loading={logs === null}
-        />
-      </div>
-    </>
+            Change
+          </Button>
+        </Item>
+      </Form>
+    </div>
   );
 };
 

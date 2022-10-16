@@ -1,8 +1,4 @@
 import {
-  ID,
-  Models,
-} from 'appwrite';
-import {
   createContext,
   ReactNode,
   useContext,
@@ -10,29 +6,22 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { User } from 'pocketbase';
+import { account } from '../appwrite';
 import {
-  account,
   client,
-} from '../appwrite';
-import Loader from '../components/Loader';
-import { Routes } from '../routes';
-import {
-  buildFullUrl,
-  buildRedirectUrl,
-} from '../utils/url';
-
-export type SessionList = Models.SessionList;
-export type LogList = Models.LogList;
-export type Account = Models.Account<Models.Preferences>;
+  formatError,
+} from '../pocketbase';
+import { buildFullUrl } from '../utils/url';
+import { Collections } from '../@types/pocketbase-types';
 
 interface AuthValue {
-  currentUser: Account | null,
-  signUp: (email: string, password: string, username: string) => Promise<Account>,
-  login: (email: string, password: string) => Promise<Account>,
-  sendMagicLink: (email: string) => Promise<void>,
-  confirmMagicLink: (userId: string, secret: string) => Promise<Account>,
+  currentUser: User | null,
+  signUp: (email: string, password: string) => Promise<User>,
+  login: (email: string, password: string) => Promise<User>,
+  refreshUser: () => Promise<User | null>,
   sendEmailVerification: () => Promise<void>,
-  confirmEmailVerification: (userId: string, secret: string) => Promise<void>,
+  confirmEmailVerification: (secret: string) => Promise<void>,
   confirmResetPassword: (userId: string, secret: string, password: string) => Promise<void>,
   logout: () => Promise<void>,
   initResetPassword: (email: string) => Promise<void>,
@@ -41,14 +30,9 @@ interface AuthValue {
   facebookAuth: () => Promise<void>,
   updateUsername: (username: string) => Promise<void>,
   updatePassword: (password: string, oldPassword: string) => Promise<void>,
-  getSessions: () => Promise<SessionList>,
-  getLogs: () => Promise<LogList>,
 }
 
 const OAUTH_REDIRECT_URL = buildFullUrl();
-const MAGIC_LINK_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION);
-const EMAIL_VERIFICATION_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_EMAIL_VERIFICATION);
-const RESET_PASSWORD_REDIRECT_URL = buildRedirectUrl(Routes.REDIRECT_PAGE_RESET_PASSWORD);
 
 const GOOGLE_SCOPES = ['https://www.googleapis.com/auth/userinfo.email'];
 const GITHUB_SCOPES = ['user:email'];
@@ -60,66 +44,56 @@ const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const AuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
-  const [currentUser, setCurrentUser] = useState<Account | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const value = useMemo(() => ({
     currentUser,
-    signUp: async (email: string, password: string, username: string) => {
+    signUp: async (email: string, password: string) => {
       try {
-        await account.create(ID.unique(), email, password, username);
-        await account.createEmailSession(email, password);
-        const user = await account.get();
-        setCurrentUser(user);
+        const user = await client.users.create({
+          email,
+          password,
+          passwordConfirm: password,
+        });
+        await client.users.authViaEmail(email, password);
+        await client.users.requestVerification(user.email);
+
         return Promise.resolve(user);
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
     login: async (email: string, password: string) => {
       try {
-        await account.createEmailSession(email, password);
-        const user = await account.get();
-        setCurrentUser(user);
-        return Promise.resolve(user);
+        const authResponse = await client.users.authViaEmail(email, password);
+        return Promise.resolve(authResponse.user);
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
-    sendMagicLink: async (email: string) => {
+    refreshUser: async () => {
       try {
-        await account.createMagicURLSession(ID.unique(), email, MAGIC_LINK_REDIRECT_URL);
-        return Promise.resolve();
+        const authResponse = await client.users.refresh();
+        return Promise.resolve(authResponse.user);
       } catch (error) {
-        return Promise.reject(error);
-      }
-    },
-    confirmMagicLink: async (userId: string, secret: string) => {
-      try {
-        await account.updateMagicURLSession(userId, secret);
-        const user = await account.get();
-        setCurrentUser(user);
-        return Promise.resolve(user);
-      } catch (error) {
-        return Promise.reject(error);
+        client.authStore.clear();
+        return Promise.resolve(null);
       }
     },
     sendEmailVerification: async () => {
       try {
-        await account.createVerification(EMAIL_VERIFICATION_REDIRECT_URL);
+        await client.users.requestVerification(currentUser!.email);
         return Promise.resolve();
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
-    confirmEmailVerification: async (userId: string, secret: string) => {
+    confirmEmailVerification: async (token: string) => {
       try {
-        await account.updateVerification(userId, secret);
-        const user = await account.get();
-        setCurrentUser(user);
+        await client.users.confirmVerification(token);
         return Promise.resolve();
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
     confirmResetPassword: async (userId: string, secret: string, password: string) => {
@@ -127,24 +101,23 @@ const AuthProvider = (props: { children: ReactNode }) => {
         await account.updateRecovery(userId, secret, password, password);
         return Promise.resolve();
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
     logout: async () => {
       try {
-        await account.deleteSession('current');
-        setCurrentUser(null);
+        client.authStore.clear();
         return Promise.resolve();
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
     initResetPassword: async (email: string) => {
       try {
-        await account.createRecovery(email, RESET_PASSWORD_REDIRECT_URL);
+        await client.users.requestPasswordReset(email);
         return Promise.resolve();
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
     googleAuth: async () => {
@@ -173,12 +146,12 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     updateUsername: async (username: string) => {
       try {
-        await account.updateName(username);
-        const user = await account.get();
-        setCurrentUser(user);
+        await client.records.update(Collections.Profiles, currentUser!.profile!.id, {
+          username,
+        });
         return Promise.resolve();
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
     updatePassword: async (password: string, oldPassword: string) => {
@@ -186,32 +159,41 @@ const AuthProvider = (props: { children: ReactNode }) => {
         await account.updatePassword(password, oldPassword);
         return Promise.resolve();
       } catch (error) {
-        return Promise.reject(error);
+        return Promise.reject(new Error(formatError(error)));
       }
     },
-    getSessions: () => account.listSessions(),
-    getLogs: () => account.listLogs(),
   }), [currentUser]);
 
   useEffect(() => {
-    account.get().then((user) => {
-      console.info('Logged as:', user.name || 'Unknown');
-      setCurrentUser(user);
-      setIsLoading(false);
-    }).catch(() => {
-      console.info('User not logged in');
-    }).finally(() => setIsLoading(false));
+    setCurrentUser(client.authStore.model as User | null);
 
-    const unsubscribe = client.subscribe('account', (event) => {
-      console.info('Account event', event);
+    const storeUnsubscribe = client.authStore.onChange((_token, model) => {
+      setCurrentUser(model as User | null);
+      if (model) {
+        console.info('Logged in as', model.email);
+      } else {
+        console.info('Logged out');
+      }
     });
 
-    return unsubscribe;
+    client.realtime.subscribe(Collections.Tunes, (event) => {
+      console.info('Tunes event', event);
+    });
+
+    client.realtime.subscribe(Collections.Profiles, (event) => {
+      console.info('Profiles event', event);
+    });
+
+    return () => {
+      storeUnsubscribe();
+      client.realtime.unsubscribe(Collections.Tunes);
+      client.realtime.unsubscribe(Collections.Profiles);
+    };
   }, []);
 
   return (
     <AuthContext.Provider value={value}>
-      {isLoading ? <Loader /> : children}
+      {children}
     </AuthContext.Provider>
   );
 };

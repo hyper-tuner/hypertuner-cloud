@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import {
+  useMatch,
   useNavigate,
-  useSearchParams,
 } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,23 +14,19 @@ import {
 const EmailVerification = () => {
   const { confirmEmailVerification } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get('userId');
-  const secret = searchParams.get('secret');
+  const rootMatch = useMatch(Routes.EMAIL_VERIFICATION);
 
   useEffect(() => {
-    if (userId && secret) {
-      confirmEmailVerification(userId, secret)
+    if (rootMatch?.params.token) {
+      confirmEmailVerification(rootMatch?.params.token)
         .then(() => emailVerificationSuccess())
         .catch((error) => {
           console.error(error);
           emailVerificationFailed(error);
         });
-    } else {
-      emailVerificationFailed(new Error('Invalid URL'));
-    }
 
-    navigate(Routes.HUB);
+      navigate(Routes.HUB);
+    }
   });
 
   return <Loader />;

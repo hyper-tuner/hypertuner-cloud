@@ -45,6 +45,7 @@ import { nanoid } from 'nanoid';
 import {
   emailNotVerified,
   restrictedPage,
+  usernameNotSet,
 } from './auth/notifications';
 import { useAuth } from '../contexts/AuthContext';
 import { Routes } from '../routes';
@@ -123,7 +124,7 @@ const UploadPage = () => {
   const [customIniFileId, setCustomIniFileId] = useState<string | null>(null);
 
   const shareSupported = 'share' in navigator;
-  const { currentUser } = useAuth();
+  const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
   const { removeFile, uploadFile, getFile } = useServerStorage();
   const { createTune, getBucketId, updateTune, getTune } = useDb();
@@ -133,8 +134,6 @@ const UploadPage = () => {
   const goToNewTune = () => navigate(generatePath(Routes.TUNE_TUNE, {
     tuneId: newTuneId!,
   }));
-
-  const genericError = (error: Error) => notification.error({ message: 'Error', description: error.message });
 
   const publishTune = async (values: any) => {
     /* eslint-disable prefer-destructuring */
@@ -215,8 +214,8 @@ const UploadPage = () => {
       const pako = await import('pako');
       const buffer = await (file as File).arrayBuffer();
       const compressed = pako.deflate(new Uint8Array(buffer));
-      const bucketId = await getBucketId(currentUser!.$id);
-      const fileCreated: ServerFile = await uploadFile(currentUser!.$id, bucketId, new File([compressed], (file as File).name));
+      const bucketId = await getBucketId(currentUser!.id);
+      const fileCreated: ServerFile = await uploadFile(currentUser!.id, bucketId, new File([compressed], (file as File).name));
 
       done(fileCreated, file as File);
       onSuccess!(null);
@@ -243,7 +242,7 @@ const UploadPage = () => {
         });
       } else {
         const document = await createTune({
-          userId: currentUser!.$id,
+          userId: currentUser!.id,
           tuneId: newTuneId!,
           signature,
           tuneFileId: fileCreated.$id,
@@ -359,7 +358,7 @@ const UploadPage = () => {
       return false;
     }
 
-    await removeFile(await getBucketId(currentUser!.$id), fileId);
+    await removeFile(await getBucketId(currentUser!.id), fileId);
 
     return true;
   };
@@ -411,7 +410,7 @@ const UploadPage = () => {
     const oldTune = await getTune(currentTuneId);
     if (oldTune) {
       // this is someone elses tune
-      if (oldTune.userId !== currentUser?.$id) {
+      if (oldTune.userId !== currentUser?.id) {
         navigateToNewTuneId();
         return;
       }
@@ -423,7 +422,7 @@ const UploadPage = () => {
       setReadme(oldTune.readme!);
 
       if (oldTune.tuneFileId) {
-        const file = await getFile(oldTune.tuneFileId, await getBucketId(currentUser!.$id));
+        const file = await getFile(oldTune.tuneFileId, await getBucketId(currentUser!.id));
         setTuneFileId(oldTune.tuneFileId);
         setDefaultTuneFileList([{
           uid: file.$id,
@@ -433,7 +432,7 @@ const UploadPage = () => {
       }
 
       if (oldTune.customIniFileId) {
-        const file = await getFile(oldTune.customIniFileId, await getBucketId(currentUser!.$id));
+        const file = await getFile(oldTune.customIniFileId, await getBucketId(currentUser!.id));
         setCustomIniFileId(oldTune.customIniFileId);
         setDefaultCustomIniFileList([{
           uid: file.$id,
@@ -443,7 +442,7 @@ const UploadPage = () => {
       }
 
       oldTune.logFileIds?.forEach(async (fileId: string) => {
-        const file = await getFile(fileId, await getBucketId(currentUser!.$id));
+        const file = await getFile(fileId, await getBucketId(currentUser!.id));
         setLogFileIds((prev) => new Map(prev).set(fileId, fileId));
         setDefaultLogFilesList((prev) => [...prev, {
           uid: file.$id,
@@ -453,7 +452,7 @@ const UploadPage = () => {
       });
 
       oldTune.toothLogFileIds?.forEach(async (fileId: string) => {
-        const file = await getFile(fileId, await getBucketId(currentUser!.$id));
+        const file = await getFile(fileId, await getBucketId(currentUser!.id));
         setToothLogFileIds((prev) => new Map(prev).set(fileId, fileId));
         setDefaultToothLogFilesList((prev) => [...prev, {
           uid: file.$id,
@@ -488,29 +487,40 @@ const UploadPage = () => {
   }, [loadExistingTune, navigateToNewTuneId, routeMatch?.params.tuneId]);
 
   useEffect(() => {
-    if (!currentUser) {
-      restrictedPage();
-      navigate(Routes.LOGIN);
-
-      return;
-    }
-
-    try {
-      if (!currentUser.emailVerification) {
-        emailNotVerified();
+    refreshUser().then((user) => {
+      if (user === null) {
+        restrictedPage();
         navigate(Routes.LOGIN);
 
         return;
       }
-      setIsUserAuthorized(true);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      genericError(error as Error);
-    }
 
-    prepareData();
-  }, [currentUser, navigate, prepareData, routeMatch?.params.tuneId]);
+      if (!user) {
+        restrictedPage();
+        navigate(Routes.LOGIN);
+
+        return;
+      }
+
+      if (!user.verified) {
+        emailNotVerified();
+        navigate(Routes.PROFILE);
+
+        return;
+      }
+
+      if (user.profile?.username.length === 0) {
+        usernameNotSet();
+        navigate(Routes.PROFILE);
+
+        return;
+      }
+
+      setIsUserAuthorized(true);
+      prepareData();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeMatch?.params.tuneId]);
 
   const uploadButton = (
     <Space direction="vertical">

@@ -13,9 +13,9 @@ const emailNotVerified = () => notification.warning({
   ...baseOptions,
 });
 
-const magicLinkSent = () => notification.success({
-  message: 'Check your email',
-  description: 'Magic link sent!',
+const usernameNotSet = () => notification.warning({
+  message: 'Update your profile',
+  description: 'Your username has to be set before you can upload files!',
   ...baseOptions,
 });
 
@@ -69,12 +69,6 @@ const resetSuccessful = () => notification.success({
 
 const resetFailed = (err: Error) => notification.error({
   message: 'Password reset failed',
-  description: err.message,
-  ...baseOptions,
-});
-
-const magicLinkConfirmationFailed = (err: Error) => notification.error({
-  message: 'Magic Link is invalid',
   description: err.message,
   ...baseOptions,
 });
@@ -140,7 +134,7 @@ const copiedToClipboard = () => notification.success({
 
 export {
   emailNotVerified,
-  magicLinkSent,
+  usernameNotSet,
   signUpSuccessful,
   signUpFailed,
   logInSuccessful,
@@ -150,7 +144,6 @@ export {
   logOutFailed,
   resetSuccessful,
   resetFailed,
-  magicLinkConfirmationFailed,
   sendingEmailVerificationFailed,
   emailVerificationSent,
   emailVerificationFailed,

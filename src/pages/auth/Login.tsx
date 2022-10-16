@@ -28,7 +28,6 @@ import {
   emailNotVerified,
   logInFailed,
   logInSuccessful,
-  magicLinkSent,
 } from './notifications';
 import {
   emailRules,
@@ -44,10 +43,9 @@ const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
-  const [isMagicLinkLoading, setIsMagicLinkLoading] = useState(false);
-  const { login, googleAuth, githubAuth, facebookAuth, sendMagicLink } = useAuth();
+  const { login, googleAuth, githubAuth, facebookAuth } = useAuth();
   const navigate = useNavigate();
-  const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading || isMagicLinkLoading;
+  const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading;
   const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
 
   const googleLogin = useCallback(async () => {
@@ -82,12 +80,12 @@ const Login = () => {
     try {
       const user = await login(email, password);
       logInSuccessful();
-      if (!user.emailVerification) {
+      if (!user.verified) {
         emailNotVerified();
       }
-      if (!user.name) {
-        navigate(Routes.PROFILE);
-      }
+      // if (!user.name) {
+      //   navigate(Routes.PROFILE);
+      // }
       redirectAfterLogin();
     } catch (error) {
       console.warn(error);
@@ -95,20 +93,6 @@ const Login = () => {
       formMagicLink.resetFields();
       formEmail.resetFields();
       setIsEmailLoading(false);
-    }
-  };
-
-  const magicLinkLogin = async ({ email }: { email: string }) => {
-    setIsMagicLinkLoading(true);
-    try {
-      await sendMagicLink(email);
-      magicLinkSent();
-    } catch (error) {
-      logInFailed(error as Error);
-    } finally {
-      setIsMagicLinkLoading(false);
-      formMagicLink.resetFields();
-      formEmail.resetFields();
     }
   };
 
@@ -138,34 +122,6 @@ const Login = () => {
           <FacebookOutlined />Facebook
         </Button>
       </Space>
-      <Divider />
-      <Form
-        onFinish={magicLinkLogin}
-        validateMessages={validateMessages}
-        form={formMagicLink}
-      >
-        <Item name="email" rules={emailRules} hasFeedback>
-          <Input
-            prefix={<MailOutlined />}
-            placeholder="Email"
-            id="email-magic-link"
-            autoComplete="email"
-            disabled={isAnythingLoading}
-          />
-        </Item>
-        <Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            loading={isMagicLinkLoading}
-            disabled={isAnythingLoading}
-            icon={<MailOutlined />}
-          >
-            Send me a Magic Link
-          </Button>
-        </Item>
-      </Form>
       <Form
         onFinish={emailLogin}
         validateMessages={validateMessages}

@@ -2,12 +2,18 @@ import { Rule } from 'antd/lib/form';
 
 const REQUIRED_MESSAGE = 'This field is required';
 
-// eslint-disable-next-line import/prefer-default-export
-export const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
+
+const usernamePattern = /^[A-z][A-z0-9_\\-]{3,30}$/;
 
 export const passwordRules: Rule[] = [
   { required: true },
   { pattern: passwordPattern, message: 'Password is too weak!' },
+];
+
+export const usernameRules: Rule[] = [
+  { required: true },
+  { pattern: usernamePattern, message: 'Username has invalid format!' },
 ];
 
 export const emailRules: Rule[] = [{
