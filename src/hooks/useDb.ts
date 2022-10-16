@@ -6,7 +6,6 @@ import {
   Query,
   Role,
 } from 'appwrite';
-import { Record } from 'pocketbase';
 import {
   databases,
   functions,
@@ -19,7 +18,10 @@ import {
   TuneDbDocument,
 } from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
-import { Collections, ProfilesRecord, TunesRecord } from '../@types/pocketbase-types';
+import {
+  Collections,
+  TunesRecord,
+} from '../@types/pocketbase-types';
 
 const DB_ID = 'public';
 const COLLECTION_ID_PUBLIC_TUNES = 'tunes';
@@ -123,27 +125,10 @@ const useDb = () => {
       const list = await client.records.getFullList(Collections.Tunes, batchSide, {
         sort: '-created',
         filter,
+        expand: 'userProfile',
       });
 
       return Promise.resolve(list as TunesRecord[]);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error(error);
-      databaseGenericError(error as Error);
-
-      return Promise.reject(error);
-    }
-  };
-
-  const listProfiles = async (userIds: string[]) => {
-    const batchSide = 100;
-
-    try {
-      const list = await client.records.getFullList(Collections.Profiles, batchSide, {
-        filter: userIds.map((userId) => `userId = "${userId}"`).join(' || '),
-      });
-
-      return Promise.resolve(list as ProfilesRecord[]);
     } catch (error) {
       Sentry.captureException(error);
       console.error(error);
@@ -159,7 +144,6 @@ const useDb = () => {
     getTune: (tuneId: string): Promise<TuneDbDocument | null> => getTune(tuneId),
     // searchTunes: (search?: string): Promise<Models.DocumentList<TuneDbDocument>> => searchTunes(search),
     searchTunes: (search?: string): Promise<TunesRecord[]> => searchTunes(search),
-    listProfiles: (userIds: string[]): Promise<ProfilesRecord[]> => listProfiles(userIds),
     getBucketId: (userId: string): Promise<string> => getBucketId(userId),
     getUser: (userId: string) => functions.createExecution('getUser', JSON.stringify({ userId })),
   };

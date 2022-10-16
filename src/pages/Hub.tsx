@@ -12,7 +12,6 @@ import {
   CopyOutlined,
   StarOutlined,
   ArrowRightOutlined,
-  LoadingOutlined,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -34,6 +33,7 @@ import {
   copyToClipboard,
   isClipboardSupported,
 } from '../utils/clipboard';
+import { ProfilesRecord } from '../@types/pocketbase-types';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -42,7 +42,7 @@ const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Hub = () => {
   const { xs } = useBreakpoint();
-  const { searchTunes, listProfiles } = useDb();
+  const { searchTunes } = useDb();
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<{}[]>([]); // TODO: fix this type
   const [isLoading, setIsLoading] = useState(true);
@@ -57,21 +57,13 @@ const Hub = () => {
       ...tune,
       key: tune.tuneId,
       year: tune.year,
-      author: <LoadingOutlined spin />,
+      author: (tune['@expand'] as { userProfile: ProfilesRecord }).userProfile.username,
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
       created: new Date(tune.created).toLocaleString(),
       stars: 0,
     })));
     setIsLoading(false);
-
-    // update list with users
-    const userList = await listProfiles(list.map((tune) => tune.user));
-
-    setDataSource((prev) => prev.map((tune) => ({
-      ...tune,
-      author: userList.find((profile) => profile.userId === (tune as any).user)?.username, // TODO: fix types
-    })));
   }, 300);
 
   const debounceLoadData = useCallback((value: string) => loadData(value), [loadData]);
