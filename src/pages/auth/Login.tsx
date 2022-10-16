@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import {
@@ -39,11 +40,14 @@ const { Item } = Form;
 const Login = () => {
   const [formMagicLink] = Form.useForm();
   const [formEmail] = Form.useForm();
+
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
-  const { login, googleAuth, githubAuth, facebookAuth } = useAuth();
+  const [googleCodes, setGoogleCodes] = useState<[string, string]>(['', '']);
+
+  const { login, googleAuth, githubAuth, facebookAuth, listAuthMethods } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading;
   const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
@@ -51,11 +55,11 @@ const Login = () => {
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
     try {
-      await googleAuth();
+      await googleAuth(...googleCodes);
     } catch (error) {
       logInFailed(error as Error);
     }
-  }, [googleAuth]);
+  }, [googleAuth, googleCodes]);
 
   const githubLogin = useCallback(async () => {
     setIsGithubLoading(true);
@@ -95,6 +99,24 @@ const Login = () => {
       setIsEmailLoading(false);
     }
   };
+
+  useEffect(() => {
+    listAuthMethods().then((methods) => {
+      console.log(methods);
+
+      const { authProviders } = methods;
+
+      authProviders.forEach((provider) => {
+        switch (provider.name) {
+          case 'google':
+            setGoogleCodes([provider.codeChallenge, provider.codeVerifier]);
+            break;
+          default:
+            break;
+        }
+      });
+    });
+  }, [listAuthMethods]);
 
   return (
     <div className="auth-container">
