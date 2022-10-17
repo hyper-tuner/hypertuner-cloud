@@ -34,6 +34,7 @@ import {
   emailRules,
   requiredRules,
 } from '../../utils/form';
+import { buildRedirectUrl } from '../../utils/url';
 
 const { Item } = Form;
 
@@ -46,6 +47,7 @@ const Login = () => {
   const [isGithubLoading, setIsGithubLoading] = useState(false);
   const [isFacebookLoading, setIsFacebookLoading] = useState(false);
   const [googleCodes, setGoogleCodes] = useState<[string, string]>(['', '']);
+  const [googleUrl, setGoogleUrl] = useState<string | null>(null);
 
   const { login, googleAuth, githubAuth, facebookAuth, listAuthMethods } = useAuth();
   const navigate = useNavigate();
@@ -53,13 +55,10 @@ const Login = () => {
   const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
 
   const googleLogin = useCallback(async () => {
-    setIsGoogleLoading(true);
-    try {
-      await googleAuth(...googleCodes);
-    } catch (error) {
-      logInFailed(error as Error);
+    if (googleUrl) {
+      window.location.href = googleUrl;
     }
-  }, [googleAuth, googleCodes]);
+  }, [googleUrl]);
 
   const githubLogin = useCallback(async () => {
     setIsGithubLoading(true);
@@ -105,13 +104,23 @@ const Login = () => {
 
       const { authProviders } = methods;
 
+      window.localStorage.setItem('authProviders', JSON.stringify(authProviders));
+
+      // TODO: refactor me!
       authProviders.forEach((provider) => {
+        let url = '';
+
         switch (provider.name) {
           case 'google':
-            setGoogleCodes([provider.codeChallenge, provider.codeVerifier]);
+            url = `${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: 'google' }))}`;
             break;
           default:
             break;
+        }
+
+        if (url) {
+          console.log(url);
+          setGoogleUrl(url);
         }
       });
     });

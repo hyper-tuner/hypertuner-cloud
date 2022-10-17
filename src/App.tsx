@@ -3,6 +3,7 @@ import {
   Route,
   useMatch,
   useNavigate,
+  generatePath,
 } from 'react-router-dom';
 import {
   Layout,
@@ -50,6 +51,7 @@ const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const ResetPasswordConfirmation = lazy(() => import('./pages/auth/ResetPasswordConfirmation'));
 const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
+const OauthCallback = lazy(() => import('./pages/auth/OauthCallback'));
 
 const { Content } = Layout;
 
@@ -73,6 +75,18 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   const tuneId = tunePathMatch?.params.tuneId;
 
   useEffect(() => {
+    // Handle external redirects (oauth, etc)
+    // TODO: refactor this
+    const searchParams = new URLSearchParams(window.location.search);
+    const redirectPage = searchParams.get('redirect');
+    switch (redirectPage) {
+      case Routes.REDIRECT_PAGE_OAUTH_CALLBACK:
+        window.location.href = `/#${generatePath(Routes.OAUTH_CALLBACK, { provider: searchParams.get('provider')! })}?${searchParams.toString()}`;
+        break;
+      default:
+        break;
+    }
+
     if (tuneId) {
       // clear out last state
       if (tuneData && tuneId !== tuneData.tuneId) {
@@ -144,6 +158,7 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
 
           <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
           <Route path={Routes.RESET_PASSWORD_CONFIRMATION} element={<ContentFor element={<ResetPasswordConfirmation />} />} />
+          <Route path={Routes.OAUTH_CALLBACK} element={<ContentFor element={<OauthCallback />} />} />
         </ReactRoutes>
         <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>

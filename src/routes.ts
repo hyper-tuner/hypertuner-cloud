@@ -21,4 +21,7 @@ export enum Routes {
   RESET_PASSWORD = '/auth/reset-password',
   RESET_PASSWORD_CONFIRMATION = '/auth/reset-password-confirmation/:token',
   EMAIL_VERIFICATION = '/auth/email-verification/:token',
+  OAUTH_CALLBACK = '/auth/oauth-callback/:provider',
+
+  REDIRECT_PAGE_OAUTH_CALLBACK = 'oauth',
 }

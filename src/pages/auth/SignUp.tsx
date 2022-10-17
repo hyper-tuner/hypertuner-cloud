@@ -57,7 +57,7 @@ const SignUp = () => {
   const googleLogin = useCallback(async () => {
     setIsGoogleLoading(true);
     try {
-      await googleAuth();
+      // await googleAuth();
     } catch (error) {
       signUpFailed(error as Error);
     }

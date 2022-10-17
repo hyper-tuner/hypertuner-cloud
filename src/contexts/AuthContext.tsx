@@ -12,11 +12,15 @@ import {
   client,
   formatError,
 } from '../pocketbase';
-import { buildFullUrl } from '../utils/url';
+import {
+  buildFullUrl,
+  buildRedirectUrl,
+} from '../utils/url';
 import { Collections } from '../@types/pocketbase-types';
+import { Routes } from '../routes';
 
 // TODO: this should be imported from pocketbase but currently is not exported
-type AuthProviderInfo = {
+export type AuthProviderInfo = {
   name: string;
   state: string;
   codeVerifier: string;
@@ -26,7 +30,7 @@ type AuthProviderInfo = {
 };
 
 // TODO: this should be imported from pocketbase but currently is not exported
-type AuthMethodsList = {
+export type AuthMethodsList = {
   [key: string]: any;
   emailPassword: boolean;
   authProviders: Array<AuthProviderInfo>;
@@ -43,7 +47,7 @@ interface AuthValue {
   logout: () => void,
   initResetPassword: (email: string) => Promise<void>,
   listAuthMethods: () => Promise<AuthMethodsList>,
-  googleAuth: (codeVerifier: string, codeChallenge: string) => Promise<void>,
+  googleAuth: (code: string, codeVerifier: string) => Promise<void>,
   githubAuth: () => Promise<void>,
   facebookAuth: () => Promise<void>,
   updateUsername: (username: string) => Promise<void>,
@@ -141,12 +145,12 @@ const AuthProvider = (props: { children: ReactNode }) => {
         return Promise.reject(new Error(formatError(error)));
       }
     },
-    googleAuth: async (codeVerifier: string, codeChallenge: string) => {
+    googleAuth: async (code: string, codeVerifier: string) => {
       client.users.authViaOAuth2(
         'google',
-        codeChallenge,
+        code,
         codeVerifier,
-        OAUTH_REDIRECT_URL,
+        buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: 'google' }),
       );
     },
     githubAuth: async () => {

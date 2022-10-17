@@ -7,7 +7,10 @@ import {
   Role,
 } from 'appwrite';
 import { databases } from '../appwrite';
-import { client, formatError } from '../pocketbase';
+import {
+  client,
+  formatError,
+} from '../pocketbase';
 import {
   TuneDbData,
   UsersBucket,
