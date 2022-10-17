@@ -7,7 +7,6 @@ import {
   useState,
 } from 'react';
 import { User } from 'pocketbase';
-import { account } from '../appwrite';
 import {
   client,
   formatError,
@@ -52,7 +51,6 @@ interface AuthValue {
   listAuthMethods: () => Promise<AuthMethodsList>,
   oAuth: (provider: OAuthProviders, code: string, codeVerifier: string) => Promise<void>,
   updateUsername: (username: string) => Promise<void>,
-  updatePassword: (password: string, oldPassword: string) => Promise<void>,
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -153,14 +151,6 @@ const AuthProvider = (props: { children: ReactNode }) => {
         await client.records.update(Collections.Profiles, currentUser!.profile!.id, {
           username,
         });
-        return Promise.resolve();
-      } catch (error) {
-        return Promise.reject(new Error(formatError(error)));
-      }
-    },
-    updatePassword: async (password: string, oldPassword: string) => {
-      try {
-        await account.updatePassword(password, oldPassword);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));

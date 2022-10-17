@@ -14,7 +14,6 @@ import {
 import {
   UserOutlined,
   MailOutlined,
-  LockOutlined,
 } from '@ant-design/icons';
 import validateMessages from './validateMessages';
 import { useAuth } from '../../contexts/AuthContext';
@@ -24,33 +23,24 @@ import {
   emailVerificationSent,
   profileUpdateSuccess,
   profileUpdateFailed,
-  passwordUpdateSuccess,
-  passwordUpdateFailed,
 } from './notifications';
 import { Routes } from '../../routes';
-import {
-  passwordRules,
-  requiredRules,
-  usernameRules,
-} from '../../utils/form';
+import { usernameRules } from '../../utils/form';
 
 const { Item } = Form;
 
 const Profile = () => {
   const [formProfile] = Form.useForm();
-  const [formPassword] = Form.useForm();
   const {
     currentUser,
     sendEmailVerification,
     updateUsername,
-    updatePassword,
     refreshUser,
   } = useAuth();
   const navigate = useNavigate();
   const [isVerificationSent, setIsVerificationSent] = useState(false);
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
-  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
 
   const resendEmailVerification = async () => {
     setIsSendingVerification(true);
@@ -76,19 +66,6 @@ const Profile = () => {
       profileUpdateFailed(error as Error);
     } finally {
       setIsProfileLoading(false);
-    }
-  };
-
-  const onUpdatePassword = async ({ password, oldPassword }: { password: string, oldPassword: string }) => {
-    setIsPasswordLoading(true);
-    try {
-      await updatePassword(password, oldPassword);
-      passwordUpdateSuccess();
-      formPassword.resetFields();
-    } catch (error) {
-      passwordUpdateFailed(error as Error);
-    } finally {
-      setIsPasswordLoading(false);
     }
   };
 
@@ -172,46 +149,6 @@ const Profile = () => {
           </Item>
         </Form>
       </Space>
-      <Divider>Password</Divider>
-      <Form
-        validateMessages={validateMessages}
-        form={formPassword}
-        onFinish={onUpdatePassword}
-      >
-        <Item
-          name="oldPassword"
-          rules={requiredRules}
-          hasFeedback
-        >
-          <Input.Password
-            placeholder="Old password"
-            autoComplete="current-password"
-            prefix={<LockOutlined />}
-          />
-        </Item>
-        <Item
-          name="password"
-          rules={passwordRules}
-          hasFeedback
-        >
-          <Input.Password
-            placeholder="New password"
-            autoComplete="new-password"
-            prefix={<LockOutlined />}
-          />
-        </Item>
-        <Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            icon={<LockOutlined />}
-            loading={isPasswordLoading}
-          >
-            Change
-          </Button>
-        </Item>
-      </Form>
     </div>
   );
 };
