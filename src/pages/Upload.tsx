@@ -509,7 +509,7 @@ const UploadPage = () => {
         return;
       }
 
-      if (user.profile?.username.length === 0) {
+      if ((user.profile?.username?.length || 0) === 0) {
         usernameNotSet();
         navigate(Routes.PROFILE);
 
