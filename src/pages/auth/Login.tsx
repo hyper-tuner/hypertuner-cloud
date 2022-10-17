@@ -18,18 +18,24 @@ import {
   GoogleOutlined,
   GithubOutlined,
   FacebookOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
 import {
   Link,
   useNavigate,
 } from 'react-router-dom';
-import { OAuthProviders, useAuth } from '../../contexts/AuthContext';
+import {
+  OAuthProviders,
+  useAuth,
+} from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
 import {
   emailNotVerified,
   logInFailed,
   logInSuccessful,
+  signUpFailed,
+  signUpSuccessful,
 } from './notifications';
 import {
   emailRules,
@@ -39,10 +45,14 @@ import { buildRedirectUrl } from '../../utils/url';
 
 const { Item } = Form;
 
-const Login = () => {
-  const [formMagicLink] = Form.useForm();
-  const [formEmail] = Form.useForm();
+export enum FormRoles {
+  LOGIN = 'Login',
+  SING_UP = 'Sign Up',
+}
 
+const Login = ({ formRole }: { formRole: FormRoles }) => {
+  const [formEmail] = Form.useForm();
+  const isLogin = formRole === FormRoles.LOGIN;
   const [isEmailLoading, setIsEmailLoading] = useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [providersReady, setProvidersReady] = useState(false);
@@ -55,7 +65,7 @@ const Login = () => {
     facebook: false,
   });
 
-  const { login, listAuthMethods } = useAuth();
+  const { login, signUp, listAuthMethods } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isOAuthLoading;
   const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
@@ -74,7 +84,24 @@ const Login = () => {
       redirectAfterLogin();
     } catch (error) {
       logInFailed(error as Error);
-      formMagicLink.resetFields();
+      formEmail.resetFields();
+      setIsEmailLoading(false);
+    }
+  };
+
+  const emailSignUp = async ({ email, password }: { email: string, password: string }) => {
+    setIsEmailLoading(true);
+    try {
+      const user = await signUp(email, password);
+      signUpSuccessful();
+
+      if (!user.verified) {
+        emailNotVerified();
+      }
+
+      navigate(Routes.HUB);
+    } catch (error) {
+      signUpFailed(error as Error);
       formEmail.resetFields();
       setIsEmailLoading(false);
     }
@@ -155,12 +182,55 @@ const Login = () => {
     </>
   );
 
+  const bottomLinksLogin = (
+    <>
+      <Link to={Routes.SIGN_UP}>
+        Sign Up
+      </Link>
+      <Link to={Routes.RESET_PASSWORD} style={{ float: 'right' }}>
+        Forgot password?
+      </Link>
+    </>
+  );
+
+  const bottomLinksSignUp = (
+    <Link to={Routes.LOGIN} style={{ float: 'right' }}>
+      Log In
+    </Link>
+  );
+
+  const submitLogin = (
+    <Button
+      type="primary"
+      htmlType="submit"
+      style={{ width: '100%' }}
+      loading={isEmailLoading}
+      disabled={isAnythingLoading}
+      icon={<UnlockOutlined />}
+    >
+      Login using password
+    </Button>
+  );
+
+  const submitSignUp = (
+    <Button
+      type="primary"
+      htmlType="submit"
+      style={{ width: '100%' }}
+      loading={isEmailLoading}
+      disabled={isAnythingLoading}
+      icon={<UserAddOutlined />}
+    >
+      Sign Up using password
+    </Button>
+  );
+
   return (
     <div className="auth-container">
-      <Divider>Log In</Divider>
+      <Divider>{formRole}</Divider>
       {providersReady && oauthSection}
       <Form
-        onFinish={emailLogin}
+        onFinish={isLogin ? emailLogin : emailSignUp}
         validateMessages={validateMessages}
         form={formEmail}
       >
@@ -185,23 +255,9 @@ const Login = () => {
           />
         </Item>
         <Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            loading={isEmailLoading}
-            disabled={isAnythingLoading}
-            icon={<UnlockOutlined />}
-          >
-            Log in using password
-          </Button>
+          {isLogin ? submitLogin : submitSignUp}
         </Item>
-        <Link to={Routes.SIGN_UP}>
-          Sign Up
-        </Link>
-        <Link to={Routes.RESET_PASSWORD} style={{ float: 'right' }}>
-          Forgot password?
-        </Link>
+        {isLogin ? bottomLinksLogin : bottomLinksSignUp}
       </Form>
     </div>
   );

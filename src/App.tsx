@@ -34,6 +34,7 @@ import {
 import useDb from './hooks/useDb';
 import Info from './pages/Info';
 import Hub from './pages/Hub';
+import { FormRoles } from './pages/auth/Login';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './css/App.less';
@@ -47,7 +48,6 @@ const Diagnose = lazy(() => import('./pages/Diagnose'));
 const Upload = lazy(() => import('./pages/Upload'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Profile = lazy(() => import('./pages/auth/Profile'));
-const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const ResetPasswordConfirmation = lazy(() => import('./pages/auth/ResetPasswordConfirmation'));
 const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
@@ -151,9 +151,9 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
           <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
           <Route path={`${Routes.UPLOAD}/*`} element={<ContentFor element={<Upload />} />} />
 
-          <Route path={Routes.LOGIN} element={<ContentFor element={<Login />} />} />
+          <Route path={Routes.LOGIN} element={<ContentFor element={<Login formRole={FormRoles.LOGIN} />} />} />
+          <Route path={Routes.SIGN_UP} element={<ContentFor element={<Login formRole={FormRoles.SING_UP} />} />} />
           <Route path={Routes.PROFILE} element={<ContentFor element={<Profile />} />} />
-          <Route path={Routes.SIGN_UP} element={<ContentFor element={<SignUp />} />} />
           <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
 
           <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
