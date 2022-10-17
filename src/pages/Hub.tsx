@@ -71,7 +71,8 @@ const Hub = () => {
   const debounceLoadData = useCallback((value: string) => {
     setSearchQuery(value);
     loadData(value);
-  }, [loadData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
     if (isEscape(e)) {

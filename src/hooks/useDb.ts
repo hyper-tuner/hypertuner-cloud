@@ -3,9 +3,15 @@ import {
   client,
   formatError,
 } from '../pocketbase';
-import { TunesRecordFull, TunesRecordPartial } from '../types/dbData';
+import {
+  TunesRecordFull,
+  TunesRecordPartial,
+} from '../types/dbData';
 import { databaseGenericError } from '../pages/auth/notifications';
-import { Collections } from '../@types/pocketbase-types';
+import {
+  Collections,
+  TunesRecord,
+} from '../@types/pocketbase-types';
 
 const useDb = () => {
   const updateTune = async (id: string, data: TunesRecordPartial) => {
@@ -20,7 +26,7 @@ const useDb = () => {
     }
   };
 
-  const createTune = async (data: TunesRecordFull) => {
+  const createTune = async (data: TunesRecord) => {
     try {
       const record = await client.records.create(Collections.Tunes, data);
 
@@ -76,7 +82,7 @@ const useDb = () => {
 
   return {
     updateTune: (tuneId: string, data: TunesRecordPartial): Promise<void> => updateTune(tuneId, data),
-    createTune: (data: TunesRecordFull): Promise<TunesRecordFull> => createTune(data),
+    createTune: (data: TunesRecord): Promise<TunesRecordFull> => createTune(data),
     getTune: (tuneId: string): Promise<TunesRecordFull | null> => getTune(tuneId),
     searchTunes: (search?: string): Promise<TunesRecordFull[]> => searchTunes(search),
   };

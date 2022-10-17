@@ -11,11 +11,10 @@ export type ProfilesRecord = {
 	avatar?: string;
 }
 
-// TODO: regenerate this
-
 export type TunesRecord = {
-	tuneId: string;
 	user: string;
+	userProfile: string;
+	tuneId: string;
 	signature: string;
 	vehicleName: string;
 	engineMake: string;
@@ -30,10 +29,10 @@ export type TunesRecord = {
 	year?: number;
 	hp?: number;
 	stockHp?: number;
-	visibility: string;
-	tuneFile: string;
 	readme: string;
 	textSearch: string;
+	visibility: string;
+	tuneFile: string;
 	customIniFile?: string;
 	logFiles?: string;
 	toothLogFiles?: string;
