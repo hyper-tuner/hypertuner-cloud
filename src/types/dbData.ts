@@ -1,5 +1,8 @@
 import { Record } from 'pocketbase';
-import { ProfilesRecord, TunesRecord } from '../@types/pocketbase-types';
+import {
+  ProfilesRecord,
+  TunesRecord,
+} from '../@types/pocketbase-types';
 
 type Partial<T> = {
   [A in keyof T]?: T[A];

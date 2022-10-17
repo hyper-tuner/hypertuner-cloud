@@ -34,6 +34,6 @@ export type TunesRecord = {
 	visibility: string;
 	tuneFile: string;
 	customIniFile?: string;
-	logFiles?: string;
-	toothLogFiles?: string;
+	logFiles?: string[];
+	toothLogFiles?: string[];
 }

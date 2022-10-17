@@ -30,8 +30,9 @@ import {
   EditOutlined,
   CheckOutlined,
   SendOutlined,
+  GlobalOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
-import * as Sentry from '@sentry/browser';
 import { INI } from '@hyper-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -40,6 +41,7 @@ import {
   useMatch,
   useNavigate,
 } from 'react-router-dom';
+import Pako from 'pako';
 import ReactMarkdown from 'react-markdown';
 import { nanoid } from 'nanoid';
 import {
@@ -53,7 +55,7 @@ import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogParser from '../utils/logs/LogParser';
 import useDb from '../hooks/useDb';
-import useServerStorage, { ServerFile } from '../hooks/useServerStorage';
+import useServerStorage from '../hooks/useServerStorage';
 import { buildFullUrl } from '../utils/url';
 import Loader from '../components/Loader';
 import {
@@ -63,6 +65,10 @@ import {
 import { aspirationMapper } from '../utils/tune/mappers';
 import { copyToClipboard } from '../utils/clipboard';
 import { TunesRecord } from '../@types/pocketbase-types';
+import {
+  TunesRecordFull,
+  TunesRecordPartial,
+} from '../types/dbData';
 
 const { Item, useForm } = Form;
 
@@ -79,7 +85,6 @@ interface ValidationResult {
 }
 
 type ValidateFile = (file: File) => Promise<ValidationResult>;
-type UploadDone = (fileCreated: ServerFile, file: File) => void;
 
 const rowProps = { gutter: 10 };
 const colProps = { span: 24, sm: 12 };
@@ -98,6 +103,8 @@ const iniIcon = () => <FileTextOutlined />;
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 const tuneParser = new TuneParser();
 
+const bufferToFile = (buffer: ArrayBuffer, name: string) => new File([buffer], name);
+
 const UploadPage = () => {
   const [form] = useForm();
   const routeMatch = useMatch(Routes.UPLOAD_WITH_TUNE_ID);
@@ -105,37 +112,42 @@ const UploadPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTuneLoading, setTuneIsLoading] = useState(true);
   const [newTuneId, setNewTuneId] = useState<string>();
-  const [tuneDocumentId, setTuneDocumentId] = useState<string>();
   const [isUserAuthorized, setIsUserAuthorized] = useState(false);
   const [shareUrl, setShareUrl] = useState<string>();
   const [isPublished, setIsPublished] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [readme, setReadme] = useState(defaultReadme);
-  const [existingTune, setExistingTune] = useState<TunesRecord>();
+  const [existingTune, setExistingTune] = useState<TunesRecordFull>();
 
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);
   const [defaultToothLogFilesList, setDefaultToothLogFilesList] = useState<UploadFile[]>([]);
   const [defaultCustomIniFileList, setDefaultCustomIniFileList] = useState<UploadFile[]>([]);
 
-  const [tuneFileId, setTuneFileId] = useState<string | null>(null);
-  const [logFileIds, setLogFileIds] = useState<Map<string, string>>(new Map());
-  const [toothLogFileIds, setToothLogFileIds] = useState<Map<string, string>>(new Map());
-  const [customIniFileId, setCustomIniFileId] = useState<string | null>(null);
+  const [tuneFile, setTuneFile] = useState<File>();
+  const [customIniFile, setCustomIniFile] = useState<File>();
+  const [logFiles, setLogFiles] = useState<File[]>([]);
+  const [toothLogFiles, setToothLogFiles] = useState<File[]>([]);
 
   const shareSupported = 'share' in navigator;
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
-  const { removeFile, uploadFile, getFile } = useServerStorage();
-  const { createTune, getBucketId, updateTune, getTune } = useDb();
+  const { fetchFileFromServer } = useServerStorage();
+  const { createTune, updateTune, getTune } = useDb();
+
+  const fetchFile = async (tuneId: string, fileName: string) => bufferToFile(await fetchFileFromServer(tuneId, fileName), fileName);
 
   const noop = () => { };
+
+  const removeFilenameSuffix = (filename: string) => filename.replace(/(.+)(_\w{10})(\.\w+)$/, '$1$3');
 
   const goToNewTune = () => navigate(generatePath(Routes.TUNE_TUNE, {
     tuneId: newTuneId!,
   }));
 
   const publishTune = async (values: any) => {
+    setIsLoading(true);
+
     /* eslint-disable prefer-destructuring */
     const vehicleName = values.vehicleName.trim();
     const engineMake = values.engineMake.trim();
@@ -150,10 +162,36 @@ const UploadPage = () => {
     const year = values.year || null;
     const hp = values.hp || null;
     const stockHp = values.stockHp || null;
+    const visibility = values.visibility;
     /* eslint-enable prefer-destructuring */
 
-    setIsLoading(true);
-    await updateTune(tuneDocumentId!, {
+    const compressedTuneFile = bufferToFile(
+      Pako.deflate(await tuneFile!.arrayBuffer()),
+      removeFilenameSuffix(tuneFile!.name),
+    );
+
+    const compressedCustomIniFile = customIniFile ? bufferToFile(
+      Pako.deflate(await customIniFile!.arrayBuffer()),
+      removeFilenameSuffix(customIniFile!.name),
+    ) : null;
+
+    const compressedLogFiles = await Promise.all(logFiles.map(async (file) => bufferToFile(
+      Pako.deflate(await file.arrayBuffer()),
+      removeFilenameSuffix(file.name),
+    )));
+
+    const compressedToothLogFiles = await Promise.all(toothLogFiles.map(async (file) => bufferToFile(
+      Pako.deflate(await file.arrayBuffer()),
+      removeFilenameSuffix(file.name),
+    )));
+
+    const { signature } = tuneParser.parse(await tuneFile!.arrayBuffer()).getTune().details;
+
+    const newData: TunesRecord = {
+      user: currentUser!.id,
+      userProfile: currentUser!.profile!.id,
+      tuneId: newTuneId!,
+      signature,
       vehicleName,
       engineMake,
       engineCode,
@@ -168,8 +206,13 @@ const UploadPage = () => {
       hp,
       stockHp,
       readme: readme?.trim(),
+      visibility,
+      tuneFile: compressedTuneFile as unknown as string,
+      customIniFile: compressedCustomIniFile as unknown as string,
+      logFiles: compressedLogFiles as unknown as string[],
+      toothLogFiles: compressedToothLogFiles as unknown as string[],
       textSearch: [
-        existingTune?.signature,
+        signature,
         vehicleName,
         engineMake,
         engineCode,
@@ -181,7 +224,36 @@ const UploadPage = () => {
       ].filter((field) => field !== null && `${field}`.length > 1)
         .join(' ')
         .replace(/[^A-z.\-\d ]/g, ''),
+    };
+
+    const formData = new FormData();
+
+    Object.keys(newData).forEach((key) => {
+      const value = (newData as any)[key];
+
+      if (Array.isArray(value)) {
+        value.forEach((file: File) => {
+          formData.append(key, file);
+        });
+      } else {
+        formData.append(key, value);
+      }
     });
+
+    if (existingTune) {
+      // clear old multi files first
+      if (logFiles.length > 0 || toothLogFiles.length > 0) {
+        const tempFormData = new FormData();
+        tempFormData.append('logFiles', '');
+        tempFormData.append('toothLogFiles', '');
+        await updateTune(existingTune.id, tempFormData as unknown as TunesRecord);
+      }
+
+      await updateTune(existingTune.id, formData as unknown as TunesRecord);
+    } else {
+      await createTune(formData as unknown as TunesRecord);
+    }
+
     setIsLoading(false);
     setIsPublished(true);
   };
@@ -197,7 +269,7 @@ const UploadPage = () => {
     }), { replace: true });
   }, [navigate]);
 
-  const upload = async (options: UploadRequestOption, done: UploadDone, validate: ValidateFile) => {
+  const upload = async (options: UploadRequestOption, done: (file: File) => void, validate: ValidateFile) => {
     const { onError, onSuccess, file } = options;
 
     const validation = await validate(file as File);
@@ -210,54 +282,15 @@ const UploadPage = () => {
       return false;
     }
 
-    try {
-      const pako = await import('pako');
-      const buffer = await (file as File).arrayBuffer();
-      const compressed = pako.deflate(new Uint8Array(buffer));
-      const bucketId = await getBucketId(currentUser!.id);
-      const fileCreated: ServerFile = await uploadFile(currentUser!.id, bucketId, new File([compressed], (file as File).name));
-
-      done(fileCreated, file as File);
-      onSuccess!(null);
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error('Upload error:', error);
-      notification.error({ message: 'Upload error', description: (error as Error).message });
-      onError!(error as Error);
-
-      return false;
-    }
+    done(file as File);
+    onSuccess!(null);
 
     return true;
   };
 
   const uploadTune = async (options: UploadRequestOption) => {
-    upload(options, async (fileCreated: ServerFile, file: File) => {
-      const { signature } = tuneParser.parse(await file.arrayBuffer()).getTune().details;
-
-      if (tuneDocumentId) {
-        await updateTune(tuneDocumentId, {
-          signature,
-          tuneFileId: fileCreated.$id,
-        });
-      } else {
-        const document = await createTune({
-          userId: currentUser!.id,
-          tuneId: newTuneId!,
-          signature,
-          tuneFileId: fileCreated.$id,
-          vehicleName: '',
-          displacement: 0,
-          cylindersCount: 0,
-          engineMake: '',
-          engineCode: '',
-          aspiration: 'na',
-          readme: '',
-        });
-        setTuneDocumentId(document.$id);
-      }
-
-      setTuneFileId(fileCreated.$id);
+    upload(options, async (file) => {
+      setTuneFile(file);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -272,10 +305,8 @@ const UploadPage = () => {
   };
 
   const uploadLogs = async (options: UploadRequestOption) => {
-    upload(options, async (fileCreated) => {
-      const newValues = new Map(logFileIds.set((options.file as UploadFile).uid, fileCreated.$id));
-      await updateTune(tuneDocumentId!, { logFileIds: Array.from(newValues.values()) });
-      setLogFileIds(newValues);
+    upload(options, async (file) => {
+      setLogFiles((prev) => [...prev, file]);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -307,10 +338,8 @@ const UploadPage = () => {
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
-    upload(options, async (fileCreated) => {
-      const newValues = new Map(toothLogFileIds.set((options.file as UploadFile).uid, fileCreated.$id));
-      await updateTune(tuneDocumentId!, { toothLogFileIds: Array.from(newValues.values()) });
-      setToothLogFileIds(newValues);
+    upload(options, async (file) => {
+      setToothLogFiles((prev) => [...prev, file]);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -327,9 +356,8 @@ const UploadPage = () => {
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
-    upload(options, async (fileCreated) => {
-      await updateTune(tuneDocumentId!, { customIniFileId: fileCreated.$id });
-      setCustomIniFileId(fileCreated.$id);
+    upload(options, async (file) => {
+      setCustomIniFile(file);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -353,54 +381,20 @@ const UploadPage = () => {
     });
   };
 
-  const removeFileFromStorage = async (fileId: string | null): Promise<boolean> => {
-    if (!fileId) {
-      return false;
-    }
-
-    await removeFile(await getBucketId(currentUser!.id), fileId);
-
-    return true;
-  };
-
   const removeTuneFile = async () => {
-    if (!await removeFileFromStorage(tuneFileId!)) {
-      return;
-    }
-
-    await updateTune(tuneDocumentId!, { tuneFileId: null });
-    setTuneFileId(null);
+    setTuneFile(undefined);
   };
 
   const removeLogFile = async (file: UploadFile) => {
-    if (!await removeFileFromStorage(logFileIds.get(file.uid)!)) {
-      return;
-    }
-
-    logFileIds.delete(file.uid);
-    const newValues = new Map(logFileIds);
-    setLogFileIds(newValues);
-    updateTune(tuneDocumentId!, { logFileIds: Array.from(newValues.values()) });
+    setLogFiles((prev) => prev.filter((f) => f.name !== file.name));
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
-    if (!await removeFileFromStorage(toothLogFileIds.get(file.uid)!)) {
-      return;
-    }
-
-    toothLogFileIds.delete(file.uid);
-    const newValues = new Map(toothLogFileIds);
-    setToothLogFileIds(newValues);
-    updateTune(tuneDocumentId!, { toothLogFileIds: Array.from(newValues.values()) });
+    setToothLogFiles((prev) => prev.filter((f) => f.name !== file.name));
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
-    if (!await removeFileFromStorage(customIniFileId!)) {
-      return;
-    }
-
-    await updateTune(tuneDocumentId!, { customIniFileId: null });
-    setCustomIniFileId(null);
+    setCustomIniFile(undefined);
   };
 
   const loadExistingTune = useCallback(async (currentTuneId: string) => {
@@ -410,7 +404,7 @@ const UploadPage = () => {
     const oldTune = await getTune(currentTuneId);
     if (oldTune) {
       // this is someone elses tune
-      if (oldTune.userId !== currentUser?.id) {
+      if (oldTune.user !== currentUser?.id) {
         navigateToNewTuneId();
         return;
       }
@@ -418,54 +412,54 @@ const UploadPage = () => {
       setExistingTune(oldTune);
       form.setFieldsValue(oldTune);
       setIsEditMode(true);
-      setTuneDocumentId(oldTune.$id);
       setReadme(oldTune.readme!);
 
-      if (oldTune.tuneFileId) {
-        const file = await getFile(oldTune.tuneFileId, await getBucketId(currentUser!.id));
-        setTuneFileId(oldTune.tuneFileId);
+      if (oldTune.tuneFile) {
+        setTuneFile(await fetchFile(oldTune.id, oldTune.tuneFile));
         setDefaultTuneFileList([{
-          uid: file.$id,
-          name: file.name,
+          uid: oldTune.tuneFile,
+          name: oldTune.tuneFile,
           status: 'done',
         }]);
       }
 
-      if (oldTune.customIniFileId) {
-        const file = await getFile(oldTune.customIniFileId, await getBucketId(currentUser!.id));
-        setCustomIniFileId(oldTune.customIniFileId);
+      if (oldTune.customIniFile) {
+        setCustomIniFile(await fetchFile(oldTune.id, oldTune.customIniFile));
         setDefaultCustomIniFileList([{
-          uid: file.$id,
-          name: file.name,
+          uid: oldTune.customIniFile,
+          name: oldTune.customIniFile,
           status: 'done',
         }]);
       }
 
-      oldTune.logFileIds?.forEach(async (fileId: string) => {
-        const file = await getFile(fileId, await getBucketId(currentUser!.id));
-        setLogFileIds((prev) => new Map(prev).set(fileId, fileId));
+      const tempLogFiles: File[] = [];
+      oldTune.logFiles?.forEach(async (fileName: string) => {
+        tempLogFiles.push(await fetchFile(oldTune.id, fileName));
         setDefaultLogFilesList((prev) => [...prev, {
-          uid: file.$id,
-          name: file.name,
+          uid: fileName,
+          name: fileName,
           status: 'done',
         }]);
       });
+      setLogFiles(tempLogFiles);
 
-      oldTune.toothLogFileIds?.forEach(async (fileId: string) => {
-        const file = await getFile(fileId, await getBucketId(currentUser!.id));
-        setToothLogFileIds((prev) => new Map(prev).set(fileId, fileId));
+      const tempToothLogFiles: File[] = [];
+      oldTune.toothLogFiles?.forEach(async (fileName: string) => {
+        tempToothLogFiles.push(await fetchFile(oldTune.id, fileName));
         setDefaultToothLogFilesList((prev) => [...prev, {
-          uid: file.$id,
-          name: file.name,
+          uid: fileName,
+          name: fileName,
           status: 'done',
         }]);
       });
+      setToothLogFiles(tempToothLogFiles);
+
     } else {
       // reset state
       form.resetFields();
       setReadme(defaultReadme);
-      setTuneFileId(null);
-      setCustomIniFileId(null);
+      setTuneFile(undefined);
+      setCustomIniFile(undefined);
       setDefaultTuneFileList([]);
       setDefaultLogFilesList([]);
       setDefaultToothLogFilesList([]);
@@ -528,10 +522,39 @@ const UploadPage = () => {
     </Space>
   );
 
-  const shareSection = (
+  const publishButton = (
+    <Row style={{ marginTop: 10 }} {...rowProps}>
+      <Col {...colProps}>
+        <Item name="visibility" rules={requiredTextRules}>
+          <Select disabled>
+            <Select.Option value="public">
+              <Space><GlobalOutlined />Public</Space>
+            </Select.Option>
+            <Select.Option value="unlisted">
+              <Space><EyeOutlined />Unlisted</Space>
+            </Select.Option>
+          </Select>
+        </Item>
+      </Col>
+      <Col {...colProps}>
+        <Item style={{ width: '100%' }}>
+          <Button
+            type="primary"
+            block
+            loading={isLoading}
+            htmlType="submit"
+            icon={isEditMode ? <EditOutlined /> : <CheckOutlined />}
+          >
+            {isEditMode ? 'Update' : 'Publish'}
+          </Button>
+        </Item>
+      </Col>
+    </Row>
+  );
+
+  const openButton = (
     <>
-      <Divider>Publish & Share</Divider>
-      {isPublished && <Row>
+      <Row>
         <Input
           style={{ width: `calc(100% - ${shareSupported ? 65 : 35}px)` }}
           value={shareUrl!}
@@ -547,27 +570,26 @@ const UploadPage = () => {
             />
           </Tooltip>
         )}
-      </Row>}
+      </Row>
       <Row style={{ marginTop: 10 }}>
         <Item style={{ width: '100%' }}>
-          {!isPublished ? <Button
-            type="primary"
-            block
-            loading={isLoading}
-            htmlType="submit"
-            icon={isEditMode ? <EditOutlined /> : <CheckOutlined />}
-          >
-            {isEditMode ? 'Update' : 'Publish'}
-          </Button> : <Button
+          <Button
             type="primary"
             block
             onClick={goToNewTune}
             icon={<SendOutlined />}
           >
             Open
-          </Button>}
+          </Button>
         </Item>
       </Row>
+    </>
+  );
+
+  const shareSection = (
+    <>
+      <Divider>Publish & Share</Divider>
+      {isPublished ? openButton : publishButton}
     </>
   );
 
@@ -721,7 +743,7 @@ const UploadPage = () => {
         defaultFileList={defaultLogFilesList}
         accept=".mlg,.csv,.msl"
       >
-        {logFileIds.size < MaxFiles.LOG_FILES && uploadButton}
+        {logFiles.length < MaxFiles.LOG_FILES && uploadButton}
       </Upload>
       <Divider>
         <Space>
@@ -741,7 +763,7 @@ const UploadPage = () => {
         defaultFileList={defaultToothLogFilesList}
         accept=".csv"
       >
-        {toothLogFileIds.size < MaxFiles.TOOTH_LOG_FILES && uploadButton}
+        {toothLogFiles.length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
       </Upload>
       <Divider>
         <Space>
@@ -760,16 +782,12 @@ const UploadPage = () => {
         defaultFileList={defaultCustomIniFileList}
         accept=".ini"
       >
-        {!customIniFileId && uploadButton}
+        {!customIniFile && uploadButton}
       </Upload>
       {detailsSection}
-      {shareUrl && tuneFileId && shareSection}
+      {shareUrl && tuneFile && shareSection}
     </>
   );
-
-  if (!isUserAuthorized || isTuneLoading) {
-    return <Loader />;
-  }
 
   if (isPublished) {
     return (
@@ -779,9 +797,28 @@ const UploadPage = () => {
     );
   }
 
+  if (!isUserAuthorized || isTuneLoading) {
+    return (
+      <Form form={form}>
+        <Loader />
+      </Form>
+    );
+  }
+
   return (
     <div className="small-container">
-      <Form onFinish={publishTune} initialValues={{ readme }} form={form}>
+      <Form
+        initialValues={{
+          aspiration: 'na',
+          readme,
+          visibility: 'public',
+          cylindersCount: 4,
+          displacement: 1.6,
+          year: thisYear,
+        } as TunesRecordPartial}
+        form={form}
+        onFinish={publishTune}
+      >
         <Divider>
           <Space>
             Upload Tune
@@ -799,9 +836,9 @@ const UploadPage = () => {
           defaultFileList={defaultTuneFileList}
           accept=".msq"
         >
-          {tuneFileId === null && uploadButton}
+          {tuneFile === undefined && uploadButton}
         </Upload>
-        {(tuneFileId || defaultTuneFileList.length > 0) && optionalSection}
+        {(tuneFile || defaultTuneFileList.length > 0) && optionalSection}
       </Form>
     </div>
   );

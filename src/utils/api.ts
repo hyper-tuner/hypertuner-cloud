@@ -20,15 +20,13 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
     return;
   }
 
-  const pako = await import('pako');
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { getINIFile, fetchFileFromServer } = useServerStorage();
 
   const started = new Date();
   const tuneRaw = await fetchFileFromServer(tuneData.id, tuneData.tuneFile);
 
-  const tuneParser = new TuneParser()
-    .parse(pako.inflate(tuneRaw));
+  const tuneParser = new TuneParser().parse(tuneRaw);
 
   if (!tuneParser.isValid()) {
     console.error('Invalid tune');
@@ -39,8 +37,7 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
 
   const tune = tuneParser.getTune();
   const iniRaw = tuneData.customIniFile ? fetchFileFromServer(tuneData.id, tuneData.customIniFile) : getINIFile(tuneData.signature);
-  const buff = pako.inflate(new Uint8Array(await iniRaw));
-  const config = new INI(buff).parse().getResults();
+  const config = new INI(await iniRaw).parse().getResults();
 
   // override / merge standard dialogs, constants and help
   config.dialogs = {
