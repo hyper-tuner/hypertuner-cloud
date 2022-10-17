@@ -10,10 +10,10 @@ import {
 } from './http';
 import TuneParser from './tune/TuneParser';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
-import { TunesRecord } from '../@types/pocketbase-types';
+import { TunesRecordFull } from '../types/dbData';
 
 // TODO: refactor this!!
-export const loadTune = async (tuneData: TunesRecord | null) => {
+export const loadTune = async (tuneData: TunesRecordFull | null) => {
   if (tuneData === null) {
     store.dispatch({ type: 'config/load', payload: null });
     store.dispatch({ type: 'tune/load', payload: null });

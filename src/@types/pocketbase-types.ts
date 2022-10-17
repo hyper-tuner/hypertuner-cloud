@@ -1,19 +1,19 @@
 // Generated using pocketbase-typegen
 
-import { Record } from 'pocketbase';
-
 export enum Collections {
 	Profiles = 'profiles',
 	Tunes = 'tunes',
 }
 
-export interface ProfilesRecord extends Record {
+export type ProfilesRecord = {
 	userId: string;
 	username: string;
 	avatar?: string;
 }
 
-export interface TunesRecord extends Record {
+// TODO: regenerate this
+
+export type TunesRecord = {
 	tuneId: string;
 	user: string;
 	signature: string;

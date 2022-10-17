@@ -28,13 +28,13 @@ import useDb from '../hooks/useDb';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 import { aspirationMapper } from '../utils/tune/mappers';
-import { TuneDbDocument } from '../types/dbData';
 import {
   copyToClipboard,
   isClipboardSupported,
 } from '../utils/clipboard';
 import { ProfilesRecord } from '../@types/pocketbase-types';
 import { isEscape } from '../utils/keyboard/shortcuts';
+import { TunesRecordFull } from '../types/dbData';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -93,7 +93,7 @@ const Hub = () => {
   const columns: ColumnsType<any> = [
     {
       title: 'Tunes',
-      render: (tune: TuneDbDocument) => (
+      render: (tune: TunesRecordFull) => (
         <>
           <Title level={5}>{tune.vehicleName}</Title>
           <Space direction="vertical">
