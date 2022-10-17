@@ -33,7 +33,6 @@ const signUpFailed = (err: Error) => notification.error({
 
 const logInSuccessful = () => notification.success({
   message: 'Log in successful',
-  description: 'Welcome back!',
   ...baseOptions,
 });
 
@@ -51,7 +50,6 @@ const restrictedPage = () => notification.error({
 
 const logOutSuccessful = () => notification.success({
   message: 'Log out successful',
-  description: 'See you next time!',
   ...baseOptions,
 });
 
