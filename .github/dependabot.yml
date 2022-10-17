@@ -6,6 +6,11 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 20
 
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
 # registries:
 #   npm-github:
 #     type: npm-registry
@@ -21,7 +26,3 @@ updates:
 #     registries:
 #       - npm-github
 
-#   - package-ecosystem: "github-actions"
-#     directory: "/"
-#     schedule:
-#       interval: "daily"
