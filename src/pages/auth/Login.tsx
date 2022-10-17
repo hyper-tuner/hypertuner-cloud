@@ -1,4 +1,5 @@
 import {
+  ReactNode,
   useCallback,
   useEffect,
   useState,
@@ -22,7 +23,7 @@ import {
   Link,
   useNavigate,
 } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { OAuthProviders, useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
 import {
@@ -43,52 +44,33 @@ const Login = () => {
   const [formEmail] = Form.useForm();
 
   const [isEmailLoading, setIsEmailLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isGithubLoading, setIsGithubLoading] = useState(false);
-  const [isFacebookLoading, setIsFacebookLoading] = useState(false);
-  const [googleCodes, setGoogleCodes] = useState<[string, string]>(['', '']);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
+  const [providersReady, setProvidersReady] = useState(false);
   const [googleUrl, setGoogleUrl] = useState<string | null>(null);
+  const [githubUrl, setGithubUrl] = useState<string | null>(null);
+  const [facebookUrl, setFacebookUrl] = useState<string | null>(null);
+  const [providersStatuses, setProvidersStatuses] = useState<{ [key: string]: boolean }>({
+    google: false,
+    github: false,
+    facebook: false,
+  });
 
-  const { login, googleAuth, githubAuth, facebookAuth, listAuthMethods } = useAuth();
+  const { login, listAuthMethods } = useAuth();
   const navigate = useNavigate();
-  const isAnythingLoading = isEmailLoading || isGoogleLoading || isGithubLoading || isFacebookLoading;
+  const isAnythingLoading = isEmailLoading || isOAuthLoading;
   const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
-
-  const googleLogin = useCallback(async () => {
-    if (googleUrl) {
-      window.location.href = googleUrl;
-    }
-  }, [googleUrl]);
-
-  const githubLogin = useCallback(async () => {
-    setIsGithubLoading(true);
-    try {
-      await githubAuth();
-    } catch (error) {
-      logInFailed(error as Error);
-    }
-  }, [githubAuth]);
-
-  const facebookLogin = async () => {
-    setIsFacebookLoading(true);
-    try {
-      await facebookAuth();
-    } catch (error) {
-      logInFailed(error as Error);
-    }
-  };
+  const isOauthEnabled = Object.values(providersStatuses).includes(true);
 
   const emailLogin = async ({ email, password }: { email: string, password: string }) => {
     setIsEmailLoading(true);
     try {
       const user = await login(email, password);
       logInSuccessful();
+
       if (!user.verified) {
         emailNotVerified();
       }
-      // if (!user.name) {
-      //   navigate(Routes.PROFILE);
-      // }
+
       redirectAfterLogin();
     } catch (error) {
       logInFailed(error as Error);
@@ -98,66 +80,90 @@ const Login = () => {
     }
   };
 
+  const oauthMethods: { [provider: string]: { label: string, icon: ReactNode, onClick: () => void } } = {
+    google: {
+      label: 'Google',
+      icon: <GoogleOutlined />,
+      onClick: () => {
+        setIsOAuthLoading(true);
+        window.location.href = googleUrl!;
+      },
+    },
+    github: {
+      label: 'GitHub',
+      icon: <GithubOutlined />,
+      onClick: () => {
+        setIsOAuthLoading(true);
+        window.location.href = githubUrl!;
+      },
+    },
+    facebook: {
+      label: 'Facebook',
+      icon: <FacebookOutlined />,
+      onClick: () => {
+        setIsOAuthLoading(true);
+        window.location.href = facebookUrl!;
+      },
+    },
+  };
+
   useEffect(() => {
     listAuthMethods().then((methods) => {
-      console.log(methods);
-
       const { authProviders } = methods;
-
       window.localStorage.setItem('authProviders', JSON.stringify(authProviders));
 
-      // TODO: refactor me!
       authProviders.forEach((provider) => {
-        let url = '';
-
-        switch (provider.name) {
-          case 'google':
-            url = `${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: 'google' }))}`;
-            break;
-          default:
-            break;
+        if (provider.name) {
+          setProvidersReady(true);
         }
 
-        if (url) {
-          console.log(url);
-          setGoogleUrl(url);
+        switch (provider.name) {
+          case OAuthProviders.GOOGLE:
+            setProvidersStatuses((prevState) => ({ ...prevState, [provider.name]: true }));
+            setGoogleUrl(`${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: provider.name }))}`);
+            break;
+          case OAuthProviders.GITHUB:
+            setProvidersStatuses((prevState) => ({ ...prevState, [provider.name]: true }));
+            setGithubUrl(`${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: provider.name }))}`);
+            break;
+          case OAuthProviders.FACEBOOK:
+            setProvidersStatuses((prevState) => ({ ...prevState, [provider.name]: true }));
+            setFacebookUrl(`${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: provider.name }))}`);
+            break;
+          default:
+            throw new Error(`Unsupported provider: ${provider.name}`);
         }
       });
     });
   }, [listAuthMethods]);
 
+  const oauthSection = (
+    isOauthEnabled && <>
+      <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
+        {providersReady && Object.keys(oauthMethods).map((provider) => (
+          providersStatuses[provider] && <Button
+            key={provider}
+            icon={oauthMethods[provider].icon}
+            onClick={oauthMethods[provider].onClick}
+            loading={isOAuthLoading}
+          >
+            {oauthMethods[provider].label}
+          </Button>
+        ))}
+      </Space>
+      <Divider />
+    </>
+  );
+
   return (
     <div className="auth-container">
       <Divider>Log In</Divider>
-      <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
-        <Button
-          loading={isGoogleLoading}
-          onClick={googleLogin}
-          disabled={isAnythingLoading}
-        >
-          <GoogleOutlined />Google
-        </Button>
-        <Button
-          loading={isGithubLoading}
-          onClick={githubLogin}
-          disabled={isAnythingLoading}
-        >
-          <GithubOutlined />GitHub
-        </Button>
-        <Button
-          loading={isFacebookLoading}
-          onClick={facebookLogin}
-          disabled={isAnythingLoading}
-        >
-          <FacebookOutlined />Facebook
-        </Button>
-      </Space>
+      {providersReady && oauthSection}
       <Form
         onFinish={emailLogin}
         validateMessages={validateMessages}
         form={formEmail}
       >
-        <Divider />
         <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}

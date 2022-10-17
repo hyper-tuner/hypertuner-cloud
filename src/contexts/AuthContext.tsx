@@ -12,10 +12,7 @@ import {
   client,
   formatError,
 } from '../pocketbase';
-import {
-  buildFullUrl,
-  buildRedirectUrl,
-} from '../utils/url';
+import { buildRedirectUrl } from '../utils/url';
 import { Collections } from '../@types/pocketbase-types';
 import { Routes } from '../routes';
 
@@ -36,6 +33,12 @@ export type AuthMethodsList = {
   authProviders: Array<AuthProviderInfo>;
 };
 
+export enum OAuthProviders {
+  GOOGLE = 'google',
+  GITHUB = 'github',
+  FACEBOOK = 'facebook',
+};
+
 interface AuthValue {
   currentUser: User | null,
   signUp: (email: string, password: string) => Promise<User>,
@@ -47,18 +50,10 @@ interface AuthValue {
   logout: () => void,
   initResetPassword: (email: string) => Promise<void>,
   listAuthMethods: () => Promise<AuthMethodsList>,
-  googleAuth: (code: string, codeVerifier: string) => Promise<void>,
-  githubAuth: () => Promise<void>,
-  facebookAuth: () => Promise<void>,
+  oAuth: (provider: OAuthProviders, code: string, codeVerifier: string) => Promise<void>,
   updateUsername: (username: string) => Promise<void>,
   updatePassword: (password: string, oldPassword: string) => Promise<void>,
 }
-
-const OAUTH_REDIRECT_URL = buildFullUrl();
-
-const GOOGLE_SCOPES = ['https://www.googleapis.com/auth/userinfo.email'];
-const GITHUB_SCOPES = ['user:email'];
-const FACEBOOK_SCOPES = ['email'];
 
 const AuthContext = createContext<AuthValue | null>(null);
 
@@ -145,28 +140,12 @@ const AuthProvider = (props: { children: ReactNode }) => {
         return Promise.reject(new Error(formatError(error)));
       }
     },
-    googleAuth: async (code: string, codeVerifier: string) => {
+    oAuth: async (provider: OAuthProviders, code: string, codeVerifier: string) => {
       client.users.authViaOAuth2(
-        'google',
+        provider,
         code,
         codeVerifier,
-        buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: 'google' }),
-      );
-    },
-    githubAuth: async () => {
-      account.createOAuth2Session(
-        'github',
-        OAUTH_REDIRECT_URL,
-        OAUTH_REDIRECT_URL,
-        GITHUB_SCOPES,
-      );
-    },
-    facebookAuth: async () => {
-      account.createOAuth2Session(
-        'facebook',
-        OAUTH_REDIRECT_URL,
-        OAUTH_REDIRECT_URL,
-        FACEBOOK_SCOPES,
+        buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider }),
       );
     },
     updateUsername: async (username: string) => {

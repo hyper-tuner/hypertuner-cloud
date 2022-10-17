@@ -7,37 +7,31 @@ import {
 import Loader from '../../components/Loader';
 import {
   AuthProviderInfo,
+  OAuthProviders,
   useAuth,
 } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import { logInSuccessful } from './notifications';
 
 const OauthCallback = () => {
-  const { googleAuth } = useAuth();
+  const { oAuth } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const routeMatch = useMatch(Routes.OAUTH_CALLBACK);
 
   useEffect(() => {
-    console.log({ searchParams: searchParams.toString() });
-    console.log({ routeMatch });
-
     const authProviders = JSON.parse(window.localStorage.getItem('authProviders') || '') as unknown as AuthProviderInfo[];
 
-    switch (routeMatch?.params.provider) {
-      case 'google':
-        // TODO: add error handling
-        googleAuth(searchParams.get('code')!, authProviders.find((provider) => provider.name === 'google')?.codeVerifier!)
-          .then(() => {
-            logInSuccessful();
-            navigate(Routes.HUB);
-          });
-        break;
-
-      default:
-        break;
-    }
-  }, [googleAuth, navigate, routeMatch, searchParams]);
+    oAuth(
+      routeMatch?.params.provider as OAuthProviders,
+      searchParams.get('code')!,
+      authProviders.find((provider) => provider.name === routeMatch?.params.provider)?.codeVerifier!,
+    )
+      .then(() => {
+        logInSuccessful();
+        navigate(Routes.HUB, { replace: true });
+      });
+  }, [navigate, oAuth, routeMatch, searchParams]);
 
   return <Loader />;
 };
