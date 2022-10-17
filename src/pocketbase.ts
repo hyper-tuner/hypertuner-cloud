@@ -1,10 +1,7 @@
 import PocketBase from 'pocketbase';
-// import { fetchEnv } from './utils/env';
+import { fetchEnv } from './utils/env';
 
-
-const API_URL = 'http://localhost:8090';
-// const API_URL = 'https://hypertuner.fly.dev';
-
+const API_URL = fetchEnv('VITE_POCKETBASE_API_URL');
 const client = new PocketBase(API_URL);
 
 const formatError = (error: any) => {
