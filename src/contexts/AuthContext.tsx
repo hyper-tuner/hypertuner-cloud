@@ -40,7 +40,7 @@ interface AuthValue {
   sendEmailVerification: () => Promise<void>,
   confirmEmailVerification: (token: string) => Promise<void>,
   confirmResetPassword: (token: string, password: string) => Promise<void>,
-  logout: () => Promise<void>,
+  logout: () => void,
   initResetPassword: (email: string) => Promise<void>,
   listAuthMethods: () => Promise<AuthMethodsList>,
   googleAuth: (codeVerifier: string, codeChallenge: string) => Promise<void>,
@@ -123,12 +123,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
       }
     },
     logout: async () => {
-      try {
-        client.authStore.clear();
-        return Promise.resolve();
-      } catch (error) {
-        return Promise.reject(new Error(formatError(error)));
-      }
+      client.authStore.clear();
     },
     initResetPassword: async (email: string) => {
       try {

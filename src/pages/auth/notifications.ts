@@ -55,12 +55,6 @@ const logOutSuccessful = () => notification.success({
   ...baseOptions,
 });
 
-const logOutFailed = (err: Error) => notification.error({
-  message: 'Log out failed',
-  description: err.message,
-  ...baseOptions,
-});
-
 const resetSuccessful = () => notification.success({
   message: 'Password reset initiated',
   description: 'Check your email!',
@@ -141,7 +135,6 @@ export {
   logInFailed,
   restrictedPage,
   logOutSuccessful,
-  logOutFailed,
   resetSuccessful,
   resetFailed,
   sendingEmailVerificationFailed,

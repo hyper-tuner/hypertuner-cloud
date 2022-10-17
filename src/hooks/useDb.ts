@@ -7,7 +7,7 @@ import {
   Role,
 } from 'appwrite';
 import { databases } from '../appwrite';
-import { client } from '../pocketbase';
+import { client, formatError } from '../pocketbase';
 import {
   TuneDbData,
   UsersBucket,
@@ -31,7 +31,6 @@ const useDb = () => {
       return Promise.resolve();
     } catch (error) {
       Sentry.captureException(error);
-      console.error(error);
       databaseGenericError(error as Error);
 
       return Promise.reject(error);
@@ -54,7 +53,6 @@ const useDb = () => {
       return Promise.resolve(tune);
     } catch (error) {
       Sentry.captureException(error);
-      console.error(error);
       databaseGenericError(error as Error);
 
       return Promise.reject(error);
@@ -71,7 +69,6 @@ const useDb = () => {
       return Promise.resolve(tune.totalItems > 0 ? tune.items[0] as TunesRecord : null);
     } catch (error) {
       Sentry.captureException(error);
-      console.error(error);
       databaseGenericError(error as Error);
 
       return Promise.reject(error);
@@ -97,7 +94,6 @@ const useDb = () => {
       return Promise.resolve((buckets.documents[0] as unknown as UsersBucket)!.bucketId);
     } catch (error) {
       Sentry.captureException(error);
-      console.error(error);
       databaseGenericError(error as Error);
 
       return Promise.reject(error);
@@ -123,8 +119,7 @@ const useDb = () => {
       return Promise.resolve(list as TunesRecord[]);
     } catch (error) {
       Sentry.captureException(error);
-      console.error(error);
-      databaseGenericError(error as Error);
+      databaseGenericError(new Error(formatError(error)));
 
       return Promise.reject(error);
     }

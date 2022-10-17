@@ -34,6 +34,7 @@ import {
   isClipboardSupported,
 } from '../utils/clipboard';
 import { ProfilesRecord } from '../@types/pocketbase-types';
+import { isEscape } from '../utils/keyboard/shortcuts';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -46,6 +47,7 @@ const Hub = () => {
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<{}[]>([]); // TODO: fix this type
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const searchRef = useRef<InputRef | null>(null);
 
   const loadData = debounce(async (searchText?: string) => {
@@ -66,11 +68,25 @@ const Hub = () => {
     setIsLoading(false);
   }, 300);
 
-  const debounceLoadData = useCallback((value: string) => loadData(value), [loadData]);
+  const debounceLoadData = useCallback((value: string) => {
+    setSearchQuery(value);
+    loadData(value);
+  }, [loadData]);
+
+  const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
+    if (isEscape(e)) {
+      setSearchQuery('');
+      loadData();
+    }
+  }, [loadData]);
 
   useEffect(() => {
     loadData();
+
+    window.addEventListener('keydown', handleGlobalKeyboard);
     // searchRef.current?.focus(); // autofocus
+
+    return () => window.removeEventListener('keydown', handleGlobalKeyboard);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -170,6 +186,7 @@ const Hub = () => {
         tabIndex={1}
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
+        value={searchQuery}
         placeholder="Search..."
         onChange={({ target }) => debounceLoadData(target.value)}
         allowClear

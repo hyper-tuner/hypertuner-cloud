@@ -46,10 +46,7 @@ import {
 } from '@hyper-tuner/types';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  logOutFailed,
-  logOutSuccessful,
-} from '../pages/auth/notifications';
+import { logOutSuccessful } from '../pages/auth/notifications';
 import store from '../store';
 import { isMac } from '../utils/env';
 import {
@@ -323,15 +320,11 @@ const CommandPalette = (props: CommandPaletteProps) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  const logoutAction = useCallback(async () => {
-    try {
-      await logout();
-      logOutSuccessful();
-    } catch (error) {
-      console.warn(error);
-      logOutFailed(error as Error);
-    }
-  }, [logout]);
+  const logoutAction = useCallback(() => {
+    logout();
+    logOutSuccessful();
+    navigate(Routes.HUB);
+  }, [logout, navigate]);
 
   const initialActions = [
     {

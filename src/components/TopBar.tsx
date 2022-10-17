@@ -51,10 +51,7 @@ import { isMac } from '../utils/env';
 import { isToggleSidebar } from '../utils/keyboard/shortcuts';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  logOutFailed,
-  logOutSuccessful,
-} from '../pages/auth/notifications';
+import { logOutSuccessful } from '../pages/auth/notifications';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -73,15 +70,10 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const tabMatch = useMatch(`${Routes.TUNE_TAB}/*`);
   const uploadMatch = useMatch(Routes.UPLOAD);
   const hubMatch = useMatch(Routes.HUB);
-  const logoutClick = useCallback(async () => {
-    try {
-      navigate(Routes.HUB);
-      logout();
-      logOutSuccessful();
-    } catch (error) {
-      console.warn(error);
-      logOutFailed(error as Error);
-    }
+  const logoutClick = useCallback(() => {
+    logout();
+    logOutSuccessful();
+    navigate(Routes.HUB);
   }, [logout, navigate]);
 
   const toggleCommandPalette = useCallback(() => query.toggle(), [query]);
@@ -189,7 +181,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   }], [currentUser, logoutClick, navigate]);
 
   return (
-    <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {} }>
+    <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {}}>
       <Row>
         {tuneId ? tabs : (
           <Col span={10} md={14} sm={16}>

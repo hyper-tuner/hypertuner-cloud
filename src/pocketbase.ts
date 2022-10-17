@@ -1,17 +1,20 @@
-import PocketBase, { ClientResponseError } from 'pocketbase';
+import PocketBase from 'pocketbase';
 // import { fetchEnv } from './utils/env';
 
 
-// const API_URL = 'http://localhost:8090';
-const API_URL = 'https://hypertuner.fly.dev';
+const API_URL = 'http://localhost:8090';
+// const API_URL = 'https://hypertuner.fly.dev';
+
 const client = new PocketBase(API_URL);
 
 const formatError = (error: any) => {
-  const { data, message } = (error as ClientResponseError).data;
-  const errors = Object.keys(data).map((key) => `${key.toUpperCase()}: ${data[key].message}`);
+  const { data, message } = error;
 
-  if (errors.length > 0) {
-    return errors.join(', ');
+  if (data.data) {
+    const errors = Object.keys(data.data).map((key) => `${key.toUpperCase()}: ${data.data[key].message}`);
+    if (errors.length > 0) {
+      return errors.join(', ');
+    }
   }
 
   return message;

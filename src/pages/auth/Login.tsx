@@ -92,7 +92,6 @@ const Login = () => {
       // }
       redirectAfterLogin();
     } catch (error) {
-      console.warn(error);
       logInFailed(error as Error);
       formMagicLink.resetFields();
       formEmail.resetFields();
