@@ -12,7 +12,6 @@ import {
   CopyOutlined,
   StarOutlined,
   ArrowRightOutlined,
-  LoadingOutlined,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -29,75 +28,77 @@ import useDb from '../hooks/useDb';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 import { aspirationMapper } from '../utils/tune/mappers';
-import { TuneDbDocument } from '../types/dbData';
 import {
   copyToClipboard,
   isClipboardSupported,
 } from '../utils/clipboard';
+import { ProfilesRecord } from '../@types/pocketbase-types';
+import { isEscape } from '../utils/keyboard/shortcuts';
+import { TunesRecordFull } from '../types/dbData';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
-
-interface ListUsersResponse {
-  users: [{
-    id: string;
-    name: string;
-  }];
-}
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Hub = () => {
   const { xs } = useBreakpoint();
-  const { searchTunes, listUsers } = useDb();
+  const { searchTunes } = useDb();
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState<{}[]>([]); // TODO: fix this type
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const searchRef = useRef<InputRef | null>(null);
 
   const loadData = debounce(async (searchText?: string) => {
     setIsLoading(true);
     const list = await searchTunes(searchText);
-    // TODO: create `unpublishedTunes` collection for this
-    const filtered = list.documents.filter((tune) => !!tune.vehicleName);
 
     // set initial list
-    setDataSource(filtered.map((tune) => ({
+    setDataSource(list.map((tune) => ({
       ...tune,
       key: tune.tuneId,
       year: tune.year,
-      author: <LoadingOutlined spin />,
+      author: (tune['@expand'] as { userProfile: ProfilesRecord }).userProfile.username,
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
-      publishedAt: new Date(tune.$updatedAt).toLocaleString(),
+      created: new Date(tune.created).toLocaleString(),
       stars: 0,
     })));
     setIsLoading(false);
-
-    // update list with users
-    const userList: ListUsersResponse = JSON.parse((await listUsers(filtered.map((tune) => tune.userId))).response);
-    setDataSource((prev) => prev.map((item: any) => ({
-      ...item,
-      author: userList.users.find((el) => el.id === item.userId)?.name,
-    })));
   }, 300);
 
-  const debounceLoadData = useCallback((value: string) => loadData(value), [loadData]);
+  const debounceLoadData = useCallback((value: string) => {
+    setSearchQuery(value);
+    loadData(value);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
+    if (isEscape(e)) {
+      setSearchQuery('');
+      loadData();
+    }
+  }, [loadData]);
 
   useEffect(() => {
     loadData();
+
+    window.addEventListener('keydown', handleGlobalKeyboard);
     // searchRef.current?.focus(); // autofocus
+
+    return () => window.removeEventListener('keydown', handleGlobalKeyboard);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const columns: ColumnsType<any> = [
     {
       title: 'Tunes',
-      render: (tune: TuneDbDocument) => (
+      render: (tune: TunesRecordFull) => (
         <>
           <Title level={5}>{tune.vehicleName}</Title>
           <Space direction="vertical">
-            <Text type="secondary">{tune.author}, {tune.publishedAt}</Text>
+            <Text type="secondary">{tune.author}, {tune.created}</Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
             <Text code>{tune.signature}</Text>
           </Space>
@@ -155,8 +156,8 @@ const Hub = () => {
     },
     {
       title: 'Published',
-      dataIndex: 'publishedAt',
-      key: 'publishedAt',
+      dataIndex: 'created',
+      key: 'created',
       responsive: ['sm'],
     },
     {
@@ -186,6 +187,7 @@ const Hub = () => {
         tabIndex={1}
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
+        value={searchQuery}
         placeholder="Search..."
         onChange={({ target }) => debounceLoadData(target.value)}
         allowClear

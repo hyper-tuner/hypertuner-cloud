@@ -1,8 +1,8 @@
 {
     "typescript.tsdk": "node_modules/typescript/lib",
     "cSpell.words": [
-        "Appwrite",
         "kbar",
+        "pocketbase",
         "prefs",
         "vite",
         "vitejs"

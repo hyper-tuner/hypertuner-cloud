@@ -3,6 +3,7 @@ import {
   Route,
   useMatch,
   useNavigate,
+  generatePath,
 } from 'react-router-dom';
 import {
   Layout,
@@ -33,6 +34,7 @@ import {
 import useDb from './hooks/useDb';
 import Info from './pages/Info';
 import Hub from './pages/Hub';
+import { FormRoles } from './pages/auth/Login';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './css/App.less';
@@ -46,11 +48,10 @@ const Diagnose = lazy(() => import('./pages/Diagnose'));
 const Upload = lazy(() => import('./pages/Upload'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Profile = lazy(() => import('./pages/auth/Profile'));
-const SignUp = lazy(() => import('./pages/auth/SignUp'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
-const MagicLinkConfirmation = lazy(() => import('./pages/auth/MagicLinkConfirmation'));
-const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
 const ResetPasswordConfirmation = lazy(() => import('./pages/auth/ResetPasswordConfirmation'));
+const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
+const OauthCallback = lazy(() => import('./pages/auth/OauthCallback'));
 
 const { Content } = Layout;
 
@@ -64,26 +65,8 @@ const mapStateToProps = (state: AppState) => ({
 const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: NavigationState, tuneData: TuneDataState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   const { getTune } = useDb();
-  const searchParams = new URLSearchParams(window.location.search);
-  const redirectPage = searchParams.get('redirectPage');
   const [isLoading, setIsLoading] = useState(false);
-  const { getBucketId } = useDb();
   const navigate = useNavigate();
-
-  // TODO: refactor this
-  switch (redirectPage) {
-    case Routes.REDIRECT_PAGE_MAGIC_LINK_CONFIRMATION:
-      window.location.href = `/#${Routes.MAGIC_LINK_CONFIRMATION}?${searchParams.toString()}`;
-      break;
-    case Routes.REDIRECT_PAGE_EMAIL_VERIFICATION:
-      window.location.href = `/#${Routes.EMAIL_VERIFICATION}?${searchParams.toString()}`;
-      break;
-    case Routes.REDIRECT_PAGE_RESET_PASSWORD:
-      window.location.href = `/#${Routes.RESET_PASSWORD_CONFIRMATION}?${searchParams.toString()}`;
-      break;
-    default:
-      break;
-  }
 
   // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
   // const lastDialogPath = storageGetSync('lastDialog');
@@ -92,11 +75,23 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   const tuneId = tunePathMatch?.params.tuneId;
 
   useEffect(() => {
+    // Handle external redirects (oauth, etc)
+    // TODO: refactor this
+    const searchParams = new URLSearchParams(window.location.search);
+    const redirectPage = searchParams.get('redirect');
+    switch (redirectPage) {
+      case Routes.REDIRECT_PAGE_OAUTH_CALLBACK:
+        window.location.href = `/#${generatePath(Routes.OAUTH_CALLBACK, { provider: searchParams.get('provider')! })}?${searchParams.toString()}`;
+        break;
+      default:
+        break;
+    }
+
     if (tuneId) {
       // clear out last state
       if (tuneData && tuneId !== tuneData.tuneId) {
         setIsLoading(true);
-        loadTune(null, '');
+        loadTune(null);
         store.dispatch({ type: 'tuneData/load', payload: null });
         setIsLoading(false);
       }
@@ -108,10 +103,8 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
           return;
         }
 
-        getBucketId(tune.userId).then((bucketId) => {
-          loadTune(tune!, bucketId);
-        });
-        store.dispatch({ type: 'tuneData/load', payload: tune });
+        loadTune(tune!);
+        store.dispatch({ type: 'tuneData/load', payload: JSON.parse(JSON.stringify(tune)) });
       });
 
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });
@@ -158,14 +151,14 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
           <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
           <Route path={`${Routes.UPLOAD}/*`} element={<ContentFor element={<Upload />} />} />
 
-          <Route path={Routes.LOGIN} element={<ContentFor element={<Login />} />} />
+          <Route path={Routes.LOGIN} element={<ContentFor element={<Login formRole={FormRoles.LOGIN} />} />} />
+          <Route path={Routes.SIGN_UP} element={<ContentFor element={<Login formRole={FormRoles.SING_UP} />} />} />
           <Route path={Routes.PROFILE} element={<ContentFor element={<Profile />} />} />
-          <Route path={Routes.SIGN_UP} element={<ContentFor element={<SignUp />} />} />
           <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
 
-          <Route path={Routes.MAGIC_LINK_CONFIRMATION} element={<ContentFor element={<MagicLinkConfirmation />} />} />
           <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
           <Route path={Routes.RESET_PASSWORD_CONFIRMATION} element={<ContentFor element={<ResetPasswordConfirmation />} />} />
+          <Route path={Routes.OAUTH_CALLBACK} element={<ContentFor element={<OauthCallback />} />} />
         </ReactRoutes>
         <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>

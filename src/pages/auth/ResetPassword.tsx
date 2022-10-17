@@ -35,7 +35,6 @@ const ResetPassword = () => {
       navigate(Routes.LOGIN);
     } catch (error) {
       form.resetFields();
-      console.warn(error);
       resetFailed(error as Error);
       setIsLoading(false);
     }

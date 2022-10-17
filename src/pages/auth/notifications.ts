@@ -13,9 +13,9 @@ const emailNotVerified = () => notification.warning({
   ...baseOptions,
 });
 
-const magicLinkSent = () => notification.success({
-  message: 'Check your email',
-  description: 'Magic link sent!',
+const usernameNotSet = () => notification.warning({
+  message: 'Update your profile',
+  description: 'Your username has to be set before you can upload files!',
   ...baseOptions,
 });
 
@@ -33,7 +33,6 @@ const signUpFailed = (err: Error) => notification.error({
 
 const logInSuccessful = () => notification.success({
   message: 'Log in successful',
-  description: 'Welcome back!',
   ...baseOptions,
 });
 
@@ -51,13 +50,6 @@ const restrictedPage = () => notification.error({
 
 const logOutSuccessful = () => notification.success({
   message: 'Log out successful',
-  description: 'See you next time!',
-  ...baseOptions,
-});
-
-const logOutFailed = (err: Error) => notification.error({
-  message: 'Log out failed',
-  description: err.message,
   ...baseOptions,
 });
 
@@ -69,12 +61,6 @@ const resetSuccessful = () => notification.success({
 
 const resetFailed = (err: Error) => notification.error({
   message: 'Password reset failed',
-  description: err.message,
-  ...baseOptions,
-});
-
-const magicLinkConfirmationFailed = (err: Error) => notification.error({
-  message: 'Magic Link is invalid',
   description: err.message,
   ...baseOptions,
 });
@@ -140,17 +126,15 @@ const copiedToClipboard = () => notification.success({
 
 export {
   emailNotVerified,
-  magicLinkSent,
+  usernameNotSet,
   signUpSuccessful,
   signUpFailed,
   logInSuccessful,
   logInFailed,
   restrictedPage,
   logOutSuccessful,
-  logOutFailed,
   resetSuccessful,
   resetFailed,
-  magicLinkConfirmationFailed,
   sendingEmailVerificationFailed,
   emailVerificationSent,
   emailVerificationFailed,

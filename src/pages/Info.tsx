@@ -1,7 +1,3 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
 import {
@@ -25,7 +21,6 @@ import {
 import Loader from '../components/Loader';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
-import useDb from '../hooks/useDb';
 
 const { Item } = Form;
 const rowProps = { gutter: 10 };
@@ -35,35 +30,15 @@ const mapStateToProps = (state: AppState) => ({
   tuneData: state.tuneData,
 });
 
-interface GetUserResponse {
-  id: string;
-  name: string;
-  tunes: [];
-}
-
 const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { getUser } = useDb();
-  const [author, setAuthor] = useState<string>();
 
   const goToEdit = () => navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
     tuneId: tuneData.tuneId,
   }));
 
-  const loadData = async () => {
-    const authorData: GetUserResponse = JSON.parse((await getUser(tuneData.userId)).response);
-    setAuthor(authorData.name);
-  };
-
-  useEffect(() => {
-    if (tuneData?.userId) {
-      loadData();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tuneData]);
-
-  const canManage = tuneData?.userId === currentUser?.$id;
+  const canManage = currentUser && tuneData && currentUser.id === tuneData.user;
 
   const manageSection = (
     <>
@@ -94,7 +69,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col span={24} sm={24}>
             <Item>
-              <Input value={author || 'loading...'} addonBefore="Author" />
+              <Input value={tuneData['@expand'].userProfile.username} addonBefore="Author" />
             </Item>
           </Col>
         </Row>
