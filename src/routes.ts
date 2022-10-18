@@ -8,6 +8,7 @@ export enum Routes {
   TUNE_TUNE = '/t/:tuneId/tune',
   TUNE_DIALOG = '/t/:tuneId/tune/:category/:dialog',
   TUNE_LOGS = '/t/:tuneId/logs',
+  TUNE_LOGS_FILE = '/t/:tuneId/logs/:fileName',
   TUNE_DIAGNOSE = '/t/:tuneId/diagnose',
 
   UPLOAD = '/upload',

@@ -24,11 +24,9 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
-  Config,
-  Logs,
-} from '@hyper-tuner/types';
-import {
   AppState,
+  ConfigState,
+  LogsState,
   UIState,
 } from '../types/state';
 import {
@@ -64,7 +62,7 @@ const margin = 30;
 const sidebarWidth = 250;
 const minCanvasHeightInner = 600;
 
-const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loadedLogs: Logs }) => {
+const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState, loadedLogs: LogsState }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
@@ -147,7 +145,7 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs && !loadedLogs.length ?
+        {!logs && !(loadedLogs.logs || []).length ?
           <Loader />
           :
           !ui.sidebarCollapsed &&

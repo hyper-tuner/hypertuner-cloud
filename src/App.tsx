@@ -148,6 +148,7 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
           <Route path={Routes.TUNE_ROOT} element={<ContentFor element={<Info />} />} />
           <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
           <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
+          <Route path={Routes.TUNE_LOGS_FILE} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
           <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
           <Route path={`${Routes.UPLOAD}/*`} element={<ContentFor element={<Upload />} />} />
 
