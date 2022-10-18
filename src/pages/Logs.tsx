@@ -14,6 +14,7 @@ import {
   Space,
   Divider,
   Badge,
+  Typography,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -30,11 +31,9 @@ import {
   OutputChannel,
   Logs as LogsType,
   DatalogEntry,
-  Tune as TuneType,
 } from '@hyper-tuner/types';
 // eslint-disable-next-line import/no-unresolved
 import MlgParserWorker from '../workers/mlgParser?worker';
-import { loadLogs } from '../utils/api';
 import LogCanvas from '../components/Logs/LogCanvas';
 import store from '../store';
 import {
@@ -52,6 +51,8 @@ import {
 } from '../types/state';
 import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
+import { TunesRecordFull } from '../types/dbData';
+import useServerStorage from '../hooks/useServerStorage';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -64,22 +65,21 @@ const badgeStyle = { backgroundColor: Colors.TEXT };
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
-  tune: state.tune,
-  status: state.status,
   config: state.config,
   loadedLogs: state.logs,
+  tuneData: state.tuneData,
 });
 
 const Logs = ({
   ui,
   config,
-  tune,
   loadedLogs,
+  tuneData,
 }: {
   ui: UIState,
-  tune: TuneType,
   config: Config,
   loadedLogs: LogsType,
+  tuneData: TunesRecordFull,
 }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -94,6 +94,7 @@ const Logs = ({
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
+  const { fetchLogFileWithProgress } = useServerStorage();
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
@@ -157,8 +158,14 @@ const Logs = ({
     const controller = new AbortController();
     const { signal } = controller;
     const loadData = async () => {
+      const firstLogFile = (tuneData.logFiles || [])[0];
+
+      if (!firstLogFile) {
+        return;
+      }
+
       try {
-        const raw = await loadLogs((percent, total, edge) => {
+        const raw = await fetchLogFileWithProgress(tuneData.id, firstLogFile, (percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
@@ -216,6 +223,7 @@ const Logs = ({
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasSize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculateCanvasSize, config?.datalog, config?.outputChannels, loadedLogs, ui.sidebarCollapsed]);
 
   return (
@@ -265,11 +273,15 @@ const Logs = ({
                 ),
               },
               {
-                label: <><FileTextOutlined /><Badge size="small" style={badgeStyle} count="1" /></>,
+                label: <><FileTextOutlined /><Badge size="small" style={badgeStyle} count={tuneData.logFiles?.length} /></>,
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    some_tune.mlg
+                    {tuneData.logFiles?.map((fileName) => (
+                      <Typography.Paragraph key={fileName}>
+                        {fileName}
+                      </Typography.Paragraph>
+                    ))}
                   </PerfectScrollbar>
                 ),
               },

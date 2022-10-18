@@ -4,6 +4,10 @@ import { fetchEnv } from '../utils/env';
 import { API_URL } from '../pocketbase';
 import { Collections } from '../@types/pocketbase-types';
 import useDb from './useDb';
+import {
+  fetchWithProgress,
+  OnProgress,
+} from '../utils/http';
 
 export const CDN_URL = fetchEnv('VITE_CDN_URL');
 
@@ -36,9 +40,17 @@ const useServerStorage = () => {
     return Pako.inflate(new Uint8Array(await response.arrayBuffer()));
   };
 
+  const fetchLogFileWithProgress = (recordId: string, filename: string, onProgress?: OnProgress, signal?: AbortSignal) =>
+    fetchWithProgress(
+      buildFileUrl(Collections.Tunes, recordId, filename),
+      onProgress,
+      signal,
+    ).then((response) => response);
+
   return {
     fetchTuneFile: (recordId: string, filename: string): Promise<ArrayBuffer> => fetchTuneFile(recordId, filename),
     fetchINIFile: (signature: string): Promise<ArrayBuffer> => fetchINIFile(signature),
+    fetchLogFileWithProgress: (recordId: string, filename: string, onProgress?: OnProgress, signal?: AbortSignal): Promise<ArrayBuffer> => fetchLogFileWithProgress(recordId, filename, onProgress, signal),
   };
 };
 

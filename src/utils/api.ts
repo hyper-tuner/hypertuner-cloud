@@ -6,7 +6,7 @@ import help from '../data/help';
 import { divider } from '../data/constants';
 import {
   fetchWithProgress,
-  onProgress as onProgressType,
+  OnProgress,
 } from './http';
 import TuneParser from './tune/TuneParser';
 import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
@@ -63,21 +63,21 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
   }
 };
 
-export const loadLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
+export const loadLogs = (onProgress?: OnProgress, signal?: AbortSignal) =>
   fetchWithProgress(
     `${CDN_URL}/public/temp/long.mlg.gz`,
     onProgress,
     signal,
   ).then((response) => response);
 
-export const loadCompositeLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
+export const loadCompositeLogs = (onProgress?: OnProgress, signal?: AbortSignal) =>
   fetchWithProgress(
     `${CDN_URL}/public/temp/composite_1.csv.gz`,
     onProgress,
     signal,
   ).then((response) => response);
 
-export const loadToothLogs = (onProgress?: onProgressType, signal?: AbortSignal) =>
+export const loadToothLogs = (onProgress?: OnProgress, signal?: AbortSignal) =>
   fetchWithProgress(
     `${CDN_URL}/public/temp/tooth_3.csv.gz`,
     onProgress,

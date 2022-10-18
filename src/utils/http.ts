@@ -2,9 +2,9 @@ import locations from '../data/edge-locations.json';
 
 type LocationsType = { [index: string]: string };
 
-export type onProgress = (percent: number, total: number, edgeLocation: string | null) => void;
+export type OnProgress = (percent: number, total: number, edgeLocation: string | null) => void;
 
-export const fetchWithProgress = async (url: string, onProgress?: onProgress, signal?: AbortSignal): Promise<ArrayBuffer> => {
+export const fetchWithProgress = async (url: string, onProgress?: OnProgress, signal?: AbortSignal): Promise<ArrayBuffer> => {
   let edgeLocation = null;
   const response = await fetch(url, { signal });
   const contentLength = response.headers.get('Content-Length');
