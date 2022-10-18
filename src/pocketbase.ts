@@ -17,8 +17,12 @@ const formatError = (error: any) => {
   return message;
 };
 
+// NOTE: PocketBase doesn't return ISO time, this may change here: https://github.com/pocketbase/pocketbase/issues/376
+const formatTime = (time: string) => new Date(`${time}Z`).toLocaleString();
+
 export {
   API_URL,
   client,
   formatError,
+  formatTime,
 };

@@ -21,6 +21,7 @@ import {
 import Loader from '../components/Loader';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
+import { formatTime } from '../pocketbase';
 
 const { Item } = Form;
 const rowProps = { gutter: 10 };
@@ -67,16 +68,21 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       <Divider>Details</Divider>
       <Form>
         <Row {...rowProps}>
-          <Col span={24} sm={24}>
+          <Col {...colProps}>
             <Item>
               <Input value={tuneData['@expand'].userProfile.username} addonBefore="Author" />
+            </Item>
+          </Col>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.signature} addonBefore="Signature" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col span={24} sm={24}>
             <Item>
-              <Input value={tuneData.signature} addonBefore="Signature" />
+              <Input value={formatTime(tuneData.updated)} addonBefore="Published at" />
             </Item>
           </Col>
         </Row>

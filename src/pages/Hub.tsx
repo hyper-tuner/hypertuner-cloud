@@ -35,6 +35,7 @@ import {
 import { ProfilesRecord } from '../@types/pocketbase-types';
 import { isEscape } from '../utils/keyboard/shortcuts';
 import { TunesRecordFull } from '../types/dbData';
+import { formatTime } from '../pocketbase';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -62,7 +63,7 @@ const Hub = () => {
       author: (tune['@expand'] as { userProfile: ProfilesRecord }).userProfile.username,
       displacement: `${tune.displacement}l`,
       aspiration: aspirationMapper[tune.aspiration],
-      created: new Date(tune.created).toLocaleString(),
+      published: formatTime(tune.updated),
       stars: 0,
     })));
     setIsLoading(false);
@@ -98,7 +99,7 @@ const Hub = () => {
         <>
           <Title level={5}>{tune.vehicleName}</Title>
           <Space direction="vertical">
-            <Text type="secondary">{tune.author}, {tune.created}</Text>
+            <Text type="secondary">{tune.author}, {tune.published}</Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
             <Text code>{tune.signature}</Text>
           </Space>
@@ -156,8 +157,8 @@ const Hub = () => {
     },
     {
       title: 'Published',
-      dataIndex: 'created',
-      key: 'created',
+      dataIndex: 'published',
+      key: 'published',
       responsive: ['sm'],
     },
     {
