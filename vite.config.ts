@@ -6,6 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 export default defineConfig({
   build: {
     outDir: 'build', // This changes the out put dir from dist to build
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks: {
