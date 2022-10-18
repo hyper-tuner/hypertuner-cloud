@@ -4,6 +4,7 @@ import {
   formatError,
 } from '../pocketbase';
 import {
+  IniFilesRecordFull,
   TunesRecordFull,
   TunesRecordPartial,
 } from '../types/dbData';
@@ -55,6 +56,21 @@ const useDb = () => {
     }
   };
 
+  const getIni = async (signature: string) => {
+    try {
+      const tune = await client.records.getList(Collections.IniFiles, 1, 1, {
+        filter: `signature = "${signature}"`,
+      });
+
+      return Promise.resolve(tune.totalItems > 0 ? tune.items[0] as IniFilesRecordFull : null);
+    } catch (error) {
+      Sentry.captureException(error);
+      databaseGenericError(new Error(formatError(error)));
+
+      return Promise.reject(error);
+    }
+  };
+
   const searchTunes = async (search?: string) => {
     // TODO: add pagination
     const batchSide = 100;
@@ -84,6 +100,7 @@ const useDb = () => {
     updateTune: (tuneId: string, data: TunesRecordPartial): Promise<void> => updateTune(tuneId, data),
     createTune: (data: TunesRecord): Promise<TunesRecordFull> => createTune(data),
     getTune: (tuneId: string): Promise<TunesRecordFull | null> => getTune(tuneId),
+    getIni: (tuneId: string): Promise<IniFilesRecordFull | null> => getIni(tuneId),
     searchTunes: (search?: string): Promise<TunesRecordFull[]> => searchTunes(search),
   };
 };

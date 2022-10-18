@@ -1,5 +1,6 @@
 import { Record } from 'pocketbase';
 import {
+  IniFilesRecord,
   ProfilesRecord,
   TunesRecord,
 } from '../@types/pocketbase-types';
@@ -13,3 +14,5 @@ export type TunesRecordPartial = Partial<TunesRecord>;
 export interface TunesRecordFull extends TunesRecord, Record { }
 
 export interface ProfilesRecordFull extends ProfilesRecord, Record { }
+
+export interface IniFilesRecordFull extends IniFilesRecord, Record { }

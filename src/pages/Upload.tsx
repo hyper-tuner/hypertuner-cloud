@@ -132,10 +132,10 @@ const UploadPage = () => {
   const shareSupported = 'share' in navigator;
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
-  const { fetchFileFromServer } = useServerStorage();
+  const { fetchTuneFile } = useServerStorage();
   const { createTune, updateTune, getTune } = useDb();
 
-  const fetchFile = async (tuneId: string, fileName: string) => bufferToFile(await fetchFileFromServer(tuneId, fileName), fileName);
+  const fetchFile = async (tuneId: string, fileName: string) => bufferToFile(await fetchTuneFile(tuneId, fileName), fileName);
 
   const noop = () => { };
 

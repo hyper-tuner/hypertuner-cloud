@@ -1,63 +1,44 @@
-import { notification } from 'antd';
 import Pako from 'pako';
 import * as Sentry from '@sentry/browser';
 import { fetchEnv } from '../utils/env';
 import { API_URL } from '../pocketbase';
 import { Collections } from '../@types/pocketbase-types';
+import useDb from './useDb';
 
-const PUBLIC_PATH = 'public';
-const INI_PATH = `${PUBLIC_PATH}/ini`;
 export const CDN_URL = fetchEnv('VITE_CDN_URL');
 
-const fetchFromServer = async (path: string): Promise<ArrayBuffer> => {
-  const response = await fetch(`${CDN_URL}/${path}`);
-  return Promise.resolve(response.arrayBuffer());
-};
-
-const fetchFileFromServer = async (recordId: string, filename: string, inflate = true): Promise<ArrayBuffer> => {
-  const response = await fetch(`${API_URL}/api/files/${Collections.Tunes}/${recordId}/${filename}`);
-
-  if (inflate) {
-    return Pako.inflate(new Uint8Array(await response.arrayBuffer()));
-  }
-
-  return response.arrayBuffer();
-};
-
 const useServerStorage = () => {
-  const getINIFile = async (signature: string) => {
-    const { version, baseVersion } = /.+?(?<version>(?<baseVersion>\d+)(-\w+)*)/.exec(signature)?.groups || { version: null, baseVersion: null };
+  const { getIni } = useDb();
 
-    try {
-      return Pako.inflate(new Uint8Array(await fetchFromServer(`${INI_PATH}/${version}.ini.gz`)));
-    } catch (error) {
+  // TODO: use built in pocketbase function
+  const buildFileUrl = (collection: Collections, recordId: string, filename: string) => `${API_URL}/api/files/${collection}/${recordId}/${filename}`;
+
+  const fetchTuneFile = async (recordId: string, filename: string): Promise<ArrayBuffer> => {
+    const response = await fetch(buildFileUrl(Collections.Tunes, recordId, filename));
+
+    return Pako.inflate(new Uint8Array(await response.arrayBuffer()));
+  };
+
+  const fetchINIFile = async (signature: string): Promise<ArrayBuffer> => {
+    // const { version, baseVersion } = /.+?(?<version>(?<baseVersion>\d+)(-\w+)*)/.exec(signature)?.groups || { version: null, baseVersion: null };
+    const ini = await getIni(signature);
+
+    if (!ini) {
+      const msg = `Signature: "${signature}" not supported!`;
+      const error = new Error(msg);
       Sentry.captureException(error);
-      console.error(error);
-
-      notification.warning({
-        message: 'INI not found',
-        description: `INI version: "${version}" not found. Trying base version: "${baseVersion}"!`,
-      });
-
-      try {
-        return fetchFromServer(`${INI_PATH}/${baseVersion}.ini.gz`);
-      } catch (err) {
-        Sentry.captureException(err);
-        console.error(err);
-
-        notification.error({
-          message: 'INI not found',
-          description: `INI version: "${baseVersion}" not found. Try uploading custom INI file!`,
-        });
-      }
 
       return Promise.reject(error);
     }
+
+    const response = await fetch(buildFileUrl(Collections.IniFiles, ini.id, ini.file));
+
+    return Pako.inflate(new Uint8Array(await response.arrayBuffer()));
   };
 
   return {
-    getINIFile: (signature: string): Promise<ArrayBuffer> => getINIFile(signature),
-    fetchFileFromServer: (recordId: string, filename: string): Promise<ArrayBuffer> => fetchFileFromServer(recordId, filename),
+    fetchTuneFile: (recordId: string, filename: string): Promise<ArrayBuffer> => fetchTuneFile(recordId, filename),
+    fetchINIFile: (signature: string): Promise<ArrayBuffer> => fetchINIFile(signature),
   };
 };
 
