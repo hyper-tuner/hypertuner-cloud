@@ -11,7 +11,10 @@ export interface TuneState extends TuneWithDetails {}
 
 export interface TuneDataState extends TunesRecordFull {}
 
-export interface LogsState extends Logs {}
+export interface LogsState {
+  fileName: string;
+  logs: Logs;
+}
 
 export interface UIState {
   sidebarCollapsed: boolean;

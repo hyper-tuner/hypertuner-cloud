@@ -39,7 +39,7 @@ const initialState: AppState = {
     details: {} as any,
   },
   tuneData: {} as any,
-  logs: [],
+  logs: {} as any,
   config: {} as any,
   ui: {
     sidebarCollapsed: false,

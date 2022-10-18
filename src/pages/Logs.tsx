@@ -33,7 +33,6 @@ import { connect } from 'react-redux';
 import { Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
-  Config,
   OutputChannel,
   Logs as LogsType,
   DatalogEntry,
@@ -53,11 +52,13 @@ import {
 } from '../utils/tune/expression';
 import {
   AppState,
+  ConfigState,
+  LogsState,
+  TuneDataState,
   UIState,
 } from '../types/state';
 import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
-import { TunesRecordFull } from '../types/dbData';
 import useServerStorage from '../hooks/useServerStorage';
 import { Routes } from '../routes';
 
@@ -84,9 +85,9 @@ const Logs = ({
   tuneData,
 }: {
   ui: UIState,
-  config: Config,
-  loadedLogs: LogsType,
-  tuneData: TunesRecordFull,
+  config: ConfigState,
+  loadedLogs: LogsState,
+  tuneData: TuneDataState,
 }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -167,20 +168,9 @@ const Logs = ({
     const worker = new MlgParserWorker();
     const controller = new AbortController();
     const { signal } = controller;
+
     const loadData = async () => {
-      let logFileName: string;
-
-      if (routeMatch?.params.fileName) {
-        logFileName = routeMatch?.params.fileName;
-      } else {
-        const firstLogFile = (tuneData.logFiles || [])[0];
-
-        if (firstLogFile) {
-          navigate(generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
-        }
-
-        logFileName = firstLogFile;
-      }
+      const logFileName = routeMatch?.params.fileName!;
 
       try {
         const raw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
@@ -203,7 +193,12 @@ const Logs = ({
               break;
             case 'result':
               setLogs(data.result);
-              store.dispatch({ type: 'logs/load', payload: data.result.records });
+              store.dispatch({
+                type: 'logs/load', payload: {
+                  fileName: logFileName,
+                  logs: data.result.records,
+                },
+              });
               break;
             case 'metrics':
               console.info(`Log parsed in ${data.elapsed}ms`);
@@ -223,7 +218,28 @@ const Logs = ({
       }
     };
 
-    if (!loadedLogs.length && tuneData.tuneId) {
+    // user navigated to logs root page
+    if (!routeMatch?.params.fileName && tuneData.logFiles?.length) {
+      // either redirect to the first log or to the latest selected
+      if (loadedLogs.fileName) {
+        navigate(generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName: loadedLogs.fileName }));
+      } else {
+        const firstLogFile = (tuneData.logFiles || [])[0];
+        navigate(generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
+      }
+
+      return undefined;
+    }
+
+    // first visit, logs are not loaded yet
+    if (!(loadedLogs.logs || []).length && tuneData.tuneId) {
+      loadData();
+    }
+
+    // file changed, reload
+    if ((loadedLogs.logs || []).length && loadedLogs.fileName !== routeMatch?.params.fileName) {
+      setLogs(undefined);
+      store.dispatch({ type: 'logs/load', payload: {} });
       loadData();
     }
 
@@ -241,12 +257,12 @@ const Logs = ({
       window.removeEventListener('resize', calculateCanvasSize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, loadedLogs, ui.sidebarCollapsed]);
+  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, loadedLogs, ui.sidebarCollapsed, routeMatch?.params.fileName]);
 
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs && !loadedLogs.length ?
+        {!logs && !(loadedLogs.logs || []).length ?
           <Loader />
           :
           !ui.sidebarCollapsed &&
@@ -317,10 +333,10 @@ const Logs = ({
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {logs || !!loadedLogs.length
+            {logs || !!(loadedLogs.logs || []).length
               ?
               <LogCanvas
-                data={loadedLogs || (logs!.records as LogsType)}
+                data={loadedLogs.logs || (logs!.records as LogsType)}
                 width={canvasWidth}
                 height={canvasHeight}
                 selectedFields1={prepareSelectedFields(selectedFields1)}
