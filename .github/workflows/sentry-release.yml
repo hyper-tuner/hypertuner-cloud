@@ -1,7 +1,7 @@
 name: Sentry Release
 
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.ref }}-sentry-release
   cancel-in-progress: true
 
 on:
