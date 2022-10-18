@@ -67,6 +67,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
   const hubPathMatch = useMatch(Routes.HUB);
   const tuneRootMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneTuneMatch = useMatch(`${Routes.TUNE_TUNE}/*`);
+  const tuneLogMatch = useMatch(`${Routes.TUNE_LOGS}/*`);
   const tabMatch = useMatch(`${Routes.TUNE_TAB}/*`);
   const uploadMatch = useMatch(Routes.UPLOAD);
   const hubMatch = useMatch(Routes.HUB);
@@ -95,7 +96,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
     <Col span={16} md={16} sm={16}>
       <Radio.Group
         key={pathname}
-        defaultValue={tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || hubPathMatch?.pathname}
+        defaultValue={tuneLogMatch?.pathnameBase || tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || hubPathMatch?.pathname}
         optionType="button"
         buttonStyle="solid"
         onChange={(e) => navigate(e.target.value)}
@@ -132,7 +133,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         </Radio.Button>
       </Radio.Group>
     </Col>
-  ), [buildTuneUrl, lg, navigate, pathname, hubPathMatch?.pathname, tabMatch?.pathname, tuneRootMatch?.pathname, tuneTuneMatch?.pathnameBase]);
+  ), [pathname, tuneTuneMatch?.pathnameBase, tabMatch?.pathname, tuneRootMatch?.pathname, hubPathMatch?.pathname, tuneLogMatch?.pathnameBase, buildTuneUrl, lg, navigate]);
 
   const rightMenuColProps = tuneId ? {
     span: 8,

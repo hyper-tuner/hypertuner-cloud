@@ -1,4 +1,10 @@
 import {
+  Link,
+  generatePath,
+  useMatch,
+  useNavigate,
+} from 'react-router-dom';
+import {
   useCallback,
   useEffect,
   useRef,
@@ -53,6 +59,7 @@ import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
 import { TunesRecordFull } from '../types/dbData';
 import useServerStorage from '../hooks/useServerStorage';
+import { Routes } from '../routes';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -95,6 +102,9 @@ const Logs = ({
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
   const { fetchLogFileWithProgress } = useServerStorage();
+  const routeMatch = useMatch(Routes.TUNE_LOGS_FILE);
+  const navigate = useNavigate();
+
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
@@ -158,14 +168,22 @@ const Logs = ({
     const controller = new AbortController();
     const { signal } = controller;
     const loadData = async () => {
-      const firstLogFile = (tuneData.logFiles || [])[0];
+      let logFileName: string;
 
-      if (!firstLogFile) {
-        return;
+      if (routeMatch?.params.fileName) {
+        logFileName = routeMatch?.params.fileName;
+      } else {
+        const firstLogFile = (tuneData.logFiles || [])[0];
+
+        if (firstLogFile) {
+          navigate(generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
+        }
+
+        logFileName = firstLogFile;
       }
 
       try {
-        const raw = await fetchLogFileWithProgress(tuneData.id, firstLogFile, (percent, total, edge) => {
+        const raw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
@@ -202,11 +220,10 @@ const Logs = ({
         };
       } catch (error) {
         setFetchError(error as Error);
-        throw error;
       }
     };
 
-    if (!loadedLogs.length) {
+    if (!loadedLogs.length && tuneData.tuneId) {
       loadData();
     }
 
@@ -279,7 +296,15 @@ const Logs = ({
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
                     {tuneData.logFiles?.map((fileName) => (
                       <Typography.Paragraph key={fileName}>
-                        {fileName}
+                        <Link
+                          to={generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName })}
+                          style={
+                            routeMatch?.params.fileName === fileName ?
+                              {} : { color: 'inherit' }
+                          }
+                        >
+                          {fileName}
+                        </Link>
                       </Typography.Paragraph>
                     ))}
                   </PerfectScrollbar>
