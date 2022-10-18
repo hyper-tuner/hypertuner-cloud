@@ -13,6 +13,7 @@ import {
   Steps,
   Space,
   Divider,
+  Badge,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -50,6 +51,7 @@ import {
   UIState,
 } from '../types/state';
 import Loader from '../components/Loader';
+import { Colors } from '../utils/colors';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -57,6 +59,8 @@ const edgeUnknown = 'Unknown';
 const margin = 30;
 const sidebarWidth = 250;
 const minCanvasHeightInner = 600;
+
+const badgeStyle = { backgroundColor: Colors.TEXT };
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -226,7 +230,7 @@ const Logs = ({
             style={{ marginLeft: 20 }}
             items={[
               {
-                label: <EditOutlined />,
+                label: <><EditOutlined /><Badge size="small" style={badgeStyle} count={fields.length} /></>,
                 key: 'fields',
                 children: (
                   <>
@@ -261,7 +265,7 @@ const Logs = ({
                 ),
               },
               {
-                label: <FileTextOutlined />,
+                label: <><FileTextOutlined /><Badge size="small" style={badgeStyle} count="1" /></>,
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>

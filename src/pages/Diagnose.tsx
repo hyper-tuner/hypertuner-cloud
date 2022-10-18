@@ -13,6 +13,7 @@ import {
   Space,
   Divider,
   Typography,
+  Badge,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -43,11 +44,14 @@ import TriggerLogsParser, {
 } from '../utils/logs/TriggerLogsParser';
 import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
 import Loader from '../components/Loader';
+import { Colors } from '../utils/colors';
 
 const { Content } = Layout;
 const { Step } = Steps;
 
 const edgeUnknown = 'Unknown';
+
+const badgeStyle = { backgroundColor: Colors.TEXT };
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -152,7 +156,7 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: Config, loa
             style={{ marginLeft: 20 }}
             items={[
               {
-                label: <FileTextOutlined />,
+                label: <><FileTextOutlined /><Badge size="small" style={badgeStyle} count={2} /></>,
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
