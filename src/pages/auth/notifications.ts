@@ -119,6 +119,12 @@ const databaseGenericError = (err: Error) => notification.error({
   ...baseOptions,
 });
 
+const iniLoadingError = (err: Error) => notification.error({
+  message: 'INI not found',
+  description: err.message,
+  ...baseOptions,
+});
+
 const copiedToClipboard = () => notification.success({
   message: 'Copied to clipboard',
   ...baseOptions,
@@ -145,4 +151,5 @@ export {
   passwordUpdateFailed,
   databaseGenericError,
   copiedToClipboard,
+  iniLoadingError,
 };

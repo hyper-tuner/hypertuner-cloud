@@ -3,6 +3,7 @@
 export enum Collections {
 	Profiles = 'profiles',
 	Tunes = 'tunes',
+	IniFiles = 'iniFiles',
 }
 
 export type ProfilesRecord = {
@@ -36,4 +37,10 @@ export type TunesRecord = {
 	customIniFile?: string;
 	logFiles?: string[];
 	toothLogFiles?: string[];
+}
+
+export type IniFilesRecord = {
+	signature: string;
+	file: string;
+	ecosystem: string;
 }
