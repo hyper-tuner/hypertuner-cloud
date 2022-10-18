@@ -4,7 +4,7 @@ const REQUIRED_MESSAGE = 'This field is required';
 
 const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
 
-const usernamePattern = /^[A-z][A-z0-9_\\-]{3,30}$/;
+const usernamePattern = /^[A-Za-z0-9][\w\\-]{3,30}$/;
 
 export const passwordRules: Rule[] = [
   { required: true },
