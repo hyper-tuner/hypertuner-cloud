@@ -4,6 +4,7 @@
         "kbar",
         "pocketbase",
         "prefs",
+        "typegen",
         "vite",
         "vitejs"
     ]
