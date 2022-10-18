@@ -223,7 +223,7 @@ const UploadPage = () => {
         year,
       ].filter((field) => field !== null && `${field}`.length > 1)
         .join(' ')
-        .replace(/[^A-z.\-\d ]/g, ''),
+        .replace(/[^\w.\-\d ]/g, ''),
     };
 
     const formData = new FormData();
