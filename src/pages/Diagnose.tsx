@@ -27,6 +27,7 @@ import * as Sentry from '@sentry/browser';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import Pako from 'pako';
 import {
   AppState,
   LogsState,
@@ -115,8 +116,6 @@ const Diagnose = ({
     const { signal } = controller;
 
     const loadData = async () => {
-      const pako = await import('pako');
-
       try {
         const compositeRaw = await loadCompositeLogs((percent, total, edge) => {
           setProgress(percent);
@@ -129,10 +128,10 @@ const Diagnose = ({
         setFileSize(formatBytes(compositeRaw.byteLength));
         setStep(1);
 
-        const resultComposite = (new TriggerLogsParser(pako.inflate(new Uint8Array(compositeRaw))))
+        const resultComposite = (new TriggerLogsParser(Pako.inflate(new Uint8Array(compositeRaw))))
           .parse()
           .getCompositeLogs();
-        const resultTooth = (new TriggerLogsParser(pako.inflate(new Uint8Array(toothRaw))))
+        const resultTooth = (new TriggerLogsParser(Pako.inflate(new Uint8Array(toothRaw))))
           .parse()
           .getToothLogs();
 
