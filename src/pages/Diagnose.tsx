@@ -30,11 +30,10 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import Pako from 'pako';
 import {
   AppState,
-  LogsState,
+  ToothLogsState,
   TuneDataState,
   UIState,
 } from '../types/state';
-import { loadToothLogs } from '../utils/api';
 import store from '../store';
 import { formatBytes } from '../utils/numbers';
 import CompositeCanvas from '../components/TriggerLogs/CompositeCanvas';
@@ -75,7 +74,7 @@ const Diagnose = ({
   tuneData,
 }: {
   ui: UIState;
-  loadedToothLogs: LogsState;
+  loadedToothLogs: ToothLogsState;
   tuneData: TuneDataState;
 }) => {
   const { lg } = useBreakpoint();
@@ -110,8 +109,6 @@ const Diagnose = ({
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
     },
   };
-  const [logs, setLogs] = useState<CompositeLogEntry[]>();
-  const [toothLogs, setToothLogs] = useState<ToothLogEntry[]>();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -132,33 +129,38 @@ const Diagnose = ({
       }
 
       try {
-        const compositeRaw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
+        const raw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
         }, signal);
 
-        const toothRaw = await loadToothLogs(undefined, signal);
-
-        setFileSize(formatBytes(compositeRaw.byteLength));
+        setFileSize(formatBytes(raw.byteLength));
         setStep(1);
 
-        const resultComposite = (new TriggerLogsParser(Pako.inflate(new Uint8Array(compositeRaw))))
-          .parse()
-          .getCompositeLogs();
-        const resultTooth = (new TriggerLogsParser(Pako.inflate(new Uint8Array(toothRaw))))
-          .parse()
-          .getToothLogs();
+        const parser = new TriggerLogsParser(Pako.inflate(new Uint8Array(raw))).parse();
 
-        setLogs(resultComposite);
+        let type = '';
+        let result: CompositeLogEntry[] | ToothLogEntry[] = [];
+
+        if (parser.isComposite()) {
+          type = 'composite';
+          result = parser.getCompositeLogs();
+        }
+
+        if (parser.isTooth()) {
+          type = 'tooth';
+          result = parser.getToothLogs();
+        }
+
         store.dispatch({
           type: 'toothLogs/load', payload: {
             fileName: logFileName,
-            logs: resultComposite,
+            logs: result,
+            type,
           },
         });
 
-        setToothLogs(resultTooth);
         setStep(2);
       } catch (error) {
         if (isAbortedRequest(error as Error)) {
@@ -170,14 +172,14 @@ const Diagnose = ({
     };
 
     // first visit, logs are not loaded yet
-    if (!(loadedToothLogs.logs || []).length && tuneData?.tuneId) {
+    if (!loadedToothLogs.type && tuneData?.tuneId) {
       loadData();
     }
 
     // file changed, reload
-    if ((loadedToothLogs.logs || []).length && loadedToothLogs.fileName !== routeMatch?.params.fileName) {
-
-      setLogs(undefined);
+    if (loadedToothLogs.type && loadedToothLogs.fileName !== routeMatch?.params.fileName) {
+      // setToothLogs(undefined);
+      // setCompositeLogs(undefined);
       store.dispatch({ type: 'toothLogs/load', payload: {} });
       loadData();
     }
@@ -201,13 +203,34 @@ const Diagnose = ({
       controller.abort();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculateCanvasSize, routeMatch?.params.fileName, ui.sidebarCollapsed, tuneData?.tuneId]);
+
+  const graphSection = () => {
+    switch (loadedToothLogs.type) {
+      case 'composite':
+        console.log('composite');
+        return <CompositeCanvas
+          data={loadedToothLogs.logs as CompositeLogEntry[]}
+          width={canvasWidth}
+          height={canvasHeight}
+        />;
+      case 'tooth':
+        console.log('tooth');
+        return <ToothCanvas
+          data={loadedToothLogs.logs}
+          width={canvasWidth}
+          height={canvasHeight}
+        />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs && !(loadedToothLogs.logs || []).length ?
+        {!loadedToothLogs.type ?
           <Loader />
           :
           !ui.sidebarCollapsed &&
@@ -247,22 +270,9 @@ const Diagnose = ({
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {toothLogs && logs
+            {loadedToothLogs.type
               ?
-              (
-                <Space direction="vertical" size="large">
-                  <ToothCanvas
-                    data={toothLogs!}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                  />
-                  <CompositeCanvas
-                    data={logs!}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                  />
-                </Space>
-              )
+              graphSection()
               :
               <Space
                 direction="vertical"

@@ -3,6 +3,10 @@ import {
   Logs,
   TuneWithDetails,
 } from '@hyper-tuner/types';
+import {
+  CompositeLogEntry,
+  ToothLogEntry,
+} from '../utils/logs/TriggerLogsParser';
 import { TunesRecordFull } from './dbData';
 
 export interface ConfigState extends Config {}
@@ -14,6 +18,12 @@ export interface TuneDataState extends TunesRecordFull {}
 export interface LogsState {
   fileName: string;
   logs: Logs;
+}
+
+export interface ToothLogsState {
+  fileName: string;
+  type: 'tooth' | 'composite';
+  logs: CompositeLogEntry[] | ToothLogEntry[];
 }
 
 export interface UIState {
@@ -33,7 +43,7 @@ export interface AppState {
   tuneData: TuneDataState;
   config: ConfigState;
   logs: LogsState,
-  toothLogs: LogsState,
+  toothLogs: ToothLogsState,
   ui: UIState;
   status: StatusState;
   navigation: NavigationState;

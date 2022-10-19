@@ -4,16 +4,13 @@ import store from '../store';
 import stdDialogs from '../data/standardDialogs';
 import help from '../data/help';
 import { divider } from '../data/constants';
-import {
-  fetchWithProgress,
-  OnProgress,
-} from './http';
 import TuneParser from './tune/TuneParser';
-import useServerStorage, { CDN_URL } from '../hooks/useServerStorage';
+import useServerStorage from '../hooks/useServerStorage';
 import { TunesRecordFull } from '../types/dbData';
 import { iniLoadingError } from '../pages/auth/notifications';
 
 // TODO: refactor this!!
+// eslint-disable-next-line import/prefer-default-export
 export const loadTune = async (tuneData: TunesRecordFull | null) => {
   if (tuneData === null) {
     store.dispatch({ type: 'config/load', payload: null });
@@ -63,10 +60,3 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
     iniLoadingError((error as Error));
   }
 };
-
-export const loadToothLogs = (onProgress?: OnProgress, signal?: AbortSignal) =>
-  fetchWithProgress(
-    `${CDN_URL}/public/temp/tooth_3.csv.gz`,
-    onProgress,
-    signal,
-  ).then((response) => response);

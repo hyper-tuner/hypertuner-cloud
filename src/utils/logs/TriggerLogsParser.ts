@@ -49,11 +49,9 @@ class TriggerLogsParser implements ParserInterface {
     this.parseCompositeLogs(this.raw);
     this.parseToothLogs(this.raw);
 
-    if (this.resultComposite.length > 0) {
+    if (this.resultComposite.length > this.resultTooth.length) {
       this.isCompositeLogs = true;
-    }
-
-    if (this.resultTooth.length > 0) {
+    } else {
       this.isToothLogs = true;
     }
 

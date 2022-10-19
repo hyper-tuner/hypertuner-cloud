@@ -274,7 +274,7 @@ const Logs = ({
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs && !(loadedLogs.logs || []).length ?
+        {!(loadedLogs.logs || []).length ?
           <Loader />
           :
           !ui.sidebarCollapsed &&

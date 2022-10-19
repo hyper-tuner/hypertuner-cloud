@@ -9,6 +9,7 @@ import {
   AppState,
   ConfigState,
   LogsState,
+  ToothLogsState,
   TuneDataState,
   TuneState,
   UpdateTunePayload,
@@ -25,7 +26,7 @@ const setTuneId = createAction<string>('navigation/tuneId');
 
 // logs
 const loadLogs = createAction<LogsState>('logs/load');
-const loadToothLogs = createAction<LogsState>('toothLogs/load');
+const loadToothLogs = createAction<ToothLogsState>('toothLogs/load');
 
 // status bar
 const setStatus = createAction<string>('status');
