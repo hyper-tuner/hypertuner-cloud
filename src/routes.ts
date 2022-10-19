@@ -10,6 +10,7 @@ export enum Routes {
   TUNE_LOGS = '/t/:tuneId/logs',
   TUNE_LOGS_FILE = '/t/:tuneId/logs/:fileName',
   TUNE_DIAGNOSE = '/t/:tuneId/diagnose',
+  TUNE_DIAGNOSE_FILE = '/t/:tuneId/diagnose/:fileName',
 
   UPLOAD = '/upload',
   UPLOAD_WITH_TUNE_ID = '/upload/:tuneId',

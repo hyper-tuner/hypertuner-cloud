@@ -172,6 +172,13 @@ const Logs = ({
     const loadData = async () => {
       const logFileName = routeMatch?.params.fileName!;
 
+      // user didn't upload any logs
+      if (tuneData && (tuneData.logFiles || []).length === 0) {
+        navigate(Routes.HUB);
+
+        return;
+      }
+
       try {
         const raw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
           setProgress(percent);
@@ -217,13 +224,6 @@ const Logs = ({
         setFetchError(error as Error);
       }
     };
-
-    // user didn't upload any logs
-    if (tuneData && (tuneData.logFiles || []).length === 0) {
-      navigate(Routes.HUB);
-
-      return undefined;
-    }
 
     // user navigated to logs root page
     if (!routeMatch?.params.fileName && tuneData.logFiles?.length) {
@@ -278,7 +278,11 @@ const Logs = ({
             style={{ marginLeft: 20 }}
             items={[
               {
-                label: <><EditOutlined /><Badge size="small" style={badgeStyle} count={fields.length} /></>,
+                label: (
+                  <Badge size="small" style={badgeStyle} count={fields.length} offset={[10, -3]}>
+                    <EditOutlined />Fields
+                  </Badge>
+                ),
                 key: 'fields',
                 children: (
                   <>
@@ -313,7 +317,11 @@ const Logs = ({
                 ),
               },
               {
-                label: <><FileTextOutlined /><Badge size="small" style={badgeStyle} count={tuneData.logFiles?.length} /></>,
+                label: (
+                  <Badge size="small" style={badgeStyle} count={tuneData.logFiles?.length} offset={[10, -3]}>
+                    <FileTextOutlined />Files
+                  </Badge>
+                ),
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>

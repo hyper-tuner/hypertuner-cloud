@@ -154,7 +154,11 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
             style={{ marginLeft: 20 }}
             items={[
               {
-                label: <><FileTextOutlined /><Badge size="small" style={badgeStyle} count={2} /></>,
+                label: (
+                  <Badge size="small" style={badgeStyle} count={1} offset={[10, -3]}>
+                    <FileTextOutlined />Files
+                  </Badge>
+                ),
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
