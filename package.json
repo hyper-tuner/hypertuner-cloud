@@ -20,7 +20,7 @@
     "typegen": "pocketbase-typegen --json ../pocketbase/pb_schema.json --out src/@types/pocketbase-types.ts"
   },
   "dependencies": {
-    "@hyper-tuner/ini": "^0.6.0",
+    "@hyper-tuner/ini": "^0.6.1",
     "@hyper-tuner/types": "^0.4.0",
     "@reduxjs/toolkit": "^1.8.6",
     "@sentry/react": "^7.16.0",
