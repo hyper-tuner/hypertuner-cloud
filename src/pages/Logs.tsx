@@ -104,6 +104,7 @@ const Logs = ({
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
+  const [showSingleGraph, setShowSingleGraph] = useState(false);
   const { fetchLogFileWithProgress } = useServerStorage();
   const routeMatch = useMatch(Routes.TUNE_LOGS_FILE);
   const navigate = useNavigate();
@@ -113,9 +114,13 @@ const Logs = ({
 
     if (window.innerHeight > minCanvasHeightInner) {
       setCanvasHeight(Math.round((window.innerHeight - 250) / 2));
+      setShowSingleGraph(false);
     } else {
+      // not enough space to put 2 graphs
+      setShowSingleGraph(true);
       setCanvasHeight(minCanvasHeightInner / 2);
     }
+
   }, []);
 
   const siderProps = {
@@ -291,7 +296,7 @@ const Logs = ({
                 key: 'fields',
                 children: (
                   <>
-                    <div style={{ height: '45%' }}>
+                    <div style={showSingleGraph ? {} : { height: '45%' }}>
                       <PerfectScrollbar options={{ suppressScrollX: true }}>
                         <Checkbox.Group onChange={setSelectedFields1} value={selectedFields1}>
                           {fields.map((field) => (
@@ -304,20 +309,24 @@ const Logs = ({
                         </Checkbox.Group>
                       </PerfectScrollbar>
                     </div>
-                    <Divider />
-                    <div style={{ height: '45%' }}>
-                      <PerfectScrollbar options={{ suppressScrollX: true }}>
-                        <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
-                          {fields.map((field) => (
-                            <Row key={field.name}>
-                              <Checkbox key={field.name} value={field.name}>
-                                {isExpression(field.label) ? stripExpression(field.label) : field.label}
-                              </Checkbox>
-                            </Row>
-                          ))}
-                        </Checkbox.Group>
-                      </PerfectScrollbar>
-                    </div>
+                    {!showSingleGraph && (
+                      <>
+                        <Divider />
+                        <div style={{ height: '45%' }}>
+                          <PerfectScrollbar options={{ suppressScrollX: true }}>
+                            <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
+                              {fields.map((field) => (
+                                <Row key={field.name}>
+                                  <Checkbox key={field.name} value={field.name}>
+                                    {isExpression(field.label) ? stripExpression(field.label) : field.label}
+                                  </Checkbox>
+                                </Row>
+                              ))}
+                            </Checkbox.Group>
+                          </PerfectScrollbar>
+                        </div>
+                      </>
+                    )}
                   </>
                 ),
               },
@@ -361,6 +370,7 @@ const Logs = ({
                 height={canvasHeight}
                 selectedFields1={prepareSelectedFields(selectedFields1)}
                 selectedFields2={prepareSelectedFields(selectedFields2)}
+                showSingleGraph={showSingleGraph}
               />
               :
               <Space

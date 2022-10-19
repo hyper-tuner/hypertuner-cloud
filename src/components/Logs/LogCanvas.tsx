@@ -38,6 +38,7 @@ interface Props {
   height: number;
   selectedFields1: SelectedField[];
   selectedFields2: SelectedField[];
+  showSingleGraph: boolean;
 };
 
 export interface PlottableField {
@@ -49,7 +50,7 @@ export interface PlottableField {
   format: string;
 };
 
-const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Props) => {
+const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, showSingleGraph }: Props) => {
   const { sm } = useBreakpoint();
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
@@ -166,11 +167,14 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
     setOptions1(result1.options);
     setPlotData1([result1.xData, ...result1.yData]);
 
-    const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
-    setOptions2(result2.options);
-    setPlotData2([result2.xData, ...result2.yData]);
+    if (!showSingleGraph) {
+      const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
+      setOptions2(result2.options);
+      setPlotData2([result2.xData, ...result2.yData]);
+    }
 
-  }, [data, hsl, width, height, sm, generatePlotConfig, generateFieldsToPlot, selectedFields1, selectedFields2]);
+
+  }, [data, hsl, width, height, sm, generatePlotConfig, generateFieldsToPlot, selectedFields1, selectedFields2, showSingleGraph]);
 
   if (!sm) {
     return <LandscapeNotice />;
@@ -179,7 +183,7 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2 }: Pr
   return (
     <Space direction="vertical" size="large">
       <UplotReact options={options1!} data={plotData1!} />
-      <UplotReact options={options2!} data={plotData2!} />
+      {!showSingleGraph && <UplotReact options={options2!} data={plotData2!} />}
     </Space>
   );
 };
