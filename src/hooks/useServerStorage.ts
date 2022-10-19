@@ -1,6 +1,5 @@
 import Pako from 'pako';
 import * as Sentry from '@sentry/browser';
-import { fetchEnv } from '../utils/env';
 import { API_URL } from '../pocketbase';
 import { Collections } from '../@types/pocketbase-types';
 import useDb from './useDb';
@@ -8,8 +7,6 @@ import {
   fetchWithProgress,
   OnProgress,
 } from '../utils/http';
-
-export const CDN_URL = fetchEnv('VITE_CDN_URL');
 
 const useServerStorage = () => {
   const { getIni } = useDb();

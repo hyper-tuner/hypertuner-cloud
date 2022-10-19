@@ -69,6 +69,7 @@ import {
   TunesRecordFull,
   TunesRecordPartial,
 } from '../types/dbData';
+import { removeFilenameSuffix } from '../pocketbase';
 
 const { Item, useForm } = Form;
 
@@ -138,8 +139,6 @@ const UploadPage = () => {
   const fetchFile = async (tuneId: string, fileName: string) => bufferToFile(await fetchTuneFile(tuneId, fileName), fileName);
 
   const noop = () => { };
-
-  const removeFilenameSuffix = (filename: string) => filename.replace(/(.+)(_\w{10})(\.\w+)$/, '$1$3');
 
   const goToNewTune = () => navigate(generatePath(Routes.TUNE_TUNE, {
     tuneId: newTuneId!,

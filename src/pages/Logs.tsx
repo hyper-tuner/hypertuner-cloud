@@ -61,6 +61,8 @@ import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
 import useServerStorage from '../hooks/useServerStorage';
 import { Routes } from '../routes';
+import { removeFilenameSuffix } from '../pocketbase';
+import { isAbortedRequest } from '../utils/error';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -84,10 +86,10 @@ const Logs = ({
   loadedLogs,
   tuneData,
 }: {
-  ui: UIState,
-  config: ConfigState,
-  loadedLogs: LogsState,
-  tuneData: TuneDataState,
+  ui: UIState;
+  config: ConfigState;
+  loadedLogs: LogsState;
+  tuneData: TuneDataState;
 }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -188,8 +190,7 @@ const Logs = ({
 
         setFileSize(formatBytes(raw.byteLength));
 
-        const pako = await import('pako');
-        worker.postMessage(pako.inflate(new Uint8Array(raw)).buffer);
+        worker.postMessage(raw);
 
         worker.onmessage = ({ data }) => {
           switch (data.type) {
@@ -221,6 +222,10 @@ const Logs = ({
           }
         };
       } catch (error) {
+        if (isAbortedRequest(error as Error)) {
+          return;
+        }
+
         setFetchError(error as Error);
       }
     };
@@ -264,12 +269,12 @@ const Logs = ({
       window.removeEventListener('resize', calculateCanvasSize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, loadedLogs, ui.sidebarCollapsed, routeMatch?.params.fileName]);
+  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, ui.sidebarCollapsed, routeMatch?.params.fileName]);
 
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs && !(loadedLogs.logs || []).length ?
+        {!(loadedLogs.logs || []).length ?
           <Loader />
           :
           !ui.sidebarCollapsed &&
@@ -318,15 +323,15 @@ const Logs = ({
               },
               {
                 label: (
-                  <Badge size="small" style={badgeStyle} count={tuneData.logFiles?.length} offset={[10, -3]}>
+                  <Badge size="small" style={badgeStyle} count={tuneData?.logFiles?.length} offset={[10, -3]}>
                     <FileTextOutlined />Files
                   </Badge>
                 ),
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    {tuneData.logFiles?.map((fileName) => (
-                      <Typography.Paragraph key={fileName}>
+                    {tuneData?.logFiles?.map((fileName) => (
+                      <Typography.Paragraph key={fileName} ellipsis>
                         <Link
                           to={generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName })}
                           style={
@@ -334,7 +339,7 @@ const Logs = ({
                               {} : { color: 'inherit' }
                           }
                         >
-                          {fileName}
+                          {removeFilenameSuffix(fileName)}
                         </Link>
                       </Typography.Paragraph>
                     ))}

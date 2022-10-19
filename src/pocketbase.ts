@@ -17,6 +17,8 @@ const formatError = (error: any) => {
   return message;
 };
 
+const removeFilenameSuffix = (filename: string) => filename.replace(/(.+)(_\w{10})(\.\w+)$/, '$1$3');
+
 // NOTE: PocketBase doesn't return ISO time, this may change here: https://github.com/pocketbase/pocketbase/issues/376
 const formatTime = (time: string) => new Date(`${time}Z`).toLocaleString();
 
@@ -25,4 +27,5 @@ export {
   client,
   formatError,
   formatTime,
+  removeFilenameSuffix,
 };

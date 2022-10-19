@@ -1,4 +1,9 @@
-/* eslint-disable import/no-webpack-loader-syntax */
+import {
+  generatePath,
+  Link,
+  useMatch,
+  useNavigate,
+} from 'react-router-dom';
 import {
   useCallback,
   useEffect,
@@ -19,20 +24,16 @@ import {
   FileTextOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
-import * as Sentry from '@sentry/browser';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import Pako from 'pako';
 import {
   AppState,
-  ConfigState,
-  LogsState,
+  ToothLogsState,
+  TuneDataState,
   UIState,
 } from '../types/state';
-import {
-  loadCompositeLogs,
-  loadToothLogs,
-} from '../utils/api';
 import store from '../store';
 import { formatBytes } from '../utils/numbers';
 import CompositeCanvas from '../components/TriggerLogs/CompositeCanvas';
@@ -43,6 +44,10 @@ import TriggerLogsParser, {
 import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
 import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
+import { Routes } from '../routes';
+import { removeFilenameSuffix } from '../pocketbase';
+import useServerStorage from '../hooks/useServerStorage';
+import { isAbortedRequest } from '../utils/error';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -51,18 +56,27 @@ const edgeUnknown = 'Unknown';
 
 const badgeStyle = { backgroundColor: Colors.TEXT };
 
-const mapStateToProps = (state: AppState) => ({
-  ui: state.ui,
-  status: state.status,
-  config: state.config,
-  loadedLogs: state.logs,
-});
-
 const margin = 30;
 const sidebarWidth = 250;
 const minCanvasHeightInner = 600;
 
-const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState, loadedLogs: LogsState }) => {
+const mapStateToProps = (state: AppState) => ({
+  ui: state.ui,
+  status: state.status,
+  config: state.config,
+  loadedToothLogs: state.toothLogs,
+  tuneData: state.tuneData,
+});
+
+const Diagnose = ({
+  ui,
+  loadedToothLogs,
+  tuneData,
+}: {
+  ui: UIState;
+  loadedToothLogs: ToothLogsState;
+  tuneData: TuneDataState;
+}) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
@@ -73,11 +87,15 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
+  const routeMatch = useMatch(Routes.TUNE_DIAGNOSE_FILE);
+  const { fetchLogFileWithProgress } = useServerStorage();
+  const navigate = useNavigate();
+
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
     if (window.innerHeight > minCanvasHeightInner) {
-      setCanvasHeight(Math.round((window.innerHeight - 250) / 2));
+      setCanvasHeight(Math.round(window.innerHeight - 250));
     } else {
       setCanvasHeight(minCanvasHeightInner / 2);
     }
@@ -91,47 +109,92 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
     },
   };
-  const [logs, setLogs] = useState<CompositeLogEntry[]>();
-  const [toothLogs, setToothLogs] = useState<ToothLogEntry[]>();
 
   useEffect(() => {
     const controller = new AbortController();
     const { signal } = controller;
 
     const loadData = async () => {
-      const pako = await import('pako');
+      const logFileName = routeMatch?.params.fileName;
+
+      if (!logFileName) {
+        return;
+      }
+
+      // user didn't upload any logs
+      if (tuneData && (tuneData.toothLogFiles || []).length === 0) {
+        navigate(Routes.HUB);
+
+        return;
+      }
 
       try {
-        const compositeRaw = await loadCompositeLogs((percent, total, edge) => {
+        const raw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
         }, signal);
 
-        const toothRaw = await loadToothLogs(undefined, signal);
-
-        setFileSize(formatBytes(compositeRaw.byteLength));
+        setFileSize(formatBytes(raw.byteLength));
         setStep(1);
 
-        const resultComposite = (new TriggerLogsParser(pako.inflate(new Uint8Array(compositeRaw))))
-          .parse()
-          .getCompositeLogs();
-        const resultTooth = (new TriggerLogsParser(pako.inflate(new Uint8Array(toothRaw))))
-          .parse()
-          .getToothLogs();
+        const parser = new TriggerLogsParser(Pako.inflate(new Uint8Array(raw))).parse();
 
-        setLogs(resultComposite);
-        setToothLogs(resultTooth);
+        let type = '';
+        let result: CompositeLogEntry[] | ToothLogEntry[] = [];
+
+        if (parser.isComposite()) {
+          type = 'composite';
+          result = parser.getCompositeLogs();
+        }
+
+        if (parser.isTooth()) {
+          type = 'tooth';
+          result = parser.getToothLogs();
+        }
+
+        store.dispatch({
+          type: 'toothLogs/load', payload: {
+            fileName: logFileName,
+            logs: result,
+            type,
+          },
+        });
 
         setStep(2);
       } catch (error) {
+        if (isAbortedRequest(error as Error)) {
+          return;
+        }
+
         setFetchError(error as Error);
-        Sentry.captureException(error);
-        console.error(error);
       }
     };
 
-    loadData();
+    // first visit, logs are not loaded yet
+    if (!loadedToothLogs.type && tuneData?.tuneId) {
+      loadData();
+    }
+
+    // file changed, reload
+    if (loadedToothLogs.type && loadedToothLogs.fileName !== routeMatch?.params.fileName) {
+      // setToothLogs(undefined);
+      // setCompositeLogs(undefined);
+      store.dispatch({ type: 'toothLogs/load', payload: {} });
+      loadData();
+    }
+
+    // user navigated to logs root page
+    if (!routeMatch?.params.fileName && tuneData.toothLogFiles?.length) {
+      // either redirect to the first log or to the latest selected
+      if (loadedToothLogs.fileName) {
+        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: loadedToothLogs.fileName }));
+      } else {
+        const firstLogFile = (tuneData.toothLogFiles || [])[0];
+        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
+      }
+    }
+
     calculateCanvasSize();
 
     window.addEventListener('resize', calculateCanvasSize);
@@ -140,12 +203,32 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
       controller.abort();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [calculateCanvasSize, loadedLogs, ui.sidebarCollapsed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calculateCanvasSize, routeMatch?.params.fileName, ui.sidebarCollapsed, tuneData?.tuneId]);
+
+  const graphSection = () => {
+    switch (loadedToothLogs.type) {
+      case 'composite':
+        return <CompositeCanvas
+          data={loadedToothLogs.logs as CompositeLogEntry[]}
+          width={canvasWidth}
+          height={canvasHeight}
+        />;
+      case 'tooth':
+        return <ToothCanvas
+          data={loadedToothLogs.logs}
+          width={canvasWidth}
+          height={canvasHeight}
+        />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs && !(loadedLogs.logs || []).length ?
+        {!loadedToothLogs.type ?
           <Loader />
           :
           !ui.sidebarCollapsed &&
@@ -155,15 +238,26 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
             items={[
               {
                 label: (
-                  <Badge size="small" style={badgeStyle} count={1} offset={[10, -3]}>
+                  <Badge size="small" style={badgeStyle} count={tuneData?.toothLogFiles?.length} offset={[10, -3]}>
                     <FileTextOutlined />Files
                   </Badge>
                 ),
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    <Typography.Paragraph>tooth.csv</Typography.Paragraph>
-                    <Typography.Paragraph>composite.csv</Typography.Paragraph>
+                    {tuneData?.toothLogFiles?.map((fileName) => (
+                      <Typography.Paragraph key={fileName} ellipsis>
+                        <Link
+                          to={generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName })}
+                          style={
+                            routeMatch?.params.fileName === fileName ?
+                              {} : { color: 'inherit' }
+                          }
+                        >
+                          {removeFilenameSuffix(fileName)}
+                        </Link>
+                      </Typography.Paragraph>
+                    ))}
                   </PerfectScrollbar>
                 ),
               },
@@ -174,22 +268,9 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
       <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
-            {toothLogs && logs
+            {loadedToothLogs.type
               ?
-              (
-                <Space direction="vertical" size="large">
-                  <ToothCanvas
-                    data={toothLogs!}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                  />
-                  <CompositeCanvas
-                    data={logs!}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                  />
-                </Space>
-              )
+              graphSection()
               :
               <Space
                 direction="vertical"

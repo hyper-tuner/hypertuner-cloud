@@ -1,6 +1,7 @@
 /* eslint-disable no-bitwise */
 
 import { Parser } from 'mlg-converter';
+import Pako from 'pako';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
@@ -8,7 +9,7 @@ const ctx: Worker = self as any;
 ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
   try {
     const t0 = performance.now();
-    const result = new Parser(data).parse((progress) => {
+    const result = new Parser(Pako.inflate(new Uint8Array(data)).buffer).parse((progress) => {
       ctx.postMessage({
         type: 'progress',
         progress,
