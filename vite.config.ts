@@ -43,7 +43,7 @@ export default defineConfig({
       },
       manifest: {
         name: 'HyperTuner Cloud',
-        short_name: 'HyperTuner',
+        short_name: 'HyperTuner Cloud',
         description: 'HyperTuner Cloud - Share your tunes and logs',
         start_url: '.',
         display: 'standalone',
