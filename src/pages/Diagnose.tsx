@@ -75,7 +75,7 @@ const Diagnose = ({
 }: {
   ui: UIState;
   loadedToothLogs: ToothLogsState;
-  tuneData: TuneDataState;
+  tuneData: TuneDataState | null;
 }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -129,7 +129,7 @@ const Diagnose = ({
       }
 
       try {
-        const raw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
+        const raw = await fetchLogFileWithProgress(tuneData!.id, logFileName, (percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
@@ -185,7 +185,7 @@ const Diagnose = ({
     }
 
     // user navigated to logs root page
-    if (!routeMatch?.params.fileName && tuneData.toothLogFiles?.length) {
+    if (!routeMatch?.params.fileName && tuneData && tuneData.toothLogFiles?.length) {
       // either redirect to the first log or to the latest selected
       if (loadedToothLogs.fileName) {
         navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: loadedToothLogs.fileName }));

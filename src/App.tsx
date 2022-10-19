@@ -142,11 +142,7 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   return (
     <>
       <Layout>
-        <TopBar
-          tuneId={navigation.tuneId}
-          hasLogs={tuneData && (tuneData.logFiles || []).length > 0}
-          hasToothLogs={tuneData && (tuneData.toothLogFiles || []).length > 0}
-        />
+        <TopBar tuneData={tuneData} />
         <ReactRoutes>
           <Route path={Routes.HUB} element={<ContentFor element={<Hub />} />} />
           <Route path={Routes.TUNE_ROOT} element={<ContentFor element={<Info />} />} />

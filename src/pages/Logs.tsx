@@ -89,7 +89,7 @@ const Logs = ({
   ui: UIState;
   config: ConfigState;
   loadedLogs: LogsState;
-  tuneData: TuneDataState;
+  tuneData: TuneDataState | null;
 }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -182,7 +182,7 @@ const Logs = ({
       }
 
       try {
-        const raw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
+        const raw = await fetchLogFileWithProgress(tuneData!.id, logFileName, (percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
@@ -231,7 +231,7 @@ const Logs = ({
     };
 
     // user navigated to logs root page
-    if (!routeMatch?.params.fileName && tuneData.logFiles?.length) {
+    if (!routeMatch?.params.fileName && tuneData && tuneData.logFiles?.length) {
       // either redirect to the first log or to the latest selected
       if (loadedLogs.fileName) {
         navigate(generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName: loadedLogs.fileName }));
@@ -244,7 +244,7 @@ const Logs = ({
     }
 
     // first visit, logs are not loaded yet
-    if (!(loadedLogs.logs || []).length && tuneData.tuneId) {
+    if (!(loadedLogs.logs || []).length && tuneData?.tuneId) {
       loadData();
     }
 
@@ -274,7 +274,7 @@ const Logs = ({
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!(loadedLogs.logs || []).length ?
+        {!(loadedLogs?.logs || []).length ?
           <Loader />
           :
           !ui.sidebarCollapsed &&

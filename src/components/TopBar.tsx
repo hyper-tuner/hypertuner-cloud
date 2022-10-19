@@ -52,18 +52,23 @@ import { isToggleSidebar } from '../utils/keyboard/shortcuts';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import { logOutSuccessful } from '../pages/auth/notifications';
+import { TuneDataState } from '../types/state';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 const { SubMenu } = Menu;
 
-const TopBar = ({ tuneId, hasLogs, hasToothLogs }: { tuneId: string | null; hasLogs: boolean; hasToothLogs: boolean }) => {
+const TopBar = ({
+  tuneData,
+}: {
+  tuneData: TuneDataState | null;
+}) => {
   const { xs, sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const { query } = useKBar();
-  const buildTuneUrl = useCallback((route: string) => tuneId ? generatePath(route, { tuneId }) : null, [tuneId]);
+  const buildTuneUrl = useCallback((route: string) => tuneData?.tuneId ? generatePath(route, { tuneId: tuneData.tuneId }) : null, [tuneData?.tuneId]);
   const hubPathMatch = useMatch(Routes.HUB);
   const tuneRootMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneTuneMatch = useMatch(`${Routes.TUNE_TUNE}/*`);
@@ -120,13 +125,13 @@ const TopBar = ({ tuneId, hasLogs, hasToothLogs }: { tuneId: string | null; hasL
             {lg && 'Tune'}
           </Space>
         </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOGS)} disabled={!hasLogs}>
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOGS)} disabled={(tuneData?.logFiles || []).length === 0}>
           <Space>
             <FundOutlined />
             {lg && 'Logs'}
           </Space>
         </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)} disabled={!hasToothLogs}>
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)} disabled={(tuneData?.toothLogFiles || []).length === 0}>
           <Space>
             <SettingOutlined />
             {lg && 'Diagnose'}
@@ -134,9 +139,9 @@ const TopBar = ({ tuneId, hasLogs, hasToothLogs }: { tuneId: string | null; hasL
         </Radio.Button>
       </Radio.Group>
     </Col>
-  ), [pathname, tuneLogMatch?.pathnameBase, toothLogMatch?.pathnameBase, tuneTuneMatch?.pathnameBase, tabMatch?.pathname, tuneRootMatch?.pathname, hubPathMatch?.pathname, buildTuneUrl, lg, hasLogs, hasToothLogs, navigate]);
+  ), [pathname, tuneLogMatch?.pathnameBase, toothLogMatch?.pathnameBase, tuneTuneMatch?.pathnameBase, tabMatch?.pathname, tuneRootMatch?.pathname, hubPathMatch?.pathname, buildTuneUrl, lg, tuneData?.logFiles, tuneData?.toothLogFiles, navigate]);
 
-  const rightMenuColProps = tuneId ? {
+  const rightMenuColProps = tuneData?.tuneId ? {
     span: 8,
     md: 8,
     sm: 8,
@@ -185,7 +190,7 @@ const TopBar = ({ tuneId, hasLogs, hasToothLogs }: { tuneId: string | null; hasL
   return (
     <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {}}>
       <Row>
-        {tuneId ? tabs : (
+        {tuneData?.tuneId ? tabs : (
           <Col span={10} md={14} sm={16}>
             <Link to={Routes.HUB}>
               <Button icon={<CarOutlined />} type={hubMatch ? 'primary' : 'default'}>Hub</Button>
