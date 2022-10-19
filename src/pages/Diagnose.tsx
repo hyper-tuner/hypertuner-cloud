@@ -48,6 +48,7 @@ import { Colors } from '../utils/colors';
 import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
 import useServerStorage from '../hooks/useServerStorage';
+import { isAbortedRequest } from '../utils/error';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -160,6 +161,10 @@ const Diagnose = ({
         setToothLogs(resultTooth);
         setStep(2);
       } catch (error) {
+        if (isAbortedRequest(error as Error)) {
+          return;
+        }
+
         setFetchError(error as Error);
       }
     };

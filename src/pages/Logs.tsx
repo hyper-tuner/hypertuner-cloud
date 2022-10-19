@@ -62,6 +62,7 @@ import { Colors } from '../utils/colors';
 import useServerStorage from '../hooks/useServerStorage';
 import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
+import { isAbortedRequest } from '../utils/error';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -221,6 +222,10 @@ const Logs = ({
           }
         };
       } catch (error) {
+        if (isAbortedRequest(error as Error)) {
+          return;
+        }
+
         setFetchError(error as Error);
       }
     };
