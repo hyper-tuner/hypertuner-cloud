@@ -36,4 +36,7 @@ yarn-error.log*
 *.sw?
 
 # rollup-plugin-visualizer generated files
-stats.html
+/stats.html
+
+# pwa dev
+/dev-dist

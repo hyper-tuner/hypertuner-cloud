@@ -41,7 +41,8 @@
     "react-router-dom": "^6.4.2",
     "uplot": "^1.6.22",
     "uplot-react": "^1.1.1",
-    "vite": "^3.1.8"
+    "vite": "^3.1.8",
+    "vite-plugin-pwa": "^0.13.1"
   },
   "devDependencies": {
     "@hyper-tuner/eslint-config": "^0.1.6",
