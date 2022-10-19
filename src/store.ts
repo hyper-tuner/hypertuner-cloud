@@ -25,6 +25,7 @@ const setTuneId = createAction<string>('navigation/tuneId');
 
 // logs
 const loadLogs = createAction<LogsState>('logs/load');
+const loadToothLogs = createAction<LogsState>('toothLogs/load');
 
 // status bar
 const setStatus = createAction<string>('status');
@@ -40,6 +41,7 @@ const initialState: AppState = {
   },
   tuneData: {} as any,
   logs: {} as any,
+  toothLogs: {} as any,
   config: {} as any,
   ui: {
     sidebarCollapsed: false,
@@ -65,6 +67,9 @@ const rootReducer = createReducer(initialState, (builder) => {
     })
     .addCase(loadLogs, (state: AppState, action) => {
       state.logs = action.payload;
+    })
+    .addCase(loadToothLogs, (state: AppState, action) => {
+      state.toothLogs = action.payload;
     })
     .addCase(updateTune, (state: AppState, action) => {
       state.tune.constants[action.payload.name].value = action.payload.value;

@@ -269,7 +269,7 @@ const Logs = ({
       window.removeEventListener('resize', calculateCanvasSize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, loadedLogs, ui.sidebarCollapsed, routeMatch?.params.fileName]);
+  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, ui.sidebarCollapsed, routeMatch?.params.fileName]);
 
   return (
     <>

@@ -65,17 +65,17 @@ const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
   config: state.config,
-  loadedLogs: state.logs,
+  loadedToothLogs: state.toothLogs,
   tuneData: state.tuneData,
 });
 
 const Diagnose = ({
   ui,
-  loadedLogs,
+  loadedToothLogs,
   tuneData,
 }: {
   ui: UIState;
-  loadedLogs: LogsState;
+  loadedToothLogs: LogsState;
   tuneData: TuneDataState;
 }) => {
   const { lg } = useBreakpoint();
@@ -152,7 +152,7 @@ const Diagnose = ({
 
         setLogs(resultComposite);
         store.dispatch({
-          type: 'logs/load', payload: {
+          type: 'toothLogs/load', payload: {
             fileName: logFileName,
             logs: resultComposite,
           },
@@ -170,25 +170,23 @@ const Diagnose = ({
     };
 
     // first visit, logs are not loaded yet
-    if (!(loadedLogs.logs || []).length && tuneData?.tuneId) {
+    if (!(loadedToothLogs.logs || []).length && tuneData?.tuneId) {
       loadData();
     }
 
     // file changed, reload
-    if ((loadedLogs.logs || []).length && loadedLogs.fileName !== routeMatch?.params.fileName) {
+    if ((loadedToothLogs.logs || []).length && loadedToothLogs.fileName !== routeMatch?.params.fileName) {
 
       setLogs(undefined);
-      store.dispatch({ type: 'logs/load', payload: {} });
+      store.dispatch({ type: 'toothLogs/load', payload: {} });
       loadData();
     }
 
     // user navigated to logs root page
     if (!routeMatch?.params.fileName && tuneData.toothLogFiles?.length) {
-
       // either redirect to the first log or to the latest selected
-      if (loadedLogs.fileName) {
-
-        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: loadedLogs.fileName }));
+      if (loadedToothLogs.fileName) {
+        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: loadedToothLogs.fileName }));
       } else {
         const firstLogFile = (tuneData.toothLogFiles || [])[0];
         navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
@@ -209,7 +207,7 @@ const Diagnose = ({
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!logs && !(loadedLogs.logs || []).length ?
+        {!logs && !(loadedToothLogs.logs || []).length ?
           <Loader />
           :
           !ui.sidebarCollapsed &&

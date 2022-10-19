@@ -18,6 +18,7 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
   if (tuneData === null) {
     store.dispatch({ type: 'config/load', payload: null });
     store.dispatch({ type: 'tune/load', payload: null });
+
     return;
   }
 

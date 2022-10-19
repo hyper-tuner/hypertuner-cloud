@@ -33,6 +33,7 @@ export interface AppState {
   tuneData: TuneDataState;
   config: ConfigState;
   logs: LogsState,
+  toothLogs: LogsState,
   ui: UIState;
   status: StatusState;
   navigation: NavigationState;
