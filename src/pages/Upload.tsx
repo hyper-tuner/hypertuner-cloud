@@ -525,7 +525,7 @@ const UploadPage = () => {
   const publishButton = (
     <Row style={{ marginTop: 10 }} {...rowProps}>
       <Col {...colProps}>
-        <Item name="visibility" rules={requiredTextRules}>
+        <Item name="visibility">
           <Select disabled>
             <Select.Option value="public">
               <Space><GlobalOutlined />Public</Space>
@@ -631,7 +631,7 @@ const UploadPage = () => {
       </Row>
       <Row {...rowProps}>
         <Col {...colProps}>
-          <Item name="aspiration" rules={requiredTextRules}>
+          <Item name="aspiration">
             <Select placeholder="Aspiration" style={{ width: '100%' }}>
               <Select.Option value="na">Naturally aspirated</Select.Option>
               <Select.Option value="turbocharged">Turbocharged</Select.Option>
