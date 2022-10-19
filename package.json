@@ -16,7 +16,7 @@
     "serve": "vite preview",
     "lint": "tsc && eslint --max-warnings=0 src",
     "lint:fix": "eslint --fix src",
-    "stats:bundle": "npm run build && open stats.html",
+    "analyze": "npm run build && open stats.html",
     "typegen": "pocketbase-typegen --json ../pocketbase/pb_schema.json --out src/@types/pocketbase-types.ts"
   },
   "dependencies": {
