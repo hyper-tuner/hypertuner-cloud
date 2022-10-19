@@ -2,6 +2,7 @@ import {
   generatePath,
   Link,
   useMatch,
+  useNavigate,
 } from 'react-router-dom';
 import {
   useCallback,
@@ -23,7 +24,6 @@ import {
   FileTextOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
-import * as Sentry from '@sentry/browser';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -34,10 +34,7 @@ import {
   TuneDataState,
   UIState,
 } from '../types/state';
-import {
-  loadCompositeLogs,
-  loadToothLogs,
-} from '../utils/api';
+import { loadToothLogs } from '../utils/api';
 import store from '../store';
 import { formatBytes } from '../utils/numbers';
 import CompositeCanvas from '../components/TriggerLogs/CompositeCanvas';
@@ -50,6 +47,7 @@ import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
 import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
+import useServerStorage from '../hooks/useServerStorage';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -90,6 +88,9 @@ const Diagnose = ({
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
   const routeMatch = useMatch(Routes.TUNE_DIAGNOSE_FILE);
+  const { fetchLogFileWithProgress } = useServerStorage();
+  const navigate = useNavigate();
+
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
@@ -116,8 +117,21 @@ const Diagnose = ({
     const { signal } = controller;
 
     const loadData = async () => {
+      const logFileName = routeMatch?.params.fileName;
+
+      if (!logFileName) {
+        return;
+      }
+
+      // user didn't upload any logs
+      if (tuneData && (tuneData.toothLogFiles || []).length === 0) {
+        navigate(Routes.HUB);
+
+        return;
+      }
+
       try {
-        const compositeRaw = await loadCompositeLogs((percent, total, edge) => {
+        const compositeRaw = await fetchLogFileWithProgress(tuneData.id, logFileName, (percent, total, edge) => {
           setProgress(percent);
           setFileSize(formatBytes(total));
           setEdgeLocation(edge || edgeUnknown);
@@ -136,17 +150,46 @@ const Diagnose = ({
           .getToothLogs();
 
         setLogs(resultComposite);
-        setToothLogs(resultTooth);
+        store.dispatch({
+          type: 'logs/load', payload: {
+            fileName: logFileName,
+            logs: resultComposite,
+          },
+        });
 
+        setToothLogs(resultTooth);
         setStep(2);
       } catch (error) {
         setFetchError(error as Error);
-        Sentry.captureException(error);
-        console.error(error);
       }
     };
 
-    loadData();
+    // first visit, logs are not loaded yet
+    if (!(loadedLogs.logs || []).length && tuneData?.tuneId) {
+      loadData();
+    }
+
+    // file changed, reload
+    if ((loadedLogs.logs || []).length && loadedLogs.fileName !== routeMatch?.params.fileName) {
+
+      setLogs(undefined);
+      store.dispatch({ type: 'logs/load', payload: {} });
+      loadData();
+    }
+
+    // user navigated to logs root page
+    if (!routeMatch?.params.fileName && tuneData.toothLogFiles?.length) {
+
+      // either redirect to the first log or to the latest selected
+      if (loadedLogs.fileName) {
+
+        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: loadedLogs.fileName }));
+      } else {
+        const firstLogFile = (tuneData.toothLogFiles || [])[0];
+        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
+      }
+    }
+
     calculateCanvasSize();
 
     window.addEventListener('resize', calculateCanvasSize);
@@ -155,7 +198,8 @@ const Diagnose = ({
       controller.abort();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-  }, [calculateCanvasSize, loadedLogs, ui.sidebarCollapsed]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calculateCanvasSize, routeMatch?.params.fileName, ui.sidebarCollapsed, tuneData?.tuneId]);
 
   return (
     <>
