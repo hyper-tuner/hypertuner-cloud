@@ -95,7 +95,7 @@ const Diagnose = ({
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
     if (window.innerHeight > minCanvasHeightInner) {
-      setCanvasHeight(Math.round((window.innerHeight - 250) / 2));
+      setCanvasHeight(Math.round(window.innerHeight - 250));
     } else {
       setCanvasHeight(minCanvasHeightInner / 2);
     }
@@ -209,14 +209,12 @@ const Diagnose = ({
   const graphSection = () => {
     switch (loadedToothLogs.type) {
       case 'composite':
-        console.log('composite');
         return <CompositeCanvas
           data={loadedToothLogs.logs as CompositeLogEntry[]}
           width={canvasWidth}
           height={canvasHeight}
         />;
       case 'tooth':
-        console.log('tooth');
         return <ToothCanvas
           data={loadedToothLogs.logs}
           width={canvasWidth}
