@@ -61,6 +61,7 @@ import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
 import useServerStorage from '../hooks/useServerStorage';
 import { Routes } from '../routes';
+import { removeFilenameSuffix } from '../pocketbase';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -84,10 +85,10 @@ const Logs = ({
   loadedLogs,
   tuneData,
 }: {
-  ui: UIState,
-  config: ConfigState,
-  loadedLogs: LogsState,
-  tuneData: TuneDataState,
+  ui: UIState;
+  config: ConfigState;
+  loadedLogs: LogsState;
+  tuneData: TuneDataState;
 }) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
@@ -318,15 +319,15 @@ const Logs = ({
               },
               {
                 label: (
-                  <Badge size="small" style={badgeStyle} count={tuneData.logFiles?.length} offset={[10, -3]}>
+                  <Badge size="small" style={badgeStyle} count={tuneData?.logFiles?.length} offset={[10, -3]}>
                     <FileTextOutlined />Files
                   </Badge>
                 ),
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    {tuneData.logFiles?.map((fileName) => (
-                      <Typography.Paragraph key={fileName}>
+                    {tuneData?.logFiles?.map((fileName) => (
+                      <Typography.Paragraph key={fileName} ellipsis>
                         <Link
                           to={generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName })}
                           style={
@@ -334,7 +335,7 @@ const Logs = ({
                               {} : { color: 'inherit' }
                           }
                         >
-                          {fileName}
+                          {removeFilenameSuffix(fileName)}
                         </Link>
                       </Typography.Paragraph>
                     ))}

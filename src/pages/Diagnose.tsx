@@ -1,4 +1,8 @@
-/* eslint-disable import/no-webpack-loader-syntax */
+import {
+  generatePath,
+  Link,
+  useMatch,
+} from 'react-router-dom';
 import {
   useCallback,
   useEffect,
@@ -25,8 +29,8 @@ import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import {
   AppState,
-  ConfigState,
   LogsState,
+  TuneDataState,
   UIState,
 } from '../types/state';
 import {
@@ -43,6 +47,8 @@ import TriggerLogsParser, {
 import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
 import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
+import { Routes } from '../routes';
+import { removeFilenameSuffix } from '../pocketbase';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -51,18 +57,27 @@ const edgeUnknown = 'Unknown';
 
 const badgeStyle = { backgroundColor: Colors.TEXT };
 
+const margin = 30;
+const sidebarWidth = 250;
+const minCanvasHeightInner = 600;
+
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
   config: state.config,
   loadedLogs: state.logs,
+  tuneData: state.tuneData,
 });
 
-const margin = 30;
-const sidebarWidth = 250;
-const minCanvasHeightInner = 600;
-
-const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState, loadedLogs: LogsState }) => {
+const Diagnose = ({
+  ui,
+  loadedLogs,
+  tuneData,
+}: {
+  ui: UIState;
+  loadedLogs: LogsState;
+  tuneData: TuneDataState;
+}) => {
   const { lg } = useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
@@ -73,6 +88,7 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(0);
   const [canvasHeight, setCanvasHeight] = useState(0);
+  const routeMatch = useMatch(Routes.TUNE_DIAGNOSE_FILE);
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
@@ -155,15 +171,26 @@ const Diagnose = ({ ui, config, loadedLogs }: { ui: UIState, config: ConfigState
             items={[
               {
                 label: (
-                  <Badge size="small" style={badgeStyle} count={1} offset={[10, -3]}>
+                  <Badge size="small" style={badgeStyle} count={tuneData?.toothLogFiles?.length} offset={[10, -3]}>
                     <FileTextOutlined />Files
                   </Badge>
                 ),
                 key: 'files',
                 children: (
                   <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    <Typography.Paragraph>tooth.csv</Typography.Paragraph>
-                    <Typography.Paragraph>composite.csv</Typography.Paragraph>
+                    {tuneData?.toothLogFiles?.map((fileName) => (
+                      <Typography.Paragraph key={fileName} ellipsis>
+                        <Link
+                          to={generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName })}
+                          style={
+                            routeMatch?.params.fileName === fileName ?
+                              {} : { color: 'inherit' }
+                          }
+                        >
+                          {removeFilenameSuffix(fileName)}
+                        </Link>
+                      </Typography.Paragraph>
+                    ))}
                   </PerfectScrollbar>
                 ),
               },
