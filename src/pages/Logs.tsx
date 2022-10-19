@@ -189,8 +189,7 @@ const Logs = ({
 
         setFileSize(formatBytes(raw.byteLength));
 
-        const pako = await import('pako');
-        worker.postMessage(pako.inflate(new Uint8Array(raw)).buffer);
+        worker.postMessage(raw);
 
         worker.onmessage = ({ data }) => {
           switch (data.type) {
