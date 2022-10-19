@@ -41,6 +41,7 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
+      includeAssets: ['icons/icon.ico', 'icons/icon.png'],
       manifest: {
         name: 'HyperTuner Cloud',
         short_name: 'HyperTuner Cloud',
