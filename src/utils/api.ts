@@ -63,13 +63,6 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
   }
 };
 
-export const loadLogs = (onProgress?: OnProgress, signal?: AbortSignal) =>
-  fetchWithProgress(
-    `${CDN_URL}/public/temp/long.mlg.gz`,
-    onProgress,
-    signal,
-  ).then((response) => response);
-
 export const loadCompositeLogs = (onProgress?: OnProgress, signal?: AbortSignal) =>
   fetchWithProgress(
     `${CDN_URL}/public/temp/composite_1.csv.gz`,
