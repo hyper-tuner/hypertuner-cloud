@@ -57,7 +57,7 @@ const { Header } = Layout;
 const { useBreakpoint } = Grid;
 const { SubMenu } = Menu;
 
-const TopBar = ({ tuneId }: { tuneId: string | null }) => {
+const TopBar = ({ tuneId, hasLogs, hasToothLogs }: { tuneId: string | null; hasLogs: boolean; hasToothLogs: boolean }) => {
   const { xs, sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
@@ -119,13 +119,13 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
             {lg && 'Tune'}
           </Space>
         </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOGS)}>
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOGS)} disabled={!hasLogs}>
           <Space>
             <FundOutlined />
             {lg && 'Logs'}
           </Space>
         </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)}>
+        <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)} disabled={!hasToothLogs}>
           <Space>
             <SettingOutlined />
             {lg && 'Diagnose'}
@@ -133,7 +133,7 @@ const TopBar = ({ tuneId }: { tuneId: string | null }) => {
         </Radio.Button>
       </Radio.Group>
     </Col>
-  ), [pathname, tuneTuneMatch?.pathnameBase, tabMatch?.pathname, tuneRootMatch?.pathname, hubPathMatch?.pathname, tuneLogMatch?.pathnameBase, buildTuneUrl, lg, navigate]);
+  ), [pathname, tuneLogMatch?.pathnameBase, tuneTuneMatch?.pathnameBase, tabMatch?.pathname, tuneRootMatch?.pathname, hubPathMatch?.pathname, buildTuneUrl, lg, hasLogs, hasToothLogs, navigate]);
 
   const rightMenuColProps = tuneId ? {
     span: 8,

@@ -218,6 +218,13 @@ const Logs = ({
       }
     };
 
+    // user didn't upload any logs
+    if (tuneData && (tuneData.logFiles || []).length === 0) {
+      navigate(Routes.HUB);
+
+      return undefined;
+    }
+
     // user navigated to logs root page
     if (!routeMatch?.params.fileName && tuneData.logFiles?.length) {
       // either redirect to the first log or to the latest selected
