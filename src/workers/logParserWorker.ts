@@ -24,8 +24,24 @@ const parseMsl = (raw: ArrayBufferLike, t0: number): Result => ({
   timestamp: new Date(),
   info: '',
   bitFieldNames: '',
-  records: [],
-  fields: [],
+  fields: [
+    {
+      name: 'test',
+      units: 'RPM',
+      displayStyle: 'Float',
+      scale: 1,
+      transform: 1,
+      digits: 1,
+    },
+  ],
+  records: [
+    {
+      test: 1,
+      'Time': new Date().getTime(),
+      type: 'field',
+      timestamp: new Date().getTime(),
+    },
+  ],
 });
 
 const parseMlg = (raw: ArrayBufferLike, t0: number): Result => new Parser(raw).parse((progress) => {
