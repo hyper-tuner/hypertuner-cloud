@@ -41,11 +41,11 @@ class TriggerLogsParser implements ParserInterface {
 
   private raw: string = '';
 
-  constructor(buffer: ArrayBuffer) {
+  public constructor(buffer: ArrayBuffer) {
     this.raw = (new TextDecoder()).decode(buffer);
   }
 
-  parse(): this {
+  public parse(): this {
     this.parseCompositeLogs(this.raw);
     this.parseToothLogs(this.raw);
 
@@ -60,15 +60,15 @@ class TriggerLogsParser implements ParserInterface {
     return this;
   }
 
-  getCompositeLogs(): CompositeLogEntry[] {
+  public getCompositeLogs(): CompositeLogEntry[] {
     return this.resultComposite;
   }
 
-  getToothLogs(): ToothLogEntry[] {
+  public getToothLogs(): ToothLogEntry[] {
     return this.resultTooth;
   }
 
-  isTooth(): boolean {
+  public isTooth(): boolean {
     if (!this.alreadyParsed) {
       this.parse();
     }
@@ -76,7 +76,7 @@ class TriggerLogsParser implements ParserInterface {
     return this.isToothLogs;
   }
 
-  isComposite(): boolean {
+  public isComposite(): boolean {
     if (!this.alreadyParsed) {
       this.parse();
     }
