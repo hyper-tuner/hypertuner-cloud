@@ -93,6 +93,8 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
         setIsLoading(true);
         loadTune(null);
         store.dispatch({ type: 'tuneData/load', payload: null });
+        store.dispatch({ type: 'logs/load', payload: {} });
+        store.dispatch({ type: 'toothLogs/load', payload: {} });
         setIsLoading(false);
       }
 
