@@ -119,7 +119,7 @@ const Logs = ({
     } else {
       // not enough space to put 2 graphs
       setShowSingleGraph(true);
-      setCanvasHeight((minCanvasHeightInner - 100) / 2);
+      setCanvasHeight((minCanvasHeightInner - 140) / 2);
     }
   }, []);
 
