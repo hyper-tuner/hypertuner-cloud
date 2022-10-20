@@ -58,7 +58,6 @@ const badgeStyle = { backgroundColor: Colors.TEXT };
 
 const margin = 30;
 const sidebarWidth = 250;
-const minCanvasHeightInner = 600;
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -93,12 +92,7 @@ const Diagnose = ({
 
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
-
-    if (window.innerHeight > minCanvasHeightInner) {
-      setCanvasHeight(Math.round(window.innerHeight - 250));
-    } else {
-      setCanvasHeight(minCanvasHeightInner / 2);
-    }
+    setCanvasHeight(Math.round(window.innerHeight - 220));
   }, []);
   const siderProps = {
     width: sidebarWidth,

@@ -70,7 +70,7 @@ const { Step } = Steps;
 const edgeUnknown = 'Unknown';
 const margin = 30;
 const sidebarWidth = 250;
-const minCanvasHeightInner = 600;
+const minCanvasHeightInner = 500;
 
 const badgeStyle = { backgroundColor: Colors.TEXT };
 
@@ -114,14 +114,13 @@ const Logs = ({
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
     if (window.innerHeight > minCanvasHeightInner) {
-      setCanvasHeight(Math.round((window.innerHeight - 250) / 2));
+      setCanvasHeight(Math.round((window.innerHeight - 280) / 2));
       setShowSingleGraph(false);
     } else {
       // not enough space to put 2 graphs
       setShowSingleGraph(true);
-      setCanvasHeight(minCanvasHeightInner / 2);
+      setCanvasHeight((minCanvasHeightInner - 100) / 2);
     }
-
   }, []);
 
   const siderProps = {
