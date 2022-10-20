@@ -1,6 +1,6 @@
 import { ParserInterface } from '../ParserInterface';
 
-class LogParser implements ParserInterface {
+class LogValidator implements ParserInterface {
   private MLG_FORMAT_LENGTH = 6;
 
   private isMLGLogs: boolean = false;
@@ -53,4 +53,4 @@ class LogParser implements ParserInterface {
   }
 }
 
-export default LogParser;
+export default LogValidator;

@@ -1,7 +1,7 @@
 import { Parser } from 'mlg-converter';
 import { Result } from 'mlg-converter/dist/types';
 import Pako from 'pako';
-import LogParser from '../utils/logs/LogParser';
+import LogValidator from '../utils/logs/LogValidator';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
@@ -40,7 +40,7 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
   try {
     const t0 = performance.now();
     const raw = Pako.inflate(new Uint8Array(data)).buffer;
-    const logParser = new LogParser(raw);
+    const logParser = new LogValidator(raw);
 
     if (logParser.isMLG()) {
       const mlgResult = parseMlg(raw, t0);
