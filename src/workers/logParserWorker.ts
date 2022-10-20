@@ -42,6 +42,8 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
   try {
     const t0 = performance.now();
     const raw = Pako.inflate(new Uint8Array(data)).buffer;
+
+    // first try MLG
     const result = parseMlg(raw, t0);
 
     if (result) {
@@ -51,6 +53,9 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
         records: result.records.length,
       } as WorkerOutput);
       ctx.postMessage({ type: 'result', result } as WorkerOutput);
+    } else {
+      // try CSV/MLS
+      ctx.postMessage({ type: 'result', result: { records: [], fields: [] } } as WorkerOutput);
     }
   } catch (error) {
     ctx.postMessage({ type: 'error', error } as WorkerOutput);
