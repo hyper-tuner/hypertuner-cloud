@@ -49,6 +49,10 @@ class LogValidator implements ParserInterface {
         this.isMSLLogs = true;
         break;
       }
+
+      if (index > 10) {
+        break;
+      }
     }
   }
 }
