@@ -1,6 +1,6 @@
 import { ParserInterface } from '../ParserInterface';
 
-class LogParser implements ParserInterface {
+class LogValidator implements ParserInterface {
   private MLG_FORMAT_LENGTH = 6;
 
   private isMLGLogs: boolean = false;
@@ -11,7 +11,7 @@ class LogParser implements ParserInterface {
 
   private raw: string = '';
 
-  constructor(buffer: ArrayBuffer) {
+  public constructor(buffer: ArrayBuffer) {
     this.buffer = buffer;
     this.raw = (new TextDecoder()).decode(buffer);
 
@@ -19,15 +19,15 @@ class LogParser implements ParserInterface {
     this.checkMSL();
   }
 
-  parse(): this {
+  public parse(): this {
     return this;
   }
 
-  isMLG(): boolean {
+  public isMLG(): boolean {
     return this.isMLGLogs;
   }
 
-  isMSL(): boolean {
+  public isMSL(): boolean {
     return this.isMSLLogs;
   }
 
@@ -49,8 +49,12 @@ class LogParser implements ParserInterface {
         this.isMSLLogs = true;
         break;
       }
+
+      if (index > 10) {
+        break;
+      }
     }
   }
 }
 
-export default LogParser;
+export default LogValidator;

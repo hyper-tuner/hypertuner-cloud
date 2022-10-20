@@ -38,7 +38,7 @@ import {
   DatalogEntry,
 } from '@hyper-tuner/types';
 // eslint-disable-next-line import/no-unresolved
-import MlgParserWorker from '../workers/mlgParser?worker';
+import LogParserWorker from '../workers/logParserWorker?worker';
 import LogCanvas from '../components/Logs/LogCanvas';
 import store from '../store';
 import {
@@ -63,7 +63,7 @@ import useServerStorage from '../hooks/useServerStorage';
 import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
 import { isAbortedRequest } from '../utils/error';
-import { WorkerOutput } from '../workers/mlgParser';
+import { WorkerOutput } from '../workers/logParserWorker';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -168,11 +168,10 @@ const Logs = ({
         format,
       };
     }).filter((val) => !!val);
-
   }, [config?.datalog, findOutputChannel, isConfigReady]);
 
   useEffect(() => {
-    const worker = new MlgParserWorker();
+    const worker = new LogParserWorker();
     const controller = new AbortController();
     const { signal } = controller;
 

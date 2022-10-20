@@ -53,7 +53,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Routes } from '../routes';
 import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
-import LogParser from '../utils/logs/LogParser';
+import LogValidator from '../utils/logs/LogValidator';
 import useDb from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
 import { buildFullUrl } from '../utils/url';
@@ -314,7 +314,7 @@ const UploadPage = () => {
 
       let valid = true;
       const extension = file.name.split('.').pop();
-      const parser = new LogParser(await file.arrayBuffer());
+      const parser = new LogValidator(await file.arrayBuffer());
 
       switch (extension) {
         case 'mlg':
