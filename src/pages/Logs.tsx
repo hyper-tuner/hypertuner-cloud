@@ -63,6 +63,7 @@ import useServerStorage from '../hooks/useServerStorage';
 import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
 import { isAbortedRequest } from '../utils/error';
+import { WorkerOutput } from '../workers/mlgParser';
 
 const { Content } = Layout;
 const { Step } = Steps;
@@ -96,7 +97,7 @@ const Logs = ({
   const [progress, setProgress] = useState(0);
   const [fileSize, setFileSize] = useState<string>();
   const [parseElapsed, setParseElapsed] = useState<string>();
-  const [samplesCount, setSamplesCount] = useState();
+  const [samplesCount, setSamplesCount] = useState<number>();
   const [fetchError, setFetchError] = useState<Error>();
   const [parseError, setParseError] = useState<Error>();
   const [step, setStep] = useState(0);
@@ -197,26 +198,26 @@ const Logs = ({
 
         worker.postMessage(raw);
 
-        worker.onmessage = ({ data }) => {
+        worker.onmessage = ({ data }: { data: WorkerOutput }) => {
           switch (data.type) {
             case 'progress':
               setStep(1);
-              setProgress(data.progress);
-              setParseElapsed(msToTime(data.elapsed));
+              setProgress(data.progress!);
+              setParseElapsed(msToTime(data.elapsed!));
               break;
             case 'result':
               setLogs(data.result);
               store.dispatch({
                 type: 'logs/load', payload: {
                   fileName: logFileName,
-                  logs: data.result.records,
+                  logs: data.result!.records,
                 },
               });
               break;
             case 'metrics':
               console.info(`Log parsed in ${data.elapsed}ms`);
-              setParseElapsed(msToTime(data.elapsed));
-              setSamplesCount(data.records);
+              setParseElapsed(msToTime(data.elapsed!));
+              setSamplesCount(data.records!);
               setStep(2);
               break;
             case 'error':
