@@ -168,7 +168,6 @@ const Logs = ({
         format,
       };
     }).filter((val) => !!val);
-
   }, [config?.datalog, findOutputChannel, isConfigReady]);
 
   useEffect(() => {

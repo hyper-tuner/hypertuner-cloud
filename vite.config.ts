@@ -20,6 +20,7 @@ export default defineConfig({
           kbar: ['kbar'],
           perfectScrollbar: ['perfect-scrollbar'],
           pako: ['pako'],
+          mlgConverter: ['mlg-converter'],
         },
       },
     },
