@@ -2,6 +2,7 @@ import { Parser } from 'mlg-converter';
 import { Result } from 'mlg-converter/dist/types';
 import Pako from 'pako';
 import LogValidator from '../utils/logs/LogValidator';
+import MslLogParser from '../utils/logs/MslLogParser';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
@@ -18,31 +19,7 @@ export interface WorkerOutput {
 // eslint-disable-next-line no-bitwise
 const elapsed = (t0: number): number => ~~(performance.now() - t0);
 
-const parseMsl = (raw: ArrayBufferLike, t0: number): Result => ({
-  fileFormat: 'MSL',
-  formatVersion: 1,
-  timestamp: new Date(),
-  info: '',
-  bitFieldNames: '',
-  fields: [
-    {
-      name: 'test',
-      units: 'RPM',
-      displayStyle: 'Float',
-      scale: 1,
-      transform: 1,
-      digits: 1,
-    },
-  ],
-  records: [
-    {
-      test: 1,
-      'Time': new Date().getTime(),
-      type: 'field',
-      timestamp: new Date().getTime(),
-    },
-  ],
-});
+const parseMsl = (raw: ArrayBufferLike, t0: number): Result => new MslLogParser(raw).parse().getResult();
 
 const parseMlg = (raw: ArrayBufferLike, t0: number): Result => new Parser(raw).parse((progress) => {
   ctx.postMessage({
