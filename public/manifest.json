@@ -1,0 +1,37 @@
+{
+  "short_name": "HyperTuner Cloud",
+  "name": "HyperTuner Cloud",
+  "description": "The best way to share your Speeduino and rusEFI tunes and logs",
+  "icons": [
+    {
+      "src": "/icons/icon.ico",
+      "type": "image/x-icon",
+      "sizes": "256x256"
+    },
+    {
+      "src": "/icons/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "screenshots" : [
+    {
+      "src": "/img/screen2.png",
+      "sizes": "1920x1194",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Log viewer"
+    },
+    {
+      "src": "/img/screen1.png",
+      "sizes": "1920x1194",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "VE Table with command palette"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#191C1E",
+  "background_color": "#191C1E"
+}
