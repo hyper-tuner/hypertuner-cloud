@@ -33,7 +33,9 @@ const ToothCanvas = ({ data, width, height }: Props) => {
     const xData: number[] = [];
     const yData: (number | null)[] = [];
 
-    data.forEach((entry: ToothLogEntry, index) => {
+    // NOTE: temporary limit to 500 points
+    // TODO: add pagination
+    data.slice(0, 500).forEach((entry: ToothLogEntry, index) => {
       if (entry.type === EntryType.TRIGGER) {
         yData.push(entry.toothTime);
         xData.push(index);
