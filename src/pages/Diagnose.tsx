@@ -92,7 +92,7 @@ const Diagnose = ({
 
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
-    setCanvasHeight(Math.round(window.innerHeight - 110));
+    setCanvasHeight(Math.round(window.innerHeight - 200));
   }, []);
   const siderProps = {
     width: sidebarWidth,
