@@ -1,28 +1,21 @@
 version: 2
+
+registries:
+  github:
+    type: npm-registry
+    url: npm.pkg.github.com
+    token: ${{ secrets.NPM_GITHUB_PAT }}
+
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 20
+    registries:
+      - github
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-
-# registries:
-#   npm-github:
-#     type: npm-registry
-#     url: https://npm.pkg.github.com
-#     token: ${{ secrets.NPM_GITHUB_PAT }}
-
-# updates:
-#   - package-ecosystem: "npm"
-#     directory: "/"
-#     schedule:
-#       interval: "daily"
-#     open-pull-requests-limit: 20
-#     registries:
-#       - npm-github
-
