@@ -1,5 +1,5 @@
 export interface ParserInterface {
-  parse(): this;
+  parse(onProgress: (percent: number) => void): this;
 }
 
 export interface ParserConstructor {

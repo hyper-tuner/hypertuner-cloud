@@ -19,7 +19,15 @@ export interface WorkerOutput {
 // eslint-disable-next-line no-bitwise
 const elapsed = (t0: number): number => ~~(performance.now() - t0);
 
-const parseMsl = (raw: ArrayBufferLike, t0: number): Result => new MslLogParser(raw).parse().getResult();
+const parseMsl = (raw: ArrayBufferLike, t0: number): Result => new MslLogParser(raw)
+  .parse((progress) => {
+    ctx.postMessage({
+      type: 'progress',
+      progress,
+      elapsed: elapsed(t0),
+    } as WorkerOutput);
+  })
+  .getResult();
 
 const parseMlg = (raw: ArrayBufferLike, t0: number): Result => new Parser(raw).parse((progress) => {
   ctx.postMessage({
