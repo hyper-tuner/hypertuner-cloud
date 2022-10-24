@@ -1,5 +1,19 @@
 // This file was @generated using pocketbase-typegen
 
+export type IsoDateString = string
+
+export type RecordIdString = string
+
+export type UserIdString = string
+
+export type BaseRecord = {
+    id: RecordIdString
+    created: IsoDateString
+    updated: IsoDateString
+    '@collectionId': string
+    '@collectionName': string
+}
+
 export enum Collections {
 	IniFiles = 'iniFiles',
 	Profiles = 'profiles',
@@ -9,18 +23,18 @@ export enum Collections {
 export type IniFilesRecord = {
 	signature: string
 	file: string
-	ecosystem: string
+	ecosystem: 'speeduino' | 'rusefi'
 }
 
 export type ProfilesRecord = {
-	userId: string
+	userId: UserIdString
 	username: string
 	avatar?: string
 }
 
 export type TunesRecord = {
-	user: string
-	userProfile: string
+	user: UserIdString
+	userProfile: RecordIdString
 	tuneId: string
 	signature: string
 	vehicleName: string
@@ -28,7 +42,7 @@ export type TunesRecord = {
 	engineCode: string
 	displacement: number
 	cylindersCount: number
-	aspiration: string
+	aspiration: 'na' | 'turbocharged' | 'supercharged'
 	compression?: number
 	fuel?: string
 	ignition?: string
@@ -38,7 +52,7 @@ export type TunesRecord = {
 	stockHp?: number
 	readme: string
 	textSearch: string
-	visibility: string
+	visibility: 'public' | 'unlisted'
 	tuneFile: string
 	customIniFile?: string
 	logFiles?: string[]
