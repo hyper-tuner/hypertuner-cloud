@@ -22,12 +22,15 @@ class MslLogParser implements ParserInterface {
     this.raw = (new TextDecoder()).decode(buffer);
   }
 
-  public parse(): this {
+  public parse(onProgress: (percent: number) => void): this {
     let unitsIndex = 999;
     const lines = this.raw.trim().split('\n');
-    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      const line = lines[lineIndex].trim();
 
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      // eslint-disable-next-line no-bitwise
+      onProgress(~~(lineIndex / lines.length * 100));
+
+      const line = lines[lineIndex].trim();
       if (line.startsWith('"')) {
         this.result.info += `${line.replaceAll('"', '').trim()}\n`;
 
