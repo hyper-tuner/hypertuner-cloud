@@ -71,23 +71,24 @@ const useDb = () => {
     }
   };
 
-  const searchTunes = async (search?: string) => {
-    // TODO: add pagination
-    const batchSide = 100;
-    const phrases = search ? search.replace(/ +(?= )/g,'').split(' ') : [];
+  const searchTunes = async (search: string, page: number, perPage: number) => {
+    const phrases = search.length > 0 ? search.replace(/ +(?= )/g,'').split(' ') : [];
     const filter = phrases
       .filter((phrase) => phrase.length > 1)
       .map((phrase) => `textSearch ~ "${phrase}"`)
       .join(' || ');
 
     try {
-      const list = await client.records.getFullList(Collections.Tunes, batchSide, {
+      const list = await client.records.getList(Collections.Tunes, page, perPage, {
         sort: '-created',
         filter,
         expand: 'userProfile',
       });
 
-      return Promise.resolve(list as TunesRecordFull[]);
+      return Promise.resolve({
+        items: list.items as TunesRecordFull[],
+        totalItems: list.totalItems,
+      });
     } catch (error) {
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error)));
@@ -101,7 +102,7 @@ const useDb = () => {
     createTune: (data: TunesRecord): Promise<TunesRecordFull> => createTune(data),
     getTune: (tuneId: string): Promise<TunesRecordFull | null> => getTune(tuneId),
     getIni: (tuneId: string): Promise<IniFilesRecordFull | null> => getIni(tuneId),
-    searchTunes: (search?: string): Promise<TunesRecordFull[]> => searchTunes(search),
+    searchTunes: (search: string, page: number, perPage: number): Promise<{ items: TunesRecordFull[]; totalItems: number }> => searchTunes(search, page, perPage),
   };
 };
 
