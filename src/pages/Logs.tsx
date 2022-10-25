@@ -114,12 +114,12 @@ const Logs = ({
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
 
     if (window.innerHeight > minCanvasHeightInner) {
-      setCanvasHeight(Math.round((window.innerHeight - 280) / 2));
+      setCanvasHeight(Math.round((window.innerHeight - 170) / 2));
       setShowSingleGraph(false);
     } else {
       // not enough space to put 2 graphs
+      setCanvasHeight(Math.round(window.innerHeight - 115));
       setShowSingleGraph(true);
-      setCanvasHeight((minCanvasHeightInner - 140) / 2);
     }
   }, []);
 
@@ -358,7 +358,7 @@ const Logs = ({
           />
         }
       </Sider>
-      <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
+      <Layout className="logs-container">
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
             {logs || !!(loadedLogs.logs || []).length
@@ -382,6 +382,7 @@ const Logs = ({
                   percent={progress}
                   status={(fetchError || parseError) && 'exception'}
                   width={170}
+                  className="logs-progress"
                 />
                 <Divider />
                 <Steps current={step} direction={lg ? 'horizontal' : 'vertical'}>

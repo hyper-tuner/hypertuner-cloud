@@ -159,21 +159,6 @@ const Dialog = ({
     </div>;
   }, [tune?.constants]);
 
-  const calculateSpan = (type: PanelTypes, dialogsCount: number) => {
-    let xxl = 24;
-    const xl = 24;
-
-    if (dialogsCount > 1 && type === PanelTypes.FIELDS) {
-      xxl = 12;
-    }
-
-    return {
-      span: 24,
-      xxl,
-      xl,
-    };
-  };
-
   const resolvedDialogs: DialogsAndCurves = {};
 
   const resolveDialogs = (source: DialogsType, dialogName: string) => {
@@ -270,7 +255,7 @@ const Dialog = ({
     }
 
     return (
-      <Col key={panel.name} {...calculateSpan(panel.type as PanelTypes, panels.length)}>
+      <Col key={panel.name} span={24}>
         <Divider>{panel.title}</Divider>
         {(panel.fields).map((field: FieldType) => {
           const constant = findConstantOnPage(field.name);
