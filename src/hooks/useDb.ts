@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/browser';
 import {
   client,
   formatError,
+  ClientResponseError,
 } from '../pocketbase';
 import {
   IniFilesRecordFull,
@@ -49,6 +50,10 @@ const useDb = () => {
 
       return Promise.resolve(tune.totalItems > 0 ? tune.items[0] as TunesRecordFull : null);
     } catch (error) {
+      if ((error as ClientResponseError).isAbort) {
+        return Promise.reject(new Error('Cancelled'));
+      }
+
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error)));
 
@@ -64,6 +69,10 @@ const useDb = () => {
 
       return Promise.resolve(tune.totalItems > 0 ? tune.items[0] as IniFilesRecordFull : null);
     } catch (error) {
+      if ((error as ClientResponseError).isAbort) {
+        return Promise.reject(new Error('Cancelled'));
+      }
+
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error)));
 
@@ -90,6 +99,10 @@ const useDb = () => {
         totalItems: list.totalItems,
       });
     } catch (error) {
+      if ((error as ClientResponseError).isAbort) {
+        return Promise.reject(new Error('Cancelled'));
+      }
+
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error)));
 

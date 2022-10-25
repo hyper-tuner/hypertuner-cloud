@@ -6,10 +6,10 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { User } from 'pocketbase';
 import {
   client,
   formatError,
+  User,
 } from '../pocketbase';
 import { buildRedirectUrl } from '../utils/url';
 import { Collections } from '../@types/pocketbase-types';
