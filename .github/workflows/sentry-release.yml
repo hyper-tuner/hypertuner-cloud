@@ -16,6 +16,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache: "npm"
+      - run: npm install
+      - run: npm run build
       - name: Sentry Release
         uses: getsentry/action-release@v1.2.0
         env:
@@ -25,3 +31,4 @@ jobs:
         with:
           environment: production
           ignore_empty: true
+          sourcemaps: './build/assets'
