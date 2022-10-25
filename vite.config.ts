@@ -5,7 +5,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    outDir: 'build', // This changes the out put dir from dist to build
+    outDir: 'build',
     sourcemap: true,
     rollupOptions: {
       output: {

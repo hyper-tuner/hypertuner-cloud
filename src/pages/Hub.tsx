@@ -57,26 +57,31 @@ const Hub = () => {
 
   const loadData = debounce(async (searchText: string) => {
     setIsLoading(true);
-    const { items, totalItems } = await searchTunes(searchText, page, pageSize);
-    setTotal(totalItems);
-    const mapped = items.map((tune) => ({
-      ...tune,
-      key: tune.tuneId,
-      year: tune.year,
-      author: (tune['@expand'] as { userProfile: ProfilesRecord }).userProfile.username,
-      displacement: `${tune.displacement}l`,
-      aspiration: aspirationMapper[tune.aspiration],
-      published: formatTime(tune.updated),
-      stars: 0,
-    }));
-    setDataSource(mapped);
-    setIsLoading(false);
+    try {
+      const { items, totalItems } = await searchTunes(searchText, page, pageSize);
+      setTotal(totalItems);
+      const mapped = items.map((tune) => ({
+        ...tune,
+        key: tune.tuneId,
+        year: tune.year,
+        author: (tune['@expand'] as { userProfile: ProfilesRecord }).userProfile.username,
+        displacement: `${tune.displacement}l`,
+        aspiration: aspirationMapper[tune.aspiration],
+        published: formatTime(tune.updated),
+        stars: 0,
+      }));
+      setDataSource(mapped);
+    } catch (error) {
+      // request cancelled
+    } finally {
+      setIsLoading(false);
+    }
   }, 300);
 
   const debounceLoadData = useCallback((value: string) => {
     setSearchQuery(value);
     loadData(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {

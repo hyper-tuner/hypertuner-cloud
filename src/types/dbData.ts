@@ -1,4 +1,4 @@
-import { Record } from 'pocketbase';
+import { Record } from '../pocketbase';
 import {
   IniFilesRecord,
   ProfilesRecord,
