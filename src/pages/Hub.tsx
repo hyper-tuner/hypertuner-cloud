@@ -192,7 +192,6 @@ const Hub = () => {
 
   return (
     <div className="large-container">
-      <Title>Hub</Title>
       <Input
         // eslint-disable-next-line jsx-a11y/tabindex-no-positive
         tabIndex={1}
