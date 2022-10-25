@@ -22,13 +22,11 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { fetchINIFile, fetchTuneFile } = useServerStorage();
 
-  const started = new Date();
   const tuneRaw = await fetchTuneFile(tuneData.id, tuneData.tuneFile);
 
   const tuneParser = new TuneParser().parse(tuneRaw);
 
   if (!tuneParser.isValid()) {
-    console.error('Invalid tune');
     notification.error({ message: 'Error', description: 'Tune file is not valid!' });
 
     return;
@@ -50,12 +48,8 @@ export const loadTune = async (tuneData: TunesRecordFull | null) => {
     };
     config.constants.pages[0].data.divider = divider;
 
-    const loadingTimeInfo = `Tune loaded in ${(new Date().getTime() - started.getTime())}ms`;
-    console.info(loadingTimeInfo);
-
     store.dispatch({ type: 'config/load', payload: config });
     store.dispatch({ type: 'tune/load', payload: tune });
-    store.dispatch({ type: 'status', payload: loadingTimeInfo });
   } catch (error) {
     iniLoadingError((error as Error));
   }

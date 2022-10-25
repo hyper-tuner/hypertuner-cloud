@@ -163,11 +163,6 @@ const AuthProvider = (props: { children: ReactNode }) => {
 
     const storeUnsubscribe = client.authStore.onChange((_token, model) => {
       setCurrentUser(model as User | null);
-      if (model) {
-        console.info('Logged in as', model.email);
-      } else {
-        console.info('Logged out');
-      }
     });
 
     client.realtime.subscribe(Collections.Tunes, (event) => {

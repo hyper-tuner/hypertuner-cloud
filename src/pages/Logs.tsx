@@ -213,7 +213,6 @@ const Logs = ({
               });
               break;
             case 'metrics':
-              console.info(`Log parsed in ${data.elapsed}ms`);
               setParseElapsed(msToTime(data.elapsed!));
               setSamplesCount(data.records!);
               setStep(2);

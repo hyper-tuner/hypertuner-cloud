@@ -28,9 +28,6 @@ const setTuneId = createAction<string>('navigation/tuneId');
 const loadLogs = createAction<LogsState>('logs/load');
 const loadToothLogs = createAction<ToothLogsState>('toothLogs/load');
 
-// status bar
-const setStatus = createAction<string>('status');
-
 // ui
 const setSidebarCollapsed = createAction<boolean>('ui/sidebarCollapsed');
 const toggleSidebar = createAction('ui/toggleSidebar');
@@ -80,9 +77,6 @@ const rootReducer = createReducer(initialState, (builder) => {
     })
     .addCase(toggleSidebar, (state: AppState) => {
       state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
-    })
-    .addCase(setStatus, (state: AppState, action) => {
-      state.status.text = action.payload;
     })
     .addCase(setTuneId, (state: AppState, action) => {
       state.navigation.tuneId = action.payload;

@@ -402,9 +402,8 @@ const UploadPage = () => {
 
   const loadExistingTune = useCallback(async (currentTuneId: string) => {
     setNewTuneId(currentTuneId);
-    console.info('Using tuneId:', currentTuneId);
-
     const oldTune = await getTune(currentTuneId);
+
     if (oldTune) {
       // this is someone elses tune
       if (oldTune.user !== currentUser?.id) {
