@@ -110,12 +110,32 @@ const useDb = () => {
     }
   };
 
+  const autocomplete = async (attribute: string, search: string) => {
+    try {
+      const items = await client.records.getFullList(Collections.Tunes, 10, {
+        filter: `${attribute} ~ "${search}"`,
+      });
+
+      return Promise.resolve(items as TunesRecordFull[]);
+    } catch (error) {
+      if ((error as ClientResponseError).isAbort) {
+        return Promise.reject(new Error('Cancelled'));
+      }
+
+      Sentry.captureException(error);
+      databaseGenericError(new Error(formatError(error)));
+
+      return Promise.reject(error);
+    }
+  };
+
   return {
     updateTune: (tuneId: string, data: TunesRecordPartial): Promise<void> => updateTune(tuneId, data),
     createTune: (data: TunesRecord): Promise<TunesRecordFull> => createTune(data),
     getTune: (tuneId: string): Promise<TunesRecordFull | null> => getTune(tuneId),
     getIni: (tuneId: string): Promise<IniFilesRecordFull | null> => getIni(tuneId),
     searchTunes: (search: string, page: number, perPage: number): Promise<{ items: TunesRecordFull[]; totalItems: number }> => searchTunes(search, page, perPage),
+    autocomplete: (attribute: string, search: string): Promise<TunesRecordFull[]> => autocomplete(attribute, search),
   };
 };
 

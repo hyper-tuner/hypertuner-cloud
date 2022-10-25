@@ -18,6 +18,7 @@ import {
   Typography,
   Upload,
   Form,
+  AutoComplete,
 } from 'antd';
 import {
   PlusOutlined,
@@ -33,6 +34,7 @@ import {
   GlobalOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
+import debounce from 'lodash.debounce';
 import { INI } from '@hyper-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -138,7 +140,24 @@ const UploadPage = () => {
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
   const { fetchTuneFile } = useServerStorage();
-  const { createTune, updateTune, getTune } = useDb();
+  const { createTune, updateTune, getTune, autocomplete } = useDb();
+
+  const [autocompleteOptions, setAutocompleteOptions] = useState<{ [attribute: string]: { value: string }[] }>({});
+
+  const searchAutocomplete = debounce(async (attribute: string, search: string) => {
+    if (search.length === 0) {
+      setAutocompleteOptions((prev) => ({ ...prev, [attribute]: [] }));
+      return;
+    }
+
+    const options = (await autocomplete(attribute, search))
+      .map((record) => record[attribute]);
+
+    // TODO: order by occurrence (more common - higher in the list)
+    const unique = [...new Set(options)].map((value) => ({ value }));
+
+    setAutocompleteOptions((prev) => ({ ...prev, [attribute]: unique }));
+  }, 300);
 
   const fetchFile = async (tuneId: string, fileName: string) => bufferToFile(await fetchTuneFile(tuneId, fileName), fileName);
 
@@ -603,19 +622,37 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col span={24} sm={24}>
           <Item name="vehicleName" rules={requiredTextRules}>
-            <Input addonBefore="Vehicle name" />
+            <AutoComplete
+              options={autocompleteOptions.vehicleName}
+              onSearch={(search) => searchAutocomplete('vehicleName', search)}
+              backfill
+            >
+              <Input addonBefore="Vehicle name" />
+            </AutoComplete>
           </Item>
         </Col>
       </Row>
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="engineMake" rules={requiredTextRules}>
-            <Input addonBefore="Engine make" />
+            <AutoComplete
+              options={autocompleteOptions.engineMake}
+              onSearch={(search) => searchAutocomplete('engineMake', search)}
+              backfill
+            >
+              <Input addonBefore="Engine make" />
+            </AutoComplete>
           </Item>
         </Col>
         <Col {...colProps}>
           <Item name="engineCode" rules={requiredTextRules}>
-            <Input addonBefore="Engine code" />
+            <AutoComplete
+              options={autocompleteOptions.engineCode}
+              onSearch={(search) => searchAutocomplete('engineCode', search)}
+              backfill
+            >
+              <Input addonBefore="Engine code" />
+            </AutoComplete>
           </Item>
         </Col>
       </Row>
@@ -650,12 +687,24 @@ const UploadPage = () => {
       <Row {...rowProps}>
         <Col {...colProps}>
           <Item name="fuel">
-            <Input addonBefore="Fuel" />
+            <AutoComplete
+              options={autocompleteOptions.fuel}
+              onSearch={(search) => searchAutocomplete('fuel', search)}
+              backfill
+            >
+              <Input addonBefore="Fuel" />
+            </AutoComplete>
           </Item>
         </Col>
         <Col {...colProps}>
           <Item name="ignition">
-            <Input addonBefore="Ignition" />
+            <AutoComplete
+              options={autocompleteOptions.ignition}
+              onSearch={(search) => searchAutocomplete('ignition', search)}
+              backfill
+            >
+              <Input addonBefore="Ignition" />
+            </AutoComplete>
           </Item>
         </Col>
       </Row>
