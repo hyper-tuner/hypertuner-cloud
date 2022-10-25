@@ -21,6 +21,7 @@ const SmartNumber = ({
   const isSlider = (u: string) => ['%', 'C']
     .includes(`${u}`.toUpperCase());
   const sliderMarks: { [value: number]: string } = {};
+  const step = digits ? 10**-digits : 1;
   sliderMarks[min] = `${min}${units}`;
 
   if (min <= 0) {
@@ -37,7 +38,7 @@ const SmartNumber = ({
         value={defaultValue}
         min={min}
         max={max}
-        step={10**-digits}
+        step={step}
         disabled={disabled}
         marks={sliderMarks}
         tooltip={{
@@ -53,7 +54,7 @@ const SmartNumber = ({
       precision={digits}
       min={min}
       max={max}
-      step={10**-digits}
+      step={step}
       disabled={disabled}
       style={{ minWidth: 150 }}
       formatter={(val) => units ? `${val} ${units}` : `${val}`}
