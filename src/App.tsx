@@ -123,14 +123,16 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuneId]);
 
-  const ContentFor = useCallback((props: { element: ReactNode, marginLeft?: number }) => {
-    const { element, marginLeft } = props;
+  const ContentFor = useCallback((props: { element: ReactNode, marginLeft?: number, fullScreen?: boolean }) => {
+    const { element, marginLeft, fullScreen } = props;
 
     return (
       <Layout style={{ marginLeft }}>
         <Layout className="app-content">
           <Content>
             <Suspense fallback={<Loader />}>{element}</Suspense>
+            {/* dummy element to mitigate mobile browsers navbar offset */}
+            {!fullScreen && <div style={{ marginTop: 60 }}>&nbsp;</div>}
           </Content>
         </Layout>
       </Layout>
@@ -149,10 +151,10 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
           <Route path={Routes.HUB} element={<ContentFor element={<Hub />} />} />
           <Route path={Routes.TUNE_ROOT} element={<ContentFor element={<Info />} />} />
           <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
-          <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
-          <Route path={Routes.TUNE_LOGS_FILE} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
-          <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
-          <Route path={Routes.TUNE_DIAGNOSE_FILE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
+          <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} fullScreen element={<Logs />} />} />
+          <Route path={Routes.TUNE_LOGS_FILE} element={<ContentFor marginLeft={margin} fullScreen element={<Logs />} />} />
+          <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} fullScreen element={<Diagnose />} />} />
+          <Route path={Routes.TUNE_DIAGNOSE_FILE} element={<ContentFor marginLeft={margin} fullScreen element={<Diagnose />} />} />
           <Route path={`${Routes.UPLOAD}/*`} element={<ContentFor element={<Upload />} />} />
 
           <Route path={Routes.LOGIN} element={<ContentFor element={<Login formRole={FormRoles.LOGIN} />} />} />
