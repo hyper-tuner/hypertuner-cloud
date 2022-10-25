@@ -17,7 +17,7 @@ const scale = 2;
 const secondaryTranslate = 2.6;
 const primaryTranslate = 1;
 
-const PAGE_SIZE = 500;
+const PAGE_SIZE = 200;
 
 interface Props {
   data: CompositeLogEntry[];

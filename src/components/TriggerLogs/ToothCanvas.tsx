@@ -23,7 +23,7 @@ interface Props {
   height: number;
 };
 
-const PAGE_SIZE = 500;
+const PAGE_SIZE = 200;
 
 const ToothCanvas = ({ data, width, height }: Props) => {
   const { sm } = useBreakpoint();
