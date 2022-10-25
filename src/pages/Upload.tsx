@@ -85,6 +85,10 @@ interface ValidationResult {
   message: string;
 }
 
+interface UploadedFile extends File {
+  uid: string | undefined;
+}
+
 type ValidateFile = (file: File) => Promise<ValidationResult>;
 
 const rowProps = { gutter: 10 };
@@ -166,22 +170,22 @@ const UploadPage = () => {
 
     const compressedTuneFile = bufferToFile(
       Pako.deflate(await tuneFile!.arrayBuffer()),
-      removeFilenameSuffix(tuneFile!.name),
+      (tuneFile as UploadedFile).uid ? tuneFile!.name : removeFilenameSuffix(tuneFile!.name),
     );
 
     const compressedCustomIniFile = customIniFile ? bufferToFile(
       Pako.deflate(await customIniFile!.arrayBuffer()),
-      removeFilenameSuffix(customIniFile!.name),
+      (customIniFile as UploadedFile).uid ? customIniFile!.name : removeFilenameSuffix(customIniFile!.name),
     ) : null;
 
     const compressedLogFiles = await Promise.all(logFiles.map(async (file) => bufferToFile(
       Pako.deflate(await file.arrayBuffer()),
-      removeFilenameSuffix(file.name),
+      (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
     )));
 
     const compressedToothLogFiles = await Promise.all(toothLogFiles.map(async (file) => bufferToFile(
       Pako.deflate(await file.arrayBuffer()),
-      removeFilenameSuffix(file.name),
+      (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
     )));
 
     const { signature } = tuneParser.parse(await tuneFile!.arrayBuffer()).getTune().details;
