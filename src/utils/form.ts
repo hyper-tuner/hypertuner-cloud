@@ -26,7 +26,7 @@ export const requiredTextRules: Rule[] = [{
   required: true,
   message: REQUIRED_MESSAGE,
   whitespace: true,
-  pattern: /^.{3,}$/,
+  pattern: /^.{2,255}$/,
 }];
 
 export const requiredRules: Rule[] = [{
