@@ -92,7 +92,7 @@ const Diagnose = ({
 
   const calculateCanvasSize = useCallback(() => {
     setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
-    setCanvasHeight(Math.round(window.innerHeight - 200));
+    setCanvasHeight(Math.round(window.innerHeight - 115));
   }, []);
   const siderProps = {
     width: sidebarWidth,
@@ -259,7 +259,7 @@ const Diagnose = ({
           />
         }
       </Sider>
-      <Layout style={{ width: '100%', textAlign: 'center', marginTop: 50 }}>
+      <Layout className="logs-container">
         <Content>
           <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
             {loadedToothLogs.type
@@ -275,6 +275,7 @@ const Diagnose = ({
                   type="circle"
                   percent={progress}
                   width={170}
+                  className="logs-progress"
                 />
                 <Divider />
                 <Steps current={step} direction={lg ? 'horizontal' : 'vertical'}>
