@@ -3,6 +3,7 @@ import {
   Grid,
   Input,
   InputRef,
+  Pagination,
   Space,
   Table,
   Typography,
@@ -49,14 +50,16 @@ const Hub = () => {
   const [dataSource, setDataSource] = useState<{}[]>([]); // TODO: fix this type
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [total, setTotal] = useState(0);
   const searchRef = useRef<InputRef | null>(null);
 
-  const loadData = debounce(async (searchText?: string) => {
+  const loadData = debounce(async (searchText: string) => {
     setIsLoading(true);
-    const list = await searchTunes(searchText);
-
-    // set initial list
-    setDataSource(list.map((tune) => ({
+    const { items, totalItems } = await searchTunes(searchText, page, pageSize);
+    setTotal(totalItems);
+    const mapped = items.map((tune) => ({
       ...tune,
       key: tune.tuneId,
       year: tune.year,
@@ -65,32 +68,34 @@ const Hub = () => {
       aspiration: aspirationMapper[tune.aspiration],
       published: formatTime(tune.updated),
       stars: 0,
-    })));
+    }));
+    setDataSource(mapped);
     setIsLoading(false);
   }, 300);
 
   const debounceLoadData = useCallback((value: string) => {
     setSearchQuery(value);
     loadData(value);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
     if (isEscape(e)) {
       setSearchQuery('');
-      loadData();
+      loadData('');
     }
   }, [loadData]);
 
   useEffect(() => {
-    loadData();
+    loadData('');
 
     window.addEventListener('keydown', handleGlobalKeyboard);
+
     // searchRef.current?.focus(); // autofocus
 
     return () => window.removeEventListener('keydown', handleGlobalKeyboard);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [page]);
 
   const columns: ColumnsType<any> = [
     {
@@ -200,6 +205,19 @@ const Hub = () => {
         scroll={xs ? undefined : { x: 1360 }}
         pagination={false}
       />
+      <div style={{ textAlign: 'right' }}>
+        <Pagination
+          style={{ marginTop: 10 }}
+          pageSize={pageSize}
+          current={page}
+          total={total}
+          onChange={(newPage, newPageSize) => {
+            setIsLoading(true);
+            setPage(newPage);
+            setPageSize(newPageSize);
+          }}
+        />
+      </div>
     </div>
   );
 };
