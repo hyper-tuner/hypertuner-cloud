@@ -12,8 +12,7 @@ import {
   EntryType,
 } from '../../utils/logs/TriggerLogsParser';
 import { Colors } from '../../utils/colors';
-
-import 'uplot/dist/uPlot.min.css';
+import LogsPagination from './LogsPagination';
 
 const { useBreakpoint } = Grid;
 const { bars } = uPlot.paths;
@@ -24,23 +23,27 @@ interface Props {
   height: number;
 };
 
+const PAGE_SIZE = 500;
+
 const ToothCanvas = ({ data, width, height }: Props) => {
   const { sm } = useBreakpoint();
   const [options, setOptions] = useState<uPlot.Options>();
   const [plotData, setPlotData] = useState<uPlot.AlignedData>();
+  const [indexFrom, setIndexFrom] = useState(0);
+  const [indexTo, setIndexTo] = useState(PAGE_SIZE);
 
   useEffect(() => {
     const xData: number[] = [];
     const yData: (number | null)[] = [];
 
-    // NOTE: temporary limit to 500 points
-    // TODO: add pagination
-    data.slice(0, 500).forEach((entry: ToothLogEntry, index) => {
-      if (entry.type === EntryType.TRIGGER) {
-        yData.push(entry.toothTime);
-        xData.push(index);
-      }
-    });
+    data
+      .slice(indexFrom, indexTo)
+      .forEach((entry: ToothLogEntry, index) => {
+        if (entry.type === EntryType.TRIGGER) {
+          yData.push(entry.toothTime);
+          xData.push(index);
+        }
+      });
 
     setPlotData([xData, yData]);
 
@@ -80,14 +83,23 @@ const ToothCanvas = ({ data, width, height }: Props) => {
       },
       plugins: [touchZoomPlugin()],
     });
-  }, [data, width, height, sm]);
+  }, [data, width, height, sm, indexFrom, indexTo]);
 
   if (!sm) {
     return <LandscapeNotice />;
   }
 
   return (
-    <UplotReact options={options!} data={plotData!} />
+    <LogsPagination
+      onChange={(newIndexFrom, newIndexTo) => {
+        setIndexFrom(newIndexFrom);
+        setIndexTo(newIndexTo);
+      }}
+      pageSize={PAGE_SIZE}
+      total={data.length}
+    >
+      <UplotReact options={options!} data={plotData!} />
+    </LogsPagination>
   );
 };
 

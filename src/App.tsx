@@ -36,6 +36,7 @@ import Info from './pages/Info';
 import Hub from './pages/Hub';
 import { FormRoles } from './pages/auth/Login';
 
+import 'uplot/dist/uPlot.min.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './css/App.less';
 

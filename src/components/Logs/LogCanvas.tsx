@@ -19,8 +19,6 @@ import { Colors } from '../../utils/colors';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import { isNumber } from '../../utils/tune/expression';
 
-import 'uplot/dist/uPlot.min.css';
-
 const { useBreakpoint } = Grid;
 
 export interface SelectedField {

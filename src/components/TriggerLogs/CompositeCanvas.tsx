@@ -9,12 +9,15 @@ import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
 import { Colors } from '../../utils/colors';
+import LogsPagination from './LogsPagination';
 
 const { useBreakpoint } = Grid;
 
 const scale = 2;
 const secondaryTranslate = 2.6;
 const primaryTranslate = 1;
+
+const PAGE_SIZE = 500;
 
 interface Props {
   data: CompositeLogEntry[];
@@ -26,6 +29,8 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
   const { sm } = useBreakpoint();
   const [options, setOptions] = useState<uPlot.Options>();
   const [plotData, setPlotData] = useState<uPlot.AlignedData>();
+  const [indexFrom, setIndexFrom] = useState(0);
+  const [indexTo, setIndexTo] = useState(PAGE_SIZE);
 
   useEffect(() => {
     const xData: number[] = [];
@@ -33,30 +38,32 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
     const primary: (number | null)[] = [];
     const sync: (number | null)[] = [];
 
-    data.forEach((entry, index) => {
-      const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
-      const currentSecondary = (entry.secondaryLevel + secondaryTranslate) * scale;
+    data
+      .slice(indexFrom, indexTo)
+      .forEach((entry, index) => {
+        const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
+        const currentSecondary = (entry.secondaryLevel + secondaryTranslate) * scale;
 
-      const prevPrimary = data[index - 1] ? data[index - 1].primaryLevel : 0;
-      const currentPrimary = (entry.primaryLevel + primaryTranslate) * scale;
+        const prevPrimary = data[index - 1] ? data[index - 1].primaryLevel : 0;
+        const currentPrimary = (entry.primaryLevel + primaryTranslate) * scale;
 
-      const prevSync = data[index - 1] ? data[index - 1].sync : 0;
-      const currentSync = entry.sync;
+        const prevSync = data[index - 1] ? data[index - 1].sync : 0;
+        const currentSync = entry.sync;
 
-      // base data
-      xData.push(index);
-      secondary.push(currentSecondary);
-      primary.push(currentPrimary);
-      sync.push(currentSync);
-
-      // make it square
-      if (prevSecondary !== currentSecondary || prevPrimary !== currentPrimary || prevSync !== currentSync) {
+        // base data
+        xData.push(index);
         secondary.push(currentSecondary);
         primary.push(currentPrimary);
         sync.push(currentSync);
-        xData.push(index + 1);
-      }
-    });
+
+        // make it square
+        if (prevSecondary !== currentSecondary || prevPrimary !== currentPrimary || prevSync !== currentSync) {
+          secondary.push(currentSecondary);
+          primary.push(currentPrimary);
+          sync.push(currentSync);
+          xData.push(index + 1);
+        }
+      });
 
     setPlotData([
       xData,
@@ -109,14 +116,23 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
       },
       plugins: [touchZoomPlugin()],
     });
-  }, [data, width, height, sm]);
+  }, [data, width, height, sm, indexFrom, indexTo]);
 
   if (!sm) {
     return <LandscapeNotice />;
   }
 
   return (
-    <UplotReact options={options!} data={plotData!} />
+    <LogsPagination
+      onChange={(newIndexFrom, newIndexTo) => {
+        setIndexFrom(newIndexFrom);
+        setIndexTo(newIndexTo);
+      }}
+      pageSize={PAGE_SIZE}
+      total={data.length}
+    >
+      <UplotReact options={options!} data={plotData!} />
+    </LogsPagination>
   );
 };
 
