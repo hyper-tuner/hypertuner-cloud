@@ -89,7 +89,7 @@ const useDb = () => {
 
     try {
       const list = await client.records.getList(Collections.Tunes, page, perPage, {
-        sort: '-created',
+        sort: '-updated',
         filter,
         expand: 'userProfile',
       });
