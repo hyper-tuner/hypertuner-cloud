@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { useCallback } from 'react';
 import { Logs } from '@hyper-tuner/types';
 import {
   Grid,
@@ -30,7 +26,7 @@ export interface SelectedField {
   format: string;
 };
 
-interface Props {
+interface LogCanvasProps {
   data: Logs;
   width: number;
   height: number;
@@ -48,21 +44,19 @@ export interface PlottableField {
   format: string;
 };
 
-const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, showSingleGraph }: Props) => {
+const plotSync = uPlot.sync('logs');
+
+const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, showSingleGraph }: LogCanvasProps) => {
   const { sm } = useBreakpoint();
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
     return `hsl(${hue}, 90%, 50%)`;
   }, []);
-  const [options1, setOptions1] = useState<uPlot.Options>();
-  const [plotData1, setPlotData1] = useState<uPlot.AlignedData>();
-  const [options2, setOptions2] = useState<uPlot.Options>();
-  const [plotData2, setPlotData2] = useState<uPlot.AlignedData>();
 
   const generateFieldsToPlot = useCallback((selectedFields: SelectedField[]) => {
     const temp: { [index: string]: PlottableField } = {};
 
-    data.forEach((entry) => {
+    data.forEach((_entry) => {
       selectedFields.forEach(({ label, scale, transform, units, format }) => {
         if (!temp[label]) {
           temp[label] = {
@@ -149,23 +143,18 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, show
     };
   }, [data, height, hsl, width]);
 
-  useEffect(() => {
-    const plotSync = uPlot.sync('logs');
+  const result1 = generatePlotConfig(generateFieldsToPlot(selectedFields1), selectedFields1.length, plotSync.key);
+  const options1: uPlot.Options = result1.options;
+  const plotData1: uPlot.AlignedData = [result1.xData, ...result1.yData];
 
-    if (selectedFields1.length > 0) {
-      const result1 = generatePlotConfig(generateFieldsToPlot(selectedFields1), selectedFields1.length, plotSync.key);
-      setOptions1(result1.options);
-      setPlotData1([result1.xData, ...result1.yData]);
-    }
+  let options2: uPlot.Options = {} as uPlot.Options;
+  let plotData2: uPlot.AlignedData = [];
 
-    if (!showSingleGraph) {
-      if (selectedFields2.length > 0) {
-        const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
-        setOptions2(result2.options);
-        setPlotData2([result2.xData, ...result2.yData]);
-      }
-    }
-  }, [data, hsl, width, height, sm, generatePlotConfig, generateFieldsToPlot, selectedFields1, selectedFields2, showSingleGraph]);
+  if (!showSingleGraph) {
+    const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
+    options2 = result2.options;
+    plotData2 = [result2.xData, ...result2.yData];
+  }
 
   if (!sm) {
     return <LandscapeNotice />;
@@ -173,8 +162,17 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, show
 
   return (
     <Space direction="vertical" size="large">
-      <UplotReact options={options1!} data={plotData1!} />
-      {!showSingleGraph && <UplotReact options={options2!} data={plotData2!} />}
+      <UplotReact
+        key={`first-${selectedFields1.join('-')}`}
+        options={options1}
+        data={plotData1}
+      />
+      {!showSingleGraph && (
+        <UplotReact
+          key={`second-${selectedFields2.join('-')}`}
+          options={options2}
+          data={plotData2}
+        />)}
     </Space>
   );
 };
