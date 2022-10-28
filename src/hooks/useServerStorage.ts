@@ -1,12 +1,16 @@
 import Pako from 'pako';
 import * as Sentry from '@sentry/browser';
-import { API_URL } from '../pocketbase';
+import {
+  API_URL,
+  removeFilenameSuffix,
+} from '../pocketbase';
 import { Collections } from '../@types/pocketbase-types';
 import useDb from './useDb';
 import {
   fetchWithProgress,
   OnProgress,
 } from '../utils/http';
+import { downloading } from '../pages/auth/notifications';
 
 const useServerStorage = () => {
   const { getIni } = useDb();
@@ -43,10 +47,28 @@ const useServerStorage = () => {
       signal,
     ).then((response) => response);
 
+  const downloadFile = async (recordId: string, filename: string, anchorRef: HTMLAnchorElement) => {
+    downloading();
+
+    const response = await fetch(buildFileUrl(Collections.Tunes, recordId, filename));
+    const data = Pako.inflate(new Uint8Array(await response.arrayBuffer()));
+    const url = window.URL.createObjectURL(new Blob([data]));
+
+    // eslint-disable-next-line no-param-reassign
+    anchorRef.href = url;
+    // eslint-disable-next-line no-param-reassign
+    anchorRef.target = '_blank';
+    // eslint-disable-next-line no-param-reassign
+    anchorRef.download = removeFilenameSuffix(filename);
+    anchorRef.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return {
     fetchTuneFile: (recordId: string, filename: string): Promise<ArrayBuffer> => fetchTuneFile(recordId, filename),
     fetchINIFile: (signature: string): Promise<ArrayBuffer> => fetchINIFile(signature),
     fetchLogFileWithProgress: (recordId: string, filename: string, onProgress?: OnProgress, signal?: AbortSignal): Promise<ArrayBuffer> => fetchLogFileWithProgress(recordId, filename, onProgress, signal),
+    downloadFile: (recordId: string, filename: string, anchorRef: HTMLAnchorElement): Promise<void> => downloadFile(recordId, filename, anchorRef),
   };
 };
 
