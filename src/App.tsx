@@ -23,7 +23,6 @@ import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
 import { loadTune } from './utils/api';
 import store from './store';
-import Logs from './pages/Logs';
 import Loader from './components/Loader';
 import {
   AppState,
@@ -42,9 +41,8 @@ import './css/App.less';
 
 // TODO: fix this
 // lazy loading this component causes a weird Curve canvas scaling
-// const Log = lazy(() => import('./pages/Log'));
-
 const Tune = lazy(() => import('./pages/Tune'));
+const Logs = lazy(() => import('./pages/Logs'));
 const Diagnose = lazy(() => import('./pages/Diagnose'));
 const Upload = lazy(() => import('./pages/Upload'));
 const Login = lazy(() => import('./pages/auth/Login'));
@@ -68,10 +66,6 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
   const { getTune } = useDb();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  // const [lastDialogPath, setLastDialogPath] = useState<string|null>();
-  // const lastDialogPath = storageGetSync('lastDialog');
-
   const tunePathMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneId = tunePathMatch?.params.tuneId;
 
@@ -112,14 +106,6 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
 
       store.dispatch({ type: 'navigation/tuneId', payload: tuneId });
     }
-
-    // storageGet('lastDialog')
-    //   .then((path) => setLastDialogPath(path));
-
-    // window.addEventListener('beforeunload', beforeUnload);
-    // return () => {
-    //   window.removeEventListener('beforeunload', beforeUnload);
-    // };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuneId]);
