@@ -144,6 +144,7 @@ const TopBar = ({
           label: 'Open in app',
           icon: <DesktopOutlined />,
           key: 'open',
+          disabled: true,
           onClick: () => window.open(`hypertuner://hypertuner.cloud/t/${tuneData!.tuneId}`, '_blank'),
         },
       ],
