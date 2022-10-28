@@ -48,13 +48,16 @@ import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
 import useServerStorage from '../hooks/useServerStorage';
 import { isAbortedRequest } from '../utils/error';
+import {
+  collapsedSidebarWidth,
+  sidebarWidth,
+} from '../components/Tune/SideBar';
 
 const { Content } = Layout;
 const { Step } = Steps;
 
 const edgeUnknown = 'Unknown';
 const badgeStyle = { backgroundColor: Colors.TEXT };
-const sidebarWidth = 250;
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -93,6 +96,7 @@ const Diagnose = ({
   }, []);
   const siderProps = {
     width: sidebarWidth,
+    collapsedWidth: collapsedSidebarWidth,
     collapsible: true,
     breakpoint: 'xl',
     collapsed: ui.sidebarCollapsed,

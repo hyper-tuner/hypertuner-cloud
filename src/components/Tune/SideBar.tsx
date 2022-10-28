@@ -69,10 +69,13 @@ interface SideBarProps {
   matchedPath: PathMatch<'dialog' | 'tuneId' | 'category'>;
 };
 
+export const sidebarWidth = 250;
+export const collapsedSidebarWidth = 50;
+
 const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) => {
-  const sidebarWidth = 250;
   const siderProps = {
     width: sidebarWidth,
+    collapsedWidth: collapsedSidebarWidth,
     collapsible: true,
     breakpoint: 'xl',
     collapsed: ui.sidebarCollapsed,

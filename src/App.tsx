@@ -43,6 +43,10 @@ import {
   tuneParsingError,
 } from './pages/auth/notifications';
 import { divider } from './data/constants';
+import {
+  collapsedSidebarWidth,
+  sidebarWidth,
+} from './components/Tune/SideBar';
 
 import 'uplot/dist/uPlot.min.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
@@ -68,7 +72,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
-  const margin = ui.sidebarCollapsed ? 80 : 250;
+  const margin = ui.sidebarCollapsed ? collapsedSidebarWidth : sidebarWidth;
   const { getTune } = useDb();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -158,8 +162,8 @@ const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuneId]);
 
-  const ContentFor = useCallback((props: { element: ReactNode, marginLeft?: number, fullScreen?: boolean }) => {
-    const { element, marginLeft, fullScreen } = props;
+  const ContentFor = useCallback((props: { element: ReactNode, marginLeft?: number, bottomOffset?: boolean }) => {
+    const { element, marginLeft, bottomOffset } = props;
 
     return (
       <Layout style={{ marginLeft }}>
@@ -167,7 +171,7 @@ const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
           <Content>
             <Suspense fallback={<Loader />}>{element}</Suspense>
             {/* dummy element to mitigate mobile browsers navbar offset */}
-            {!fullScreen && <div style={{ marginTop: 60 }}>&nbsp;</div>}
+            {!bottomOffset && <div style={{ marginTop: 60 }}>&nbsp;</div>}
           </Content>
         </Layout>
       </Layout>
@@ -186,10 +190,10 @@ const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
           <Route path={Routes.HUB} element={<ContentFor element={<Hub />} />} />
           <Route path={Routes.TUNE_ROOT} element={<ContentFor element={<Info />} />} />
           <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
-          <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} fullScreen element={<Logs />} />} />
-          <Route path={Routes.TUNE_LOGS_FILE} element={<ContentFor marginLeft={margin} fullScreen element={<Logs />} />} />
-          <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} fullScreen element={<Diagnose />} />} />
-          <Route path={Routes.TUNE_DIAGNOSE_FILE} element={<ContentFor marginLeft={margin} fullScreen element={<Diagnose />} />} />
+          <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} bottomOffset element={<Logs />} />} />
+          <Route path={Routes.TUNE_LOGS_FILE} element={<ContentFor marginLeft={margin} bottomOffset element={<Logs />} />} />
+          <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} bottomOffset element={<Diagnose />} />} />
+          <Route path={Routes.TUNE_DIAGNOSE_FILE} element={<ContentFor marginLeft={margin} bottomOffset element={<Diagnose />} />} />
           <Route path={`${Routes.UPLOAD}/*`} element={<ContentFor element={<Upload />} />} />
 
           <Route path={Routes.LOGIN} element={<ContentFor element={<Login formRole={FormRoles.LOGIN} />} />} />
