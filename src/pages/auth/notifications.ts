@@ -125,6 +125,11 @@ const iniLoadingError = (err: Error) => notification.error({
   ...baseOptions,
 });
 
+const tuneParsingError = () => notification.error({
+  message: 'Tune file is not valid',
+  ...baseOptions,
+});
+
 const copiedToClipboard = () => notification.success({
   message: 'Copied to clipboard',
   ...baseOptions,
@@ -152,4 +157,5 @@ export {
   databaseGenericError,
   copiedToClipboard,
   iniLoadingError,
+  tuneParsingError,
 };

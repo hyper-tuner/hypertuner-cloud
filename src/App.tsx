@@ -10,6 +10,7 @@ import {
   Result,
 } from 'antd';
 import { connect } from 'react-redux';
+import { INI } from '@hyper-tuner/ini';
 import {
   lazy,
   ReactNode,
@@ -21,12 +22,10 @@ import {
 import TopBar from './components/TopBar';
 import StatusBar from './components/StatusBar';
 import { Routes } from './routes';
-import { loadTune } from './utils/api';
 import store from './store';
 import Loader from './components/Loader';
 import {
   AppState,
-  NavigationState,
   TuneDataState,
   UIState,
 } from './types/state';
@@ -34,6 +33,16 @@ import useDb from './hooks/useDb';
 import Info from './pages/Info';
 import Hub from './pages/Hub';
 import { FormRoles } from './pages/auth/Login';
+import useServerStorage from './hooks/useServerStorage';
+import { TunesRecordFull } from './types/dbData';
+import TuneParser from './utils/tune/TuneParser';
+import standardDialogs from './data/standardDialogs';
+import help from './data/help';
+import {
+  iniLoadingError,
+  tuneParsingError,
+} from './pages/auth/notifications';
+import { divider } from './data/constants';
 
 import 'uplot/dist/uPlot.min.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
@@ -55,17 +64,59 @@ const { Content } = Layout;
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
   status: state.status,
-  navigation: state.navigation,
   tuneData: state.tuneData,
 });
 
-const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: NavigationState, tuneData: TuneDataState }) => {
+const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
   const margin = ui.sidebarCollapsed ? 80 : 250;
   const { getTune } = useDb();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const tunePathMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneId = tunePathMatch?.params.tuneId;
+  const { fetchINIFile, fetchTuneFile } = useServerStorage();
+
+  const loadTune = async (data: TunesRecordFull | null) => {
+    if (data === null) {
+      store.dispatch({ type: 'config/load', payload: null });
+      store.dispatch({ type: 'tune/load', payload: null });
+
+      return;
+    }
+
+    const tuneRaw = await fetchTuneFile(data.id, data.tuneFile);
+    const tuneParser = new TuneParser().parse(tuneRaw);
+
+    if (!tuneParser.isValid()) {
+      tuneParsingError();
+      navigate(Routes.HUB);
+
+      return;
+    }
+
+    const tune = tuneParser.getTune();
+    try {
+      const iniRaw = data.customIniFile ? fetchTuneFile(data.id, data.customIniFile) : fetchINIFile(data.signature);
+      const config = new INI(await iniRaw).parse().getResults();
+
+      // override / merge standard dialogs, constants and help
+      config.dialogs = {
+        ...config.dialogs,
+        ...standardDialogs,
+      };
+      config.help = {
+        ...config.help,
+        ...help,
+      };
+      config.constants.pages[0].data.divider = divider;
+
+      store.dispatch({ type: 'config/load', payload: config });
+      store.dispatch({ type: 'tune/load', payload: tune });
+    } catch (error) {
+      iniLoadingError((error as Error));
+      navigate(Routes.HUB);
+    }
+  };
 
   useEffect(() => {
     // Handle external redirects (oauth, etc)
