@@ -7,6 +7,12 @@ const baseOptions = {
   placement: 'bottomRight' as const,
 };
 
+const error = (message: string, description: string) => notification.warning({
+  message,
+  description,
+  ...baseOptions,
+});
+
 const emailNotVerified = () => notification.warning({
   message: 'Check your email',
   description: 'Your email address has to be verified before you can upload files!',
@@ -135,7 +141,14 @@ const copiedToClipboard = () => notification.success({
   ...baseOptions,
 });
 
+const signatureNotSupportedWarning = (message: string) => notification.warning({
+  message,
+  description: 'You need to upload custom INI file with your tune!',
+  ...baseOptions,
+});
+
 export {
+  error,
   emailNotVerified,
   usernameNotSet,
   signUpSuccessful,
@@ -158,4 +171,5 @@ export {
   copiedToClipboard,
   iniLoadingError,
   tuneParsingError,
+  signatureNotSupportedWarning,
 };

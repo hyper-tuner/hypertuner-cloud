@@ -9,7 +9,6 @@ import {
   Divider,
   Input,
   InputNumber,
-  notification,
   Row,
   Select,
   Space,
@@ -48,7 +47,9 @@ import ReactMarkdown from 'react-markdown';
 import { nanoid } from 'nanoid';
 import {
   emailNotVerified,
+  error,
   restrictedPage,
+  signatureNotSupportedWarning,
   usernameNotSet,
 } from './auth/notifications';
 import { useAuth } from '../contexts/AuthContext';
@@ -139,7 +140,7 @@ const UploadPage = () => {
   const shareSupported = 'share' in navigator;
   const { currentUser, refreshUser } = useAuth();
   const navigate = useNavigate();
-  const { fetchTuneFile } = useServerStorage();
+  const { fetchTuneFile, fetchINIFile } = useServerStorage();
   const { createTune, updateTune, getTune, autocomplete } = useDb();
 
   const [autocompleteOptions, setAutocompleteOptions] = useState<{ [attribute: string]: { value: string }[] }>({});
@@ -298,7 +299,7 @@ const UploadPage = () => {
     if (!validation.result) {
       const errorName = 'Validation failed';
       const errorMessage = validation.message;
-      notification.error({ message: errorName, description: errorMessage });
+      error(errorName, errorMessage);
       onError!({ name: errorName, message: errorMessage });
 
       return false;
@@ -319,8 +320,16 @@ const UploadPage = () => {
         return { result, message };
       }
 
+      const parsed = tuneParser.parse(await file.arrayBuffer());
+
+      try {
+        await fetchINIFile(parsed.getTune().details.signature);
+      } catch (e) {
+        signatureNotSupportedWarning((e as Error).message);
+      }
+
       return {
-        result: tuneParser.parse(await file.arrayBuffer()).isValid(),
+        result: parsed.isValid(),
         message: 'Tune file is not valid!',
       };
     });
@@ -391,9 +400,9 @@ const UploadPage = () => {
       try {
         const parser = new INI(await file.arrayBuffer()).parse();
         valid = parser.getResults().megaTune.signature.length > 0;
-      } catch (error) {
+      } catch (e) {
         valid = false;
-        validationMessage = (error as Error).message;
+        validationMessage = (e as Error).message;
       }
 
       return {

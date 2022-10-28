@@ -24,7 +24,7 @@ const useServerStorage = () => {
     const ini = await getIni(signature);
 
     if (!ini) {
-      const msg = `Signature: "${signature}" not supported!`;
+      const msg = `Signature: "${signature}" not supported`;
       const error = new Error(msg);
       Sentry.captureException(error);
 
