@@ -5,6 +5,7 @@
 @import './themes/common.less';
 @import './themes/ant.less';
 @import './overrides.less';
+@import './animations.less';
 
 body {
   overflow: hidden;
@@ -41,6 +42,14 @@ html, body {
 
   a {
     color: @text;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .github-link {
+    animation: wiggle 2s linear 2;
   }
 }
 

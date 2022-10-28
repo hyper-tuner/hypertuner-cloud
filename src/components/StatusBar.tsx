@@ -60,7 +60,7 @@ const StatusBar = ({ tune }: { tune: TuneState }) => (
           target="__blank"
           rel="noopener noreferrer"
         >
-          <Space>
+          <Space className="github-link">
             <GithubOutlined />
             GitHub
           </Space>
