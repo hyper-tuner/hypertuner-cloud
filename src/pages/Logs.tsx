@@ -258,7 +258,7 @@ const Logs = ({
       loadData();
     }
 
-    if (config.outputChannels) {
+    if (config?.outputChannels) {
       setFields(Object.values(config.datalog));
     }
 

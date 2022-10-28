@@ -152,17 +152,19 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, show
   useEffect(() => {
     const plotSync = uPlot.sync('logs');
 
-    const result1 = generatePlotConfig(generateFieldsToPlot(selectedFields1), selectedFields1.length, plotSync.key);
-    setOptions1(result1.options);
-    setPlotData1([result1.xData, ...result1.yData]);
-
-    if (!showSingleGraph) {
-      const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
-      setOptions2(result2.options);
-      setPlotData2([result2.xData, ...result2.yData]);
+    if (selectedFields1.length > 0) {
+      const result1 = generatePlotConfig(generateFieldsToPlot(selectedFields1), selectedFields1.length, plotSync.key);
+      setOptions1(result1.options);
+      setPlotData1([result1.xData, ...result1.yData]);
     }
 
-
+    if (!showSingleGraph) {
+      if (selectedFields2.length > 0) {
+        const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
+        setOptions2(result2.options);
+        setPlotData2([result2.xData, ...result2.yData]);
+      }
+    }
   }, [data, hsl, width, height, sm, generatePlotConfig, generateFieldsToPlot, selectedFields1, selectedFields2, showSingleGraph]);
 
   if (!sm) {
