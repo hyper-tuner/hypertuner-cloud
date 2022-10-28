@@ -39,8 +39,6 @@ import 'uplot/dist/uPlot.min.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './css/App.less';
 
-// TODO: fix this
-// lazy loading this component causes a weird Curve canvas scaling
 const Tune = lazy(() => import('./pages/Tune'));
 const Logs = lazy(() => import('./pages/Logs'));
 const Diagnose = lazy(() => import('./pages/Diagnose'));
@@ -71,7 +69,6 @@ const App = ({ ui, navigation, tuneData }: { ui: UIState, navigation: Navigation
 
   useEffect(() => {
     // Handle external redirects (oauth, etc)
-    // TODO: refactor this
     const searchParams = new URLSearchParams(window.location.search);
     const redirectPage = searchParams.get('redirect');
     switch (redirectPage) {

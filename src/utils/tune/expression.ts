@@ -71,7 +71,6 @@ export const evaluateExpression = (expression: string, tuneConstants: TuneConsta
 
   try {
     // TODO: strip eval from `command` etc
-    // https://www.electronjs.org/docs/tutorial/security
     // eslint-disable-next-line no-eval
     return eval(`
       'use strict';

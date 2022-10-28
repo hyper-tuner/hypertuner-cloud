@@ -74,15 +74,6 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, show
             format: format || '',
           };
         }
-
-        // const value = entry[label];
-        // if (value > temp[label].max) {
-        //   temp[label].max = entry[label] as number;
-        // }
-
-        // if (value < temp[label].min) {
-        //   temp[label].min = entry[label] as number;
-        // }
       });
     });
 

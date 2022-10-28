@@ -11,7 +11,6 @@ import {
 const useServerStorage = () => {
   const { getIni } = useDb();
 
-  // TODO: use built in pocketbase function
   const buildFileUrl = (collection: Collections, recordId: string, filename: string) => `${API_URL}/api/files/${collection}/${recordId}/${filename}`;
 
   const fetchTuneFile = async (recordId: string, filename: string): Promise<ArrayBuffer> => {
