@@ -68,10 +68,8 @@ import { WorkerOutput } from '../workers/logParserWorker';
 const { Content } = Layout;
 const { Step } = Steps;
 const edgeUnknown = 'Unknown';
-const margin = 30;
 const sidebarWidth = 250;
 const minCanvasHeightInner = 500;
-
 const badgeStyle = { backgroundColor: Colors.TEXT };
 
 const mapStateToProps = (state: AppState) => ({
@@ -111,7 +109,7 @@ const Logs = ({
   const navigate = useNavigate();
 
   const calculateCanvasSize = useCallback(() => {
-    setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
+    setCanvasWidth(contentRef.current?.clientWidth || 0);
 
     if (window.innerHeight > minCanvasHeightInner) {
       setCanvasHeight(Math.round((window.innerHeight - 170) / 2));
@@ -359,7 +357,7 @@ const Logs = ({
       </Sider>
       <Layout className="logs-container">
         <Content>
-          <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
+          <div ref={contentRef}>
             {logs || !!(loadedLogs.logs || []).length
               ?
               <LogCanvas
@@ -374,13 +372,11 @@ const Logs = ({
               <Space
                 direction="vertical"
                 size="large"
-                style={{ width: '80%', maxWidth: 1000 }}
               >
                 <Progress
                   type="circle"
                   percent={progress}
                   status={(fetchError || parseError) && 'exception'}
-                  width={170}
                   className="logs-progress"
                 />
                 <Divider />

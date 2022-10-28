@@ -53,10 +53,7 @@ const { Content } = Layout;
 const { Step } = Steps;
 
 const edgeUnknown = 'Unknown';
-
 const badgeStyle = { backgroundColor: Colors.TEXT };
-
-const margin = 30;
 const sidebarWidth = 250;
 
 const mapStateToProps = (state: AppState) => ({
@@ -91,7 +88,7 @@ const Diagnose = ({
   const navigate = useNavigate();
 
   const calculateCanvasSize = useCallback(() => {
-    setCanvasWidth((contentRef.current?.clientWidth || 0) - margin);
+    setCanvasWidth(contentRef.current?.clientWidth || 0);
     setCanvasHeight(Math.round(window.innerHeight - 115));
   }, []);
   const siderProps = {
@@ -261,7 +258,7 @@ const Diagnose = ({
       </Sider>
       <Layout className="logs-container">
         <Content>
-          <div ref={contentRef} style={{ width: '100%', marginRight: margin }}>
+          <div ref={contentRef}>
             {loadedToothLogs.type
               ?
               graphSection()
@@ -269,12 +266,10 @@ const Diagnose = ({
               <Space
                 direction="vertical"
                 size="large"
-                style={{ width: '80%', maxWidth: 1000 }}
               >
                 <Progress
                   type="circle"
                   percent={progress}
-                  width={170}
                   className="logs-progress"
                 />
                 <Divider />
