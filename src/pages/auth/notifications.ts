@@ -147,6 +147,12 @@ const signatureNotSupportedWarning = (message: string) => notification.warning({
   ...baseOptions,
 });
 
+const downloading = () => notification.success({
+  message: 'Downloading...',
+  ...baseOptions,
+  duration: 1,
+});
+
 export {
   error,
   emailNotVerified,
@@ -172,4 +178,5 @@ export {
   iniLoadingError,
   tuneParsingError,
   signatureNotSupportedWarning,
+  downloading,
 };

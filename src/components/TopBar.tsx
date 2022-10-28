@@ -1,7 +1,11 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/anchor-has-content */
+
 import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
 } from 'react';
 import {
   useLocation,
@@ -31,10 +35,7 @@ import {
   LoginOutlined,
   LineChartOutlined,
   SlidersOutlined,
-  FileExcelOutlined,
-  FileTextOutlined,
   FileZipOutlined,
-  SaveOutlined,
   DesktopOutlined,
   DownOutlined,
   SearchOutlined,
@@ -44,6 +45,8 @@ import {
   LogoutOutlined,
   InfoCircleOutlined,
   CarOutlined,
+  FileTextOutlined,
+  FileExcelOutlined,
 } from '@ant-design/icons';
 import { useKBar } from 'kbar';
 import store from '../store';
@@ -53,10 +56,17 @@ import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import { logOutSuccessful } from '../pages/auth/notifications';
 import { TuneDataState } from '../types/state';
+import { removeFilenameSuffix } from '../pocketbase';
+import useServerStorage from '../hooks/useServerStorage';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
-const { SubMenu } = Menu;
+
+const logsExtensionsIcons: { [key: string]: any } = {
+  'mlg': <FileZipOutlined />,
+  'msl': <FileTextOutlined />,
+  'csv': <FileExcelOutlined />,
+};
 
 const TopBar = ({
   tuneData,
@@ -77,6 +87,8 @@ const TopBar = ({
   const tabMatch = useMatch(`${Routes.TUNE_TAB}/*`);
   const uploadMatch = useMatch(Routes.UPLOAD);
   const hubMatch = useMatch(Routes.HUB);
+  const { downloadFile } = useServerStorage();
+  const downloadAnchorRef = useRef<HTMLAnchorElement | null>(null);
   const logoutClick = useCallback(() => {
     logout();
     logOutSuccessful();
@@ -91,6 +103,54 @@ const TopBar = ({
       store.dispatch({ type: 'ui/toggleSidebar' });
     }
   }, []);
+
+  const downloadLogsItems = {
+    label: 'Logs',
+    icon: <LineChartOutlined />,
+    key: 'logs',
+    children: (tuneData?.logFiles || []).map((filename) => ({
+      key: filename,
+      label: removeFilenameSuffix(filename),
+      icon: logsExtensionsIcons[filename.slice(-3)],
+      onClick: () => downloadFile(tuneData!.id, filename, downloadAnchorRef.current!),
+    })),
+  };
+
+  const downloadToothLogsItems = {
+    label: 'Tooth logs',
+    icon: <SettingOutlined />,
+    key: 'toothLogs',
+    children: (tuneData?.toothLogFiles || []).map((filename) => ({
+      key: filename,
+      label: removeFilenameSuffix(filename),
+      icon: logsExtensionsIcons[filename.slice(-3)],
+      onClick: () => downloadFile(tuneData!.id, filename, downloadAnchorRef.current!),
+    })),
+  };
+
+  const downloadItems = [
+    {
+      label: 'Tune',
+      icon: <SlidersOutlined />,
+      key: 'tune',
+      children: [
+        {
+          label: 'Download',
+          icon: <FileTextOutlined />,
+          key: 'download',
+          onClick: () => downloadFile(tuneData!.id, tuneData!.tuneFile, downloadAnchorRef.current!),
+        },
+        {
+          label: 'Open in app',
+          icon: <DesktopOutlined />,
+          key: 'open',
+          onClick: () => window.open(`hypertuner://hypertuner.cloud/t/${tuneData!.tuneId}`, '_blank'),
+        },
+      ],
+    },
+    (tuneData?.logFiles || []).length > 0 ? { ...downloadLogsItems } : null,
+    (tuneData?.toothLogFiles || []).length > 0 ? { ...downloadToothLogsItems } : null,
+  ];
 
   useEffect(() => {
     document.addEventListener('keydown', handleGlobalKeyboard);
@@ -212,31 +272,9 @@ const TopBar = ({
                 {lg && 'Upload'}
               </Button>
             </Link>
-            <Dropdown
+            {tuneData?.tuneId && <Dropdown
               overlay={
-                <Menu disabled>
-                  <SubMenu key="tune-sub" title="Tune" icon={<SlidersOutlined />}>
-                    <Menu.Item key="download" icon={<SaveOutlined />}>
-                      <a href="/tunes/202103.msq" target="__blank" rel="noopener noreferrer">
-                        Download
-                      </a>
-                    </Menu.Item>
-                    <Menu.Item key="open" disabled icon={<DesktopOutlined />}>
-                      Open in app
-                    </Menu.Item>
-                  </SubMenu>
-                  <SubMenu key="logs-sub" title="Logs" icon={<LineChartOutlined />}>
-                    <Menu.Item key="mlg" disabled icon={<FileZipOutlined />}>
-                      MLG
-                    </Menu.Item>
-                    <Menu.Item key="msl" disabled icon={<FileTextOutlined />}>
-                      MSL
-                    </Menu.Item>
-                    <Menu.Item key="csv" disabled icon={<FileExcelOutlined />}>
-                      CSV
-                    </Menu.Item>
-                  </SubMenu>
-                </Menu>
+                <Menu triggerSubMenuAction="click" items={downloadItems} />
               }
               placement="bottom"
               trigger={['click']}
@@ -244,7 +282,7 @@ const TopBar = ({
               <Button icon={<CloudDownloadOutlined />}>
                 {downloadButton}
               </Button>
-            </Dropdown>
+            </Dropdown>}
             <Dropdown
               overlay={<Menu items={userMenuItems} />}
               placement="bottomRight"
@@ -254,6 +292,8 @@ const TopBar = ({
                 {sm && <DownOutlined />}
               </Button>
             </Dropdown>
+            {/* dummy anchor for file download */}
+            <a ref={downloadAnchorRef} style={{ display: 'none' }} />
           </Space>
         </Col>
       </Row>
