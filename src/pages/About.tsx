@@ -6,7 +6,7 @@ import {
   HeartOutlined,
   GithubOutlined,
 } from '@ant-design/icons';
-import hyperIcon from '../../public/icons/icon.png';
+import hyperIcon from '../assets/img/hyper-tuner-logo.png';
 
 const About = () => (
   <div className="large-container">
