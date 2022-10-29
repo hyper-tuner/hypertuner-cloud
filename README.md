@@ -30,6 +30,10 @@
 
 ![Screenshot Logs](/public/img/screen2.png)
 
+<br/>
+
+![Screenshot Tooth](/public/img/screen3.png)
+
 ## Supported ECUs
 
 ### Speeduino

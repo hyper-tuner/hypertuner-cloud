@@ -16,18 +16,25 @@
   ],
   "screenshots" : [
     {
+      "src": "/img/screen1.png",
+      "sizes": "3008x2050",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Tune view"
+    },
+    {
       "src": "/img/screen2.png",
-      "sizes": "1920x1194",
+      "sizes": "3008x2050",
       "type": "image/png",
       "platform": "wide",
       "label": "Log viewer"
     },
     {
-      "src": "/img/screen1.png",
-      "sizes": "1920x1194",
+      "src": "/img/screen3.png",
+      "sizes": "3008x2050",
       "type": "image/png",
       "platform": "wide",
-      "label": "VE Table with command palette"
+      "label": "Tooth log viewer"
     }
   ],
   "start_url": ".",
