@@ -6,7 +6,7 @@
 
 <div align="center">
   <p><a href="https://hypertuner.cloud"><strong>hypertuner.cloud</strong></a></p>
-  <p><sub>The best way to share your tunes and logs</sub></p>
+  <p><sub>The best way to share your tunes and logs.</sub></p>
 </div>
 
 <br/>
@@ -41,6 +41,14 @@
 
 [GitHub Sponsors](https://github.com/sponsors/karniv00l)
 
+## Discord server
+
+[![HyperTuner Discord server](https://dcbadge.vercel.app/api/server/HdxznPUA)](https://discord.gg/HdxznPUA)
+
 ## Development
 
 Before you begin please see [Development guide](https://github.com/hyper-tuner/hyper-tuner-cloud/blob/master/DEVELOPMENT.md).
+
+## License
+
+[MIT](https://github.com/hyper-tuner/hyper-tuner-cloud/blob/master/LICENSE)
