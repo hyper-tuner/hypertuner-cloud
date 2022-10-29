@@ -25,5 +25,7 @@ export enum Routes {
   EMAIL_VERIFICATION = '/auth/email-verification/:token',
   OAUTH_CALLBACK = '/auth/oauth-callback/:provider',
 
+  ABOUT = '/about',
+
   REDIRECT_PAGE_OAUTH_CALLBACK = 'oauth',
 }

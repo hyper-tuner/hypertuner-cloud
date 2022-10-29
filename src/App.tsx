@@ -62,6 +62,7 @@ const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
 const ResetPasswordConfirmation = lazy(() => import('./pages/auth/ResetPasswordConfirmation'));
 const EmailVerification = lazy(() => import('./pages/auth/EmailVerification'));
 const OauthCallback = lazy(() => import('./pages/auth/OauthCallback'));
+const About = lazy(() => import('./pages/About'));
 
 const { Content } = Layout;
 
@@ -200,6 +201,7 @@ const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
           <Route path={Routes.SIGN_UP} element={<ContentFor element={<Login formRole={FormRoles.SING_UP} />} />} />
           <Route path={Routes.PROFILE} element={<ContentFor element={<Profile />} />} />
           <Route path={Routes.RESET_PASSWORD} element={<ContentFor element={<ResetPassword />} />} />
+          <Route path={Routes.ABOUT} element={<ContentFor element={<About />} />} />
 
           <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
           <Route path={Routes.RESET_PASSWORD_CONFIRMATION} element={<ContentFor element={<ResetPasswordConfirmation />} />} />

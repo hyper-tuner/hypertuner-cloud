@@ -226,7 +226,7 @@ const TopBar = ({
     return list.length ? list : null;
   }, [lg, sm]);
 
-  const userMenuItems = useMemo(() => currentUser ? [{
+  const userAuthMenuItems = useMemo(() => currentUser ? [{
     key: 'profile',
     icon: <UserOutlined />,
     label: 'Profile',
@@ -247,6 +247,20 @@ const TopBar = ({
     label: 'Sign Up',
     onClick: () => navigate(Routes.SIGN_UP),
   }], [currentUser, logoutClick, navigate]);
+
+  const userMenuItems = [
+    ...userAuthMenuItems,
+    {
+      key: 'divider',
+      type: 'divider',
+    },
+    {
+      key: 'about',
+      icon: <InfoCircleOutlined />,
+      label: 'About',
+      onClick: () => navigate(Routes.ABOUT),
+    },
+  ];
 
   return (
     <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {}}>
