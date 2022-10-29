@@ -4,21 +4,24 @@
     <meta charset="utf-8" />
     <link rel="icon" href="/icons/icon.ico" />
     <link rel="apple-touch-icon" href="/icons/icon.png" />
-    <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="preconnect" href="https://apis.google.com" crossorigin>
-    <meta property="og:title" content="HyperTuner Cloud">
-    <meta name="twitter:image:alt" content="HyperTuner Cloud">
-    <meta name="description" content="Share your tune and logs" />
-    <meta property="og:description" content="The best way to share your Speeduino and rusEFI tunes and logs">
-    <meta property="og:site_name" content="The best way to share your Speeduino and rusEFI tunes and logs">
-    <meta property="og:image" content="https://hypertuner.cloud/img/screen2.png">
-    <meta property="og:url" content="https://hypertuner.cloud">
+
+    <meta name="description" content="<%- metaDescription %>">
+    <title><%- metaTitle %></title>
+
+    <meta property="og:title" content="<%- metaTitle %>">
+    <meta property="og:site_name" content="<%- metaTitle %>">
+    <meta property="og:description" content="<%- metaDescription %>">
+    <meta property="og:image" content="<%- metaImage %>">
+    <meta property="og:url" content="<%- metaUrl %>">
+
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="description" content="HyperTuner - Share your tunes and logs" />
-    <title>HyperTuner Cloud</title>
+    <meta name="twitter:image:alt" content="<%- metaTitle %>">
+
+    <meta name="theme-color" content="<%- metaThemeColor %>">
   </head>
-  <body style="background-color: #191C1E">
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!-- Vite entrypoint -->
