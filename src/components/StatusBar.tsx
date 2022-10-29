@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Layout,
   Space,
@@ -18,6 +19,7 @@ import {
   AppState,
   TuneState,
 } from '../types/state';
+import { Routes } from '../routes';
 
 const { Footer } = Layout;
 
@@ -55,16 +57,12 @@ const StatusBar = ({ tune }: { tune: TuneState }) => (
         {tune?.details?.author && <Firmware tune={tune} />}
       </Col>
       <Col span={4} style={{ textAlign: 'right' }}>
-        <a
-          href="https://github.com/hyper-tuner/hyper-tuner-cloud"
-          target="__blank"
-          rel="noopener noreferrer"
-        >
-          <Space className="github-link">
+        <Link to={Routes.ABOUT}>
+          <Space>
             <GithubOutlined />
             GitHub
           </Space>
-        </a>
+        </Link>
       </Col>
     </Row>
   </Footer>
