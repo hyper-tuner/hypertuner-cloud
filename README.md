@@ -22,8 +22,6 @@
   </p>
 </div>
 
-<div align="center"><p>🚧 Work in progress 🚧</p></div>
-
 <br/>
 
 ![Screenshot VE Table](/public/img/screen1.png)
@@ -38,6 +36,10 @@
 
 - Source code: [noisymime/speeduino](https://github.com/noisymime/speeduino)
 - Documentation: [wiki.speeduino.com](https://wiki.speeduino.com/)
+
+## Support this project
+
+[GitHub Sponsors](https://github.com/sponsors/karniv00l)
 
 ## Development
 
