@@ -121,6 +121,29 @@ const useDb = () => {
     }
   };
 
+  const getUserTunes = async (userId: string, page: number, perPage: number) => {
+    try {
+      const list = await tunesCollection.getList(page, perPage, {
+        sort: '-updated',
+        filter: `author = "${userId}"`,
+      });
+
+      return Promise.resolve({
+        items: list.items as TunesRecordFull[],
+        totalItems: list.totalItems,
+      });
+    } catch (error) {
+      if ((error as ClientResponseError).isAbort) {
+        return Promise.reject(new Error('Cancelled'));
+      }
+
+      Sentry.captureException(error);
+      databaseGenericError(new Error(formatError(error)));
+
+      return Promise.reject(error);
+    }
+  };
+
   const autocomplete = async (attribute: string, search: string) => {
     try {
       const items = await tunesCollection.getFullList(10, {
@@ -146,6 +169,7 @@ const useDb = () => {
     getTune: (tuneId: string): Promise<TunesRecordFull | null> => getTune(tuneId),
     getIni: (tuneId: string): Promise<IniFilesRecordFull | null> => getIni(tuneId),
     searchTunes: (search: string, page: number, perPage: number): Promise<{ items: TunesRecordFull[]; totalItems: number }> => searchTunes(search, page, perPage),
+    getUserTunes: (userId: string, page: number, perPage: number): Promise<{ items: TunesRecordFull[]; totalItems: number }> => getUserTunes(userId, page, perPage),
     autocomplete: (attribute: string, search: string): Promise<TunesRecordFull[]> => autocomplete(attribute, search),
   };
 };

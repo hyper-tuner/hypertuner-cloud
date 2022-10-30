@@ -49,7 +49,7 @@ const Hub = () => {
   const { xs } = useBreakpoint();
   const { searchTunes } = useDb();
   const navigate = useNavigate();
-  const [dataSource, setDataSource] = useState<{}[]>([]); // TODO: fix this type
+  const [dataSource, setDataSource] = useState<TunesRecordFull[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
@@ -72,7 +72,7 @@ const Hub = () => {
         published: formatTime(tune.updated),
         stars: 0,
       }));
-      setDataSource(mapped);
+      setDataSource(mapped as any);
     } catch (error) {
       // request cancelled
     } finally {
@@ -138,7 +138,7 @@ const Hub = () => {
       responsive: ['sm'],
     },
     {
-      title: '',
+      title: 'Displacement',
       dataIndex: 'displacement',
       key: 'displacement',
       responsive: ['sm'],
