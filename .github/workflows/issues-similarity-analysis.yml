@@ -12,6 +12,8 @@ jobs:
         uses: actions-cool/issues-similarity-analysis@v1
         with:
           show-footer: false
+          comment-title: '### Similar issues'
           comment-body: '${index}. ${similarity} #${number}'
+          show-mentioned: true
           filter-threshold: 0.6
           since-days: 730
