@@ -26,6 +26,7 @@ export enum Routes {
   OAUTH_CALLBACK = '/auth/oauth-callback/:provider',
 
   ABOUT = '/about',
+  USER_ROOT = '/user/:userId',
 
   REDIRECT_PAGE_OAUTH_CALLBACK = 'oauth',
 }

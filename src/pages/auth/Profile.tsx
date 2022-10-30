@@ -217,10 +217,7 @@ const Profile = () => {
                   {tune.vehicleName} <Typography.Text code>{tune.signature}</Typography.Text>
                 </>}
                 description={<>
-                  {tune.engineMake},
-                  {tune.engineCode},
-                  {tune.displacement},
-                  {tune.aspiration}
+                  {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
                 </>}
               />
               <div>

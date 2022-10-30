@@ -126,6 +126,7 @@ const useDb = () => {
       const list = await tunesCollection.getList(page, perPage, {
         sort: '-updated',
         filter: `author = "${userId}"`,
+        expand: 'author',
       });
 
       return Promise.resolve({

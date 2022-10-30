@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
   Button,
   Grid,
@@ -166,6 +167,11 @@ const Hub = () => {
       dataIndex: 'authorUsername',
       key: 'authorUsername',
       responsive: ['sm'],
+      render: (userName: string, record: TunesRecordFull) => (
+        <Link to={generatePath(Routes.USER_ROOT, { userId: record.author })}>
+          {userName}
+        </Link>
+      ),
     },
     {
       title: 'Signature',
@@ -188,7 +194,7 @@ const Hub = () => {
     {
       dataIndex: 'tuneId',
       fixed: 'right',
-      render: (tuneId: string, record) => {
+      render: (tuneId: string, record: TunesRecordFull) => {
         const isOwner = currentUser?.id === record.author;
         const size = isOwner ? 'small' : 'middle';
 
