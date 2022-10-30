@@ -21,7 +21,8 @@ import {
 import Loader from '../components/Loader';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
-import { formatTime } from '../pocketbase';
+import { formatTime } from '../utils/time';
+import { UsersRecordFull } from '../types/dbData';
 
 const { Item } = Form;
 const rowProps = { gutter: 10 };
@@ -39,7 +40,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
     tuneId: tuneData.tuneId,
   }));
 
-  const canManage = currentUser && tuneData && currentUser.id === tuneData.user;
+  const canManage = currentUser && tuneData && currentUser.id === tuneData.author;
 
   const manageSection = (
     <>
@@ -70,7 +71,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData['@expand'].userProfile.username} addonBefore="Author" />
+              <Input value={(tuneData.expand.author as unknown as UsersRecordFull).username} addonBefore="Author" />
             </Item>
           </Col>
           <Col {...colProps}>

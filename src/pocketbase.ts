@@ -1,6 +1,5 @@
 import PocketBase, {
   ClientResponseError,
-  User,
   Record,
 } from 'pocketbase';
 import { fetchEnv } from './utils/env';
@@ -23,16 +22,11 @@ const formatError = (error: any) => {
 
 const removeFilenameSuffix = (filename: string) => filename.replace(/(.+)(_\w{10})(\.\w+)$/, '$1$3');
 
-// NOTE: PocketBase doesn't return ISO time, this may change here: https://github.com/pocketbase/pocketbase/issues/376
-const formatTime = (time: string) => new Date(`${time}Z`).toLocaleString();
-
 export {
   API_URL,
   client,
   formatError,
-  formatTime,
   removeFilenameSuffix,
   ClientResponseError,
-  User,
   Record,
 };

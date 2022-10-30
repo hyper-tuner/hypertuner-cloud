@@ -106,7 +106,6 @@ const Profile = () => {
       </>)}
       <Divider>Your Profile</Divider>
       <Space direction="vertical" style={{ width: '100%' }} size="large">
-        {(currentUser?.profile?.username?.length || 0) === 0 && <Alert message="Remember to set your username!" type="error" showIcon />}
         <Form
           validateMessages={validateMessages}
           form={formProfile}
@@ -114,11 +113,11 @@ const Profile = () => {
           fields={[
             {
               name: 'username',
-              value: currentUser?.profile?.username,
+              value: currentUser!.username,
             },
             {
               name: 'email',
-              value: currentUser?.email,
+              value: currentUser!.email,
             },
           ]}
         >

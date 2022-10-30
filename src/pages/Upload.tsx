@@ -50,7 +50,6 @@ import {
   error,
   restrictedPage,
   signatureNotSupportedWarning,
-  usernameNotSet,
 } from './auth/notifications';
 import { useAuth } from '../contexts/AuthContext';
 import { Routes } from '../routes';
@@ -211,8 +210,7 @@ const UploadPage = () => {
     const { signature } = tuneParser.parse(await tuneFile!.arrayBuffer()).getTune().details;
 
     const newData: TunesRecord = {
-      user: currentUser!.id,
-      userProfile: currentUser!.profile!.id,
+      author: currentUser!.id,
       tuneId: newTuneId!,
       signature,
       vehicleName,
@@ -434,7 +432,7 @@ const UploadPage = () => {
 
     if (oldTune) {
       // this is someone elses tune
-      if (oldTune.user !== currentUser?.id) {
+      if (oldTune.author !== currentUser?.id) {
         navigateToNewTuneId();
         return;
       }
@@ -528,13 +526,6 @@ const UploadPage = () => {
 
       if (!user.verified) {
         emailNotVerified();
-        navigate(Routes.PROFILE);
-
-        return;
-      }
-
-      if ((user.profile?.username?.length || 0) === 0) {
-        usernameNotSet();
         navigate(Routes.PROFILE);
 
         return;
