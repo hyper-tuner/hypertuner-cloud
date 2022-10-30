@@ -547,7 +547,7 @@ const UploadPage = () => {
     <Row style={{ marginTop: 10 }} {...rowProps}>
       <Col {...colProps}>
         <Item name="visibility">
-          <Select disabled>
+          <Select>
             <Select.Option value="public">
               <Space><GlobalOutlined />Public</Space>
             </Select.Option>

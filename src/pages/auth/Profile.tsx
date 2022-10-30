@@ -22,6 +22,8 @@ import {
   MailOutlined,
   ArrowRightOutlined,
   EditOutlined,
+  GlobalOutlined,
+  EyeOutlined,
 } from '@ant-design/icons';
 import validateMessages from './validateMessages';
 import { useAuth } from '../../contexts/AuthContext';
@@ -205,6 +207,7 @@ const Profile = () => {
           renderItem={(tune) => (
             <List.Item
               actions={[
+                tune.visibility === 'public' ? <GlobalOutlined /> : <EyeOutlined />,
                 <Button icon={<EditOutlined />} onClick={() => goToEdit(tune.tuneId)} />,
                 <Button icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tune.tuneId))} />,
               ]}

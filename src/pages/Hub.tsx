@@ -210,6 +210,7 @@ const Hub = () => {
         loading={isLoading}
         scroll={xs ? undefined : { x: 1360 }}
         pagination={false}
+        rowClassName={(tune) => tune.visibility}
       />
       <div style={{ textAlign: 'right' }}>
         <Pagination
