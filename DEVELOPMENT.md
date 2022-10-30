@@ -42,4 +42,10 @@ npm install
 
 # run development server
 npm start
+
+# lint code
+npm run lint
+
+# production build
+npm run build
 ```
