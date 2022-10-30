@@ -11,7 +11,8 @@ body {
   background-color: @main-dark;
 }
 
-html, body {
+html,
+body {
   overscroll-behavior-x: none;
 }
 
@@ -172,7 +173,8 @@ select:-webkit-autofill:focus {
     font-size: 2em;
   }
 
-  code, pre {
+  code,
+  pre {
     background-color: @main;
     border-radius: @border-radius-base;
   }
@@ -200,5 +202,9 @@ select:-webkit-autofill:focus {
 .ant-list-item {
   &.unlisted {
     opacity: 0.5;
+  }
+
+  code {
+    white-space: nowrap;
   }
 }

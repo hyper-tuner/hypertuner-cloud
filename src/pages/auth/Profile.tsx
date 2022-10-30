@@ -212,17 +212,19 @@ const Profile = () => {
                 <Button icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tune.tuneId))} />,
               ]}
             >
-              <List.Item.Meta
-                title={<>
-                  {tune.vehicleName} <Typography.Text code>{tune.signature}</Typography.Text>
-                </>}
-                description={<>
-                  {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
-                </>}
-              />
-              <div>
-                <Typography.Text italic>{tune.published}</Typography.Text>
-              </div>
+              <Space direction="vertical">
+                <List.Item.Meta
+                  title={<>
+                    {tune.vehicleName} <Typography.Text code>{tune.signature}</Typography.Text>
+                  </>}
+                  description={<>
+                    {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
+                  </>}
+                />
+                <div>
+                  <Typography.Text italic>{tune.published}</Typography.Text>
+                </div>
+              </Space>
             </List.Item>
           )}
           footer={

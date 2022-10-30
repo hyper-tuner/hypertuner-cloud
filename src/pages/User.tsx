@@ -12,6 +12,7 @@ import {
   Divider,
   List,
   Pagination,
+  Space,
   Typography,
 } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
@@ -77,17 +78,19 @@ const Profile = () => {
             ]}
             className={tune.visibility}
           >
-            <List.Item.Meta
-              title={<>
-                {tune.vehicleName} <Typography.Text code>{tune.signature}</Typography.Text>
-              </>}
-              description={<>
-                {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
-              </>}
-            />
-            <div>
-              <Typography.Text italic>{tune.published}</Typography.Text>
-            </div>
+            <Space direction="vertical">
+              <List.Item.Meta
+                title={<>
+                  {tune.vehicleName} <Typography.Text code>{tune.signature}</Typography.Text>
+                </>}
+                description={<>
+                  {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
+                </>}
+              />
+              <div>
+                <Typography.Text italic>{tune.published}</Typography.Text>
+              </div>
+            </Space>
           </List.Item>
         )}
         footer={

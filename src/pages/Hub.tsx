@@ -118,7 +118,11 @@ const Hub = () => {
         <>
           <Title level={5}>{tune.vehicleName}</Title>
           <Space direction="vertical">
-            <Text type="secondary">{tune.author}, {tune.published}</Text>
+            <Text type="secondary">
+              <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
+                {tune.authorUsername}
+              </Link>, {tune.published}
+            </Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
             <Text code>{tune.signature}</Text>
           </Space>
