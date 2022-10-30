@@ -92,10 +92,10 @@ const useDb = () => {
   };
 
   const searchTunes = async (search: string, page: number, perPage: number) => {
-    const phrases = search.length > 0 ? search.replace(/ +(?= )/g,'').split(' ') : [];
+    const phrases = search.length > 0 ? search.replace(/ +(?= )/g, '').split(' ') : [];
     const filter = phrases
       .filter((phrase) => phrase.length > 1)
-      .map((phrase) => `textSearch ~ "${phrase}"`)
+      .map((phrase) => `textSearch ~ "${phrase}" || author.username ~ "${phrase}"`)
       .join(' && ');
 
     try {
