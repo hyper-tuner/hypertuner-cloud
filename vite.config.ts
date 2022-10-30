@@ -57,6 +57,8 @@ export default ({ mode }) => {
       }),
       VitePWA({
         registerType: null,
+        injectRegister: null,
+        selfDestroying: true,
         devOptions: { enabled: true },
         manifest: {
           name: env.VITE_META_TITLE,
