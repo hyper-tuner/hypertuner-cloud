@@ -96,7 +96,7 @@ const useDb = () => {
     const filter = phrases
       .filter((phrase) => phrase.length > 1)
       .map((phrase) => `textSearch ~ "${phrase}"`)
-      .join(' || ');
+      .join(' && ');
 
     try {
       const list = await tunesCollection.getList(page, perPage, {
