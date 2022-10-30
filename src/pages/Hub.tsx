@@ -13,6 +13,7 @@ import {
   CopyOutlined,
   StarOutlined,
   ArrowRightOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -39,6 +40,7 @@ import {
   UsersRecordFull,
 } from '../types/dbData';
 import { formatTime } from '../utils/time';
+import { useAuth } from '../contexts/AuthContext';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -56,6 +58,10 @@ const Hub = () => {
   const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
   const searchRef = useRef<InputRef | null>(null);
+  const { currentUser } = useAuth();
+  const goToEdit = (tuneId: string) => navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+    tuneId,
+  }));
 
   const loadData = debounce(async (searchText: string) => {
     setIsLoading(true);
@@ -66,7 +72,7 @@ const Hub = () => {
         ...tune,
         key: tune.tuneId,
         year: tune.year,
-        author: (tune.expand.author as unknown as UsersRecordFull).username,
+        authorUsername: (tune.expand.author as unknown as UsersRecordFull).username,
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
         published: formatTime(tune.updated),
@@ -83,7 +89,7 @@ const Hub = () => {
   const debounceLoadData = useCallback((value: string) => {
     setSearchQuery(value);
     loadData(value);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
@@ -157,8 +163,8 @@ const Hub = () => {
     },
     {
       title: 'Author',
-      dataIndex: 'author',
-      key: 'author',
+      dataIndex: 'authorUsername',
+      key: 'authorUsername',
       responsive: ['sm'],
     },
     {
@@ -182,12 +188,18 @@ const Hub = () => {
     {
       dataIndex: 'tuneId',
       fixed: 'right',
-      render: (tuneId: string) => (
-        <Space>
-          {isClipboardSupported && <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />}
-          <Button type="primary" icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
-        </Space>
-      ),
+      render: (tuneId: string, record) => {
+        const isOwner = currentUser?.id === record.author;
+        const size = isOwner ? 'small' : 'middle';
+
+        return (
+          <Space>
+            {isOwner && <Button size={size} icon={<EditOutlined />} onClick={() => goToEdit(tuneId)} />}
+            {isClipboardSupported && <Button size={size} icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />}
+            <Button size={size} type="primary" icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
+          </Space>
+        );
+      },
       key: 'tuneId',
     },
   ];
