@@ -9,11 +9,11 @@ import {
 import {
   client,
   formatError,
-  User,
 } from '../pocketbase';
 import { buildRedirectUrl } from '../utils/url';
 import { Collections } from '../@types/pocketbase-types';
 import { Routes } from '../routes';
+import { UsersRecordFull } from '../types/dbData';
 
 // TODO: this should be imported from pocketbase but currently is not exported
 export type AuthProviderInfo = {
@@ -39,10 +39,10 @@ export enum OAuthProviders {
 };
 
 interface AuthValue {
-  currentUser: User | null,
-  signUp: (email: string, password: string) => Promise<User>,
-  login: (email: string, password: string) => Promise<User>,
-  refreshUser: () => Promise<User | null>,
+  currentUser: UsersRecordFull | null,
+  signUp: (email: string, password: string, username: string) => Promise<UsersRecordFull>,
+  login: (email: string, password: string) => Promise<UsersRecordFull>,
+  refreshUser: () => Promise<UsersRecordFull | null>,
   sendEmailVerification: () => Promise<void>,
   confirmEmailVerification: (token: string) => Promise<void>,
   confirmResetPassword: (token: string, password: string) => Promise<void>,
@@ -57,21 +57,24 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
+const users = client.collection(Collections.Users);
+
 const AuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<UsersRecordFull | null>(null);
 
   const value = useMemo(() => ({
     currentUser,
-    signUp: async (email: string, password: string) => {
+    signUp: async (email: string, password: string, username: string) => {
       try {
-        const user = await client.users.create({
+        const user = await users.create({
           email,
           password,
           passwordConfirm: password,
+          username,
         });
-        client.users.requestVerification(user.email);
-        await client.users.authViaEmail(user.email, password);
+        users.requestVerification(email);
+        await users.authWithPassword(email, password);
 
         return Promise.resolve(user);
       } catch (error) {
@@ -80,16 +83,16 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     login: async (email: string, password: string) => {
       try {
-        const authResponse = await client.users.authViaEmail(email, password);
-        return Promise.resolve(authResponse.user);
+        const authResponse = await users.authWithPassword(email, password);
+        return Promise.resolve(authResponse.record);
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));
       }
     },
     refreshUser: async () => {
       try {
-        const authResponse = await client.users.refresh();
-        return Promise.resolve(authResponse.user);
+        const authResponse = await users.authRefresh();
+        return Promise.resolve(authResponse.record);
       } catch (error) {
         client.authStore.clear();
         return Promise.resolve(null);
@@ -97,7 +100,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     sendEmailVerification: async () => {
       try {
-        await client.users.requestVerification(currentUser!.email);
+        await users.requestVerification(currentUser!.email);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));
@@ -105,7 +108,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     confirmEmailVerification: async (token: string) => {
       try {
-        await client.users.confirmVerification(token);
+        await users.confirmVerification(token);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));
@@ -113,7 +116,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     confirmResetPassword: async (token: string, password: string) => {
       try {
-        await client.users.confirmPasswordReset(token, password, password);
+        await users.confirmPasswordReset(token, password, password);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));
@@ -124,7 +127,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     initResetPassword: async (email: string) => {
       try {
-        await client.users.requestPasswordReset(email);
+        await users.requestPasswordReset(email);
         return Promise.resolve();
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));
@@ -132,14 +135,14 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     listAuthMethods: async () => {
       try {
-        const methods = await client.users.listAuthMethods();
+        const methods = await users.listAuthMethods();
         return Promise.resolve(methods);
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));
       }
     },
     oAuth: async (provider: OAuthProviders, code: string, codeVerifier: string) => {
-      client.users.authViaOAuth2(
+      users.authWithOAuth2(
         provider,
         code,
         codeVerifier,
@@ -148,7 +151,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     updateUsername: async (username: string) => {
       try {
-        await client.records.update(Collections.Profiles, currentUser!.profile!.id, {
+        await client.collection(Collections.Users).update(currentUser!.id, {
           username,
         });
         return Promise.resolve();
@@ -159,24 +162,14 @@ const AuthProvider = (props: { children: ReactNode }) => {
   }), [currentUser]);
 
   useEffect(() => {
-    setCurrentUser(client.authStore.model as User | null);
+    setCurrentUser(client.authStore.model as UsersRecordFull | null);
 
     const storeUnsubscribe = client.authStore.onChange((_token, model) => {
-      setCurrentUser(model as User | null);
-    });
-
-    client.realtime.subscribe(Collections.Tunes, (event) => {
-      console.info('Tunes event', event);
-    });
-
-    client.realtime.subscribe(Collections.Profiles, (event) => {
-      console.info('Profiles event', event);
+      setCurrentUser(model as UsersRecordFull | null);
     });
 
     return () => {
       storeUnsubscribe();
-      client.realtime.unsubscribe(Collections.Tunes);
-      client.realtime.unsubscribe(Collections.Profiles);
     };
   }, []);
 

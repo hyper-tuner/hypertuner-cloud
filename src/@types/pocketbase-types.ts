@@ -10,14 +10,14 @@ export type BaseRecord = {
     id: RecordIdString
     created: IsoDateString
     updated: IsoDateString
-    '@collectionId': string
-    '@collectionName': string
+    collectionId: string
+    collectionName: string
 }
 
 export enum Collections {
 	IniFiles = 'iniFiles',
-	Profiles = 'profiles',
 	Tunes = 'tunes',
+	Users = 'users',
 }
 
 export type IniFilesRecord = {
@@ -26,15 +26,8 @@ export type IniFilesRecord = {
 	ecosystem: 'speeduino' | 'rusefi'
 }
 
-export type ProfilesRecord = {
-	userId: UserIdString
-	username: string
-	avatar?: string
-}
-
 export type TunesRecord = {
-	user: UserIdString
-	userProfile: RecordIdString
+	author: RecordIdString
 	tuneId: string
 	signature: string
 	vehicleName: string
@@ -59,8 +52,12 @@ export type TunesRecord = {
 	toothLogFiles?: string[]
 }
 
+export type UsersRecord = {
+	avatar?: string
+}
+
 export type CollectionRecords = {
 	iniFiles: IniFilesRecord
-	profiles: ProfilesRecord
 	tunes: TunesRecord
+	users: UsersRecord
 }

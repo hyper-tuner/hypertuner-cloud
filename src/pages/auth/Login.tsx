@@ -19,6 +19,7 @@ import {
   GithubOutlined,
   FacebookOutlined,
   UserAddOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import {
   Link,
@@ -40,6 +41,7 @@ import {
 import {
   emailRules,
   requiredRules,
+  usernameRules,
 } from '../../utils/form';
 import { buildRedirectUrl } from '../../utils/url';
 
@@ -89,10 +91,10 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     }
   };
 
-  const emailSignUp = async ({ email, password }: { email: string, password: string }) => {
+  const emailSignUp = async ({ email, password, username }: { email: string, password: string, username: string }) => {
     setIsEmailLoading(true);
     try {
-      const user = await signUp(email, password);
+      const user = await signUp(email, password, username);
       signUpSuccessful();
 
       if (!user.verified) {
@@ -242,6 +244,17 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
             disabled={isAnythingLoading}
           />
         </Item>
+        {!isLogin && <Item
+          name="username"
+          rules={usernameRules}
+          hasFeedback
+        >
+          <Input
+            prefix={<UserOutlined />}
+            placeholder="Username"
+            autoComplete="name"
+          />
+        </Item>}
         <Item
           name="password"
           rules={requiredRules}

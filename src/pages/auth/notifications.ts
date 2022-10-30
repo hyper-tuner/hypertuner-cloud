@@ -19,12 +19,6 @@ const emailNotVerified = () => notification.warning({
   ...baseOptions,
 });
 
-const usernameNotSet = () => notification.warning({
-  message: 'Update your profile',
-  description: 'Your username has to be set before you can upload files!',
-  ...baseOptions,
-});
-
 const signUpSuccessful = () => notification.success({
   message: 'Sign Up successful',
   description: 'Welcome on board!',
@@ -156,7 +150,6 @@ const downloading = () => notification.success({
 export {
   error,
   emailNotVerified,
-  usernameNotSet,
   signUpSuccessful,
   signUpFailed,
   logInSuccessful,

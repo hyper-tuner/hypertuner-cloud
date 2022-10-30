@@ -33,10 +33,12 @@ import {
   copyToClipboard,
   isClipboardSupported,
 } from '../utils/clipboard';
-import { ProfilesRecord } from '../@types/pocketbase-types';
 import { isEscape } from '../utils/keyboard/shortcuts';
-import { TunesRecordFull } from '../types/dbData';
-import { formatTime } from '../pocketbase';
+import {
+  TunesRecordFull,
+  UsersRecordFull,
+} from '../types/dbData';
+import { formatTime } from '../utils/time';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -64,7 +66,7 @@ const Hub = () => {
         ...tune,
         key: tune.tuneId,
         year: tune.year,
-        author: (tune['@expand'] as { userProfile: ProfilesRecord }).userProfile.username,
+        author: (tune.expand.author as unknown as UsersRecordFull).username,
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
         published: formatTime(tune.updated),

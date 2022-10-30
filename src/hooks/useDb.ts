@@ -15,10 +15,13 @@ import {
   TunesRecord,
 } from '../@types/pocketbase-types';
 
+const tunesCollection = client.collection(Collections.Tunes);
+const iniFilesCollection = client.collection(Collections.IniFiles);
+
 const useDb = () => {
   const updateTune = async (id: string, data: TunesRecordPartial) => {
     try {
-      await client.records.update(Collections.Tunes, id, data);
+      await tunesCollection.update(id, data);
       return Promise.resolve();
     } catch (error) {
       Sentry.captureException(error);
@@ -30,7 +33,7 @@ const useDb = () => {
 
   const createTune = async (data: TunesRecord) => {
     try {
-      const record = await client.records.create(Collections.Tunes, data);
+      const record = await tunesCollection.create(data);
 
       return Promise.resolve(record as TunesRecordFull);
     } catch (error) {
@@ -43,15 +46,21 @@ const useDb = () => {
 
   const getTune = async (tuneId: string) => {
     try {
-      const tune = await client.records.getList(Collections.Tunes, 1, 1, {
-        filter: `tuneId = "${tuneId}"`,
-        expand: 'userProfile',
-      });
+      const tune = await tunesCollection.getFirstListItem(
+        `tuneId = "${tuneId}"`,
+        {
+          expand: 'author',
+        },
+      );
 
-      return Promise.resolve(tune.totalItems > 0 ? tune.items[0] as TunesRecordFull : null);
+      return Promise.resolve(tune as TunesRecordFull);
     } catch (error) {
       if ((error as ClientResponseError).isAbort) {
         return Promise.reject(new Error('Cancelled'));
+      }
+
+      if ((error as ClientResponseError).status === 404) {
+        return Promise.resolve(null);
       }
 
       Sentry.captureException(error);
@@ -63,14 +72,16 @@ const useDb = () => {
 
   const getIni = async (signature: string) => {
     try {
-      const tune = await client.records.getList(Collections.IniFiles, 1, 1, {
-        filter: `signature = "${signature}"`,
-      });
+      const ini = await iniFilesCollection.getFirstListItem(`signature = "${signature}"`);
 
-      return Promise.resolve(tune.totalItems > 0 ? tune.items[0] as IniFilesRecordFull : null);
+      return Promise.resolve(ini as IniFilesRecordFull);
     } catch (error) {
       if ((error as ClientResponseError).isAbort) {
         return Promise.reject(new Error('Cancelled'));
+      }
+
+      if ((error as ClientResponseError).status === 404) {
+        return Promise.resolve(null);
       }
 
       Sentry.captureException(error);
@@ -88,10 +99,10 @@ const useDb = () => {
       .join(' || ');
 
     try {
-      const list = await client.records.getList(Collections.Tunes, page, perPage, {
+      const list = await tunesCollection.getList(page, perPage, {
         sort: '-updated',
         filter,
-        expand: 'userProfile',
+        expand: 'author',
       });
 
       return Promise.resolve({
@@ -112,7 +123,7 @@ const useDb = () => {
 
   const autocomplete = async (attribute: string, search: string) => {
     try {
-      const items = await client.records.getFullList(Collections.Tunes, 10, {
+      const items = await tunesCollection.getFullList(10, {
         filter: `${attribute} ~ "${search}"`,
       });
 
