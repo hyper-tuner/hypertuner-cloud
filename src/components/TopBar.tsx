@@ -92,7 +92,7 @@ const TopBar = ({
   const logoutClick = useCallback(() => {
     logout();
     logOutSuccessful();
-    navigate(Routes.HUB);
+    navigate(0);
   }, [logout, navigate]);
 
   const toggleCommandPalette = useCallback(() => query.toggle(), [query]);
