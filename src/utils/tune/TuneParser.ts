@@ -23,16 +23,16 @@ class TuneParser {
     const bibliography = xml.getElementsByTagName('bibliography')[0]?.attributes as any;
     const versionInfo = xml.getElementsByTagName('versionInfo')[0]?.attributes as any;
 
-    if (!xmlPages || !bibliography || !versionInfo) {
+    if (!xmlPages || !versionInfo) {
       this.isTuneValid = false;
 
       return this;
     }
 
     this.tune.details = {
-      author: bibliography.author.value,
-      tuneComment: `${bibliography.tuneComment.value}`.trim(),
-      writeDate: bibliography.writeDate.value,
+      author: bibliography ? bibliography.author.value : '',
+      tuneComment: bibliography ? `${bibliography.tuneComment.value}`.trim() : '',
+      writeDate: bibliography ? bibliography.writeDate.value : '',
       fileFormat: versionInfo.fileFormat.value,
       firmwareInfo: versionInfo.firmwareInfo.value,
       nPages: Number.parseInt(versionInfo.nPages.value, 2),

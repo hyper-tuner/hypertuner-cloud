@@ -319,16 +319,24 @@ const UploadPage = () => {
       }
 
       const parsed = tuneParser.parse(await file.arrayBuffer());
+      const { signature } = parsed.getTune().details;
+
+      if (!parsed.isValid()) {
+        return {
+          result: false,
+          message: 'Tune file is not valid or not supported!',
+        };
+      }
 
       try {
-        await fetchINIFile(parsed.getTune().details.signature);
+        await fetchINIFile(signature);
       } catch (e) {
         signatureNotSupportedWarning((e as Error).message);
       }
 
       return {
-        result: parsed.isValid(),
-        message: 'Tune file is not valid!',
+        result: true,
+        message: '',
       };
     });
   };
