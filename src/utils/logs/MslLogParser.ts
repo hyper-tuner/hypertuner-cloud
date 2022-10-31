@@ -37,7 +37,7 @@ class MslLogParser implements ParserInterface {
         continue;
       }
 
-      if (line.startsWith('Time')) {
+      if (line.startsWith('Time') || line.startsWith('RPM')) {
         unitsIndex = lineIndex + 1;
         const fields = line.split('\t');
         const units = lines[unitsIndex].trim().split('\t');

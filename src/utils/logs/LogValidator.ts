@@ -45,7 +45,7 @@ class LogValidator implements ParserInterface {
   private checkMSL() {
     const lines = this.raw.split('\n');
     for (let index = 0; index < lines.length; index++) {
-      if (lines[index].startsWith('Time')) {
+      if (lines[index].startsWith('Time') || lines[index].startsWith('RPM')) {
         this.isMSLLogs = true;
         break;
       }
