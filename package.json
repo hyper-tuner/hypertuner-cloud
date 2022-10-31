@@ -20,8 +20,8 @@
     "typegen": "pocketbase-typegen --json ../pocketbase/pb_schema.json --out src/@types/pocketbase-types.ts"
   },
   "dependencies": {
-    "@hyper-tuner/ini": "^0.6.2",
-    "@hyper-tuner/types": "^0.4.0",
+    "@hyper-tuner/ini": "git+https://github.com/hyper-tuner/ini.git",
+    "@hyper-tuner/types": "git+https://github.com/hyper-tuner/types.git",
     "@reduxjs/toolkit": "^1.8.6",
     "@sentry/react": "^7.17.3",
     "@sentry/tracing": "^7.17.3",
@@ -44,7 +44,7 @@
     "vite": "^3.2.2"
   },
   "devDependencies": {
-    "@hyper-tuner/eslint-config": "^0.1.6",
+    "@hyper-tuner/eslint-config": "git+https://github.com/hyper-tuner/eslint-config.git",
     "@types/lodash.debounce": "^4.0.7",
     "@types/node": "^18.11.8",
     "@types/pako": "^2.0.0",
