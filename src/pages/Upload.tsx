@@ -263,13 +263,12 @@ const UploadPage = () => {
 
     if (existingTune) {
       // clear old multi files first
-      if (logFiles.length > 0 || toothLogFiles.length > 0) {
-        const tempFormData = new FormData();
-        tempFormData.append('logFiles', '');
-        tempFormData.append('toothLogFiles', '');
-        await updateTune(existingTune.id, tempFormData as unknown as TunesRecord);
-      }
+      const tempFormData = new FormData();
+      tempFormData.append('logFiles', '');
+      tempFormData.append('toothLogFiles', '');
+      await updateTune(existingTune.id, tempFormData as unknown as TunesRecord);
 
+      // another update with new files
       await updateTune(existingTune.id, formData as unknown as TunesRecord);
     } else {
       await createTune(formData as unknown as TunesRecord);
