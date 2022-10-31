@@ -39,7 +39,12 @@
 ### Speeduino
 
 - Source code: [noisymime/speeduino](https://github.com/noisymime/speeduino)
-- Documentation: [wiki.speeduino.com](https://wiki.speeduino.com/)
+- Documentation: [wiki.speeduino.com](https://wiki.speeduino.com)
+
+### rusEFI
+
+- Source code: [rusefi/rusefi](https://github.com/rusefi/rusefi)
+- Documentation: [wiki.rusefi.com](https://wiki.rusefi.com)
 
 ## Support this project
 
