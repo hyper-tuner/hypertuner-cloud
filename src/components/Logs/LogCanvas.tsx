@@ -8,7 +8,7 @@ import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import {
   colorHsl,
-  formatNumber,
+  formatNumberMs,
 } from '../../utils/numbers';
 import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { Colors } from '../../utils/colors';
@@ -88,7 +88,7 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, show
         stroke: hsl(index, selectedFieldsLength),
         scale: field.units,
         width: 2,
-        value: (_self, val) => `${(isNumber(val) ? formatNumber(val, field.format) : 0)}${field.units}`,
+        value: (_self, val) => `${(isNumber(val) ? formatNumberMs(val, field.format) : 0)}${field.units}`,
       });
 
       data.forEach((entry) => {

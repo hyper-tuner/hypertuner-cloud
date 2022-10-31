@@ -36,7 +36,8 @@ export const prepareConstDeclarations = (tuneConstants: TuneConstantsType, confi
 
     // escape string values
     if (typeof val === 'string') {
-      val = `'${val}'`;
+      // eslint-disable-next-line quotes
+      val = `'${val.replaceAll("'", "\\'")}'`;
     }
 
     // some names may have invalid characters, we can fix it or skip it

@@ -145,6 +145,11 @@ const Dialog = ({
     const y = tune.constants[table.yBins[0]];
     const z = tune.constants[table.zBins[0]];
 
+    if (!x || !y) {
+      // TODO: handle this (rusEFI: fuel/lambdaTableTbl)
+      return null;
+    }
+
     return <div>
       {renderHelp(table.help)}
       <Map
