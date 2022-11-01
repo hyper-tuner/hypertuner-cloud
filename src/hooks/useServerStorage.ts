@@ -47,10 +47,10 @@ const useServerStorage = () => {
       signal,
     ).then((response) => response);
 
-  const downloadFile = async (recordId: string, filename: string, anchorRef: HTMLAnchorElement) => {
+  const downloadFile = async (collection: Collections, recordId: string, filename: string, anchorRef: HTMLAnchorElement) => {
     downloading();
 
-    const response = await fetch(buildFileUrl(Collections.Tunes, recordId, filename));
+    const response = await fetch(buildFileUrl(collection, recordId, filename));
     const data = Pako.inflate(new Uint8Array(await response.arrayBuffer()));
     const url = window.URL.createObjectURL(new Blob([data]));
 
@@ -68,7 +68,7 @@ const useServerStorage = () => {
     fetchTuneFile: (recordId: string, filename: string): Promise<ArrayBuffer> => fetchTuneFile(recordId, filename),
     fetchINIFile: (signature: string): Promise<ArrayBuffer> => fetchINIFile(signature),
     fetchLogFileWithProgress: (recordId: string, filename: string, onProgress?: OnProgress, signal?: AbortSignal): Promise<ArrayBuffer> => fetchLogFileWithProgress(recordId, filename, onProgress, signal),
-    downloadFile: (recordId: string, filename: string, anchorRef: HTMLAnchorElement): Promise<void> => downloadFile(recordId, filename, anchorRef),
+    downloadFile: (collection: Collections, recordId: string, filename: string, anchorRef: HTMLAnchorElement): Promise<void> => downloadFile(collection, recordId, filename, anchorRef),
   };
 };
 

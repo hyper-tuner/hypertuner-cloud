@@ -58,6 +58,8 @@ import { logOutSuccessful } from '../pages/auth/notifications';
 import { TuneDataState } from '../types/state';
 import { removeFilenameSuffix } from '../pocketbase';
 import useServerStorage from '../hooks/useServerStorage';
+import useDb from '../hooks/useDb';
+import { Collections } from '../@types/pocketbase-types';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -88,6 +90,7 @@ const TopBar = ({
   const uploadMatch = useMatch(Routes.UPLOAD);
   const hubMatch = useMatch(Routes.HUB);
   const { downloadFile } = useServerStorage();
+  const { getIni } = useDb();
   const downloadAnchorRef = useRef<HTMLAnchorElement | null>(null);
   const logoutClick = useCallback(() => {
     logout();
@@ -112,7 +115,7 @@ const TopBar = ({
       key: filename,
       label: removeFilenameSuffix(filename),
       icon: logsExtensionsIcons[filename.slice(-3)],
-      onClick: () => downloadFile(tuneData!.id, filename, downloadAnchorRef.current!),
+      onClick: () => downloadFile(Collections.Tunes, tuneData!.id, filename, downloadAnchorRef.current!),
     })),
   };
 
@@ -124,7 +127,7 @@ const TopBar = ({
       key: filename,
       label: removeFilenameSuffix(filename),
       icon: logsExtensionsIcons[filename.slice(-3)],
-      onClick: () => downloadFile(tuneData!.id, filename, downloadAnchorRef.current!),
+      onClick: () => downloadFile(Collections.Tunes, tuneData!.id, filename, downloadAnchorRef.current!),
     })),
   };
 
@@ -138,7 +141,7 @@ const TopBar = ({
           label: 'Download',
           icon: <FileTextOutlined />,
           key: 'download',
-          onClick: () => downloadFile(tuneData!.id, tuneData!.tuneFile, downloadAnchorRef.current!),
+          onClick: () => downloadFile(Collections.Tunes, tuneData!.id, tuneData!.tuneFile, downloadAnchorRef.current!),
         },
         {
           label: 'Open in app',
@@ -148,6 +151,19 @@ const TopBar = ({
           onClick: () => window.open(`hypertuner://hypertuner.cloud/t/${tuneData!.tuneId}`, '_blank'),
         },
       ],
+    },
+    {
+      label: 'INI',
+      icon: <FileTextOutlined />,
+      key: 'ini',
+      onClick: async () => {
+        if (tuneData?.customIniFile) {
+          downloadFile(Collections.Tunes, tuneData!.id, tuneData!.customIniFile, downloadAnchorRef.current!);
+        } else {
+          const ini = await getIni(tuneData!.signature);
+          downloadFile(Collections.IniFiles, ini!.id, ini!.file, downloadAnchorRef.current!);
+        }
+      },
     },
     (tuneData?.logFiles || []).length > 0 ? { ...downloadLogsItems } : null,
     (tuneData?.toothLogFiles || []).length > 0 ? { ...downloadToothLogsItems } : null,
