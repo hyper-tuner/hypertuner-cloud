@@ -384,6 +384,13 @@ const CommandPalette = (props: CommandPaletteProps) => {
       icon: <LogoutOutlined />,
       perform: logoutAction,
     },
+    {
+      id: 'AboutAction',
+      name: 'About',
+      subtitle: 'About this app / sponsor.',
+      icon: <InfoCircleOutlined />,
+      perform: () => navigate(Routes.ABOUT),
+    },
   ];
 
   return (
