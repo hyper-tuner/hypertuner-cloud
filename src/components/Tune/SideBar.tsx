@@ -48,10 +48,17 @@ export const SKIP_SUB_MENUS = [
   'tuning/std_realtime',
 ];
 
-export const buildUrl = (tuneId: string, main: string, sub: string) => generatePath(Routes.TUNE_DIALOG, {
+export const buildDialogUrl = (tuneId: string, main: string, dialog: string) => generatePath(Routes.TUNE_DIALOG, {
   tuneId,
   category: main,
-  dialog: sub,
+  dialog: dialog.replaceAll(' ', '-'),
+});
+
+export const buildGroupMenuDialogUrl = (tuneId: string, main: string, groupMenu: string, dialog: string) => generatePath(Routes.TUNE_GROUP_MENU_DIALOG, {
+  tuneId,
+  category: main,
+  groupMenu: groupMenu.replaceAll(' ', '-'),
+  dialog,
 });
 
 const mapStateToProps = (state: AppState) => ({
@@ -66,13 +73,14 @@ interface SideBarProps {
   tune: TuneType | null;
   ui: UIState;
   navigation: NavigationState;
-  matchedPath: PathMatch<'dialog' | 'tuneId' | 'category'>;
+  matchedPath: PathMatch<'dialog' | 'tuneId' | 'category'> | null;
+  matchedGroupMenuDialogPath: PathMatch<'dialog' | 'groupMenu' | 'tuneId' | 'category'> | null;
 };
 
 export const sidebarWidth = 250;
 export const collapsedSidebarWidth = 50;
 
-const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) => {
+const SideBar = ({ config, tune, ui, navigation, matchedPath, matchedGroupMenuDialogPath }: SideBarProps) => {
   const siderProps = {
     width: sidebarWidth,
     collapsedWidth: collapsedSidebarWidth,
@@ -84,7 +92,11 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
   const [menus, setMenus] = useState<ItemType[]>([]);
   const navigate = useNavigate();
 
-  const mapSubMenuItems = useCallback((rootMenuName: string, subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType }): ItemType[] => {
+  const mapSubMenuItems = useCallback((
+    rootMenuName: string,
+    subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType },
+    groupMenuName: string | null = null,
+  ): ItemType[] => {
     const items: ItemType[] = [];
 
     Object
@@ -105,16 +117,26 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
         const subMenu = subMenus[subMenuName];
 
         if ((subMenu as GroupMenuType).type === 'groupMenu') {
-          items.push(...mapSubMenuItems(rootMenuName, (subMenu as GroupMenuType).groupChildMenus));
+          // recurrence
+          items.push({
+            key: buildDialogUrl(navigation.tuneId!, rootMenuName, (subMenu as GroupMenuType).title),
+            icon: <Icon name={subMenuName} />,
+            label: (subMenu as GroupMenuType).title,
+            children: mapSubMenuItems(rootMenuName, (subMenu as GroupMenuType).groupChildMenus, (subMenu as GroupMenuType).title),
+          });
 
           return;
         }
 
+        const url = groupMenuName ?
+          buildGroupMenuDialogUrl(navigation.tuneId!, rootMenuName, groupMenuName, subMenuName) :
+          buildDialogUrl(navigation.tuneId!, rootMenuName, subMenuName);
+
         items.push({
-          key: buildUrl(navigation.tuneId!, rootMenuName, subMenuName),
+          key: url,
           icon: <Icon name={subMenuName} />,
           label: subMenu.title,
-          onClick: () => navigate(buildUrl(navigation.tuneId!, rootMenuName, subMenuName)),
+          onClick: () => navigate(url),
         });
       });
 
@@ -144,15 +166,30 @@ const SideBar = ({ config, tune, ui, navigation, matchedPath }: SideBarProps) =>
     }
   }, [config, config?.menus, menusList, tune, tune?.constants]);
 
+  const defaultOpenSubmenus = () => {
+    if (matchedGroupMenuDialogPath) {
+      return [
+        `/${matchedGroupMenuDialogPath.params.category}`,
+        buildDialogUrl(
+          navigation.tuneId!,
+          matchedGroupMenuDialogPath.params.category!,
+          matchedGroupMenuDialogPath.params.groupMenu!,
+        ),
+      ];
+    }
+
+    return [`/${matchedPath!.params.category}`];
+  };
+
   return (
     <Sider {...siderProps} className="app-sidebar">
       <PerfectScrollbar options={{ suppressScrollX: true }}>
         <Menu
-          defaultSelectedKeys={[matchedPath.pathname]}
-          defaultOpenKeys={ui.sidebarCollapsed ? [] : [`/${matchedPath.params.category}`]}
+          defaultSelectedKeys={[matchedGroupMenuDialogPath ? matchedGroupMenuDialogPath.pathname : matchedPath!.pathname]}
+          defaultOpenKeys={ui.sidebarCollapsed ? [] : defaultOpenSubmenus()}
           mode="inline"
           style={{ height: '100%' }}
-          key={matchedPath.pathname}
+          key={matchedGroupMenuDialogPath ? matchedGroupMenuDialogPath.pathname : matchedPath!.pathname}
           items={menus}
         />
       </PerfectScrollbar>

@@ -54,7 +54,8 @@ import {
   NavigationState,
 } from '../types/state';
 import {
-  buildUrl,
+  buildDialogUrl,
+  buildGroupMenuDialogUrl,
   SKIP_MENUS,
   SKIP_SUB_MENUS,
 } from './Tune/SideBar';
@@ -261,7 +262,12 @@ const ActionsProvider = (props: CommandPaletteProps) => {
       },
     ];
 
-    const mapSubMenuItems = (rootMenuName: string, rootMenu: MenuType, subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType }) => {
+    const mapSubMenuItems = (
+      rootMenuName: string,
+      rootMenu: MenuType,
+      subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType },
+      groupMenuName: string | null = null,
+    ) => {
       Object
         .keys(subMenus)
         .forEach((subMenuName: string) => {
@@ -276,17 +282,22 @@ const ActionsProvider = (props: CommandPaletteProps) => {
           const subMenu = subMenus[subMenuName];
 
           if ((subMenu as GroupMenuType).type === 'groupMenu') {
-            mapSubMenuItems(rootMenuName, rootMenu, (subMenu as GroupMenuType).groupChildMenus);
+            // recurrence
+            mapSubMenuItems(rootMenuName, rootMenu, (subMenu as GroupMenuType).groupChildMenus, (subMenu as GroupMenuType).title);
 
             return;
           }
 
+          const url = groupMenuName ?
+            buildGroupMenuDialogUrl(navigation.tuneId!, rootMenuName, groupMenuName, subMenuName) :
+            buildDialogUrl(navigation.tuneId!, rootMenuName, subMenuName);
+
           newActions.push({
-            id: buildUrl(navigation.tuneId!, rootMenuName, subMenuName),
+            id: url,
             section: rootMenu.title,
             name: subMenu.title,
             icon: <Icon name={subMenuName} />,
-            perform: () => navigate(buildUrl(navigation.tuneId!, rootMenuName, subMenuName)),
+            perform: () => navigate(url),
           });
         });
     };

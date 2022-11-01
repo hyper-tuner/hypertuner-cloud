@@ -26,8 +26,7 @@ const mapStateToProps = (state: AppState) => ({
 const Tune = ({ config, tune }: { config: ConfigType | null, tune: TuneState }) => {
   const dialogMatch = useMatch(Routes.TUNE_DIALOG);
   const tuneRootMatch = useMatch(Routes.TUNE_TUNE);
-  // const { storageGetSync } = useBrowserStorage();
-  // const lastDialogPath = storageGetSync('lastDialog');
+  const groupMenuDialogMatch = useMatch(Routes.TUNE_GROUP_MENU_DIALOG);
   const { isConfigReady } = useConfig(config);
   const navigate = useNavigate();
 
@@ -47,18 +46,21 @@ const Tune = ({ config, tune }: { config: ConfigType | null, tune: TuneState }) 
 
       navigate(firstDialogPath, { replace: true });
     }
-  }, [navigate, tuneRootMatch, isConfigReady, config?.menus, tuneId, config, tune, dialogMatch]);
+  }, [navigate, tuneRootMatch, isConfigReady, config?.menus, tuneId, config, tune, dialogMatch, groupMenuDialogMatch]);
 
-  if (!tune || !config || !dialogMatch) {
+  if (!tune || !config || (!dialogMatch && !groupMenuDialogMatch)) {
     return <Loader />;
   }
 
   return (
     <>
-      <SideBar matchedPath={dialogMatch!} />
+      <SideBar
+        matchedPath={dialogMatch!}
+        matchedGroupMenuDialogPath={groupMenuDialogMatch}
+      />
       <Dialog
-        name={dialogMatch?.params.dialog!}
-        url={dialogMatch?.pathname || ''}
+        name={groupMenuDialogMatch ? groupMenuDialogMatch.params.dialog! : dialogMatch?.params.dialog!}
+        url={groupMenuDialogMatch ? groupMenuDialogMatch.pathname : dialogMatch?.pathname || ''}
       />
     </>
   );
