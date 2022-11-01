@@ -46,7 +46,7 @@
   "devDependencies": {
     "@hyper-tuner/eslint-config": "git+https://github.com/hyper-tuner/eslint-config.git",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/node": "^18.11.8",
+    "@types/node": "^18.11.9",
     "@types/pako": "^2.0.0",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
