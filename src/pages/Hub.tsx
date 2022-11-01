@@ -56,7 +56,7 @@ const Hub = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const searchRef = useRef<InputRef | null>(null);
   const { currentUser } = useAuth();
