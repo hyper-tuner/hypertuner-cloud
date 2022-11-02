@@ -138,6 +138,7 @@ const UploadPage = () => {
 
   const [logsTouched, setLogsTouched] = useState(false);
   const [toothLogsTouched, setToothLogsTouched] = useState(false);
+  const [customIniRequired, setCustomIniRequired] = useState(false);
 
   const shareSupported = 'share' in navigator;
   const { currentUser, refreshUser } = useAuth();
@@ -336,8 +337,16 @@ const UploadPage = () => {
       try {
         await fetchINIFile(signature);
       } catch (e) {
+        setCustomIniRequired(true);
         signatureNotSupportedWarning((e as Error).message);
+
+        return {
+          result: true,
+          message: '',
+        };
       }
+
+      setCustomIniRequired(false);
 
       return {
         result: true,
@@ -560,6 +569,14 @@ const UploadPage = () => {
     </Space>
   );
 
+  const publishButtonText = () => {
+    if (customIniRequired) {
+      return 'Custom INI file required!';
+    }
+
+    return isEditMode ? 'Update' : 'Publish';
+  };
+
   const publishButton = (
     <Row style={{ marginTop: 10 }} {...rowProps}>
       <Col {...colProps}>
@@ -582,8 +599,9 @@ const UploadPage = () => {
             loading={isLoading}
             htmlType="submit"
             icon={isEditMode ? <EditOutlined /> : <CheckOutlined />}
+            disabled={customIniRequired}
           >
-            {isEditMode ? 'Update' : 'Publish'}
+            {publishButtonText()}
           </Button>
         </Item>
       </Col>
