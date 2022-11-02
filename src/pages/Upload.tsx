@@ -453,7 +453,7 @@ const UploadPage = () => {
         setTuneFile(await fetchFile(oldTune.id, oldTune.tuneFile));
         setDefaultTuneFileList([{
           uid: oldTune.tuneFile,
-          name: oldTune.tuneFile,
+          name: removeFilenameSuffix(oldTune.tuneFile),
           status: 'done',
         }]);
       }
@@ -462,7 +462,7 @@ const UploadPage = () => {
         setCustomIniFile(await fetchFile(oldTune.id, oldTune.customIniFile));
         setDefaultCustomIniFileList([{
           uid: oldTune.customIniFile,
-          name: oldTune.customIniFile,
+          name: removeFilenameSuffix(oldTune.customIniFile),
           status: 'done',
         }]);
       }
@@ -472,7 +472,7 @@ const UploadPage = () => {
         tempLogFiles.push(await fetchFile(oldTune.id, fileName));
         setDefaultLogFilesList((prev) => [...prev, {
           uid: fileName,
-          name: fileName,
+          name: removeFilenameSuffix(fileName),
           status: 'done',
         }]);
       });
@@ -483,7 +483,7 @@ const UploadPage = () => {
         tempToothLogFiles.push(await fetchFile(oldTune.id, fileName));
         setDefaultToothLogFilesList((prev) => [...prev, {
           uid: fileName,
-          name: fileName,
+          name: removeFilenameSuffix(fileName),
           status: 'done',
         }]);
       });
