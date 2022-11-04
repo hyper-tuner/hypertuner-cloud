@@ -19,12 +19,12 @@ import {
   Divider,
   Typography,
   Badge,
+  Grid,
 } from 'antd';
 import {
   FileTextOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
-import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Pako from 'pako';
@@ -75,7 +75,7 @@ const Diagnose = ({
   loadedToothLogs: ToothLogsState;
   tuneData: TuneDataState | null;
 }) => {
-  const { lg } = useBreakpoint();
+  const { lg } = Grid.useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
   const [fileSize, setFileSize] = useState<string>();

@@ -21,14 +21,14 @@ import {
   Divider,
   Badge,
   Typography,
+  Grid,
 } from 'antd';
 import {
   FileTextOutlined,
   EditOutlined,
   GlobalOutlined,
 } from '@ant-design/icons';
-import { CheckboxValueType } from 'antd/lib/checkbox/Group';
-import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
+import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { connect } from 'react-redux';
 import { Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -92,7 +92,7 @@ const Logs = ({
   loadedLogs: LogsState;
   tuneData: TuneDataState | null;
 }) => {
-  const { lg } = useBreakpoint();
+  const { lg } = Grid.useBreakpoint();
   const { Sider } = Layout;
   const [progress, setProgress] = useState(0);
   const [fileSize, setFileSize] = useState<string>();
