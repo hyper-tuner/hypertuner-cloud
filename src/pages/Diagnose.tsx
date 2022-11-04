@@ -54,7 +54,6 @@ import {
 } from '../components/Tune/SideBar';
 
 const { Content } = Layout;
-const { Step } = Steps;
 
 const edgeUnknown = 'Unknown';
 const badgeStyle = { backgroundColor: Colors.TEXT };

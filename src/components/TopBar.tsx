@@ -22,7 +22,6 @@ import {
   Col,
   Tooltip,
   Grid,
-  Menu,
   Dropdown,
   Typography,
   Radio,
@@ -304,9 +303,7 @@ const TopBar = ({
               </Button>
             </Link>
             {tuneData?.tuneId && <Dropdown
-              overlay={
-                <Menu triggerSubMenuAction="click" items={downloadItems} />
-              }
+              menu={{ items: downloadItems }}
               placement="bottom"
               trigger={['click']}
             >
@@ -315,7 +312,7 @@ const TopBar = ({
               </Button>
             </Dropdown>}
             <Dropdown
-              overlay={<Menu items={userMenuItems} />}
+              menu={{ items: userMenuItems }}
               placement="bottomRight"
               trigger={['click']}
             >
