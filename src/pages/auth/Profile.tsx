@@ -132,7 +132,7 @@ const Profile = () => {
     });
 
     loadData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   return (
@@ -163,11 +163,11 @@ const Profile = () => {
             fields={[
               {
                 name: 'username',
-                value: currentUser!.username,
+                value: currentUser?.username,
               },
               {
                 name: 'email',
-                value: currentUser!.email,
+                value: currentUser?.email,
               },
             ]}
           >

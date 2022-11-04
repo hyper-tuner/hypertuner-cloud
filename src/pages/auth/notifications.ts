@@ -42,7 +42,7 @@ const logInFailed = (err: Error) => notification.error({
   ...baseOptions,
 });
 
-const restrictedPage = () => notification.error({
+const restrictedPage = () => notification.warning({
   message: 'Restricted page',
   description: 'You have to be logged in to access this page!',
   ...baseOptions,
