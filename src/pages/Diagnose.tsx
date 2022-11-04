@@ -277,25 +277,29 @@ const Diagnose = ({
                   className="logs-progress"
                 />
                 <Divider />
-                <Steps current={step} direction={lg ? 'horizontal' : 'vertical'}>
-                  <Step
-                    title="Downloading"
-                    subTitle={fileSize}
-                    description={
-                      fetchError ? fetchError!.message : <Space>
-                        <GlobalOutlined />{edgeLocation}
-                      </Space>
-                    }
-                  />
-                  <Step
-                    title="Decoding"
-                    description="Parsing CSV"
-                  />
-                  <Step
-                    title="Rendering"
-                    description="Putting pixels on your screen"
-                  />
-                </Steps>
+                <Steps
+                  current={step}
+                  direction={lg ? 'horizontal' : 'vertical'}
+                  items={[
+                    {
+                      title: 'Downloading',
+                      subTitle: fileSize,
+                      description: (
+                        fetchError ? fetchError!.message : <Space>
+                          <GlobalOutlined />{edgeLocation}
+                        </Space>
+                      ),
+                    },
+                    {
+                      title: 'Decoding',
+                      description: 'Parsing CSV',
+                    },
+                    {
+                      title: 'Rendering',
+                      description: 'Putting pixels on your screen',
+                    },
+                  ]}
+                />
               </Space>
             }
           </div>

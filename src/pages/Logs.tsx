@@ -384,29 +384,33 @@ const Logs = ({
                   className="logs-progress"
                 />
                 <Divider />
-                <Steps current={step} direction={lg ? 'horizontal' : 'vertical'}>
-                  <Step
-                    title="Downloading"
-                    subTitle={fileSize}
-                    description={
-                      fetchError ? fetchError!.message : <Space>
-                        <GlobalOutlined />{edgeLocation}
-                      </Space>
-                    }
-                    status={fetchError && 'error'}
-                  />
-                  <Step
-                    title="Decoding"
-                    description={parseError ? parseError!.message : 'Reading ones and zeros'}
-                    subTitle={parseElapsed}
-                    status={parseError && 'error'}
-                  />
-                  <Step
-                    title="Rendering"
-                    description="Putting pixels on your screen"
-                    subTitle={samplesCount && `${samplesCount} samples`}
-                  />
-                </Steps>
+                <Steps
+                  current={step}
+                  direction={lg ? 'horizontal' : 'vertical'}
+                  items={[
+                    {
+                      title: 'Downloading',
+                      subTitle: fileSize,
+                      description: (
+                        fetchError ? fetchError!.message : <Space>
+                          <GlobalOutlined />{edgeLocation}
+                        </Space>
+                      ),
+                      status: fetchError && 'error',
+                    },
+                    {
+                      title: 'Decoding',
+                      description: parseError ? parseError!.message : 'Reading ones and zeros',
+                      subTitle: parseElapsed,
+                      status: parseError && 'error',
+                    },
+                    {
+                      title: 'Rendering',
+                      description: 'Putting pixels on your screen',
+                      subTitle: samplesCount && `${samplesCount} samples`,
+                    },
+                  ]}
+                />
               </Space>
             }
           </div>
