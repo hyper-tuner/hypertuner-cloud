@@ -36,12 +36,12 @@ import {
   isClipboardSupported,
 } from '../utils/clipboard';
 import { isEscape } from '../utils/keyboard/shortcuts';
-import {
-  TunesRecordFull,
-  UsersRecordFull,
-} from '../types/dbData';
 import { formatTime } from '../utils/time';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  TunesResponse,
+  UsersResponse,
+} from '../@types/pocketbase-types';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -52,7 +52,7 @@ const Hub = () => {
   const { xs } = useBreakpoint();
   const { searchTunes } = useDb();
   const navigate = useNavigate();
-  const [dataSource, setDataSource] = useState<TunesRecordFull[]>([]);
+  const [dataSource, setDataSource] = useState<TunesResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
@@ -73,10 +73,10 @@ const Hub = () => {
         ...tune,
         key: tune.tuneId,
         year: tune.year,
-        authorUsername: (tune.expand.author as unknown as UsersRecordFull).username,
+        authorUsername: (tune.expand!.author as unknown as UsersResponse).username,
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
-        published: formatTime(tune.updated),
+        updated: formatTime(tune.updated),
         stars: 0,
       }));
       setDataSource(mapped as any);
@@ -114,14 +114,14 @@ const Hub = () => {
   const columns: ColumnsType<any> = [
     {
       title: 'Tunes',
-      render: (tune: TunesRecordFull) => (
+      render: (tune: TunesResponse) => (
         <>
           <Title level={5}>{tune.vehicleName}</Title>
           <Space direction="vertical">
             <Text type="secondary">
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
-                {tune.authorUsername}
-              </Link>, {tune.published}
+                {(tune as any).authorUsername}
+              </Link>, {tune.updated}
             </Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
             <Text code>{tune.signature}</Text>
@@ -171,7 +171,7 @@ const Hub = () => {
       dataIndex: 'authorUsername',
       key: 'authorUsername',
       responsive: ['sm'],
-      render: (userName: string, record: TunesRecordFull) => (
+      render: (userName: string, record: TunesResponse) => (
         <Link to={generatePath(Routes.USER_ROOT, { userId: record.author })}>
           {userName}
         </Link>
@@ -198,7 +198,7 @@ const Hub = () => {
     {
       dataIndex: 'tuneId',
       fixed: 'right',
-      render: (tuneId: string, record: TunesRecordFull) => {
+      render: (tuneId: string, record: TunesResponse) => {
         const isOwner = currentUser?.id === record.author;
         const size = isOwner ? 'small' : 'middle';
 

@@ -7,11 +7,12 @@ export type RecordIdString = string
 export type UserIdString = string
 
 export type BaseRecord = {
-    id: RecordIdString
-    created: IsoDateString
-    updated: IsoDateString
-    collectionId: string
-    collectionName: string
+	id: RecordIdString
+	created: IsoDateString
+	updated: IsoDateString
+	collectionId: string
+	collectionName: string
+	expand?: { [key: string]: any }
 }
 
 export enum Collections {
@@ -25,6 +26,8 @@ export type IniFilesRecord = {
 	file: string
 	ecosystem: 'speeduino' | 'rusefi'
 }
+
+export type IniFilesResponse = IniFilesRecord & BaseRecord
 
 export type TunesRecord = {
 	author: RecordIdString
@@ -52,9 +55,16 @@ export type TunesRecord = {
 	toothLogFiles?: string[]
 }
 
+export type TunesResponse = TunesRecord & BaseRecord
+
 export type UsersRecord = {
 	avatar?: string
+  username: string
+  email: string
+  verified: boolean
 }
+
+export type UsersResponse = UsersRecord & BaseRecord
 
 export type CollectionRecords = {
 	iniFiles: IniFilesRecord

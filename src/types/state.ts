@@ -3,17 +3,17 @@ import {
   Logs,
   TuneWithDetails,
 } from '@hyper-tuner/types';
+import { TunesResponse } from '../@types/pocketbase-types';
 import {
   CompositeLogEntry,
   ToothLogEntry,
 } from '../utils/logs/TriggerLogsParser';
-import { TunesRecordFull } from './dbData';
 
 export interface ConfigState extends Config {}
 
 export interface TuneState extends TuneWithDetails {}
 
-export interface TuneDataState extends TunesRecordFull {}
+export interface TuneDataState extends TunesResponse {}
 
 export interface LogsState {
   fileName: string;

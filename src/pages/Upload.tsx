@@ -56,7 +56,7 @@ import { Routes } from '../routes';
 import TuneParser from '../utils/tune/TuneParser';
 import TriggerLogsParser from '../utils/logs/TriggerLogsParser';
 import LogValidator from '../utils/logs/LogValidator';
-import useDb from '../hooks/useDb';
+import useDb, { TunesRecordPartial } from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
 import { buildFullUrl } from '../utils/url';
 import Loader from '../components/Loader';
@@ -66,11 +66,10 @@ import {
 } from '../utils/form';
 import { aspirationMapper } from '../utils/tune/mappers';
 import { copyToClipboard } from '../utils/clipboard';
-import { TunesRecord } from '../@types/pocketbase-types';
 import {
-  TunesRecordFull,
-  TunesRecordPartial,
-} from '../types/dbData';
+  TunesRecord,
+  TunesResponse,
+} from '../@types/pocketbase-types';
 import { removeFilenameSuffix } from '../pocketbase';
 
 const { Item, useForm } = Form;
@@ -124,7 +123,7 @@ const UploadPage = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [readme, setReadme] = useState(defaultReadme);
-  const [existingTune, setExistingTune] = useState<TunesRecordFull>();
+  const [existingTune, setExistingTune] = useState<TunesResponse>();
 
   const [defaultTuneFileList, setDefaultTuneFileList] = useState<UploadFile[]>([]);
   const [defaultLogFilesList, setDefaultLogFilesList] = useState<UploadFile[]>([]);
@@ -155,7 +154,7 @@ const UploadPage = () => {
     }
 
     const options = (await autocomplete(attribute, search))
-      .map((record) => record[attribute]);
+      .map((record) => (record as any)[attribute]);
 
     // TODO: order by occurrence (more common - higher in the list)
     const unique = [...new Set(options)].map((value) => ({ value }));

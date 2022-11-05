@@ -39,7 +39,7 @@ import { usernameRules } from '../../utils/form';
 import { formatTime } from '../../utils/time';
 import useDb from '../../hooks/useDb';
 import { aspirationMapper } from '../../utils/tune/mappers';
-import { TunesRecordFull } from '../../types/dbData';
+import { TunesResponse } from '../../@types/pocketbase-types';
 
 const { Item } = Form;
 
@@ -62,7 +62,7 @@ const Profile = () => {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isTunesLoading, setIsTunesLoading] = useState(false);
-  const [tunesDataSource, setTunesDataSource] = useState<TunesRecordFull[]>([]);
+  const [tunesDataSource, setTunesDataSource] = useState<TunesResponse[]>([]);
 
   const goToEdit = (tuneId: string) => navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
     tuneId,
@@ -106,7 +106,7 @@ const Profile = () => {
         year: tune.year,
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
-        published: formatTime(tune.updated),
+        updated: formatTime(tune.updated),
       }));
       setTunesDataSource(mapped as any);
     } catch (error) {
@@ -222,7 +222,7 @@ const Profile = () => {
                   </>}
                 />
                 <div>
-                  <Typography.Text italic>{tune.published}</Typography.Text>
+                  <Typography.Text italic>{tune.updated}</Typography.Text>
                 </div>
               </Space>
             </List.Item>

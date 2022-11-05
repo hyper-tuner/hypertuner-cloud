@@ -22,7 +22,7 @@ import Loader from '../components/Loader';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import { formatTime } from '../utils/time';
-import { UsersRecordFull } from '../types/dbData';
+import { UsersResponse } from '../@types/pocketbase-types';
 
 const { Item } = Form;
 const rowProps = { gutter: 10 };
@@ -71,7 +71,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={(tuneData.expand.author as unknown as UsersRecordFull).username} addonBefore="Author" />
+              <Input value={(tuneData.expand!.author as unknown as UsersResponse).username} addonBefore="Author" />
             </Item>
           </Col>
           <Col {...colProps}>

@@ -11,9 +11,11 @@ import {
   formatError,
 } from '../pocketbase';
 import { buildRedirectUrl } from '../utils/url';
-import { Collections } from '../@types/pocketbase-types';
+import {
+  Collections,
+  UsersResponse,
+} from '../@types/pocketbase-types';
 import { Routes } from '../routes';
-import { UsersRecordFull } from '../types/dbData';
 
 // TODO: this should be imported from pocketbase but currently is not exported
 export type AuthProviderInfo = {
@@ -39,10 +41,10 @@ export enum OAuthProviders {
 };
 
 interface AuthValue {
-  currentUser: UsersRecordFull | null,
-  signUp: (email: string, password: string, username: string) => Promise<UsersRecordFull>,
-  login: (email: string, password: string) => Promise<UsersRecordFull>,
-  refreshUser: () => Promise<UsersRecordFull | null>,
+  currentUser: UsersResponse | null,
+  signUp: (email: string, password: string, username: string) => Promise<UsersResponse>,
+  login: (email: string, password: string) => Promise<UsersResponse>,
+  refreshUser: () => Promise<UsersResponse | null>,
   sendEmailVerification: () => Promise<void>,
   confirmEmailVerification: (token: string) => Promise<void>,
   confirmResetPassword: (token: string, password: string) => Promise<void>,
@@ -61,13 +63,13 @@ const users = client.collection(Collections.Users);
 
 const AuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
-  const [currentUser, setCurrentUser] = useState<UsersRecordFull | null>(null);
+  const [currentUser, setCurrentUser] = useState<UsersResponse | null>(null);
 
   const value = useMemo(() => ({
     currentUser,
     signUp: async (email: string, password: string, username: string) => {
       try {
-        const user = await users.create({
+        const user = await users.create<UsersResponse>({
           email,
           password,
           passwordConfirm: password,
@@ -83,7 +85,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     login: async (email: string, password: string) => {
       try {
-        const authResponse = await users.authWithPassword(email, password);
+        const authResponse = await users.authWithPassword<UsersResponse>(email, password);
         return Promise.resolve(authResponse.record);
       } catch (error) {
         return Promise.reject(new Error(formatError(error)));
@@ -91,7 +93,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     },
     refreshUser: async () => {
       try {
-        const authResponse = await users.authRefresh();
+        const authResponse = await users.authRefresh<UsersResponse>();
         return Promise.resolve(authResponse.record);
       } catch (error) {
         client.authStore.clear();
@@ -162,10 +164,10 @@ const AuthProvider = (props: { children: ReactNode }) => {
   }), [currentUser]);
 
   useEffect(() => {
-    setCurrentUser(client.authStore.model as UsersRecordFull | null);
+    setCurrentUser(client.authStore.model as UsersResponse | null);
 
     const storeUnsubscribe = client.authStore.onChange((_token, model) => {
-      setCurrentUser(model as UsersRecordFull | null);
+      setCurrentUser(model as UsersResponse | null);
     });
 
     return () => {

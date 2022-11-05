@@ -21,9 +21,9 @@ import { formatTime } from '../utils/time';
 import useDb from '../hooks/useDb';
 import { aspirationMapper } from '../utils/tune/mappers';
 import {
-  TunesRecordFull,
-  UsersRecordFull,
-} from '../types/dbData';
+  TunesResponse,
+  UsersResponse,
+} from '../@types/pocketbase-types';
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
@@ -35,22 +35,22 @@ const Profile = () => {
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [isTunesLoading, setIsTunesLoading] = useState(false);
-  const [tunesDataSource, setTunesDataSource] = useState<TunesRecordFull[]>([]);
-  const [username, setUsername] = useState();
+  const [tunesDataSource, setTunesDataSource] = useState<TunesResponse[]>([]);
+  const [username, setUsername] = useState<string>();
 
   const loadData = async () => {
     setIsTunesLoading(true);
     try {
       const { items, totalItems } = await getUserTunes(route?.params.userId!, page, pageSize);
       setTotal(totalItems);
-      setUsername((items[0].expand.author as UsersRecordFull).username);
+      setUsername((items[0]!.expand!.author as UsersResponse).username);
       const mapped = items.map((tune) => ({
         ...tune,
         key: tune.tuneId,
         year: tune.year,
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
-        published: formatTime(tune.updated),
+        updated: formatTime(tune.updated),
       }));
       setTunesDataSource(mapped as any);
     } catch (error) {
@@ -88,7 +88,7 @@ const Profile = () => {
                 </>}
               />
               <div>
-                <Typography.Text italic>{tune.published}</Typography.Text>
+                <Typography.Text italic>{tune.updated}</Typography.Text>
               </div>
             </Space>
           </List.Item>
