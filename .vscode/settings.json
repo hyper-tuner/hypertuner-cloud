@@ -1,19 +1,24 @@
 {
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "[typescriptreact]": {
-      "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
-      },
-      "editor.formatOnSave": true
-    },
-    "cSpell.words": [
-        "hypertuner",
-        "kbar",
-        "pocketbase",
-        "prefs",
-        "rusefi",
-        "typegen",
-        "vite",
-        "vitejs"
-    ]
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "cSpell.words": [
+    "hypertuner",
+    "kbar",
+    "pocketbase",
+    "prefs",
+    "rusefi",
+    "typegen",
+    "vite",
+    "vitejs"
+  ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  }
 }

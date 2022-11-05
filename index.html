@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="/icons/icon.ico" />
-    <link rel="apple-touch-icon" href="/icons/icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="preconnect" href="https://apis.google.com" crossorigin>
 
-    <meta name="description" content="<%- metaDescription %>">
-    <title><%- metaTitle %></title>
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/icons/icon.ico" />
+  <link rel="apple-touch-icon" href="/icons/icon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://apis.google.com" crossorigin>
 
-    <meta property="og:title" content="<%- metaTitle %>">
-    <meta property="og:site_name" content="<%- metaTitle %>">
-    <meta property="og:description" content="<%- metaDescription %>">
-    <meta property="og:image" content="<%- metaImage %>">
-    <meta property="og:url" content="<%- metaUrl %>">
+  <meta name="description" content="<%- metaDescription %>">
+  <title>
+    <%- metaTitle %>
+  </title>
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image:alt" content="<%- metaTitle %>">
+  <meta property="og:title" content="<%- metaTitle %>">
+  <meta property="og:site_name" content="<%- metaTitle %>">
+  <meta property="og:description" content="<%- metaDescription %>">
+  <meta property="og:image" content="<%- metaImage %>">
+  <meta property="og:url" content="<%- metaUrl %>">
 
-    <meta name="theme-color" content="<%- metaThemeColor %>">
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-    <!-- Vite entrypoint -->
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image:alt" content="<%- metaTitle %>">
+
+  <meta name="theme-color" content="<%- metaThemeColor %>">
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <!-- Vite entrypoint -->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
