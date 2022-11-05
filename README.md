@@ -38,6 +38,8 @@
 
 ### Speeduino
 
+[https://tunes.speeduino.com](https://tunes.speeduino.com)
+
 - Source code: [noisymime/speeduino](https://github.com/noisymime/speeduino)
 - Documentation: [wiki.speeduino.com](https://wiki.speeduino.com)
 
