@@ -17,7 +17,7 @@
     "lint": "tsc && eslint --max-warnings=0 src",
     "lint:fix": "eslint --fix src",
     "analyze": "npm run build && open stats.html",
-    "typegen": "pocketbase-typegen --json ../pocketbase/pb_schema.json --out src/@types/pocketbase-types.ts"
+    "typegen": "pocketbase-typegen --json ../cloud-backend/pb_schema.json --out src/@types/pocketbase-types.ts"
   },
   "dependencies": {
     "@hyper-tuner/ini": "git+https://github.com/hyper-tuner/ini.git",
