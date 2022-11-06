@@ -28,6 +28,11 @@ const tunesCollection = client.collection(Collections.Tunes);
 
 const customEndpoint = `${API_URL}/api/custom`;
 
+const headers = (token: string) => ({
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${token}`,
+});
+
 const useDb = () => {
   const updateTune = async (id: string, data: TunesRecordPartial): Promise<void> => {
     try {
@@ -161,6 +166,50 @@ const useDb = () => {
     }
   };
 
+  const toggleStar = async (currentUserToken: string, tune: string): Promise<{ stars: number, isStarred: boolean }> => {
+    const response = await fetch(`${customEndpoint}/stargazers/toggleStar`, {
+      method: 'POST',
+      headers: headers(currentUserToken),
+      body: JSON.stringify({ tune }),
+    });
+
+    if (response.ok) {
+      const { stars, isStarred } = await response.json();
+
+      return Promise.resolve({ stars, isStarred });
+    }
+
+    if (response.status === 404) {
+      return Promise.resolve({ stars: 0, isStarred: false });
+    }
+
+    Sentry.captureException(response);
+    databaseGenericError(new Error(response.statusText));
+
+    return Promise.reject(response.status);
+  };
+
+  const isStarredByMe = async (currentUserToken: string, tune: string): Promise<boolean> => {
+    const response = await fetch(`${customEndpoint}/stargazers/starredByMe/${tune}`, {
+      headers: headers(currentUserToken),
+    });
+
+    if (response.ok) {
+      const { isStarred } = await response.json();
+
+      return Promise.resolve(isStarred);
+    }
+
+    if (response.status === 404) {
+      return Promise.resolve(false);
+    }
+
+    Sentry.captureException(response);
+    databaseGenericError(new Error(response.statusText));
+
+    return Promise.reject(response.status);
+  };
+
   return {
     updateTune,
     createTune,
@@ -169,6 +218,8 @@ const useDb = () => {
     searchTunes,
     getUserTunes,
     autocomplete,
+    toggleStar,
+    isStarredByMe,
   };
 };
 

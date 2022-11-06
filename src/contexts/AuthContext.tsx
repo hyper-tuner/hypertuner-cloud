@@ -42,6 +42,7 @@ export enum OAuthProviders {
 
 interface AuthValue {
   currentUser: UsersResponse | null,
+  currentUserToken: string | null,
   signUp: (email: string, password: string, username: string) => Promise<UsersResponse>,
   login: (email: string, password: string) => Promise<UsersResponse>,
   refreshUser: () => Promise<UsersResponse | null>,
@@ -64,9 +65,11 @@ const users = client.collection(Collections.Users);
 const AuthProvider = (props: { children: ReactNode }) => {
   const { children } = props;
   const [currentUser, setCurrentUser] = useState<UsersResponse | null>(null);
+  const [currentUserToken, setCurrentUserToken] = useState<string | null>(null);
 
   const value = useMemo(() => ({
     currentUser,
+    currentUserToken,
     signUp: async (email: string, password: string, username: string) => {
       try {
         const user = await users.create<UsersResponse>({
@@ -161,13 +164,15 @@ const AuthProvider = (props: { children: ReactNode }) => {
         return Promise.reject(new Error(formatError(error)));
       }
     },
-  }), [currentUser]);
+  }), [currentUser, currentUserToken]);
 
   useEffect(() => {
     setCurrentUser(client.authStore.model as UsersResponse | null);
+    setCurrentUserToken(client.authStore.token);
 
-    const storeUnsubscribe = client.authStore.onChange((_token, model) => {
+    const storeUnsubscribe = client.authStore.onChange((token, model) => {
       setCurrentUser(model as UsersResponse | null);
+      setCurrentUserToken(token);
     });
 
     return () => {

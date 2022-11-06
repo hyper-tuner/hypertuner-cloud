@@ -23,6 +23,7 @@ import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import { formatTime } from '../utils/time';
 import { UsersResponse } from '../@types/pocketbase-types';
+import StarButton from '../components/StarButton';
 
 const { Item } = Form;
 const rowProps = { gutter: 10 };
@@ -66,6 +67,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
 
   return (
     <div className="small-container">
+      <StarButton tuneData={tuneData} />
       <Divider>Details</Divider>
       <Form>
         <Row {...rowProps}>
