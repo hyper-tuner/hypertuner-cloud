@@ -97,7 +97,7 @@ const useDb = () => {
 
     try {
       const list = await tunesCollection.getList<TunesResponse>(page, perPage, {
-        sort: '-updated',
+        sort: '-stars,-updated',
         filter,
         expand: 'author',
       });

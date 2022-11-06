@@ -77,7 +77,6 @@ const Hub = () => {
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
         updated: formatTime(tune.updated),
-        stars: 0,
       }));
       setDataSource(mapped as any);
     } catch (error) {
