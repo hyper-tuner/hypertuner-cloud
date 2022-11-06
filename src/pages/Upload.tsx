@@ -135,8 +135,6 @@ const UploadPage = () => {
   const [logFiles, setLogFiles] = useState<File[]>([]);
   const [toothLogFiles, setToothLogFiles] = useState<File[]>([]);
 
-  const [logsTouched, setLogsTouched] = useState(false);
-  const [toothLogsTouched, setToothLogsTouched] = useState(false);
   const [customIniRequired, setCustomIniRequired] = useState(false);
 
   const shareSupported = 'share' in navigator;
@@ -245,7 +243,7 @@ const UploadPage = () => {
         fuel,
         ignition,
         year,
-      ].filter((field) => field !== null && `${field}`.length > 1)
+      ].filter((field) => field !== null && `${field}`.length > 1 && field !== 'null')
         .join(' ')
         .replace(/[^\w.\-\d ]/g, ''),
     };
@@ -264,15 +262,12 @@ const UploadPage = () => {
       }
     });
 
-
     if (existingTune) {
-      if (logsTouched || toothLogsTouched) {
-        // clear old multi files first since there is no other way to handle this
-        const tempFormData = new FormData();
-        tempFormData.append('logFiles', '');
-        tempFormData.append('toothLogFiles', '');
-        await updateTune(existingTune.id, tempFormData as unknown as TunesRecord);
-      }
+      // always clear old multi files first since there is no other way to handle this
+      const tempFormData = new FormData();
+      tempFormData.append('logFiles', '');
+      tempFormData.append('toothLogFiles', '');
+      await updateTune(existingTune.id, tempFormData as unknown as TunesRecord);
 
       // another update with new files
       await updateTune(existingTune.id, formData as unknown as TunesRecord);
@@ -357,7 +352,6 @@ const UploadPage = () => {
   const uploadLogs = async (options: UploadRequestOption) => {
     upload(options, async (file) => {
       setLogFiles((prev) => [...prev, file]);
-      setLogsTouched(true);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -391,7 +385,6 @@ const UploadPage = () => {
   const uploadToothLogs = async (options: UploadRequestOption) => {
     upload(options, async (file) => {
       setToothLogFiles((prev) => [...prev, file]);
-      setToothLogsTouched(true);
     }, async (file) => {
       const { result, message } = await validateSize(file);
       if (!result) {
@@ -439,12 +432,10 @@ const UploadPage = () => {
 
   const removeLogFile = async (file: UploadFile) => {
     setLogFiles((prev) => prev.filter((f) => removeFilenameSuffix(f.name) !== file.name));
-    setLogsTouched(true);
   };
 
   const removeToothLogFile = async (file: UploadFile) => {
     setToothLogFiles((prev) => prev.filter((f) => removeFilenameSuffix(f.name) !== file.name));
-    setToothLogsTouched(true);
   };
 
   const removeCustomIniFile = async (file: UploadFile) => {
