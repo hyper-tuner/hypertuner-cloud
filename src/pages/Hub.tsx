@@ -185,8 +185,8 @@ const Hub = () => {
     },
     {
       title: 'Published',
-      dataIndex: 'published',
-      key: 'published',
+      dataIndex: 'updated',
+      key: 'updated',
       responsive: ['sm'],
     },
     {
