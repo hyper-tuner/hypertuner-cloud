@@ -419,6 +419,10 @@ const UploadPage = () => {
         validationMessage = (e as Error).message;
       }
 
+      if (valid) {
+        setCustomIniRequired(false);
+      }
+
       return {
         result: valid,
         message: validationMessage,
