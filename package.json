@@ -23,14 +23,14 @@
     "@hyper-tuner/ini": "git+https://github.com/hyper-tuner/ini.git",
     "@hyper-tuner/types": "git+https://github.com/hyper-tuner/types.git",
     "@reduxjs/toolkit": "^1.9.0",
-    "@sentry/react": "^7.17.4",
-    "@sentry/tracing": "^7.17.4",
+    "@sentry/react": "^7.18.0",
+    "@sentry/tracing": "^7.18.0",
     "antd": "^4.24.1",
-    "kbar": "^0.1.0-beta.36",
+    "kbar": "^0.1.0-beta.37",
     "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.8.1",
     "nanoid": "^4.0.0",
-    "pako": "^2.0.4",
+    "pako": "^2.1.0",
     "pocketbase": "^0.8.0-rc1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -41,7 +41,7 @@
     "react-router-dom": "^6.4.3",
     "uplot": "^1.6.22",
     "uplot-react": "^1.1.1",
-    "vite": "^3.2.2"
+    "vite": "^3.2.3"
   },
   "devDependencies": {
     "@hyper-tuner/eslint-config": "git+https://github.com/hyper-tuner/eslint-config.git",
@@ -52,10 +52,10 @@
     "@types/react-dom": "^18.0.8",
     "@types/react-redux": "^7.1.24",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
     "@vitejs/plugin-react": "^2.2.0",
-    "eslint": "^8.26.0",
+    "eslint": "^8.27.0",
     "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
@@ -64,11 +64,11 @@
     "eslint-plugin-react": "^7.31.10",
     "eslint-plugin-react-hooks": "^4.6.0",
     "less": "^4.1.3",
-    "pocketbase-typegen": "^1.0.12",
+    "pocketbase-typegen": "^1.0.13",
     "prettier": "^2.7.1",
     "rollup-plugin-visualizer": "^5.8.3",
     "typescript": "^4.8.4",
     "vite-plugin-html": "^3.2.0",
-    "vite-plugin-pwa": "^0.13.2"
+    "vite-plugin-pwa": "^0.13.3"
   }
 }
