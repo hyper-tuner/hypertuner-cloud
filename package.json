@@ -30,7 +30,7 @@
     "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.8.1",
     "nanoid": "^4.0.0",
-    "pako": "^2.0.4",
+    "pako": "^2.1.0",
     "pocketbase": "^0.8.0-rc1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
