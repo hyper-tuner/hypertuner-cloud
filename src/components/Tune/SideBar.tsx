@@ -35,11 +35,16 @@ import {
 const { Sider } = Layout;
 
 export const SKIP_MENUS = [
+  // speeduino
   'help',
   'hardwareTesting',
   '3dTuningMaps',
   'dataLogging',
   'tools',
+
+  // rusefi
+  'view',
+  'controller',
 ];
 
 export const SKIP_SUB_MENUS = [

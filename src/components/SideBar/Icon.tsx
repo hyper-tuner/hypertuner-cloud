@@ -22,106 +22,76 @@ import {
   UpCircleOutlined,
 } from '@ant-design/icons';
 
-const Icon = ({ name }: { name: string }) => {
-  switch (name) {
-    // main menu
-    case 'settings':
-      return <ControlOutlined />;
-    case 'tuning':
-      return <CarOutlined />;
-    case 'spark':
-      return <FireOutlined />;
-    case 'startupIdle':
-      return <PoweroffOutlined />;
-    case 'accessories':
-      return <ApiOutlined />;
-    case 'tools':
-      return <ToolOutlined />;
-    case '3dTuningMaps':
-      return <DotChartOutlined />;
-    case 'hardwareTesting':
-      return <ExperimentOutlined />;
-    case 'help':
-      return <QuestionCircleOutlined />;
+const Icon = ({ name }: { name: string }): JSX.Element => {
+  const map: { [name: string]: JSX.Element } = {
+    'settings': <ControlOutlined />,
+    'tuning': <CarOutlined />,
+    'spark': <FireOutlined />,
+    'startupIdle': <PoweroffOutlined />,
+    'accessories': <ApiOutlined />,
+    'tools': <ToolOutlined />,
+    '3dTuningMaps': <DotChartOutlined />,
+    'hardwareTesting': <ExperimentOutlined />,
+    'help': <QuestionCircleOutlined />,
+    'injChars': <FundOutlined />,
+    'airdensity_curve': <FundOutlined />,
+    'baroFuel_curve': <FundOutlined />,
+    'dwellCompensation': <FundOutlined />,
+    'iatRetard': <FundOutlined />,
+    'clt_advance_curve': <FundOutlined />,
+    'rotary_ignition': <FundOutlined />,
+    'accelEnrichments': <FundOutlined />,
+    'flexFueling': <FundOutlined />,
+    'dwell_correction_curve': <FundOutlined />,
+    'iat_retard_curve': <FundOutlined />,
+    'crankPW': <FundOutlined />,
+    'primePW': <FundOutlined />,
+    'warmup': <FundOutlined />,
+    'ASE': <FundOutlined />,
+    'iacClosedLoop_curve': <FundOutlined />,
+    'iacPwm_curve': <FundOutlined />,
+    'iacPwmCrank_curve': <FundOutlined />,
+    'iacStep_curve': <FundOutlined />,
+    'iacStepCrank_curve': <FundOutlined />,
+    'idleAdvanceSettings': <FundOutlined />,
+    'sparkTbl': <TableOutlined />,
+    'veTableDialog': <TableOutlined />,
+    'afrTable1Tbl': <TableOutlined />,
+    'fuelTable2Dialog': <TableOutlined />,
+    'sparkTable2Dialog': <TableOutlined />,
+    'inj_trimad': <TableOutlined />,
+    'stagingTableDialog': <TableOutlined />,
+    'stagedInjection': <TableOutlined />,
+    'fuelTemp_curve': <TableOutlined />,
+    'boostLoad': <TableOutlined />,
+    'triggerSettings': <SettingOutlined />,
+    'reset_control': <PoweroffOutlined />,
+    'engine_constants': <ControlOutlined />,
+    'io_summary': <UnorderedListOutlined />,
+    'prgm_out_config': <ApartmentOutlined />,
+    'std_realtime': <FundProjectionScreenOutlined />,
+    'sparkSettings': <FireOutlined />,
+    'dwellSettings': <FieldTimeOutlined />,
+    'RevLimiterS': <SafetyOutlined />,
+    'idleUpSettings': <UpCircleOutlined />,
+    'LaunchControl': <ThunderboltOutlined />,
+    'NitrousControl': <RocketOutlined />,
+    'vssSettings': <SettingOutlined />,
+    'Auxin_config': <ApiOutlined />,
+    'tacho': <DashboardOutlined />,
+    'pressureSensors': <DashboardOutlined />,
+  };
 
-    // common, 2D table
-    case 'injChars':
-    case 'airdensity_curve':
-    case 'baroFuel_curve':
-    case 'dwellCompensation':
-    case 'iatRetard':
-    case 'clt_advance_curve':
-    case 'rotary_ignition':
-    case 'accelEnrichments':
-    case 'flexFueling':
-    case 'dwell_correction_curve':
-    case 'iat_retard_curve':
-    case 'crankPW':
-    case 'primePW':
-    case 'warmup':
-    case 'ASE':
-    case 'iacClosedLoop_curve':
-    case 'iacPwm_curve':
-    case 'iacPwmCrank_curve':
-    case 'iacStep_curve':
-    case 'iacStepCrank_curve':
-    case 'idleAdvanceSettings':
-      return <FundOutlined />;
+  let icon = <ControlOutlined />;
 
-    // common 3D table / map
-    case 'sparkTbl':
-    case 'veTableDialog':
-    case 'afrTable1Tbl':
-    case 'fuelTable2Dialog':
-    case 'sparkTable2Dialog':
-    case 'inj_trimad':
-    case 'stagingTableDialog':
-    case 'stagedInjection':
-    case 'fuelTemp_curve':
-    case 'boostLoad':
-      return <TableOutlined />;
+  Object.keys(map).forEach((key) => {
+    // const current = map[key];
+    if (key.toLowerCase().includes(name.toLowerCase())) {
+      icon = map[key];
+    }
+  });
 
-    // rest
-    case 'triggerSettings':
-      return <SettingOutlined />;
-    case 'reset_control':
-      return <PoweroffOutlined />;
-    case 'engine_constants':
-      return <ControlOutlined />;
-    case 'io_summary':
-      return <UnorderedListOutlined />;
-    case 'prgm_out_config':
-      return <ApartmentOutlined />;
-    case 'std_realtime':
-      return <FundProjectionScreenOutlined />;
-    case 'sparkSettings':
-      return <FireOutlined />;
-    case 'dwellSettings':
-      return <FieldTimeOutlined />;
-    case 'RevLimiterS':
-      return <SafetyOutlined />;
-    case 'idleUpSettings':
-      return <UpCircleOutlined />;
-    case 'LaunchControl':
-      return <ThunderboltOutlined />;
-    case 'NitrousControl':
-      return <RocketOutlined />;
-    case 'vssSettings':
-      return <SettingOutlined />;
-    case 'Auxin_config':
-      return <ApiOutlined />;
-    case 'tacho':
-    case 'pressureSensors':
-      return <DashboardOutlined />;
-
-    // default / not found
-    default:
-      // return null;
-      // return <BarsOutlined />;
-      // return <SettingOutlined />;
-      // return <MenuOutlined />;
-      return <ControlOutlined />;
-  }
+  return icon;
 };
 
 export default Icon;
