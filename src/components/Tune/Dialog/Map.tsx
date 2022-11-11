@@ -2,7 +2,7 @@
 
 import { Grid } from 'antd';
 import LandscapeNotice from './LandscapeNotice';
-import { colorHsl } from '../../../utils/numbers';
+import { colorHsl, formatNumber } from '../../../utils/numbers';
 
 const { useBreakpoint } = Grid;
 
@@ -10,16 +10,16 @@ const Map = ({
   xData,
   yData,
   zData,
-  disabled,
   xUnits,
   yUnits,
+  zDigits,
 }: {
   xData: number[],
   yData: number[],
   zData: number[][],
-  disabled: boolean,
   xUnits: string,
   yUnits: string,
+  zDigits: number,
 }) => {
   const { sm } = useBreakpoint();
   const titleProps = { disabled: true };
@@ -47,7 +47,7 @@ const Map = ({
           key={`${rowIndex}-${index}-${value}-${hue}${sat}${light}`}
           style={{ backgroundColor: `hsl(${hue}, ${sat}%, ${light}%)` }}
         >
-          {`${value}`}
+          {formatNumber(value, zDigits)}
         </td>
       ));
 

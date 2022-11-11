@@ -150,6 +150,8 @@ const Dialog = ({
       return null;
     }
 
+    const zConstant = findConstantOnPage(table.zBins[0]) as ScalarConstantType;
+
     return <div>
       {renderHelp(table.help)}
       <Map
@@ -157,12 +159,12 @@ const Dialog = ({
         xData={parseXy(x.value as string)}
         yData={parseXy(y.value as string).reverse()}
         zData={parseZ(z.value as string)}
-        disabled={false}
         xUnits={x.units as string}
         yUnits={y.units as string}
+        zDigits={zConstant.digits}
       />
     </div>;
-  }, [tune?.constants]);
+  }, [findConstantOnPage, tune.constants]);
 
   const resolvedDialogs: DialogsAndCurves = {};
 
