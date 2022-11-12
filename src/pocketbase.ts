@@ -1,4 +1,8 @@
-import PocketBase, { ClientResponseError } from 'pocketbase';
+import PocketBase, {
+  ClientResponseError,
+  AuthMethodsList,
+  AuthProviderInfo,
+} from 'pocketbase';
 import { fetchEnv } from './utils/env';
 
 const API_URL = fetchEnv('VITE_POCKETBASE_API_URL');
@@ -25,4 +29,6 @@ export {
   formatError,
   removeFilenameSuffix,
   ClientResponseError,
+  type AuthMethodsList,
+  type AuthProviderInfo,
 };

@@ -9,6 +9,7 @@ import {
 import {
   client,
   formatError,
+  AuthMethodsList,
 } from '../pocketbase';
 import { buildRedirectUrl } from '../utils/url';
 import {
@@ -16,23 +17,6 @@ import {
   UsersResponse,
 } from '../@types/pocketbase-types';
 import { Routes } from '../routes';
-
-// TODO: this should be imported from pocketbase but currently is not exported
-export type AuthProviderInfo = {
-  name: string;
-  state: string;
-  codeVerifier: string;
-  codeChallenge: string;
-  codeChallengeMethod: string;
-  authUrl: string;
-};
-
-// TODO: this should be imported from pocketbase but currently is not exported
-export type AuthMethodsList = {
-  [key: string]: any;
-  emailPassword: boolean;
-  authProviders: Array<AuthProviderInfo>;
-};
 
 export enum OAuthProviders {
   GOOGLE = 'google',

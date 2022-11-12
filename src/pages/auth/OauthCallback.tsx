@@ -4,9 +4,9 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom';
+import { AuthProviderInfo } from '../../pocketbase';
 import Loader from '../../components/Loader';
 import {
-  AuthProviderInfo,
   OAuthProviders,
   useAuth,
 } from '../../contexts/AuthContext';
