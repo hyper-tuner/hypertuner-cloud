@@ -233,7 +233,7 @@ const Hub = () => {
         pagination={false}
         rowClassName={(tune) => tune.visibility}
       />
-      <div style={{ textAlign: 'right' }}>
+      <div style={{ textAlign: 'right', marginBottom: 10 }}>
         <Pagination
           style={{ marginTop: 10 }}
           pageSize={pageSize}

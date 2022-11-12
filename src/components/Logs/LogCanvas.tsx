@@ -1,21 +1,15 @@
 import { useCallback } from 'react';
 import { Logs } from '@hyper-tuner/types';
-import {
-  Grid,
-  Space,
-} from 'antd';
+import { Space } from 'antd';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import {
   colorHsl,
   formatNumberMs,
 } from '../../utils/numbers';
-import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { Colors } from '../../utils/colors';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import { isNumber } from '../../utils/tune/expression';
-
-const { useBreakpoint } = Grid;
 
 export interface SelectedField {
   name: string;
@@ -47,7 +41,6 @@ export interface PlottableField {
 const plotSync = uPlot.sync('logs');
 
 const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, showSingleGraph }: LogCanvasProps) => {
-  const { sm } = useBreakpoint();
   const hsl = useCallback((fieldIndex: number, allFields: number) => {
     const [hue] = colorHsl(0, allFields - 1, fieldIndex);
     return `hsl(${hue}, 90%, 50%)`;
@@ -154,10 +147,6 @@ const LogCanvas = ({ data, width, height, selectedFields1, selectedFields2, show
     const result2 = generatePlotConfig(generateFieldsToPlot(selectedFields2), selectedFields2.length, plotSync.key);
     options2 = result2.options;
     plotData2 = [result2.xData, ...result2.yData];
-  }
-
-  if (!sm) {
-    return <LandscapeNotice />;
   }
 
   return (

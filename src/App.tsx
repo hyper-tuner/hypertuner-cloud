@@ -167,16 +167,14 @@ const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuneId]);
 
-  const ContentFor = useCallback((props: { element: ReactNode, marginLeft?: number, bottomOffset?: boolean }) => {
-    const { element, marginLeft, bottomOffset } = props;
+  const ContentFor = useCallback((props: { element: ReactNode, marginLeft?: number }) => {
+    const { element, marginLeft } = props;
 
     return (
       <Layout style={{ marginLeft }}>
         <Layout className="app-content">
           <Content>
             <Suspense fallback={<Loader />}>{element}</Suspense>
-            {/* dummy element to mitigate mobile browsers navbar offset */}
-            {!bottomOffset && <div style={{ marginTop: 60 }}>&nbsp;</div>}
           </Content>
         </Layout>
       </Layout>
@@ -195,10 +193,10 @@ const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
           <Route path={Routes.HUB} element={<ContentFor element={<Hub />} />} />
           <Route path={Routes.TUNE_ROOT} element={<ContentFor element={<Info />} />} />
           <Route path={`${Routes.TUNE_TUNE}/*`} element={<ContentFor marginLeft={margin} element={<Tune />} />} />
-          <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} bottomOffset element={<Logs />} />} />
-          <Route path={Routes.TUNE_LOGS_FILE} element={<ContentFor marginLeft={margin} bottomOffset element={<Logs />} />} />
-          <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} bottomOffset element={<Diagnose />} />} />
-          <Route path={Routes.TUNE_DIAGNOSE_FILE} element={<ContentFor marginLeft={margin} bottomOffset element={<Diagnose />} />} />
+          <Route path={Routes.TUNE_LOGS} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
+          <Route path={Routes.TUNE_LOGS_FILE} element={<ContentFor marginLeft={margin} element={<Logs />} />} />
+          <Route path={Routes.TUNE_DIAGNOSE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
+          <Route path={Routes.TUNE_DIAGNOSE_FILE} element={<ContentFor marginLeft={margin} element={<Diagnose />} />} />
           <Route path={`${Routes.UPLOAD}/*`} element={<ContentFor element={<Upload />} />} />
 
           <Route path={Routes.LOGIN} element={<ContentFor element={<Login formRole={FormRoles.LOGIN} />} />} />
@@ -211,8 +209,9 @@ const App = ({ ui, tuneData }: { ui: UIState, tuneData: TuneDataState }) => {
           <Route path={Routes.EMAIL_VERIFICATION} element={<ContentFor element={<EmailVerification />} />} />
           <Route path={Routes.RESET_PASSWORD_CONFIRMATION} element={<ContentFor element={<ResetPasswordConfirmation />} />} />
           <Route path={Routes.OAUTH_CALLBACK} element={<ContentFor element={<OauthCallback />} />} />
+
+          <Route path="*" element={<ContentFor element={<Result status="warning" title="Page not found" style={{ marginTop: 50 }} />} />} />
         </ReactRoutes>
-        <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
       </Layout>
       <StatusBar />
     </>

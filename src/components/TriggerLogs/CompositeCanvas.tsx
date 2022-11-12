@@ -2,16 +2,12 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Grid } from 'antd';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
-import LandscapeNotice from '../Tune/Dialog/LandscapeNotice';
 import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
 import { Colors } from '../../utils/colors';
 import LogsPagination from './LogsPagination';
-
-const { useBreakpoint } = Grid;
 
 const scale = 2;
 const secondaryTranslate = 2.6;
@@ -26,7 +22,6 @@ interface Props {
 };
 
 const CompositeCanvas = ({ data, width, height }: Props) => {
-  const { sm } = useBreakpoint();
   const [options, setOptions] = useState<uPlot.Options>();
   const [plotData, setPlotData] = useState<uPlot.AlignedData>();
   const [indexFrom, setIndexFrom] = useState(0);
@@ -116,11 +111,8 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
       },
       plugins: [touchZoomPlugin()],
     });
-  }, [data, width, height, sm, indexFrom, indexTo]);
+  }, [data, width, height, indexFrom, indexTo]);
 
-  if (!sm) {
-    return <LandscapeNotice />;
-  }
 
   return (
     <LogsPagination
@@ -131,7 +123,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
       pageSize={PAGE_SIZE}
       total={data.length}
     >
-      <UplotReact options={options!} data={plotData!} />
+      {plotData && <UplotReact options={options!} data={plotData} />}
     </LogsPagination>
   );
 };
