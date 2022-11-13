@@ -49,6 +49,7 @@ class MslLogParser implements ParserInterface {
           scale: 1,
           transform: 0,
           digits: 0,
+          category: '',
         }));
 
         continue;
