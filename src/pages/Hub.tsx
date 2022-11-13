@@ -46,7 +46,7 @@ import {
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
-const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
+const tunePath = (tuneId: string) => generatePath(Routes.TUNE_ROOT, { tuneId });
 
 const Hub = () => {
   const { xs } = useBreakpoint();

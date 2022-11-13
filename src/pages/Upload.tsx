@@ -106,7 +106,7 @@ const logIcon = () => <FundOutlined />;
 const toothLogIcon = () => <SettingOutlined />;
 const iniIcon = () => <FileTextOutlined />;
 
-const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
+const tunePath = (tuneId: string) => generatePath(Routes.TUNE_ROOT, { tuneId });
 const tuneParser = new TuneParser();
 
 const bufferToFile = (buffer: ArrayBuffer, name: string) => new File([buffer], name);
@@ -164,7 +164,7 @@ const UploadPage = () => {
 
   const noop = () => { };
 
-  const goToNewTune = () => navigate(generatePath(Routes.TUNE_TUNE, {
+  const goToNewTune = () => navigate(generatePath(Routes.TUNE_ROOT, {
     tuneId: newTuneId!,
   }));
 
