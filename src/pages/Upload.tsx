@@ -18,6 +18,7 @@ import {
   Upload,
   Form,
   AutoComplete,
+  Tag,
 } from 'antd';
 import {
   PlusOutlined,
@@ -186,6 +187,7 @@ const UploadPage = () => {
     const hp = values.hp || null;
     const stockHp = values.stockHp || null;
     const visibility = values.visibility;
+    const tags = values.tags;
     /* eslint-enable prefer-destructuring */
 
     const compressedTuneFile = bufferToFile(
@@ -228,6 +230,7 @@ const UploadPage = () => {
       hp,
       stockHp,
       readme: readme?.trim(),
+      tags,
       visibility,
       tuneFile: compressedTuneFile as unknown as string,
       customIniFile: compressedCustomIniFile as unknown as string,
@@ -243,6 +246,7 @@ const UploadPage = () => {
         fuel,
         ignition,
         year,
+        tags,
       ].filter((field) => field !== null && `${field}`.length > 1 && field !== 'null')
         .join(' ')
         .replace(/[^\w.\-\d ]/g, ''),
@@ -645,19 +649,31 @@ const UploadPage = () => {
 
   const detailsSection = (
     <>
-      <Divider>
-        <Space>Details</Space>
-      </Divider>
+      <Divider>Details</Divider>
       <Row {...rowProps}>
-        <Col span={24} sm={24}>
+        <Col {...colProps}>
           <Item name="vehicleName" rules={requiredTextRules}>
             <AutoComplete
               options={autocompleteOptions.vehicleName}
               onSearch={(search) => searchAutocomplete('vehicleName', search)}
               backfill
             >
-              <Input addonBefore="Vehicle name" />
+              <Input addonBefore="Name" />
             </AutoComplete>
+          </Item>
+        </Col>
+        <Col {...colProps}>
+          <Item name="tags">
+            <Select
+              placeholder="Tags"
+              allowClear
+              style={{ width: '100%' }}
+              options={[
+                { label: null, value: null },
+                { label: <Tag color="green">base map</Tag>, value: 'base map' },
+                { label: <Tag color="red">help needed</Tag>, value: 'help needed' },
+              ]}
+            />
           </Item>
         </Col>
       </Row>

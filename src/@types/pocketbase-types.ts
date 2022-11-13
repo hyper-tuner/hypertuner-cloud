@@ -56,6 +56,7 @@ export type TunesRecord = {
   hp?: number
   stockHp?: number
   readme: string
+  tags: 'base map' | 'help needed'
   textSearch: string
   visibility: 'public' | 'unlisted'
   tuneFile: string

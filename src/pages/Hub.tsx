@@ -7,6 +7,7 @@ import {
   Pagination,
   Space,
   Table,
+  Tag,
   Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -99,6 +100,12 @@ const Hub = () => {
     }
   }, [loadData]);
 
+  const tagComponent = (tag: string) => (
+    <Tag color={tag === 'base map' ? 'green' : 'red'}>
+      {tag}
+    </Tag>
+  );
+
   useEffect(() => {
     loadData('');
 
@@ -115,15 +122,20 @@ const Hub = () => {
       title: 'Tunes',
       render: (tune: TunesResponse) => (
         <>
-          <Title level={5}>{tune.vehicleName}</Title>
+          <Title level={5}>
+            <Space>
+              {tune.vehicleName}
+              {tune.tags && tagComponent(tune.tags)}
+            </Space>
+          </Title>
           <Space direction="vertical">
             <Text type="secondary">
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
                 {(tune as any).authorUsername}
-              </Link>, {tune.updated}
+              </Link>, {tune.updated}, {tune.stars} <StarOutlined />
             </Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
-            <Text code>{tune.signature}</Text>
+            <Text italic>{tune.signature}</Text>
           </Space>
         </>
       ),
@@ -134,6 +146,12 @@ const Hub = () => {
       dataIndex: 'vehicleName',
       key: 'vehicleName',
       responsive: ['sm'],
+      render: (vehicleName: string, tune: TunesResponse) => (
+        <Space direction="vertical">
+          {vehicleName}
+          {tune.tags && tagComponent(tune.tags)}
+        </Space>
+      ),
     },
     {
       title: 'Make',
@@ -181,6 +199,9 @@ const Hub = () => {
       dataIndex: 'signature',
       key: 'author',
       responsive: ['sm'],
+      render: (signature: string) => (
+        <Text italic>{signature}</Text>
+      ),
     },
     {
       title: 'Published',
@@ -221,7 +242,7 @@ const Hub = () => {
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
         value={searchQuery}
-        placeholder="Search..."
+        placeholder="Search by anything..."
         onChange={({ target }) => debounceLoadData(target.value)}
         allowClear
       />
