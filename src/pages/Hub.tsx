@@ -7,7 +7,6 @@ import {
   Pagination,
   Space,
   Table,
-  Tag,
   Tooltip,
   Typography,
 } from 'antd';
@@ -45,6 +44,7 @@ import {
   TunesResponse,
   UsersResponse,
 } from '../@types/pocketbase-types';
+import TuneTag from '../components/TuneTag';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -102,12 +102,6 @@ const Hub = () => {
     }
   }, [loadData]);
 
-  const tagComponent = (tag: string) => (
-    <Tag color={tag === 'base map' ? 'green' : 'red'}>
-      {tag}
-    </Tag>
-  );
-
   useEffect(() => {
     loadData('');
 
@@ -127,7 +121,7 @@ const Hub = () => {
           <Title level={5}>
             <Space>
               {tune.vehicleName}
-              {tune.tags && tagComponent(tune.tags)}
+              <TuneTag tag={tune.tags} />
             </Space>
           </Title>
           <Space direction="vertical">
@@ -156,7 +150,7 @@ const Hub = () => {
       render: (vehicleName: string, tune: TunesResponse) => (
         <Space direction="vertical">
           {vehicleName}
-          {tune.tags && tagComponent(tune.tags)}
+          <TuneTag tag={tune.tags} />
         </Space>
       ),
     },

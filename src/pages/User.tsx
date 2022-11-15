@@ -24,6 +24,7 @@ import {
   TunesResponse,
   UsersResponse,
 } from '../@types/pocketbase-types';
+import TuneTag from '../components/TuneTag';
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
@@ -80,9 +81,13 @@ const Profile = () => {
           >
             <Space direction="vertical">
               <List.Item.Meta
-                title={<>
-                  {tune.vehicleName} <Typography.Text code>{tune.signature}</Typography.Text>
-                </>}
+                title={
+                  <Space direction="vertical">
+                    {tune.vehicleName}
+                    <TuneTag tag={tune.tags} />
+                    <Typography.Text italic>{tune.signature}</Typography.Text>
+                  </Space>
+                }
                 description={<>
                   {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
                 </>}

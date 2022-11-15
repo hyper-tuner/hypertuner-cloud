@@ -40,6 +40,7 @@ import { formatTime } from '../../utils/time';
 import useDb from '../../hooks/useDb';
 import { aspirationMapper } from '../../utils/tune/mappers';
 import { TunesResponse } from '../../@types/pocketbase-types';
+import TuneTag from '../../components/TuneTag';
 
 const { Item } = Form;
 
@@ -214,12 +215,18 @@ const Profile = () => {
             >
               <Space direction="vertical">
                 <List.Item.Meta
-                  title={<>
-                    {tune.vehicleName} <Typography.Text code>{tune.signature}</Typography.Text>
-                  </>}
-                  description={<>
-                    {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
-                  </>}
+                  title={
+                    <Space direction="vertical">
+                      {tune.vehicleName}
+                      <TuneTag tag={tune.tags} />
+                      <Typography.Text italic>{tune.signature}</Typography.Text>
+                    </Space>
+                  }
+                  description={
+                    <>
+                      {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
+                    </>
+                  }
                 />
                 <div>
                   <Typography.Text italic>{tune.updated}</Typography.Text>
