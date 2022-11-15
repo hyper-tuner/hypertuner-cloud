@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   release:
@@ -26,9 +26,9 @@ jobs:
         uses: getsentry/action-release@v1.2.1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_ORG: hypertuner
+          SENTRY_PROJECT: hypertuner-cloud
         with:
           environment: production
           ignore_empty: true
-          sourcemaps: './build/assets'
+          sourcemaps: "./build/assets"

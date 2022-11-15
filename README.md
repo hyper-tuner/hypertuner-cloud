@@ -13,12 +13,12 @@
 
 <div align="center">
   <p>
-    <img alt="GitHub lint" src="https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master">
-    <img alt="GitHub Code Analysis" src="https://github.com/hyper-tuner/hyper-tuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg">
-    <a href="https://codeclimate.com/github/hyper-tuner/hyper-tuner-cloud/maintainability">
+    <img alt="GitHub lint" src="https://github.com/hyper-tuner/hypertuner-cloud/actions/workflows/lint.js.yml/badge.svg?branch=master">
+    <img alt="GitHub Code Analysis" src="https://github.com/hyper-tuner/hypertuner-cloud/actions/workflows/codeql-analysis.yml/badge.svg">
+    <a href="https://codeclimate.com/github/hyper-tuner/hypertuner-cloud/maintainability">
       <img alt="Maintainability" src="https://api.codeclimate.com/v1/badges/d810354c0bca64ec9316/maintainability">
     </a>
-    <img alt="License" src="https://img.shields.io/github/license/hyper-tuner/hyper-tuner-cloud">
+    <img alt="License" src="https://img.shields.io/github/license/hyper-tuner/hypertuner-cloud">
   </p>
 </div>
 
@@ -58,8 +58,8 @@
 
 ## Development
 
-Before you begin please see [Development guide](https://github.com/hyper-tuner/hyper-tuner-cloud/blob/master/DEVELOPMENT.md).
+Before you begin please see [Development guide](https://github.com/hyper-tuner/hypertuner-cloud/blob/master/DEVELOPMENT.md).
 
 ## License
 
-[MIT](https://github.com/hyper-tuner/hyper-tuner-cloud/blob/master/LICENSE)
+[MIT](https://github.com/hyper-tuner/hypertuner-cloud/blob/master/LICENSE)

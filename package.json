@@ -1,5 +1,5 @@
 {
-  "name": "hyper-tuner-cloud",
+  "name": "hypertuner-cloud",
   "description": "HyperTuner Cloud - Share your tunes and logs",
   "version": "1.0.0",
   "author": "Piotr Rogowski <piotr.rogowski0@gmail.com>",
@@ -8,7 +8,7 @@
   "homepage": "./",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hyper-tuner/hyper-tuner-cloud"
+    "url": "https://github.com/hyper-tuner/hypertuner-cloud"
   },
   "scripts": {
     "start": "vite",
@@ -41,7 +41,7 @@
     "react-router-dom": "^6.4.3",
     "uplot": "^1.6.22",
     "uplot-react": "^1.1.1",
-    "vite": "^3.2.3"
+    "vite": "^3.2.4"
   },
   "devDependencies": {
     "@hyper-tuner/eslint-config": "git+https://github.com/hyper-tuner/eslint-config.git",
@@ -49,11 +49,11 @@
     "@types/node": "^18.11.9",
     "@types/pako": "^2.0.0",
     "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.8",
+    "@types/react-dom": "^18.0.9",
     "@types/react-redux": "^7.1.24",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^5.42.1",
-    "@typescript-eslint/parser": "^5.42.1",
+    "@typescript-eslint/eslint-plugin": "^5.43.0",
+    "@typescript-eslint/parser": "^5.43.0",
     "@vitejs/plugin-react": "^2.2.0",
     "eslint": "^8.27.0",
     "eslint-plugin-flowtype": "^8.0.3",
@@ -67,7 +67,7 @@
     "pocketbase-typegen": "^1.0.13",
     "prettier": "^2.7.1",
     "rollup-plugin-visualizer": "^5.8.3",
-    "typescript": "^4.8.4",
+    "typescript": "^4.9.3",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-pwa": "^0.13.3"
   }
