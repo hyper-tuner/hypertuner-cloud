@@ -8,6 +8,7 @@ import {
   Space,
   Table,
   Tag,
+  Tooltip,
   Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -16,6 +17,7 @@ import {
   StarOutlined,
   ArrowRightOutlined,
   EditOutlined,
+  CheckCircleFilled,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -131,7 +133,12 @@ const Hub = () => {
           <Space direction="vertical">
             <Text type="secondary">
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
-                {(tune as any).authorUsername}
+                <Space>
+                  {(tune.expand?.author as unknown as UsersResponse).verifiedAuthor === true && (
+                    <Tooltip title="Verified author"><CheckCircleFilled /></Tooltip>
+                  )}
+                  {(tune as any).authorUsername}
+                </Space>
               </Link>, {tune.updated}, {tune.stars} <StarOutlined />
             </Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
@@ -190,7 +197,12 @@ const Hub = () => {
       responsive: ['sm'],
       render: (userName: string, record: TunesResponse) => (
         <Link to={generatePath(Routes.USER_ROOT, { userId: record.author })}>
-          {userName}
+          <Space>
+            {(record.expand?.author as unknown as UsersResponse).verifiedAuthor === true && (
+              <Tooltip title="Verified author"><CheckCircleFilled /></Tooltip>
+            )}
+            {userName}
+          </Space>
         </Link>
       ),
     },
@@ -224,9 +236,25 @@ const Hub = () => {
 
         return (
           <Space>
-            {isOwner && <Button size={size} icon={<EditOutlined />} onClick={() => goToEdit(tuneId)} />}
-            {isClipboardSupported && <Button size={size} icon={<CopyOutlined />} onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))} />}
-            <Button size={size} type="primary" icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))} />
+            {isOwner && (
+              <Button
+                size={size}
+                icon={<EditOutlined />}
+                onClick={() => goToEdit(tuneId)}
+              />
+            )}
+            {isClipboardSupported && (
+              <Button
+                size={size}
+                icon={<CopyOutlined />}
+                onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))}
+              />
+            )}
+            <Button
+              size={size}
+              type="primary"
+              icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))}
+            />
           </Space>
         );
       },

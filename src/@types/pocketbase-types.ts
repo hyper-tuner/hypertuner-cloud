@@ -72,6 +72,7 @@ export type UsersRecord = {
   username: string
   email: string
   verified: boolean
+  verifiedAuthor?: boolean
 }
 
 export type UsersResponse = UsersRecord & BaseRecord
