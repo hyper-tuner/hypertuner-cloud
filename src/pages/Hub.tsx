@@ -14,7 +14,7 @@ import {
 import { ColumnsType } from 'antd/lib/table';
 import {
   CopyOutlined,
-  StarOutlined,
+  StarFilled,
   ArrowRightOutlined,
   EditOutlined,
   CheckCircleFilled,
@@ -139,7 +139,7 @@ const Hub = () => {
                   )}
                   {(tune as any).authorUsername}
                 </Space>
-              </Link>, {tune.updated}, {tune.stars} <StarOutlined />
+              </Link>, {tune.updated}, {tune.stars} <StarFilled />
             </Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
             <Text italic>{tune.signature}</Text>
@@ -222,9 +222,10 @@ const Hub = () => {
       responsive: ['sm'],
     },
     {
-      title: <StarOutlined />,
+      title: <StarFilled />,
       dataIndex: 'stars',
       key: 'stars',
+      width: 60,
       responsive: ['sm'],
     },
     {
