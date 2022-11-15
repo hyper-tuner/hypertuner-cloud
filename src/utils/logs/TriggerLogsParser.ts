@@ -46,13 +46,14 @@ class TriggerLogsParser implements ParserInterface {
   }
 
   public parse(): this {
-    this.parseCompositeLogs(this.raw);
-    this.parseToothLogs(this.raw);
+    this.detectType();
 
-    if (this.resultComposite.length > this.resultTooth.length) {
-      this.isCompositeLogs = true;
-    } else {
-      this.isToothLogs = true;
+    if (this.isToothLogs) {
+      this.parseToothLogs(this.raw);
+    }
+
+    if (this.isCompositeLogs) {
+      this.parseCompositeLogs(this.raw);
     }
 
     this.alreadyParsed = true;
@@ -84,6 +85,33 @@ class TriggerLogsParser implements ParserInterface {
     return this.isCompositeLogs;
   }
 
+  private detectType(): void {
+    this.raw.split('\n').some((line, index) => {
+      const trimmed = line.trim();
+
+      // give up
+      if (index > 10) {
+        return true;
+      }
+
+      const parts = trimmed.split(',');
+
+      if (parts.length === 2) {
+        this.isToothLogs = true;
+
+        return true;
+      }
+
+      if (parts.length >= 7) {
+        this.isCompositeLogs = true;
+
+        return true;
+      }
+
+      return false;
+    });
+  }
+
   private parseToothLogs(raw: string): void {
     this.resultTooth = [];
 
@@ -109,20 +137,19 @@ class TriggerLogsParser implements ParserInterface {
         return;
       }
 
-      const split = trimmed.split(',');
-      if (!isNumber(split[0])) {
+      const parts = trimmed.split(',');
+      if (parts.length !== 2) {
         return;
       }
 
-      const time = Number(split[1]);
-      if (!time) {
+      if (!isNumber(parts[0]) || !isNumber(parts[1])) {
         return;
       }
 
       this.resultTooth.push({
         type: EntryType.TRIGGER,
-        toothTime: Number(split[0]),
-        time,
+        toothTime: Number(parts[0]),
+        time: Number(parts[1]),
       });
     });
   }
@@ -164,27 +191,42 @@ class TriggerLogsParser implements ParserInterface {
         return;
       }
 
-      const split = trimmed.split(',');
-      if (!isNumber(split[0])) {
+      const parts = trimmed.split(',');
+
+      if (!isNumber(parts[0]) || !isNumber(parts[1])) {
         return;
       }
 
-      const time = Number(split[7]);
-      if (!time) {
-        return;
-      }
-
-      this.resultComposite.push({
+      const base = {
         type: EntryType.TRIGGER,
-        primaryLevel: Number(split[0]),
-        secondaryLevel: Number(split[1]),
-        trigger: Number(split[2]),
-        sync: Number(split[3]),
-        refTime: Number(split[4]),
-        maxTime: Number(split[5]),
-        toothTime: Number(split[6]),
-        time,
-      });
+        primaryLevel: Number(parts[0]),
+        secondaryLevel: Number(parts[1]),
+        trigger: Number(parts[2]),
+        sync: Number(parts[3]),
+        refTime: Number(parts[4]),
+      };
+
+      if (parts.length === 8) {
+        // PriLevel,SecLevel,Trigger,Sync,RefTime,MaxTime,ToothTime,Time
+        this.resultComposite.push({
+          ...base,
+          maxTime: Number(parts[5]),
+          toothTime: Number(parts[6]),
+          time: Number(parts[7]),
+        });
+
+        return;
+      }
+
+      if (parts.length === 7) {
+        // PriLevel,SecLevel,Trigger,Sync,RefTime,ToothTime,Time
+        this.resultComposite.push({
+          ...base,
+          maxTime: 0,
+          toothTime: Number(parts[5]),
+          time: Number(parts[6]),
+        });
+      }
     });
   }
 }
