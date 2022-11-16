@@ -7,7 +7,6 @@ import {
   Pagination,
   Space,
   Table,
-  Tooltip,
   Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -16,7 +15,6 @@ import {
   StarFilled,
   ArrowRightOutlined,
   EditOutlined,
-  CheckCircleFilled,
 } from '@ant-design/icons';
 import {
   useCallback,
@@ -40,11 +38,9 @@ import {
 import { isEscape } from '../utils/keyboard/shortcuts';
 import { formatTime } from '../utils/time';
 import { useAuth } from '../contexts/AuthContext';
-import {
-  TunesResponse,
-  UsersResponse,
-} from '../@types/pocketbase-types';
+import { TunesResponse } from '../@types/pocketbase-types';
 import TuneTag from '../components/TuneTag';
+import AuthorName from '../components/AuthorName';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -76,7 +72,6 @@ const Hub = () => {
         ...tune,
         key: tune.tuneId,
         year: tune.year,
-        authorUsername: (tune.expand!.author as unknown as UsersResponse).username,
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
         updated: formatTime(tune.updated),
@@ -127,12 +122,7 @@ const Hub = () => {
           <Space direction="vertical">
             <Text type="secondary">
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
-                <Space>
-                  {(tune.expand?.author as unknown as UsersResponse).verifiedAuthor === true && (
-                    <Tooltip title="Verified author"><CheckCircleFilled /></Tooltip>
-                  )}
-                  {(tune as any).authorUsername}
-                </Space>
+                <AuthorName author={tune.expand?.author} />
               </Link>, {tune.updated}, {tune.stars} <StarFilled />
             </Text>
             <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
@@ -191,12 +181,7 @@ const Hub = () => {
       responsive: ['sm'],
       render: (userName: string, record: TunesResponse) => (
         <Link to={generatePath(Routes.USER_ROOT, { userId: record.author })}>
-          <Space>
-            {(record.expand?.author as unknown as UsersResponse).verifiedAuthor === true && (
-              <Tooltip title="Verified author"><CheckCircleFilled /></Tooltip>
-            )}
-            {userName}
-          </Space>
+          <AuthorName author={record.expand?.author} />
         </Link>
       ),
     },

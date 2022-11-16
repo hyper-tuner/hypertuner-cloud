@@ -25,6 +25,7 @@ import {
   UsersResponse,
 } from '../@types/pocketbase-types';
 import TuneTag from '../components/TuneTag';
+import AuthorName from '../components/AuthorName';
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
@@ -37,14 +38,14 @@ const Profile = () => {
   const [total, setTotal] = useState(0);
   const [isTunesLoading, setIsTunesLoading] = useState(false);
   const [tunesDataSource, setTunesDataSource] = useState<TunesResponse[]>([]);
-  const [username, setUsername] = useState<string>();
+  const [author, setAuthor] = useState<UsersResponse>();
 
   const loadData = async () => {
     setIsTunesLoading(true);
     try {
       const { items, totalItems } = await getUserTunes(route?.params.userId!, page, pageSize);
       setTotal(totalItems);
-      setUsername((items[0]!.expand!.author as UsersResponse).username);
+      setAuthor(items[0]!.expand!.author);
       const mapped = items.map((tune) => ({
         ...tune,
         key: tune.tuneId,
@@ -68,7 +69,13 @@ const Profile = () => {
 
   return (
     <div className="small-container">
-      <Divider>{username ? `${username}'s tunes` : 'No tunes yet'}</Divider>
+      <Divider>
+        {author ? (
+          <>
+            <AuthorName author={author} /><span>&apos; tunes</span>
+          </>
+        ) : 'No tunes yet'}
+      </Divider>
       <List
         dataSource={tunesDataSource}
         loading={isTunesLoading}
