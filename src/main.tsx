@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import ReactGA from 'react-ga4';
+import { ConfigProvider, theme } from 'antd';
 import App from './App';
 import store from './store';
 import {
@@ -13,6 +14,7 @@ import {
 } from './utils/env';
 import { AuthProvider } from './contexts/AuthContext';
 import CommandPalette from './components/CommandPalette';
+import { Colors } from './utils/colors';
 
 if (isProduction) {
   Sentry.init({
@@ -35,7 +37,17 @@ createRoot(container!).render(
     <AuthProvider>
       <Provider store={store}>
         <CommandPalette>
-          <App />
+          <ConfigProvider
+            theme={{
+              algorithm: [theme.darkAlgorithm],
+              token: {
+                colorPrimary: Colors.PRIMARY,
+                colorBgBase: Colors.BG_BASE,
+              },
+            }}
+          >
+            <App />
+          </ConfigProvider>
         </CommandPalette>
       </Provider>
     </AuthProvider>

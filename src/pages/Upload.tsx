@@ -36,8 +36,8 @@ import {
 } from '@ant-design/icons';
 import debounce from 'lodash.debounce';
 import { INI } from '@hyper-tuner/ini';
-import { UploadRequestOption } from 'rc-upload/lib/interface';
-import { UploadFile } from 'antd/lib/upload/interface';
+import { UploadRequestOption } from 'rc-upload/es/interface';
+import { UploadFile } from 'antd/es/upload/interface';
 import {
   generatePath,
   useMatch,

@@ -33,11 +33,6 @@ export default ({ mode }) => {
       open: true,
       host: '0.0.0.0',
     },
-    css: {
-      preprocessorOptions: {
-        less: { javascriptEnabled: true },
-      },
-    },
     plugins: [
       react(),
       visualizer(),

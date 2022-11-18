@@ -9,7 +9,7 @@ import {
   Table,
   Typography,
 } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
+import { ColumnsType } from 'antd/es/table';
 import {
   CopyOutlined,
   StarFilled,

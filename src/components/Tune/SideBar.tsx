@@ -2,7 +2,7 @@ import {
   Layout,
   Menu,
 } from 'antd';
-import { ItemType } from 'antd/lib/menu/hooks/useItems';
+import { ItemType } from 'antd/es/menu/hooks/useItems';
 import { connect } from 'react-redux';
 import {
   generatePath,

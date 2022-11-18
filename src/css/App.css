@@ -1,0 +1,199 @@
+body {
+  margin: 0;
+  background-color: #000;
+}
+
+.border-right {
+  border-right-width: 1px;
+  /* border-right-color: @border-color-split; */
+  border-right-style: solid;
+}
+
+.row {
+  margin: 20px;
+}
+
+.app-top-bar {
+  /* box-shadow: @shadow-2; */
+  /* z-index: @bars-z-index; */
+}
+
+.app-status-bar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 28px;
+  /* font-size: @font-size-sm; */
+  /* color: @text-color; */
+  z-index: 100;
+  padding-top: 5px;
+  background-color: #000;
+
+  /* a {
+    color: @text;
+  } */
+  /*
+  a:hover {
+    text-decoration: underline;
+  } */
+}
+
+.app-sidebar {
+  /* height: calc(100vh - @layout-header-height - @layout-footer-height); */
+  height: calc(100vh - 50px - 28px);
+  position: fixed;
+  left: 0;
+  user-select: none;
+}
+
+.app-content {
+  /* height: calc(100vh - @layout-header-height - @layout-footer-height); */
+  height: calc(100vh - 50px - 28px);
+  overflow: auto;
+}
+
+.ant-tabs-tabpane {
+  /* height: calc(100vh - @layout-header-height - @layout-footer-height - @layout-trigger-height - @tabs-nav-height); */
+  /* height: calc(100vh - 50px - 28px - @layout-trigger-height - @tabs-nav-height); */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.small-container,
+.large-container,
+.auth-container {
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.auth-container {
+  max-width: 370px;
+}
+
+.small-container {
+  max-width: 600px;
+}
+
+.large-container {
+  max-width: 1400px;
+}
+
+.ant-checkbox-wrapper {
+  user-select: none;
+}
+
+.logs-container {
+  width: "100%";
+  text-align: center;
+  margin-top: 5px;
+}
+
+.logs-progress {
+  margin-top: 30px;
+}
+
+/* .table {
+  margin: 20px;
+
+  .table table {
+    width: 100%;
+  }
+
+  .table td {
+    text-align: center;
+    border: 1px solid @component-background;
+    height: 50px;
+
+    &.value {
+      color: rgba(0, 0, 0, 1);
+      width: 5%;
+      font-weight: 600;
+    }
+
+    &.title-curve {
+      width: 15%;
+    }
+
+    &.title-map {
+      width: 5%;
+    }
+
+    &.cell-selected {
+      box-shadow: inset 0 0 25px 2px @info-color;
+    }
+
+    &.cell-being-selected {
+      box-shadow: inset 0 0 25px 2px @warning-color;
+    }
+  }
+} */
+
+.log-canvas {
+  color: #fff;
+  --background-overlay: rgba(34, 38, 41, 0.9);
+}
+
+/* Fix autocomplete yellow/white background color in Chrome and Safari */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  border: 0;
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  /* -webkit-box-shadow: 0 0 0px 1000px @component-background inset; */
+  /* box-shadow: 0 0 0px 1000px @component-background inset; */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.markdown-preview {
+  /* background-color: @component-background; */
+  padding: 5px 11px;
+  border-style: solid;
+  border-width: 1px;
+  color: #fff;
+  /* border-radius: @border-radius-base; */
+  /* border-color: @border-color-split; */
+}
+
+.markdown-preview h1 {
+  font-size: 2em;
+}
+
+.markdown-preview code,
+.markdown-preview pre {
+  /* background-color: @main; */
+  /* border-radius: @border-radius-base; */
+}
+
+.markdown-preview pre {
+  padding: 0.5rem;
+}
+
+.markdown-preview p code {
+  padding: 0.3rem;
+}
+
+.upload-readme textarea {
+  resize: none;
+}
+
+.sponsor-button {
+  animation: wiggle 2s linear 1;
+}
+
+/* .ant-table-row,
+.ant-list-item {
+  &.unlisted {
+    opacity: 0.5;
+  }
+
+  code {
+    white-space: nowrap;
+  }
+} */

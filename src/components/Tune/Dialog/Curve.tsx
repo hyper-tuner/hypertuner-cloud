@@ -60,7 +60,7 @@ const Curve = ({
           label: yLabel,
           value: (_self, val) => `${val.toLocaleString()}${yUnits}`,
           points: { show: true },
-          stroke: Colors.ACCENT,
+          stroke: Colors.PRIMARY,
           width: 3,
         },
       ],

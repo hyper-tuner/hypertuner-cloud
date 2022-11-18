@@ -1,4 +1,4 @@
-import { Rule } from 'antd/lib/form';
+import { Rule } from 'antd/es/form';
 
 const REQUIRED_MESSAGE = 'This field is required';
 

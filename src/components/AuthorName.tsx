@@ -10,7 +10,7 @@ const AuthorName = ({ author }: { author: UsersResponse }) => (
   <Space>
     {author.verifiedAuthor === true && (
       <Tooltip title="Verified author">
-        <CheckCircleFilled style={{ color: Colors.ACCENT }} />
+        <CheckCircleFilled style={{ color: Colors.PRIMARY }} />
       </Tooltip>
     )}
     {author.username}

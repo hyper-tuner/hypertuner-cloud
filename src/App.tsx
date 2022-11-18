@@ -47,11 +47,12 @@ import {
   collapsedSidebarWidth,
   sidebarWidth,
 } from './components/Tune/SideBar';
+import { TunesResponse } from './@types/pocketbase-types';
 
 import 'uplot/dist/uPlot.min.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import './css/App.less';
-import { TunesResponse } from './@types/pocketbase-types';
+import './css/App.css';
+import './css/animations.css';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Logs = lazy(() => import('./pages/Logs'));
