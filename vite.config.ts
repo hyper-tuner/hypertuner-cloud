@@ -13,7 +13,6 @@ export default ({ mode }) => {
   return defineConfig({
     build: {
       outDir: 'build',
-      sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks: {
@@ -26,7 +25,6 @@ export default ({ mode }) => {
             kbar: ['kbar'],
             perfectScrollbar: ['perfect-scrollbar'],
             pako: ['pako'],
-            mlgConverter: ['mlg-converter'],
           },
         },
       },
