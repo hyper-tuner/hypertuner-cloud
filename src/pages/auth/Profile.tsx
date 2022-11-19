@@ -39,7 +39,10 @@ import { usernameRules } from '../../utils/form';
 import { formatTime } from '../../utils/time';
 import useDb from '../../hooks/useDb';
 import { aspirationMapper } from '../../utils/tune/mappers';
-import { TunesResponse } from '../../@types/pocketbase-types';
+import {
+  TunesResponse,
+  TunesVisibilityOptions,
+} from '../../@types/pocketbase-types';
 import TuneTag from '../../components/TuneTag';
 
 const { Item } = Form;
@@ -208,7 +211,7 @@ const Profile = () => {
           renderItem={(tune) => (
             <List.Item
               actions={[
-                tune.visibility === 'public' ? <GlobalOutlined /> : <EyeOutlined />,
+                tune.visibility === TunesVisibilityOptions.public ? <GlobalOutlined /> : <EyeOutlined />,
                 <Button icon={<EditOutlined />} onClick={() => goToEdit(tune.tuneId)} />,
                 <Button icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tune.tuneId))} />,
               ]}

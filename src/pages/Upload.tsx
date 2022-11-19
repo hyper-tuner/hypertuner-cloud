@@ -68,8 +68,11 @@ import {
 import { aspirationMapper } from '../utils/tune/mappers';
 import { copyToClipboard } from '../utils/clipboard';
 import {
+  TunesAspirationOptions,
   TunesRecord,
   TunesResponse,
+  TunesTagsOptions,
+  TunesVisibilityOptions,
 } from '../@types/pocketbase-types';
 import { removeFilenameSuffix } from '../pocketbase';
 
@@ -580,10 +583,10 @@ const UploadPage = () => {
       <Col {...colProps}>
         <Item name="visibility">
           <Select>
-            <Select.Option value="public">
+            <Select.Option value={TunesVisibilityOptions.public}>
               <Space><GlobalOutlined />Public</Space>
             </Select.Option>
-            <Select.Option value="unlisted">
+            <Select.Option value={TunesVisibilityOptions.unlisted}>
               <Space><EyeOutlined />Unlisted</Space>
             </Select.Option>
           </Select>
@@ -670,8 +673,8 @@ const UploadPage = () => {
               style={{ width: '100%' }}
               options={[
                 { label: null, value: null },
-                { label: <Tag color="green">base map</Tag>, value: 'base map' },
-                { label: <Tag color="red">help needed</Tag>, value: 'help needed' },
+                { label: <Tag color="green">base map</Tag>, value: TunesTagsOptions.BaseMap },
+                { label: <Tag color="red">help needed</Tag>, value: TunesTagsOptions.HelpNeeded },
               ]}
             />
           </Item>
@@ -717,9 +720,9 @@ const UploadPage = () => {
         <Col {...colProps}>
           <Item name="aspiration">
             <Select placeholder="Aspiration" style={{ width: '100%' }}>
-              <Select.Option value="na">Naturally aspirated</Select.Option>
-              <Select.Option value="turbocharged">Turbocharged</Select.Option>
-              <Select.Option value="supercharged">Supercharged</Select.Option>
+              <Select.Option value={TunesAspirationOptions.na}>Naturally aspirated</Select.Option>
+              <Select.Option value={TunesAspirationOptions.turbocharged}>Turbocharged</Select.Option>
+              <Select.Option value={TunesAspirationOptions.supercharged}>Supercharged</Select.Option>
             </Select>
           </Item>
         </Col>
@@ -907,7 +910,7 @@ const UploadPage = () => {
         initialValues={{
           aspiration: 'na',
           readme,
-          visibility: 'public',
+          visibility: TunesVisibilityOptions.public,
           cylindersCount: 4,
           displacement: 1.6,
           year: thisYear,

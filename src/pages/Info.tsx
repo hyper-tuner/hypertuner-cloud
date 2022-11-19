@@ -22,7 +22,10 @@ import Loader from '../components/Loader';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import { formatTime } from '../utils/time';
-import { UsersResponse } from '../@types/pocketbase-types';
+import {
+  TunesAspirationOptions,
+  UsersResponse,
+} from '../@types/pocketbase-types';
 import StarButton from '../components/StarButton';
 
 const { Item } = Form;
@@ -124,9 +127,9 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
           <Col {...colProps}>
             <Item>
               <Select placeholder="Aspiration" style={{ width: '100%' }} value={tuneData.aspiration}>
-                <Select.Option value="na">Naturally aspirated</Select.Option>
-                <Select.Option value="turbocharged">Turbocharged</Select.Option>
-                <Select.Option value="supercharged">Supercharged</Select.Option>
+                <Select.Option value={TunesAspirationOptions.na}>Naturally aspirated</Select.Option>
+                <Select.Option value={TunesAspirationOptions.turbocharged}>Turbocharged</Select.Option>
+                <Select.Option value={TunesAspirationOptions.supercharged}>Supercharged</Select.Option>
               </Select>
             </Item>
           </Col>
