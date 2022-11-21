@@ -16,28 +16,31 @@ const Table = ({
   xUnits,
   yUnits,
 }: {
-  xLabel: string,
-  yLabel: string,
-  xData: number[],
-  yData: number[],
-  disabled: boolean,
-  xUnits: string,
-  yUnits: string,
+  xLabel: string;
+  yLabel: string;
+  xData: number[];
+  yData: number[];
+  disabled: boolean;
+  xUnits: string;
+  yUnits: string;
 }) => {
-  const renderRow = useCallback((axis: AxisType, input: number[]) => input
-    .map((value, index) => {
-      const [hue, sat, light] = colorHsl(Math.min(...input), Math.max(...input), value);
+  const renderRow = useCallback(
+    (axis: AxisType, input: number[]) =>
+      input.map((value, index) => {
+        const [hue, sat, light] = colorHsl(Math.min(...input), Math.max(...input), value);
 
-      return (
-        <td
-          className="value"
-          key={`${axis}-${index}-${value}-${hue}${sat}${light}`}
-          style={{ backgroundColor: `hsl(${hue}, ${sat}%, ${light}%)` }}
-        >
-          {`${value}`}
-        </td>
-      );
-    }), []);
+        return (
+          <td
+            className="value"
+            key={`${axis}-${index}-${value}-${hue}${sat}${light}`}
+            style={{ backgroundColor: `hsl(${hue}, ${sat}%, ${light}%)` }}
+          >
+            {`${value}`}
+          </td>
+        );
+      }),
+    [],
+  );
 
   return (
     <div className="table">

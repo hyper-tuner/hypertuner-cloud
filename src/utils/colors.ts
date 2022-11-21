@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export enum Colors {
   RED = '#f32450',
   CYAN = '#8dd3c7',

@@ -15,64 +15,72 @@ export const isNumber = (val: any) => !Number.isNaN(Number(val));
 
 // export const isNumber
 // ochGetCommand
-export const prepareConstDeclarations = (tuneConstants: TuneConstantsType, configPages: ConfigPageType[]) => (
-  Object.keys(tuneConstants).map((constName: string) => {
-    let val = tuneConstants[constName].value;
+export const prepareConstDeclarations = (
+  tuneConstants: TuneConstantsType,
+  configPages: ConfigPageType[],
+) =>
+  Object.keys(tuneConstants)
+    .map((constName: string) => {
+      let val = tuneConstants[constName].value;
 
-    // TODO: skip 2D and 3D maps for now
-    if (typeof val === 'string' && val.includes('\n')) {
-      return null;
-    }
+      // TODO: skip 2D and 3D maps for now
+      if (typeof val === 'string' && val.includes('\n')) {
+        return null;
+      }
 
-    // TODO: check whether we can limit this to a single page
-    const constant = configPages
-      .find((page: ConfigPageType) => constName in page.data)
-      ?.data[constName];
+      // TODO: check whether we can limit this to a single page
+      const constant = configPages.find((page: ConfigPageType) => constName in page.data)?.data[
+        constName
+      ];
 
-    // we need array index instead of a display value
-    if (constant?.type === 'bits') {
-      val = (constant.values as string[]).indexOf(`${val}`);
-    }
+      // we need array index instead of a display value
+      if (constant?.type === 'bits') {
+        val = (constant.values as string[]).indexOf(`${val}`);
+      }
 
-    // escape string values
-    if (typeof val === 'string') {
-      // eslint-disable-next-line quotes
-      val = `'${val.replaceAll("'", "\\'")}'`;
-    }
+      // escape string values
+      if (typeof val === 'string') {
+        val = `'${val.replaceAll("'", "\\'")}'`;
+      }
 
-    // some names may have invalid characters, we can fix it or skip it
-    const name = constName.replace('-', '_');
+      // some names may have invalid characters, we can fix it or skip it
+      const name = constName.replace('-', '_');
 
-    return `const ${name} = ${val};`;
-  }).filter((val) => val !== null)
-);
+      return `const ${name} = ${val};`;
+    })
+    .filter((val) => val !== null);
 
-const prepareChannelsDeclarations = (configOutputChannels: OutputChannelsType) => (
-  Object.keys(configOutputChannels).map((channelName: string) => {
-    const current = configOutputChannels[channelName] as SimpleConstantType;
-    if (!current.value) {
-      return null;
-    }
+const prepareChannelsDeclarations = (configOutputChannels: OutputChannelsType) =>
+  Object.keys(configOutputChannels)
+    .map((channelName: string) => {
+      const current = configOutputChannels[channelName] as SimpleConstantType;
+      if (!current.value) {
+        return null;
+      }
 
-    let val = current.value;
+      let val = current.value;
 
-    if (isExpression(val)) {
-      val = stripExpression(val);
-    } else if (!isNumber(val)) {
-      val = `"${val}"`;
-    }
+      if (isExpression(val)) {
+        val = stripExpression(val);
+      } else if (!isNumber(val)) {
+        val = `"${val}"`;
+      }
 
-    return `const ${channelName} = ${val};`;
-  }).filter((val) => val !== null)
-);
+      return `const ${channelName} = ${val};`;
+    })
+    .filter((val) => val !== null);
 
-export const evaluateExpression = (expression: string, tuneConstants: TuneConstantsType, config: ConfigType) => {
+export const evaluateExpression = (
+  expression: string,
+  tuneConstants: TuneConstantsType,
+  config: ConfigType,
+) => {
   const constDeclarations = prepareConstDeclarations(tuneConstants, config.constants.pages);
   const channelsDeclarations = prepareChannelsDeclarations(config.outputChannels);
 
   try {
     // TODO: strip eval from `command` etc
-    // eslint-disable-next-line no-eval
+
     return eval(`
       'use strict';
       const arrayValue = (number, layout) => number;
@@ -116,4 +124,3 @@ export const evaluateExpression = (expression: string, tuneConstants: TuneConsta
 
   return undefined;
 };
-

@@ -1,9 +1,5 @@
-import {
-  ConstantTypes,
-  ScalarConstant,
-} from '@hyper-tuner/types';
+import { ConstantTypes, ScalarConstant } from '@hyper-tuner/types';
 
-// eslint-disable-next-line import/prefer-default-export
 export const divider: ScalarConstant = {
   type: ConstantTypes.SCALAR,
   size: 'U08',

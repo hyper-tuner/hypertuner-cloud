@@ -1,8 +1,5 @@
 import { Pagination } from 'antd';
-import {
-  ReactNode,
-  useState,
-} from 'react';
+import { ReactNode, useState } from 'react';
 
 interface LogsPaginationProps {
   children: ReactNode;
@@ -26,7 +23,7 @@ const LogsPagination = (props: LogsPaginationProps) => {
     <div style={{ position: 'relative' }}>
       <div style={{ position: 'absolute', bottom: 3, right: 5, zIndex: 1 }}>
         <Pagination
-          simple
+          simple={true}
           defaultPageSize={pageSize}
           current={page}
           total={total}
@@ -34,7 +31,7 @@ const LogsPagination = (props: LogsPaginationProps) => {
         />
       </div>
       {children}
-    </div >
+    </div>
   );
 };
 

@@ -16,20 +16,26 @@ export const usernameRules: Rule[] = [
   { pattern: usernamePattern, message: 'Username has invalid format!' },
 ];
 
-export const emailRules: Rule[] = [{
-  required: true,
-  type: 'email',
-  whitespace: true,
-}];
+export const emailRules: Rule[] = [
+  {
+    required: true,
+    type: 'email',
+    whitespace: true,
+  },
+];
 
-export const requiredTextRules: Rule[] = [{
-  required: true,
-  message: REQUIRED_MESSAGE,
-  whitespace: true,
-  pattern: /^.{2,255}$/,
-}];
+export const requiredTextRules: Rule[] = [
+  {
+    required: true,
+    message: REQUIRED_MESSAGE,
+    whitespace: true,
+    pattern: /^.{2,255}$/,
+  },
+];
 
-export const requiredRules: Rule[] = [{
-  required: true,
-  message: REQUIRED_MESSAGE,
-}];
+export const requiredRules: Rule[] = [
+  {
+    required: true,
+    message: REQUIRED_MESSAGE,
+  },
+];

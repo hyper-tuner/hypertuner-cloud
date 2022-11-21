@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
@@ -19,7 +16,7 @@ interface Props {
   data: CompositeLogEntry[];
   width: number;
   height: number;
-};
+}
 
 const CompositeCanvas = ({ data, width, height }: Props) => {
   const [options, setOptions] = useState<uPlot.Options>();
@@ -33,39 +30,36 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
     const primary: (number | null)[] = [];
     const sync: (number | null)[] = [];
 
-    data
-      .slice(indexFrom, indexTo)
-      .forEach((entry, index) => {
-        const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
-        const currentSecondary = (entry.secondaryLevel + secondaryTranslate) * scale;
+    data.slice(indexFrom, indexTo).forEach((entry, index) => {
+      const prevSecondary = data[index - 1] ? data[index - 1].secondaryLevel : 0;
+      const currentSecondary = (entry.secondaryLevel + secondaryTranslate) * scale;
 
-        const prevPrimary = data[index - 1] ? data[index - 1].primaryLevel : 0;
-        const currentPrimary = (entry.primaryLevel + primaryTranslate) * scale;
+      const prevPrimary = data[index - 1] ? data[index - 1].primaryLevel : 0;
+      const currentPrimary = (entry.primaryLevel + primaryTranslate) * scale;
 
-        const prevSync = data[index - 1] ? data[index - 1].sync : 0;
-        const currentSync = entry.sync;
+      const prevSync = data[index - 1] ? data[index - 1].sync : 0;
+      const currentSync = entry.sync;
 
-        // base data
-        xData.push(index);
+      // base data
+      xData.push(index);
+      secondary.push(currentSecondary);
+      primary.push(currentPrimary);
+      sync.push(currentSync);
+
+      // make it square
+      if (
+        prevSecondary !== currentSecondary ||
+        prevPrimary !== currentPrimary ||
+        prevSync !== currentSync
+      ) {
         secondary.push(currentSecondary);
         primary.push(currentPrimary);
         sync.push(currentSync);
+        xData.push(index + 1);
+      }
+    });
 
-        // make it square
-        if (prevSecondary !== currentSecondary || prevPrimary !== currentPrimary || prevSync !== currentSync) {
-          secondary.push(currentSecondary);
-          primary.push(currentPrimary);
-          sync.push(currentSync);
-          xData.push(index + 1);
-        }
-      });
-
-    setPlotData([
-      xData,
-      [...secondary],
-      [...primary],
-      [...sync],
-    ]);
+    setPlotData([xData, [...secondary], [...primary], [...sync]]);
 
     setOptions({
       width,
@@ -80,7 +74,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
           points: { show: false },
           stroke: Colors.GREEN,
           scale: '',
-          value: (_self, rawValue) => (rawValue / scale) - secondaryTranslate,
+          value: (_self, rawValue) => rawValue / scale - secondaryTranslate,
           width: 2,
         },
         {
@@ -88,7 +82,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
           points: { show: false },
           stroke: Colors.BLUE,
           scale: '',
-          value: (_self, rawValue) => (rawValue / scale) - primaryTranslate,
+          value: (_self, rawValue) => rawValue / scale - primaryTranslate,
           width: 2,
         },
         {
@@ -112,7 +106,6 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
       plugins: [touchZoomPlugin()],
     });
   }, [data, width, height, indexFrom, indexTo]);
-
 
   return (
     <LogsPagination

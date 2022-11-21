@@ -1,12 +1,4 @@
-import {
-  CSSProperties,
-  forwardRef,
-  Fragment,
-  Ref,
-  useMemo,
-  ReactNode,
-  useCallback,
-} from 'react';
+import { CSSProperties, forwardRef, Fragment, Ref, useMemo, ReactNode, useCallback } from 'react';
 import {
   ActionId,
   KBarAnimator,
@@ -31,10 +23,7 @@ import {
   SettingOutlined,
   CarOutlined,
 } from '@ant-design/icons';
-import {
-  useNavigate,
-  generatePath,
-} from 'react-router';
+import { useNavigate, generatePath } from 'react-router';
 import {
   Config as ConfigType,
   Tune as TuneType,
@@ -49,10 +38,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { logOutSuccessful } from '../pages/auth/notifications';
 import store from '../store';
 import { isMac } from '../utils/env';
-import {
-  AppState,
-  NavigationState,
-} from '../types/state';
+import { AppState, NavigationState } from '../types/state';
 import {
   buildDialogUrl,
   buildGroupMenuDialogUrl,
@@ -67,7 +53,7 @@ enum Sections {
   TUNE = 'Tune',
   LOG = 'Log',
   DIAGNOSE = 'Diagnose',
-};
+}
 
 const mapStateToProps = (state: AppState) => ({
   config: state.config,
@@ -80,9 +66,9 @@ interface CommandPaletteProps {
   config: ConfigType | null;
   tune: TuneType | null;
   navigation: NavigationState;
-  // eslint-disable-next-line react/no-unused-prop-types
+
   children?: ReactNode;
-};
+}
 
 const searchStyle = {
   padding: '12px 16px',
@@ -114,11 +100,7 @@ const groupNameStyle = {
 
 const ResultItem = forwardRef(
   (
-    {
-      action,
-      active,
-      currentRootActionId,
-    }: {
+    { action, active, currentRootActionId }: {
       action: ActionImpl;
       active: boolean;
       currentRootActionId: ActionId;
@@ -126,10 +108,10 @@ const ResultItem = forwardRef(
     ref: Ref<HTMLDivElement>,
   ) => {
     const ancestors = useMemo(() => {
-      if (!currentRootActionId) return action.ancestors;
-      const index = action.ancestors.findIndex(
-        (ancestor) => ancestor.id === currentRootActionId,
-      );
+      if (!currentRootActionId) {
+        return action.ancestors;
+      }
+      const index = action.ancestors.findIndex((ancestor) => ancestor.id === currentRootActionId);
       // +1 removes the currentRootAction (currently active item)
       return action.ancestors.slice(index + 1);
     }, [action.ancestors, currentRootActionId]);
@@ -169,23 +151,16 @@ const ResultItem = forwardRef(
                     >
                       {ancestor.name}
                     </span>
-                    <span style={{ marginRight: 8 }}>
-                      &rsaquo;
-                    </span>
+                    <span style={{ marginRight: 8 }}>&rsaquo;</span>
                   </Fragment>
                 ))}
               <span>{action.name}</span>
             </div>
-            {action.subtitle && (
-              <span style={{ fontSize: 12 }}>{action.subtitle}</span>
-            )}
+            {action.subtitle && <span style={{ fontSize: 12 }}>{action.subtitle}</span>}
           </div>
         </div>
         {action.shortcut?.length ? (
-          <div
-            aria-hidden
-            style={{ display: 'grid', gridAutoFlow: 'column', gap: '4px' }}
-          >
+          <div aria-hidden={true} style={{ display: 'grid', gridAutoFlow: 'column', gap: '4px' }}>
             {action.shortcut.map((sc: any) => (
               <kbd
                 key={sc}
@@ -209,23 +184,14 @@ const ResultItem = forwardRef(
 const RenderResults = () => {
   const { results, rootActionId } = useMatches();
 
-  const onResultsRender = ({ item, active }: { item: any, active: any }) =>
+  const onResultsRender = ({ item, active }: { item: any; active: any }) =>
     typeof item === 'string' ? (
       <div style={groupNameStyle}>{item}</div>
     ) : (
-      <ResultItem
-        action={item}
-        active={active}
-        currentRootActionId={rootActionId as string}
-      />
+      <ResultItem action={item} active={active} currentRootActionId={rootActionId as string} />
     );
 
-  return (
-    <KBarResults
-      items={results}
-      onRender={onResultsRender}
-    />
-  );
+  return <KBarResults items={results} onRender={onResultsRender} />;
 };
 
 const buildTuneUrl = (tuneId: string, route: string) => generatePath(route, { tuneId });
@@ -234,43 +200,44 @@ const ActionsProvider = (props: CommandPaletteProps) => {
   const { config, tune, navigation } = props;
   const navigate = useNavigate();
 
-  const generateActions = useCallback((types: MenusType) => {
-    const newActions: Action[] = [
-      {
-        id: 'InfoAction',
-        section: Sections.TUNE,
-        name: 'Info',
-        subtitle: 'Basic information about this tune.',
-        icon: <InfoCircleOutlined />,
-        perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_ROOT)),
-      },
-      {
-        id: 'LogsAction',
-        section: Sections.LOG,
-        name: 'Logs',
-        subtitle: 'Log viewer.',
-        icon: <FundOutlined />,
-        perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_LOGS)),
-      },
-      {
-        id: 'DiagnoseAction',
-        section: Sections.DIAGNOSE,
-        name: 'Diagnose',
-        subtitle: 'Tooth and composite logs viewer.',
-        icon: <SettingOutlined />,
-        perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_DIAGNOSE)),
-      },
-    ];
+  const generateActions = useCallback(
+    (types: MenusType) => {
+      const newActions: Action[] = [
+        {
+          id: 'InfoAction',
+          section: Sections.TUNE,
+          name: 'Info',
+          subtitle: 'Basic information about this tune.',
+          icon: <InfoCircleOutlined />,
+          perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_ROOT)),
+        },
+        {
+          id: 'LogsAction',
+          section: Sections.LOG,
+          name: 'Logs',
+          subtitle: 'Log viewer.',
+          icon: <FundOutlined />,
+          perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_LOGS)),
+        },
+        {
+          id: 'DiagnoseAction',
+          section: Sections.DIAGNOSE,
+          name: 'Diagnose',
+          subtitle: 'Tooth and composite logs viewer.',
+          icon: <SettingOutlined />,
+          perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_DIAGNOSE)),
+        },
+      ];
 
-    const mapSubMenuItems = (
-      rootMenuName: string,
-      rootMenu: MenuType,
-      subMenus: { [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType },
-      groupMenuName: string | null = null,
-    ) => {
-      Object
-        .keys(subMenus)
-        .forEach((subMenuName: string) => {
+      const mapSubMenuItems = (
+        rootMenuName: string,
+        rootMenu: MenuType,
+        subMenus: {
+          [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType;
+        },
+        groupMenuName: string | null = null,
+      ) => {
+        Object.keys(subMenus).forEach((subMenuName: string) => {
           if (SKIP_SUB_MENUS.includes(`${rootMenuName}/${subMenuName}`)) {
             return;
           }
@@ -283,14 +250,19 @@ const ActionsProvider = (props: CommandPaletteProps) => {
 
           if ((subMenu as GroupMenuType).type === 'groupMenu') {
             // recurrence
-            mapSubMenuItems(rootMenuName, rootMenu, (subMenu as GroupMenuType).groupChildMenus, (subMenu as GroupMenuType).title);
+            mapSubMenuItems(
+              rootMenuName,
+              rootMenu,
+              (subMenu as GroupMenuType).groupChildMenus,
+              (subMenu as GroupMenuType).title,
+            );
 
             return;
           }
 
-          const url = groupMenuName ?
-            buildGroupMenuDialogUrl(navigation.tuneId!, rootMenuName, groupMenuName, subMenuName) :
-            buildDialogUrl(navigation.tuneId!, rootMenuName, subMenuName);
+          const url = groupMenuName
+            ? buildGroupMenuDialogUrl(navigation.tuneId!, rootMenuName, groupMenuName, subMenuName)
+            : buildDialogUrl(navigation.tuneId!, rootMenuName, subMenuName);
 
           newActions.push({
             id: url,
@@ -300,18 +272,20 @@ const ActionsProvider = (props: CommandPaletteProps) => {
             perform: () => navigate(url),
           });
         });
-    };
+      };
 
-    Object.keys(types).forEach((rootMenuName: string) => {
-      if (SKIP_MENUS.includes(rootMenuName)) {
-        return;
-      }
+      Object.keys(types).forEach((rootMenuName: string) => {
+        if (SKIP_MENUS.includes(rootMenuName)) {
+          return;
+        }
 
-      mapSubMenuItems(rootMenuName, types[rootMenuName], types[rootMenuName].subMenus);
-    });
+        mapSubMenuItems(rootMenuName, types[rootMenuName], types[rootMenuName].subMenus);
+      });
 
-    return newActions;
-  }, [navigate, navigation.tuneId]);
+      return newActions;
+    },
+    [navigate, navigation.tuneId],
+  );
 
   const getActions = () => {
     if (tune?.constants && Object.keys(tune.constants).length) {

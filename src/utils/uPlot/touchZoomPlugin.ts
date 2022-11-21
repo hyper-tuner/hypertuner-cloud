@@ -9,7 +9,7 @@ interface Point {
   d?: number;
   dx: number;
   dy: number;
-};
+}
 
 const touchZoomPlugin = () => {
   const init = (u: uPlot, _opts: any, data: any) => {
@@ -35,8 +35,7 @@ const touchZoomPlugin = () => {
         t.x = t0x;
         t.y = t0y;
         t.d = t.dx = t.dy = 1;
-      }
-      else {
+      } else {
         const t1 = e.touches[1];
         const t1x = t1.clientX - rect.left;
         const t1y = t1.clientY - rect.top;

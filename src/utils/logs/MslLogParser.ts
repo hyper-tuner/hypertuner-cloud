@@ -19,7 +19,7 @@ class MslLogParser implements ParserInterface {
 
   public constructor(buffer: ArrayBuffer) {
     this.buffer = buffer;
-    this.raw = (new TextDecoder()).decode(buffer);
+    this.raw = new TextDecoder().decode(buffer);
   }
 
   public parse(onProgress: (percent: number) => void): this {
@@ -27,8 +27,7 @@ class MslLogParser implements ParserInterface {
     const lines = this.raw.trim().split('\n');
 
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      // eslint-disable-next-line no-bitwise
-      onProgress(~~(lineIndex / lines.length * 100));
+      onProgress(~~((lineIndex / lines.length) * 100));
 
       const line = lines[lineIndex].trim();
       if (line.startsWith('"')) {
@@ -68,7 +67,7 @@ class MslLogParser implements ParserInterface {
 
         this.result.records.push(record);
       }
-    };
+    }
 
     return this;
   }

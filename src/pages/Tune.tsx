@@ -1,8 +1,4 @@
-import {
-  generatePath,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { generatePath, useMatch, useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { Config as ConfigType } from '@hyper-tuner/types';
@@ -10,10 +6,7 @@ import Dialog from '../components/Tune/Dialog';
 import SideBar from '../components/Tune/SideBar';
 import { Routes } from '../routes';
 import useConfig from '../hooks/useConfig';
-import {
-  AppState,
-  TuneState,
-} from '../types/state';
+import { AppState, TuneState } from '../types/state';
 import Loader from '../components/Loader';
 
 const mapStateToProps = (state: AppState) => ({
@@ -23,7 +16,7 @@ const mapStateToProps = (state: AppState) => ({
   tune: state.tune,
 });
 
-const Tune = ({ config, tune }: { config: ConfigType | null, tune: TuneState }) => {
+const Tune = ({ config, tune }: { config: ConfigType | null; tune: TuneState }) => {
   const dialogMatch = useMatch(Routes.TUNE_DIALOG);
   const tuneRootMatch = useMatch(Routes.TUNE_TUNE);
   const groupMenuDialogMatch = useMatch(Routes.TUNE_GROUP_MENU_DIALOG);
@@ -46,20 +39,29 @@ const Tune = ({ config, tune }: { config: ConfigType | null, tune: TuneState }) 
 
       navigate(firstDialogPath, { replace: true });
     }
-  }, [navigate, tuneRootMatch, isConfigReady, config?.menus, tuneId, config, tune, dialogMatch, groupMenuDialogMatch]);
+  }, [
+    navigate,
+    tuneRootMatch,
+    isConfigReady,
+    config?.menus,
+    tuneId,
+    config,
+    tune,
+    dialogMatch,
+    groupMenuDialogMatch,
+  ]);
 
-  if (!tune || !config || (!dialogMatch && !groupMenuDialogMatch)) {
+  if (!(tune && config && (dialogMatch || groupMenuDialogMatch))) {
     return <Loader />;
   }
 
   return (
     <>
-      <SideBar
-        matchedPath={dialogMatch!}
-        matchedGroupMenuDialogPath={groupMenuDialogMatch}
-      />
+      <SideBar matchedPath={dialogMatch!} matchedGroupMenuDialogPath={groupMenuDialogMatch} />
       <Dialog
-        name={groupMenuDialogMatch ? groupMenuDialogMatch.params.dialog! : dialogMatch?.params.dialog!}
+        name={
+          groupMenuDialogMatch ? groupMenuDialogMatch.params.dialog! : dialogMatch?.params.dialog!
+        }
         url={groupMenuDialogMatch ? groupMenuDialogMatch.pathname : dialogMatch?.pathname || ''}
       />
     </>

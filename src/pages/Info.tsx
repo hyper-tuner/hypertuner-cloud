@@ -1,31 +1,14 @@
 import { connect } from 'react-redux';
 import ReactMarkdown from 'react-markdown';
-import {
-  Button,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Row,
-  Select,
-} from 'antd';
+import { Button, Col, Divider, Form, Input, Row, Select } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import {
-  generatePath,
-  useNavigate,
-} from 'react-router-dom';
-import {
-  AppState,
-  TuneDataState,
-} from '../types/state';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { AppState, TuneDataState } from '../types/state';
 import Loader from '../components/Loader';
 import { Routes } from '../routes';
 import { useAuth } from '../contexts/AuthContext';
 import { formatTime } from '../utils/time';
-import {
-  TunesAspirationOptions,
-  UsersResponse,
-} from '../@types/pocketbase-types';
+import { TunesAspirationOptions, UsersResponse } from '../@types/pocketbase-types';
 import StarButton from '../components/StarButton';
 
 const { Item } = Form;
@@ -40,9 +23,12 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  const goToEdit = () => navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
-    tuneId: tuneData.tuneId,
-  }));
+  const goToEdit = () =>
+    navigate(
+      generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+        tuneId: tuneData.tuneId,
+      }),
+    );
 
   const canManage = currentUser && tuneData && currentUser.id === tuneData.author;
 
@@ -51,12 +37,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       <Divider>Manage</Divider>
       <Row style={{ marginTop: 10 }}>
         <Item style={{ width: '100%' }}>
-          <Button
-            type="primary"
-            block
-            onClick={goToEdit}
-            icon={<EditOutlined />}
-          >
+          <Button type="primary" block={true} onClick={goToEdit} icon={<EditOutlined />}>
             Edit
           </Button>
         </Item>
@@ -76,7 +57,10 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={(tuneData.expand!.author as unknown as UsersResponse).username} addonBefore="Author" />
+              <Input
+                value={(tuneData.expand!.author as unknown as UsersResponse).username}
+                addonBefore="Author"
+              />
             </Item>
           </Col>
           <Col {...colProps}>
@@ -119,23 +103,40 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.cylindersCount!} addonBefore="Cylinders" style={{ width: '100%' }} />
+              <Input
+                value={tuneData.cylindersCount!}
+                addonBefore="Cylinders"
+                style={{ width: '100%' }}
+              />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Select placeholder="Aspiration" style={{ width: '100%' }} value={tuneData.aspiration}>
+              <Select
+                placeholder="Aspiration"
+                style={{ width: '100%' }}
+                value={tuneData.aspiration}
+              >
                 <Select.Option value={TunesAspirationOptions.na}>Naturally aspirated</Select.Option>
-                <Select.Option value={TunesAspirationOptions.turbocharged}>Turbocharged</Select.Option>
-                <Select.Option value={TunesAspirationOptions.supercharged}>Supercharged</Select.Option>
+                <Select.Option value={TunesAspirationOptions.turbocharged}>
+                  Turbocharged
+                </Select.Option>
+                <Select.Option value={TunesAspirationOptions.supercharged}>
+                  Supercharged
+                </Select.Option>
               </Select>
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.compression!} addonBefore="Compression" style={{ width: '100%' }} addonAfter=":1" />
+              <Input
+                value={tuneData.compression!}
+                addonBefore="Compression"
+                style={{ width: '100%' }}
+                addonAfter=":1"
+              />
             </Item>
           </Col>
         </Row>
@@ -178,12 +179,10 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       </Form>
       <Divider>README</Divider>
       <div className="markdown-preview" style={{ height: '100%' }}>
-        {tuneData.readme && <ReactMarkdown>
-          {`${tuneData.readme}`}
-        </ReactMarkdown>}
+        {tuneData.readme && <ReactMarkdown>{`${tuneData.readme}`}</ReactMarkdown>}
       </div>
       {canManage && manageSection}
-    </div >
+    </div>
   );
 };
 

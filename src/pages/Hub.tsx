@@ -1,40 +1,15 @@
 import { Link } from 'react-router-dom';
-import {
-  Button,
-  Grid,
-  Input,
-  InputRef,
-  Pagination,
-  Space,
-  Table,
-  Typography,
-} from 'antd';
+import { Button, Grid, Input, InputRef, Pagination, Space, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import {
-  CopyOutlined,
-  StarFilled,
-  ArrowRightOutlined,
-  EditOutlined,
-} from '@ant-design/icons';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {
-  generatePath,
-  useNavigate,
-} from 'react-router';
+import { CopyOutlined, StarFilled, ArrowRightOutlined, EditOutlined } from '@ant-design/icons';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { generatePath, useNavigate } from 'react-router';
 import debounce from 'lodash.debounce';
 import useDb from '../hooks/useDb';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 import { aspirationMapper } from '../utils/tune/mappers';
-import {
-  copyToClipboard,
-  isClipboardSupported,
-} from '../utils/clipboard';
+import { copyToClipboard, isClipboardSupported } from '../utils/clipboard';
 import { isEscape } from '../utils/keyboard/shortcuts';
 import { formatTime } from '../utils/time';
 import { useAuth } from '../contexts/AuthContext';
@@ -59,9 +34,12 @@ const Hub = () => {
   const [total, setTotal] = useState(0);
   const searchRef = useRef<InputRef | null>(null);
   const { currentUser } = useAuth();
-  const goToEdit = (tuneId: string) => navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
-    tuneId,
-  }));
+  const goToEdit = (tuneId: string) =>
+    navigate(
+      generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+        tuneId,
+      }),
+    );
 
   const loadData = debounce(async (searchText: string) => {
     setIsLoading(true);
@@ -87,15 +65,17 @@ const Hub = () => {
   const debounceLoadData = useCallback((value: string) => {
     setSearchQuery(value);
     loadData(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
-    if (isEscape(e)) {
-      setSearchQuery('');
-      loadData('');
-    }
-  }, [loadData]);
+  const handleGlobalKeyboard = useCallback(
+    (e: KeyboardEvent) => {
+      if (isEscape(e)) {
+        setSearchQuery('');
+        loadData('');
+      }
+    },
+    [loadData],
+  );
 
   useEffect(() => {
     loadData('');
@@ -105,7 +85,6 @@ const Hub = () => {
     // searchRef.current?.focus(); // autofocus
 
     return () => window.removeEventListener('keydown', handleGlobalKeyboard);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const columns: ColumnsType<any> = [
@@ -123,10 +102,14 @@ const Hub = () => {
             <Text type="secondary">
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
                 <AuthorName author={tune.expand?.author} />
-              </Link>, {tune.updated}, {tune.stars} <StarFilled />
+              </Link>
+              , {tune.updated}, {tune.stars} <StarFilled />
             </Text>
-            <Text>{tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount} cylinders, {tune.aspiration}</Text>
-            <Text italic>{tune.signature}</Text>
+            <Text>
+              {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount}{' '}
+              cylinders, {tune.aspiration}
+            </Text>
+            <Text italic={true}>{tune.signature}</Text>
           </Space>
         </>
       ),
@@ -190,9 +173,7 @@ const Hub = () => {
       dataIndex: 'signature',
       key: 'author',
       responsive: ['sm'],
-      render: (signature: string) => (
-        <Text italic>{signature}</Text>
-      ),
+      render: (signature: string) => <Text italic={true}>{signature}</Text>,
     },
     {
       title: 'Published',
@@ -217,11 +198,7 @@ const Hub = () => {
         return (
           <Space>
             {isOwner && (
-              <Button
-                size={size}
-                icon={<EditOutlined />}
-                onClick={() => goToEdit(tuneId)}
-              />
+              <Button size={size} icon={<EditOutlined />} onClick={() => goToEdit(tuneId)} />
             )}
             {isClipboardSupported && (
               <Button
@@ -233,7 +210,8 @@ const Hub = () => {
             <Button
               size={size}
               type="primary"
-              icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tuneId))}
+              icon={<ArrowRightOutlined />}
+              onClick={() => navigate(tunePath(tuneId))}
             />
           </Space>
         );
@@ -245,14 +223,14 @@ const Hub = () => {
   return (
     <div className="large-container">
       <Input
-        // eslint-disable-next-line jsx-a11y/tabindex-no-positive
+        // rome-ignore lint: make search input first in tab order
         tabIndex={1}
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
         value={searchQuery}
         placeholder="Search by anything..."
         onChange={({ target }) => debounceLoadData(target.value)}
-        allowClear
+        allowClear={true}
       />
       <Table
         dataSource={dataSource}

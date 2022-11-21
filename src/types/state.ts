@@ -1,13 +1,6 @@
-import {
-  Config,
-  Logs,
-  TuneWithDetails,
-} from '@hyper-tuner/types';
+import { Config, Logs, TuneWithDetails } from '@hyper-tuner/types';
 import { TunesResponse } from '../@types/pocketbase-types';
-import {
-  CompositeLogEntry,
-  ToothLogEntry,
-} from '../utils/logs/TriggerLogsParser';
+import { CompositeLogEntry, ToothLogEntry } from '../utils/logs/TriggerLogsParser';
 
 export interface ConfigState extends Config {}
 
@@ -42,8 +35,8 @@ export interface AppState {
   tune: TuneState;
   tuneData: TuneDataState;
   config: ConfigState;
-  logs: LogsState,
-  toothLogs: ToothLogsState,
+  logs: LogsState;
+  toothLogs: ToothLogsState;
   ui: UIState;
   status: StatusState;
   navigation: NavigationState;

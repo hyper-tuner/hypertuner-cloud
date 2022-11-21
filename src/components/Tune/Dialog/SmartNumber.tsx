@@ -1,7 +1,4 @@
-import {
-  InputNumber,
-  Slider,
-} from 'antd';
+import { InputNumber, Slider } from 'antd';
 import { formatNumber } from '../../../utils/numbers';
 
 const SmartNumber = ({
@@ -12,17 +9,16 @@ const SmartNumber = ({
   digits,
   disabled,
 }: {
-  defaultValue: number,
-  min: number,
-  max: number,
-  units: string | undefined,
-  digits: number,
-  disabled: boolean,
+  defaultValue: number;
+  min: number;
+  max: number;
+  units: string | undefined;
+  digits: number;
+  disabled: boolean;
 }) => {
-  const isSlider = (u: string) => ['%', 'C']
-    .includes(`${u}`.toUpperCase());
+  const isSlider = (u: string) => ['%', 'C'].includes(`${u}`.toUpperCase());
   const sliderMarks: { [value: number]: string } = {};
-  const step = digits ? 10**-digits : 1;
+  const step = digits ? 10 ** -digits : 1;
   const value = formatNumber(defaultValue, digits);
   sliderMarks[min] = `${min}${units}`;
 
@@ -59,7 +55,7 @@ const SmartNumber = ({
       step={step}
       disabled={disabled}
       style={{ minWidth: 150 }}
-      formatter={(val) => units ? `${val} ${units}` : `${val}`}
+      formatter={(val) => (units ? `${val} ${units}` : `${val}`)}
       parser={(val) => Number(`${val}`.replace(/[^\d.]/g, ''))}
     />
   );

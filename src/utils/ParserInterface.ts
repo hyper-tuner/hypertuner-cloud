@@ -3,5 +3,5 @@ export interface ParserInterface {
 }
 
 export interface ParserConstructor {
-  new(buffer: ArrayBuffer): ParserInterface;
+  new (buffer: ArrayBuffer): ParserInterface;
 }

@@ -1,13 +1,5 @@
-import {
-  Typography,
-  Grid,
-} from 'antd';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Typography, Grid } from 'antd';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import { Colors } from '../../../utils/colors';
@@ -26,14 +18,14 @@ const Curve = ({
   xUnits = '',
   yUnits = '',
 }: {
-  xLabel: string,
-  yLabel: string,
-  xData: number[],
-  yData: number[],
-  disabled: boolean,
-  help: string,
-  xUnits?: string,
-  yUnits?: string,
+  xLabel: string;
+  yLabel: string;
+  xData: number[];
+  yData: number[];
+  disabled: boolean;
+  help: string;
+  xUnits?: string;
+  yUnits?: string;
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { sm } = useBreakpoint();
@@ -41,7 +33,10 @@ const Curve = ({
   const [plotData, setPlotData] = useState<uPlot.AlignedData>();
   const [canvasWidth, setCanvasWidth] = useState(0);
 
-  const calculateWidth = useCallback(() => setCanvasWidth(containerRef.current?.clientWidth || 0), []);
+  const calculateWidth = useCallback(
+    () => setCanvasWidth(containerRef.current?.clientWidth || 0),
+    [],
+  );
 
   useEffect(() => {
     setPlotData([xData, yData]);

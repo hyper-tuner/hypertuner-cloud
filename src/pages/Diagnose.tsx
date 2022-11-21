@@ -1,39 +1,11 @@
-import {
-  generatePath,
-  Link,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Layout,
-  Tabs,
-  Progress,
-  Steps,
-  Space,
-  Divider,
-  Typography,
-  Badge,
-  Grid,
-} from 'antd';
-import {
-  FileTextOutlined,
-  GlobalOutlined,
-} from '@ant-design/icons';
+import { generatePath, Link, useMatch, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Layout, Tabs, Progress, Steps, Space, Divider, Typography, Badge, Grid } from 'antd';
+import { FileTextOutlined, GlobalOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Pako from 'pako';
-import {
-  AppState,
-  ToothLogsState,
-  TuneDataState,
-  UIState,
-} from '../types/state';
+import { AppState, ToothLogsState, TuneDataState, UIState } from '../types/state';
 import store from '../store';
 import { formatBytes } from '../utils/numbers';
 import CompositeCanvas from '../components/TriggerLogs/CompositeCanvas';
@@ -48,10 +20,7 @@ import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
 import useServerStorage from '../hooks/useServerStorage';
 import { isAbortedRequest } from '../utils/error';
-import {
-  collapsedSidebarWidth,
-  sidebarWidth,
-} from '../components/Tune/SideBar';
+import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
 
 const { Content } = Layout;
 
@@ -123,11 +92,16 @@ const Diagnose = ({
       }
 
       try {
-        const raw = await fetchLogFileWithProgress(tuneData!.id, logFileName, (percent, total, edge) => {
-          setProgress(percent);
-          setFileSize(formatBytes(total));
-          setEdgeLocation(edge || edgeUnknown);
-        }, signal);
+        const raw = await fetchLogFileWithProgress(
+          tuneData!.id,
+          logFileName,
+          (percent, total, edge) => {
+            setProgress(percent);
+            setFileSize(formatBytes(total));
+            setEdgeLocation(edge || edgeUnknown);
+          },
+          signal,
+        );
 
         setFileSize(formatBytes(raw.byteLength));
         setStep(1);
@@ -148,7 +122,8 @@ const Diagnose = ({
         }
 
         store.dispatch({
-          type: 'toothLogs/load', payload: {
+          type: 'toothLogs/load',
+          payload: {
             fileName: logFileName,
             logs: result,
             type,
@@ -182,10 +157,20 @@ const Diagnose = ({
     if (!routeMatch?.params.fileName && tuneData && tuneData.toothLogFiles?.length) {
       // either redirect to the first log or to the latest selected
       if (loadedToothLogs.fileName) {
-        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: loadedToothLogs.fileName }));
+        navigate(
+          generatePath(Routes.TUNE_DIAGNOSE_FILE, {
+            tuneId: tuneData.tuneId,
+            fileName: loadedToothLogs.fileName,
+          }),
+        );
       } else {
         const firstLogFile = (tuneData.toothLogFiles || [])[0];
-        navigate(generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
+        navigate(
+          generatePath(Routes.TUNE_DIAGNOSE_FILE, {
+            tuneId: tuneData.tuneId,
+            fileName: firstLogFile,
+          }),
+        );
       }
     }
 
@@ -197,23 +182,22 @@ const Diagnose = ({
       controller.abort();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calculateCanvasSize, routeMatch?.params.fileName, ui.sidebarCollapsed, tuneData?.tuneId]);
 
   const graphSection = () => {
     switch (loadedToothLogs.type) {
       case 'composite':
-        return <CompositeCanvas
-          data={loadedToothLogs.logs as CompositeLogEntry[]}
-          width={canvasWidth}
-          height={canvasHeight}
-        />;
+        return (
+          <CompositeCanvas
+            data={loadedToothLogs.logs as CompositeLogEntry[]}
+            width={canvasWidth}
+            height={canvasHeight}
+          />
+        );
       case 'tooth':
-        return <ToothCanvas
-          data={loadedToothLogs.logs}
-          width={canvasWidth}
-          height={canvasHeight}
-        />;
+        return (
+          <ToothCanvas data={loadedToothLogs.logs} width={canvasWidth} height={canvasHeight} />
+        );
       default:
         return null;
     }
@@ -222,59 +206,60 @@ const Diagnose = ({
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!loadedToothLogs.type ?
+        {loadedToothLogs.type ? (
+          !ui.sidebarCollapsed && (
+            <Tabs
+              defaultActiveKey="files"
+              style={{ marginLeft: 20 }}
+              items={[
+                {
+                  label: (
+                    <Badge
+                      size="small"
+                      style={badgeStyle}
+                      count={tuneData?.toothLogFiles?.length}
+                      offset={[10, -3]}
+                    >
+                      <FileTextOutlined />
+                      Files
+                    </Badge>
+                  ),
+                  key: 'files',
+                  children: (
+                    <PerfectScrollbar options={{ suppressScrollX: true }}>
+                      {tuneData?.toothLogFiles?.map((fileName) => (
+                        <Typography.Paragraph key={fileName} ellipsis={true}>
+                          <Link
+                            to={generatePath(Routes.TUNE_DIAGNOSE_FILE, {
+                              tuneId: tuneData.tuneId,
+                              fileName,
+                            })}
+                            style={
+                              routeMatch?.params.fileName === fileName ? {} : { color: 'inherit' }
+                            }
+                          >
+                            {removeFilenameSuffix(fileName)}
+                          </Link>
+                        </Typography.Paragraph>
+                      ))}
+                    </PerfectScrollbar>
+                  ),
+                },
+              ]}
+            />
+          )
+        ) : (
           <Loader />
-          :
-          !ui.sidebarCollapsed &&
-          <Tabs
-            defaultActiveKey="files"
-            style={{ marginLeft: 20 }}
-            items={[
-              {
-                label: (
-                  <Badge size="small" style={badgeStyle} count={tuneData?.toothLogFiles?.length} offset={[10, -3]}>
-                    <FileTextOutlined />Files
-                  </Badge>
-                ),
-                key: 'files',
-                children: (
-                  <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    {tuneData?.toothLogFiles?.map((fileName) => (
-                      <Typography.Paragraph key={fileName} ellipsis>
-                        <Link
-                          to={generatePath(Routes.TUNE_DIAGNOSE_FILE, { tuneId: tuneData.tuneId, fileName })}
-                          style={
-                            routeMatch?.params.fileName === fileName ?
-                              {} : { color: 'inherit' }
-                          }
-                        >
-                          {removeFilenameSuffix(fileName)}
-                        </Link>
-                      </Typography.Paragraph>
-                    ))}
-                  </PerfectScrollbar>
-                ),
-              },
-            ]}
-          />
-        }
+        )}
       </Sider>
       <Layout className="logs-container">
         <Content>
           <div ref={contentRef}>
-            {loadedToothLogs.type
-              ?
+            {loadedToothLogs.type ? (
               graphSection()
-              :
-              <Space
-                direction="vertical"
-                size="large"
-              >
-                <Progress
-                  type="circle"
-                  percent={progress}
-                  className="logs-progress"
-                />
+            ) : (
+              <Space direction="vertical" size="large">
+                <Progress type="circle" percent={progress} className="logs-progress" />
                 <Divider />
                 <Steps
                   current={step}
@@ -283,9 +268,12 @@ const Diagnose = ({
                     {
                       title: 'Downloading',
                       subTitle: fileSize,
-                      description: (
-                        fetchError ? fetchError!.message : <Space>
-                          <GlobalOutlined />{edgeLocation}
+                      description: fetchError ? (
+                        fetchError!.message
+                      ) : (
+                        <Space>
+                          <GlobalOutlined />
+                          {edgeLocation}
                         </Space>
                       ),
                     },
@@ -300,7 +288,7 @@ const Diagnose = ({
                   ]}
                 />
               </Space>
-            }
+            )}
           </div>
         </Content>
       </Layout>

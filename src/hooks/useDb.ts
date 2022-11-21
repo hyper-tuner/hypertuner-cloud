@@ -1,10 +1,5 @@
 import * as Sentry from '@sentry/browser';
-import {
-  client,
-  formatError,
-  ClientResponseError,
-  API_URL,
-} from '../pocketbase';
+import { client, formatError, ClientResponseError, API_URL } from '../pocketbase';
 import { databaseGenericError } from '../pages/auth/notifications';
 import {
   Collections,
@@ -22,7 +17,7 @@ export type TunesRecordPartial = Partial<TunesRecord>;
 type TunesResponseList = {
   items: TunesResponse[];
   totalItems: number;
-}
+};
 
 const tunesCollection = client.collection(Collections.Tunes);
 
@@ -30,7 +25,7 @@ const customEndpoint = `${API_URL}/api/custom`;
 
 const headers = (token: string) => ({
   'Content-Type': 'application/json',
-  'Authorization': `Bearer ${token}`,
+  Authorization: `Bearer ${token}`,
 });
 
 const useDb = () => {
@@ -93,7 +88,11 @@ const useDb = () => {
     return Promise.reject(response.status);
   };
 
-  const searchTunes = async (search: string, page: number, perPage: number): Promise<TunesResponseList> => {
+  const searchTunes = async (
+    search: string,
+    page: number,
+    perPage: number,
+  ): Promise<TunesResponseList> => {
     const phrases = search.length > 0 ? search.replace(/ +(?= )/g, '').split(' ') : [];
     const filter = phrases
       .filter((phrase) => phrase.length > 1)
@@ -123,7 +122,11 @@ const useDb = () => {
     }
   };
 
-  const getUserTunes = async (userId: string, page: number, perPage: number): Promise<TunesResponseList> => {
+  const getUserTunes = async (
+    userId: string,
+    page: number,
+    perPage: number,
+  ): Promise<TunesResponseList> => {
     try {
       const list = await tunesCollection.getList<TunesResponse>(page, perPage, {
         sort: '-updated',
@@ -166,7 +169,10 @@ const useDb = () => {
     }
   };
 
-  const toggleStar = async (currentUserToken: string, tune: string): Promise<{ stars: number, isStarred: boolean }> => {
+  const toggleStar = async (
+    currentUserToken: string,
+    tune: string,
+  ): Promise<{ stars: number; isStarred: boolean }> => {
     const response = await fetch(`${customEndpoint}/stargazers/toggleStar`, {
       method: 'POST',
       headers: headers(currentUserToken),

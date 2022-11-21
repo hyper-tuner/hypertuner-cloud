@@ -1,22 +1,11 @@
 import { useState } from 'react';
-import {
-  Form,
-  Input,
-  Button,
-  Divider,
-} from 'antd';
+import { Form, Input, Button, Divider } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
-import {
-  Link,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
-import {
-  resetFailed,
-  resetSuccessful,
-} from './notifications';
+import { resetFailed, resetSuccessful } from './notifications';
 import { emailRules } from '../../utils/form';
 
 const { Item } = Form;
@@ -27,7 +16,7 @@ const ResetPassword = () => {
   const { initResetPassword } = useAuth();
   const navigate = useNavigate();
 
-  const onFinish = async ({ email }: { form: any, email: string }) => {
+  const onFinish = async ({ email }: { form: any; email: string }) => {
     setIsLoading(true);
     try {
       await initResetPassword(email);
@@ -49,24 +38,11 @@ const ResetPassword = () => {
         validateMessages={validateMessages}
         form={form}
       >
-        <Item
-          name="email"
-          rules={emailRules}
-          hasFeedback
-        >
-          <Input
-            prefix={<MailOutlined />}
-            placeholder="Email"
-            autoComplete="email"
-          />
+        <Item name="email" rules={emailRules} hasFeedback={true}>
+          <Input prefix={<MailOutlined />} placeholder="Email" autoComplete="email" />
         </Item>
         <Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            loading={isLoading}
-          >
+          <Button type="primary" htmlType="submit" style={{ width: '100%' }} loading={isLoading}>
             Reset password
           </Button>
         </Item>

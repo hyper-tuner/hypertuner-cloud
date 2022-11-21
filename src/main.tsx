@@ -6,11 +6,7 @@ import { Integrations } from '@sentry/tracing';
 import ReactGA from 'react-ga4';
 import App from './App';
 import store from './store';
-import {
-  environment,
-  isProduction,
-  sentryDsn,
-} from './utils/env';
+import { environment, isProduction, sentryDsn } from './utils/env';
 import { AuthProvider } from './contexts/AuthContext';
 import CommandPalette from './components/CommandPalette';
 

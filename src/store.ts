@@ -1,10 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import {
-  configureStore,
-  createAction,
-  createReducer,
-} from '@reduxjs/toolkit';
+import { configureStore, createAction, createReducer } from '@reduxjs/toolkit';
 import {
   AppState,
   ConfigState,

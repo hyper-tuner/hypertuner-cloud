@@ -1,31 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable jsx-a11y/anchor-has-content */
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
-import {
-  useLocation,
-  useNavigate,
-  Link,
-  generatePath,
-  useMatch,
-} from 'react-router-dom';
-import {
-  Layout,
-  Space,
-  Button,
-  Row,
-  Col,
-  Tooltip,
-  Grid,
-  Dropdown,
-  Typography,
-  Radio,
-} from 'antd';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useLocation, useNavigate, Link, generatePath, useMatch } from 'react-router-dom';
+import { Layout, Space, Button, Row, Col, Tooltip, Grid, Dropdown, Typography, Radio } from 'antd';
 import {
   UserOutlined,
   CloudUploadOutlined,
@@ -64,9 +42,9 @@ const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
 const logsExtensionsIcons: { [key: string]: any } = {
-  'mlg': <FileZipOutlined />,
-  'msl': <FileTextOutlined />,
-  'csv': <FileExcelOutlined />,
+  mlg: <FileZipOutlined />,
+  msl: <FileTextOutlined />,
+  csv: <FileExcelOutlined />,
 };
 
 const TopBar = ({
@@ -79,7 +57,10 @@ const TopBar = ({
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const { query } = useKBar();
-  const buildTuneUrl = useCallback((route: string) => tuneData?.tuneId ? generatePath(route, { tuneId: tuneData.tuneId }) : null, [tuneData?.tuneId]);
+  const buildTuneUrl = useCallback(
+    (route: string) => (tuneData?.tuneId ? generatePath(route, { tuneId: tuneData.tuneId }) : null),
+    [tuneData?.tuneId],
+  );
   const hubPathMatch = useMatch(Routes.HUB);
   const tuneRootMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneTuneMatch = useMatch(`${Routes.TUNE_TUNE}/*`);
@@ -114,7 +95,8 @@ const TopBar = ({
       key: filename,
       label: removeFilenameSuffix(filename),
       icon: logsExtensionsIcons[filename.slice(-3)],
-      onClick: () => downloadFile(Collections.Tunes, tuneData!.id, filename, downloadAnchorRef.current!),
+      onClick: () =>
+        downloadFile(Collections.Tunes, tuneData!.id, filename, downloadAnchorRef.current!),
     })),
   };
 
@@ -126,7 +108,8 @@ const TopBar = ({
       key: filename,
       label: removeFilenameSuffix(filename),
       icon: logsExtensionsIcons[filename.slice(-3)],
-      onClick: () => downloadFile(Collections.Tunes, tuneData!.id, filename, downloadAnchorRef.current!),
+      onClick: () =>
+        downloadFile(Collections.Tunes, tuneData!.id, filename, downloadAnchorRef.current!),
     })),
   };
 
@@ -140,14 +123,21 @@ const TopBar = ({
           label: 'Download',
           icon: <FileTextOutlined />,
           key: 'download',
-          onClick: () => downloadFile(Collections.Tunes, tuneData!.id, tuneData!.tuneFile, downloadAnchorRef.current!),
+          onClick: () =>
+            downloadFile(
+              Collections.Tunes,
+              tuneData!.id,
+              tuneData!.tuneFile,
+              downloadAnchorRef.current!,
+            ),
         },
         {
           label: 'Open in app',
           icon: <DesktopOutlined />,
           key: 'open',
           disabled: true,
-          onClick: () => window.open(`hypertuner://hypertuner.cloud/t/${tuneData!.tuneId}`, '_blank'),
+          onClick: () =>
+            window.open(`hypertuner://hypertuner.cloud/t/${tuneData!.tuneId}`, '_blank'),
         },
       ],
     },
@@ -157,7 +147,12 @@ const TopBar = ({
       key: 'ini',
       onClick: async () => {
         if (tuneData?.customIniFile) {
-          downloadFile(Collections.Tunes, tuneData!.id, tuneData!.customIniFile, downloadAnchorRef.current!);
+          downloadFile(
+            Collections.Tunes,
+            tuneData!.id,
+            tuneData!.customIniFile,
+            downloadAnchorRef.current!,
+          );
         } else {
           const ini = await getIni(tuneData!.signature);
           downloadFile(Collections.IniFiles, ini!.id, ini!.file, downloadAnchorRef.current!);
@@ -174,58 +169,89 @@ const TopBar = ({
     return () => document.removeEventListener('keydown', handleGlobalKeyboard);
   }, [currentUser, handleGlobalKeyboard]);
 
-  const tabs = useMemo(() => (
-    <Col span={16} md={16} sm={16}>
-      <Radio.Group
-        key={pathname}
-        defaultValue={tuneLogMatch?.pathnameBase || toothLogMatch?.pathnameBase || tuneTuneMatch?.pathnameBase || tabMatch?.pathname || tuneRootMatch?.pathname || hubPathMatch?.pathname}
-        optionType="button"
-        buttonStyle="solid"
-        onChange={(e) => navigate(e.target.value)}
-      >
-        <Radio.Button value={buildTuneUrl(Routes.HUB)}>
-          <Space>
-            <CarOutlined />
-            {lg && 'Hub'}
-          </Space>
-        </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_ROOT)}>
-          <Space>
-            <InfoCircleOutlined />
-            {lg && 'Info'}
-          </Space>
-        </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_TUNE)}>
-          <Space>
-            <ToolOutlined />
-            {lg && 'Tune'}
-          </Space>
-        </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_LOGS)} disabled={(tuneData?.logFiles || []).length === 0}>
-          <Space>
-            <FundOutlined />
-            {lg && 'Logs'}
-          </Space>
-        </Radio.Button>
-        <Radio.Button value={buildTuneUrl(Routes.TUNE_DIAGNOSE)} disabled={(tuneData?.toothLogFiles || []).length === 0}>
-          <Space>
-            <SettingOutlined />
-            {lg && 'Diagnose'}
-          </Space>
-        </Radio.Button>
-      </Radio.Group>
-    </Col>
-  ), [pathname, tuneLogMatch?.pathnameBase, toothLogMatch?.pathnameBase, tuneTuneMatch?.pathnameBase, tabMatch?.pathname, tuneRootMatch?.pathname, hubPathMatch?.pathname, buildTuneUrl, lg, tuneData?.logFiles, tuneData?.toothLogFiles, navigate]);
+  const tabs = useMemo(
+    () => (
+      <Col span={16} md={16} sm={16}>
+        <Radio.Group
+          key={pathname}
+          defaultValue={
+            tuneLogMatch?.pathnameBase ||
+            toothLogMatch?.pathnameBase ||
+            tuneTuneMatch?.pathnameBase ||
+            tabMatch?.pathname ||
+            tuneRootMatch?.pathname ||
+            hubPathMatch?.pathname
+          }
+          optionType="button"
+          buttonStyle="solid"
+          onChange={(e) => navigate(e.target.value)}
+        >
+          <Radio.Button value={buildTuneUrl(Routes.HUB)}>
+            <Space>
+              <CarOutlined />
+              {lg && 'Hub'}
+            </Space>
+          </Radio.Button>
+          <Radio.Button value={buildTuneUrl(Routes.TUNE_ROOT)}>
+            <Space>
+              <InfoCircleOutlined />
+              {lg && 'Info'}
+            </Space>
+          </Radio.Button>
+          <Radio.Button value={buildTuneUrl(Routes.TUNE_TUNE)}>
+            <Space>
+              <ToolOutlined />
+              {lg && 'Tune'}
+            </Space>
+          </Radio.Button>
+          <Radio.Button
+            value={buildTuneUrl(Routes.TUNE_LOGS)}
+            disabled={(tuneData?.logFiles || []).length === 0}
+          >
+            <Space>
+              <FundOutlined />
+              {lg && 'Logs'}
+            </Space>
+          </Radio.Button>
+          <Radio.Button
+            value={buildTuneUrl(Routes.TUNE_DIAGNOSE)}
+            disabled={(tuneData?.toothLogFiles || []).length === 0}
+          >
+            <Space>
+              <SettingOutlined />
+              {lg && 'Diagnose'}
+            </Space>
+          </Radio.Button>
+        </Radio.Group>
+      </Col>
+    ),
+    [
+      pathname,
+      tuneLogMatch?.pathnameBase,
+      toothLogMatch?.pathnameBase,
+      tuneTuneMatch?.pathnameBase,
+      tabMatch?.pathname,
+      tuneRootMatch?.pathname,
+      hubPathMatch?.pathname,
+      buildTuneUrl,
+      lg,
+      tuneData?.logFiles,
+      tuneData?.toothLogFiles,
+      navigate,
+    ],
+  );
 
-  const rightMenuColProps = tuneData?.tuneId ? {
-    span: 8,
-    md: 8,
-    sm: 8,
-  } : {
-    span: 14,
-    md: 10,
-    sm: 8,
-  };
+  const rightMenuColProps = tuneData?.tuneId
+    ? {
+        span: 8,
+        md: 8,
+        sm: 8,
+      }
+    : {
+        span: 14,
+        md: 10,
+        sm: 8,
+      };
 
   const downloadButton = useMemo(() => {
     const list = [];
@@ -241,27 +267,39 @@ const TopBar = ({
     return list.length ? list : null;
   }, [lg, sm]);
 
-  const userAuthMenuItems = useMemo(() => currentUser ? [{
-    key: 'profile',
-    icon: <UserOutlined />,
-    label: 'Profile',
-    onClick: () => navigate(Routes.PROFILE),
-  }, {
-    key: 'logout',
-    icon: <LogoutOutlined />,
-    label: 'Logout',
-    onClick: logoutClick,
-  }] : [{
-    key: 'login',
-    icon: <LoginOutlined />,
-    label: 'Login',
-    onClick: () => navigate(Routes.LOGIN),
-  }, {
-    key: 'sign-up',
-    icon: <UserAddOutlined />,
-    label: 'Sign Up',
-    onClick: () => navigate(Routes.SIGN_UP),
-  }], [currentUser, logoutClick, navigate]);
+  const userAuthMenuItems = useMemo(
+    () =>
+      currentUser
+        ? [
+            {
+              key: 'profile',
+              icon: <UserOutlined />,
+              label: 'Profile',
+              onClick: () => navigate(Routes.PROFILE),
+            },
+            {
+              key: 'logout',
+              icon: <LogoutOutlined />,
+              label: 'Logout',
+              onClick: logoutClick,
+            },
+          ]
+        : [
+            {
+              key: 'login',
+              icon: <LoginOutlined />,
+              label: 'Login',
+              onClick: () => navigate(Routes.LOGIN),
+            },
+            {
+              key: 'sign-up',
+              icon: <UserAddOutlined />,
+              label: 'Sign Up',
+              onClick: () => navigate(Routes.SIGN_UP),
+            },
+          ],
+    [currentUser, logoutClick, navigate],
+  );
 
   const userMenuItems = [
     ...userAuthMenuItems,
@@ -280,48 +318,48 @@ const TopBar = ({
   return (
     <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {}}>
       <Row>
-        {tuneData?.tuneId ? tabs : (
+        {tuneData?.tuneId ? (
+          tabs
+        ) : (
           <Col span={10} md={14} sm={16}>
             <Link to={Routes.HUB}>
-              <Button icon={<CarOutlined />} type={hubMatch ? 'primary' : 'default'}>Hub</Button>
+              <Button icon={<CarOutlined />} type={hubMatch ? 'primary' : 'default'}>
+                Hub
+              </Button>
             </Link>
           </Col>
         )}
         <Col {...rightMenuColProps} style={{ textAlign: 'right' }}>
           <Space>
-            {sm && <Tooltip title={
-              <>
-                <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
-                <Typography.Text keyboard>K</Typography.Text>
-              </>
-            }>
-              <Button icon={<SearchOutlined />} onClick={toggleCommandPalette} />
-            </Tooltip>}
+            {sm && (
+              <Tooltip
+                title={
+                  <>
+                    <Typography.Text keyboard={true}>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
+                    <Typography.Text keyboard={true}>K</Typography.Text>
+                  </>
+                }
+              >
+                <Button icon={<SearchOutlined />} onClick={toggleCommandPalette} />
+              </Tooltip>
+            )}
             <Link to={Routes.UPLOAD}>
               <Button icon={<CloudUploadOutlined />} type={uploadMatch ? 'primary' : 'default'}>
                 {lg && 'Upload'}
               </Button>
             </Link>
-            {tuneData?.tuneId && <Dropdown
-              menu={{ items: downloadItems }}
-              placement="bottom"
-              trigger={['click']}
-            >
-              <Button icon={<CloudDownloadOutlined />}>
-                {downloadButton}
-              </Button>
-            </Dropdown>}
-            <Dropdown
-              menu={{ items: userMenuItems }}
-              placement="bottomRight"
-              trigger={['click']}
-            >
-              <Button icon={<UserOutlined />}>
-                {sm && <DownOutlined />}
-              </Button>
+            {tuneData?.tuneId && (
+              <Dropdown menu={{ items: downloadItems }} placement="bottom" trigger={['click']}>
+                <Button icon={<CloudDownloadOutlined />}>{downloadButton}</Button>
+              </Dropdown>
+            )}
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
+              <Button icon={<UserOutlined />}>{sm && <DownOutlined />}</Button>
             </Dropdown>
             {/* dummy anchor for file download */}
-            <a ref={downloadAnchorRef} style={{ display: 'none' }} />
+            <a href="" ref={downloadAnchorRef} style={{ display: 'none' }}>
+              download
+            </a>
           </Space>
         </Col>
       </Row>

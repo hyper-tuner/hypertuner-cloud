@@ -1,7 +1,4 @@
-import {
-  Space,
-  Tooltip,
-} from 'antd';
+import { Space, Tooltip } from 'antd';
 import { CheckCircleFilled } from '@ant-design/icons';
 import { UsersResponse } from '../@types/pocketbase-types';
 import { Colors } from '../utils/colors';
@@ -14,6 +11,7 @@ const AuthorName = ({ author }: { author: UsersResponse }) => (
       </Tooltip>
     )}
     {author.username}
-  </Space>);
+  </Space>
+);
 
 export default AuthorName;
