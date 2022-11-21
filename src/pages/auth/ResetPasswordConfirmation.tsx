@@ -1,22 +1,10 @@
-import {
-  Button,
-  Divider,
-  Form,
-  Input,
-} from 'antd';
+import { Button, Divider, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import { useState } from 'react';
-import {
-  Link,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { Link, useMatch, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
-import {
-  passwordUpdateFailed,
-  passwordUpdateSuccess,
-} from './notifications';
+import { passwordUpdateFailed, passwordUpdateSuccess } from './notifications';
 import { passwordRules } from '../../utils/form';
 import validateMessages from './validateMessages';
 
@@ -52,11 +40,7 @@ const ResetPasswordConfirmation = () => {
         autoComplete="off"
         form={form}
       >
-        <Item
-          name="password"
-          rules={passwordRules}
-          hasFeedback
-        >
+        <Item name="password" rules={passwordRules} hasFeedback={true}>
           <Input.Password
             placeholder="New password"
             autoComplete="new-password"

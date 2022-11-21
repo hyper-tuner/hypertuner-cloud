@@ -1,7 +1,9 @@
 export type HslType = [number, number, number];
 
 export const formatBytes = (bytes: number, decimals = 2): string => {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) {
+    return '0 Bytes';
+  }
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
@@ -13,7 +15,7 @@ export const formatBytes = (bytes: number, decimals = 2): string => {
 };
 
 // fix this pad
-export const leftPad = (n: number, z = 2) => (`00${n}`).slice(-z);
+export const leftPad = (n: number, z = 2) => `00${n}`.slice(-z);
 
 export const msToTime = (input: number) => {
   let s = input;
@@ -27,7 +29,8 @@ export const msToTime = (input: number) => {
   return `${leftPad(hrs)}:${leftPad(mins)}:${leftPad(secs)}.${ms}`;
 };
 
-export const remap = (x: number, inMin: number, inMax: number, outMin: number, outMax: number) => (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+export const remap = (x: number, inMin: number, inMax: number, outMin: number, outMax: number) =>
+  ((x - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 
 export const colorHsl = (min: number, max: number, value: number): HslType => {
   const saturation = 80;
@@ -44,8 +47,8 @@ export const colorHsl = (min: number, max: number, value: number): HslType => {
   return [hue, saturation, lightness];
 };
 
-// eslint-disable-next-line prefer-template
-export const round = (value: number, digits: number | string = 0) => +(Math.round(value + `e+${digits}` as any) + `e-${digits}`);
+export const round = (value: number, digits: number | string = 0) =>
+  +`${Math.round(`${value}e+${digits}` as any)}e-${digits}`;
 
 export const formatNumberMs = (value: number, format: string): string => {
   if (format === '%d') {
@@ -62,4 +65,5 @@ export const formatNumberMs = (value: number, format: string): string => {
   return round(value, digits).toFixed(digits as unknown as number);
 };
 
-export const formatNumber = (value: number, digits: number): string => round(value, digits).toFixed(digits);
+export const formatNumber = (value: number, digits: number): string =>
+  round(value, digits).toFixed(digits);

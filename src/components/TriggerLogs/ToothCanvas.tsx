@@ -1,14 +1,8 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
-import {
-  ToothLogEntry,
-  EntryType,
-} from '../../utils/logs/TriggerLogsParser';
+import { ToothLogEntry, EntryType } from '../../utils/logs/TriggerLogsParser';
 import { Colors } from '../../utils/colors';
 import LogsPagination from './LogsPagination';
 
@@ -18,7 +12,7 @@ interface Props {
   data: ToothLogEntry[];
   width: number;
   height: number;
-};
+}
 
 const PAGE_SIZE = 200;
 
@@ -32,14 +26,12 @@ const ToothCanvas = ({ data, width, height }: Props) => {
     const xData: number[] = [];
     const yData: (number | null)[] = [];
 
-    data
-      .slice(indexFrom, indexTo)
-      .forEach((entry: ToothLogEntry, index) => {
-        if (entry.type === EntryType.TRIGGER) {
-          yData.push(entry.toothTime);
-          xData.push(index);
-        }
-      });
+    data.slice(indexFrom, indexTo).forEach((entry: ToothLogEntry, index) => {
+      if (entry.type === EntryType.TRIGGER) {
+        yData.push(entry.toothTime);
+        xData.push(index);
+      }
+    });
 
     setPlotData([xData, yData]);
 

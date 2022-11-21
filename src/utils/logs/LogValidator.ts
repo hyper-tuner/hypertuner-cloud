@@ -13,7 +13,7 @@ class LogValidator implements ParserInterface {
 
   public constructor(buffer: ArrayBuffer) {
     this.buffer = buffer;
-    this.raw = (new TextDecoder()).decode(buffer);
+    this.raw = new TextDecoder().decode(buffer);
 
     this.checkMLG();
     this.checkMSL();
@@ -32,10 +32,9 @@ class LogValidator implements ParserInterface {
   }
 
   private checkMLG() {
-    const fileFormat = new TextDecoder('utf8')
-      .decode(this.buffer.slice(0, this.MLG_FORMAT_LENGTH))
-      // eslint-disable-next-line no-control-regex
-      .replace(/\x00/gu, '');
+    const fileFormat = new TextDecoder('utf8').decode(this.buffer.slice(0, this.MLG_FORMAT_LENGTH))
+
+    .replace(/\x00/gu, '');
 
     if (fileFormat === 'MLVLG') {
       this.isMLGLogs = true;

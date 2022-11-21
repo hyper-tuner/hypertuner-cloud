@@ -2,14 +2,11 @@
 
 import { Grid } from 'antd';
 import LandscapeNotice from './LandscapeNotice';
-import {
-  colorHsl,
-  formatNumber,
-} from '../../../utils/numbers';
+import { colorHsl, formatNumber } from '../../../utils/numbers';
 
 const { useBreakpoint } = Grid;
 
-const Map = ({
+const Map3D = ({
   xData,
   yData,
   zData,
@@ -17,12 +14,12 @@ const Map = ({
   yUnits,
   zDigits,
 }: {
-  xData: number[],
-  yData: number[],
-  zData: number[][],
-  xUnits: string,
-  yUnits: string,
-  zDigits: number,
+  xData: number[];
+  yData: number[];
+  zData: number[][];
+  xUnits: string;
+  yUnits: string;
+  zDigits: number;
 }) => {
   const { sm } = useBreakpoint();
   const titleProps = { disabled: true };
@@ -30,29 +27,29 @@ const Map = ({
   const min = Math.min(...zData.map((row) => Math.min(...row)));
   const max = Math.max(...zData.map((row) => Math.max(...row)));
 
-  const renderRow = (rowIndex: number, input: number[]) => input
-    .map((value, index) => {
+  const renderRow = (rowIndex: number, input: number[]) =>
+    input.map((value, index) => {
       const [hue, sat, light] = colorHsl(min, max, value);
       const yValue = yData[rowIndex];
       const result = [];
 
       if (index === 0) {
-        result.push((
+        result.push(
           <td {...titleProps} className="title-map" key={`y-${yValue}`}>
             {`${yValue}`}
-          </td>
-        ));
+          </td>,
+        );
       }
 
-      result.push((
+      result.push(
         <td
           className="value"
           key={`${rowIndex}-${index}-${value}-${hue}${sat}${light}`}
           style={{ backgroundColor: `hsl(${hue}, ${sat}%, ${light}%)` }}
         >
           {formatNumber(value, zDigits)}
-        </td>
-      ));
+        </td>,
+      );
 
       return result;
     });
@@ -66,9 +63,7 @@ const Map = ({
       <table>
         <tbody>
           {zData.map((row, i) => (
-            <tr key={`row-${i}`}>
-              {renderRow(i, row)}
-            </tr>
+            <tr key={`row-${i}`}>{renderRow(i, row)}</tr>
           ))}
           <tr>
             <td {...titleProps} className="title-map">
@@ -86,4 +81,4 @@ const Map = ({
   );
 };
 
-export default Map;
+export default Map3D;

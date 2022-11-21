@@ -17,13 +17,13 @@ class TuneParser {
   };
 
   parse(buffer: ArrayBuffer): TuneParser {
-    const raw = (new TextDecoder()).decode(buffer);
-    const xml = (new DOMParser()).parseFromString(raw, 'text/xml');
+    const raw = new TextDecoder().decode(buffer);
+    const xml = new DOMParser().parseFromString(raw, 'text/xml');
     const xmlPages = xml.getElementsByTagName('page');
     const bibliography = xml.getElementsByTagName('bibliography')[0]?.attributes as any;
     const versionInfo = xml.getElementsByTagName('versionInfo')[0]?.attributes as any;
 
-    if (!xmlPages || !versionInfo) {
+    if (!(xmlPages && versionInfo)) {
       this.isTuneValid = false;
 
       return this;

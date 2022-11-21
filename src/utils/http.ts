@@ -4,7 +4,11 @@ type LocationsType = { [index: string]: string };
 
 export type OnProgress = (percent: number, total: number, edgeLocation: string | null) => void;
 
-export const fetchWithProgress = async (url: string, onProgress?: OnProgress, signal?: AbortSignal): Promise<ArrayBuffer> => {
+export const fetchWithProgress = async (
+  url: string,
+  onProgress?: OnProgress,
+  signal?: AbortSignal,
+): Promise<ArrayBuffer> => {
   let edgeLocation = null;
   const response = await fetch(url, { signal });
   const contentLength = response.headers.get('Content-Length');
@@ -30,8 +34,7 @@ export const fetchWithProgress = async (url: string, onProgress?: OnProgress, si
   const array = new Uint8Array(length);
 
   let at = 0;
-  for (; ;) {
-    // eslint-disable-next-line no-await-in-loop
+  for (;;) {
     const { done, value } = await reader.read();
 
     if (done) {
@@ -42,8 +45,7 @@ export const fetchWithProgress = async (url: string, onProgress?: OnProgress, si
     at += (value as Uint8Array).length;
 
     if (onProgress) {
-      // eslint-disable-next-line no-bitwise
-      onProgress(~~(at / length * 100), length, edgeLocation);
+      onProgress(~~((at / length) * 100), length, edgeLocation);
     }
   }
 

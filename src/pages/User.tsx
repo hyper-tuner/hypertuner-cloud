@@ -1,29 +1,12 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-import {
-  generatePath,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
-import {
-  Button,
-  Divider,
-  List,
-  Pagination,
-  Space,
-  Typography,
-} from 'antd';
+import { useEffect, useState } from 'react';
+import { generatePath, useMatch, useNavigate } from 'react-router-dom';
+import { Button, Divider, List, Pagination, Space, Typography } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Routes } from '../routes';
 import { formatTime } from '../utils/time';
 import useDb from '../hooks/useDb';
 import { aspirationMapper } from '../utils/tune/mappers';
-import {
-  TunesResponse,
-  UsersResponse,
-} from '../@types/pocketbase-types';
+import { TunesResponse, UsersResponse } from '../@types/pocketbase-types';
 import TuneTag from '../components/TuneTag';
 import AuthorName from '../components/AuthorName';
 
@@ -64,7 +47,6 @@ const Profile = () => {
 
   useEffect(() => {
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   return (
@@ -72,9 +54,12 @@ const Profile = () => {
       <Divider>
         {author ? (
           <>
-            <AuthorName author={author} /><span>&apos; tunes</span>
+            <AuthorName author={author} />
+            <span>&apos; tunes</span>
           </>
-        ) : 'No tunes yet'}
+        ) : (
+          'No tunes yet'
+        )}
       </Divider>
       <List
         dataSource={tunesDataSource}
@@ -82,7 +67,10 @@ const Profile = () => {
         renderItem={(tune) => (
           <List.Item
             actions={[
-              <Button icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tune.tuneId))} />,
+              <Button
+                icon={<ArrowRightOutlined />}
+                onClick={() => navigate(tunePath(tune.tuneId))}
+              />,
             ]}
             className={tune.visibility}
           >
@@ -92,15 +80,17 @@ const Profile = () => {
                   <Space direction="vertical">
                     {tune.vehicleName}
                     <TuneTag tag={tune.tags} />
-                    <Typography.Text italic>{tune.signature}</Typography.Text>
+                    <Typography.Text italic={true}>{tune.signature}</Typography.Text>
                   </Space>
                 }
-                description={<>
-                  {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
-                </>}
+                description={
+                  <>
+                    {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
+                  </>
+                }
               />
               <div>
-                <Typography.Text italic>{tune.updated}</Typography.Text>
+                <Typography.Text italic={true}>{tune.updated}</Typography.Text>
               </div>
             </Space>
           </List.Item>

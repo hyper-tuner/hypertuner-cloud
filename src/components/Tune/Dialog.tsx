@@ -1,19 +1,6 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import {
-  Form,
-  Divider,
-  Col,
-  Row,
-  Popover,
-  Space,
-  Result,
-} from 'antd';
+import { Form, Divider, Col, Row, Popover, Space, Result } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import {
   Dialogs as DialogsType,
@@ -26,31 +13,25 @@ import {
   ConstantTypes,
   Tune as TuneType,
 } from '@hyper-tuner/types';
-import {
-  AppState,
-  UIState,
-} from '../../types/state';
+import { AppState, UIState } from '../../types/state';
 import SmartSelect from './Dialog/SmartSelect';
 import SmartNumber from './Dialog/SmartNumber';
 import TextField from './Dialog/TextField';
 import Curve from './Dialog/Curve';
-import {
-  parseXy,
-  parseZ,
-} from '../../utils/tune/table';
-import Map from './Dialog/Map';
+import { parseXy, parseZ } from '../../utils/tune/table';
+import Map3D from './Dialog/Map3D';
 import { evaluateExpression } from '../../utils/tune/expression';
 import useBrowserStorage from '../../hooks/useBrowserStorage';
 import useConfig from '../../hooks/useConfig';
 import Loader from '../Loader';
 
 interface DialogsAndCurves {
-  [name: string]: DialogType | CurveType | TableType,
+  [name: string]: DialogType | CurveType | TableType;
 }
 
 interface RenderedPanel {
-  type: string,
-  name: string,
+  type: string;
+  name: string;
   title: string;
   labels: string[];
   xAxis: number[];
@@ -59,7 +40,7 @@ interface RenderedPanel {
   yBins: string[];
   size: number[];
   gauge?: string;
-  fields: FieldType[],
+  fields: FieldType[];
   map: string;
   page: number;
   help?: string;
@@ -90,81 +71,87 @@ const Dialog = ({
   url,
   name,
 }: {
-  ui: UIState,
-  config: ConfigType,
-  tune: TuneType,
-  name: string,
-  url: string,
+  ui: UIState;
+  config: ConfigType;
+  tune: TuneType;
+  name: string;
+  url: string;
 }) => {
-  const isDataReady = tune && config && Object.keys(tune.constants).length && Object.keys(config.constants).length;
+  const isDataReady =
+    tune && config && Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useBrowserStorage();
   const { findConstantOnPage } = useConfig(config);
   const [panelsComponents, setPanelsComponents] = useState<any[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const renderHelp = (link?: string) => (link &&
-    <Popover
-      content={
-        <a
-          href={`${link}`}
-          target="__blank"
-          rel="noopener noreferrer"
-        >
-          {link}
-        </a>
-      }
-      placement="right"
-    >
-      <QuestionCircleOutlined />
-    </Popover>
+  const renderHelp = (link?: string) =>
+    link && (
+      <Popover
+        content={
+          <a href={`${link}`} target="__blank" rel="noopener noreferrer">
+            {link}
+          </a>
+        }
+        placement="right"
+      >
+        <QuestionCircleOutlined />
+      </Popover>
+    );
+
+  const renderCurve = useCallback(
+    (curve: CurveType) => {
+      const x = tune.constants[curve.xBins[0]];
+      const y = tune.constants[curve.yBins[0]];
+      const xConstant = findConstantOnPage(curve.xBins[0]) as ScalarConstantType;
+      const yConstant = findConstantOnPage(curve.yBins[0]) as ScalarConstantType;
+
+      return (
+        <Curve
+          key={curve.yBins[0]}
+          disabled={false} // TODO: evaluate condition
+          help={config.help[curve.yBins[0]]}
+          xLabel={curve.labels[0]}
+          yLabel={curve.labels[1]}
+          xUnits={xConstant.units}
+          yUnits={yConstant.units}
+          xData={parseXy(x.value as string)}
+          yData={parseXy(y.value as string)}
+        />
+      );
+    },
+    [config?.help, findConstantOnPage, tune?.constants],
   );
 
-  const renderCurve = useCallback((curve: CurveType) => {
-    const x = tune.constants[curve.xBins[0]];
-    const y = tune.constants[curve.yBins[0]];
-    const xConstant = findConstantOnPage(curve.xBins[0]) as ScalarConstantType;
-    const yConstant = findConstantOnPage(curve.yBins[0]) as ScalarConstantType;
+  const renderTable = useCallback(
+    (table: TableType | RenderedPanel) => {
+      const x = tune.constants[table.xBins[0]];
+      const y = tune.constants[table.yBins[0]];
+      const z = tune.constants[table.zBins[0]];
 
-    return (
-      <Curve
-        key={curve.yBins[0]}
-        disabled={false} // TODO: evaluate condition
-        help={config.help[curve.yBins[0]]}
-        xLabel={curve.labels[0]}
-        yLabel={curve.labels[1]}
-        xUnits={xConstant.units}
-        yUnits={yConstant.units}
-        xData={parseXy(x.value as string)}
-        yData={parseXy(y.value as string)}
-      />
-    );
-  }, [config?.help, findConstantOnPage, tune?.constants]);
+      if (!(x && y)) {
+        // TODO: handle this (rusEFI: fuel/lambdaTableTbl)
+        return null;
+      }
 
-  const renderTable = useCallback((table: TableType | RenderedPanel) => {
-    const x = tune.constants[table.xBins[0]];
-    const y = tune.constants[table.yBins[0]];
-    const z = tune.constants[table.zBins[0]];
+      const zConstant = findConstantOnPage(table.zBins[0]) as ScalarConstantType;
 
-    if (!x || !y) {
-      // TODO: handle this (rusEFI: fuel/lambdaTableTbl)
-      return null;
-    }
-
-    const zConstant = findConstantOnPage(table.zBins[0]) as ScalarConstantType;
-
-    return <div>
-      {renderHelp(table.help)}
-      <Map
-        key={table.map}
-        xData={parseXy(x.value as string)}
-        yData={parseXy(y.value as string).reverse()}
-        zData={parseZ(z.value as string)}
-        xUnits={x.units as string}
-        yUnits={y.units as string}
-        zDigits={zConstant.digits}
-      />
-    </div>;
-  }, [findConstantOnPage, tune.constants]);
+      return (
+        <div>
+          {renderHelp(table.help)}
+          <Map3D
+            key={table.map}
+            xData={parseXy(x.value as string)}
+            yData={parseXy(y.value as string).reverse()}
+            zData={parseZ(z.value as string)}
+            xUnits={x.units as string}
+            yUnits={y.units as string}
+            zDigits={zConstant.digits}
+          />
+        </div>
+      );
+    },
+    [findConstantOnPage, tune.constants],
+  );
 
   const resolvedDialogs: DialogsAndCurves = {};
 
@@ -225,9 +212,7 @@ const Dialog = ({
 
     if ('fields' in currentDialog) {
       type = PanelTypes.FIELDS;
-      fields = (currentDialog as DialogType)
-        .fields
-        .filter((field) => field.title !== '');
+      fields = (currentDialog as DialogType).fields.filter((field) => field.title !== '');
     } else if ('zBins' in currentDialog) {
       type = PanelTypes.TABLE;
     }
@@ -255,86 +240,98 @@ const Dialog = ({
     };
   });
 
-  const generatePanelsComponents = useCallback(() => panels.map((panel: RenderedPanel) => {
-    if (panel.type === PanelTypes.FIELDS && panel.fields.length === 0) {
-      return null;
-    }
+  const generatePanelsComponents = useCallback(
+    () =>
+      panels.map((panel: RenderedPanel) => {
+        if (panel.type === PanelTypes.FIELDS && panel.fields.length === 0) {
+          return null;
+        }
 
-    return (
-      <Col key={panel.name} span={24}>
-        <Divider>{panel.title}</Divider>
-        {(panel.fields).map((field: FieldType) => {
-          const constant = findConstantOnPage(field.name);
-          const tuneField = tune.constants[field.name];
-          const help = config.help[field.name];
-          let input;
-          let enabled = true;
-          const fieldKey = `${panel.name}-${field.title}`;
+        return (
+          <Col key={panel.name} span={24}>
+            <Divider>{panel.title}</Divider>
+            {panel.fields.map((field: FieldType) => {
+              const constant = findConstantOnPage(field.name);
+              const tuneField = tune.constants[field.name];
+              const help = config.help[field.name];
+              let input;
+              let enabled = true;
+              const fieldKey = `${panel.name}-${field.title}`;
 
-          if (field.condition) {
-            // TODO: optimize it
-            enabled = evaluateExpression(field.condition, tune.constants, config);
-          }
-
-          if (field.name === '_fieldText_' && enabled) {
-            return <TextField key={fieldKey} title={field.title} />;
-          }
-
-          if (!tuneField) {
-            // TODO: handle this?
-            // name: "rpmwarn", title: "Warning",
-            return null;
-          }
-
-          switch (constant.type) {
-            // case ConstantTypes.ARRAY: // TODO: arrays
-            case ConstantTypes.BITS:
-              input = <SmartSelect
-                defaultValue={`${tuneField.value}`}
-                values={constant.values as string[]}
-                disabled={!enabled}
-              />;
-              break;
-
-            case ConstantTypes.SCALAR:
-              input = <SmartNumber
-                defaultValue={Number(tuneField.value)}
-                digits={(constant as ScalarConstantType).digits}
-                min={((constant as ScalarConstantType).min as number) || 0}
-                max={(constant as ScalarConstantType).max as number}
-                disabled={!enabled}
-                units={(constant as ScalarConstantType).units}
-              />;
-              break;
-
-            default:
-              break;
-          }
-
-          return (
-            <Form.Item
-              key={fieldKey}
-              label={
-                <Space>
-                  {field.title}
-                  {help && (<Popover content={
-                    help.split('\\n').map((line) => <div key={line}>{line}</div>)
-                  }>
-                    <QuestionCircleOutlined />
-                  </Popover>)}
-                </Space>
+              if (field.condition) {
+                // TODO: optimize it
+                enabled = evaluateExpression(field.condition, tune.constants, config);
               }
-            >
-              {input}
-            </Form.Item>
-          );
-        })}
 
-        {panel.type === PanelTypes.CURVE && renderCurve(panel)}
-        {panel.type === PanelTypes.TABLE && renderTable(panel)}
-      </Col>
-    );
-  }), [config, findConstantOnPage, panels, renderCurve, renderTable, tune?.constants]);
+              if (field.name === '_fieldText_' && enabled) {
+                return <TextField key={fieldKey} title={field.title} />;
+              }
+
+              if (!tuneField) {
+                // TODO: handle this?
+                // name: "rpmwarn", title: "Warning",
+                return null;
+              }
+
+              switch (constant.type) {
+                // case ConstantTypes.ARRAY: // TODO: arrays
+                case ConstantTypes.BITS: {
+                  input = (
+                    <SmartSelect
+                      defaultValue={`${tuneField.value}`}
+                      values={constant.values as string[]}
+                      disabled={!enabled}
+                    />
+                  );
+                  break;
+                }
+
+                case ConstantTypes.SCALAR: {
+                  input = (
+                    <SmartNumber
+                      defaultValue={Number(tuneField.value)}
+                      digits={(constant as ScalarConstantType).digits}
+                      min={((constant as ScalarConstantType).min as number) || 0}
+                      max={(constant as ScalarConstantType).max as number}
+                      disabled={!enabled}
+                      units={(constant as ScalarConstantType).units}
+                    />
+                  );
+                  break;
+                }
+
+                default:
+                  break;
+              }
+
+              return (
+                <Form.Item
+                  key={fieldKey}
+                  label={
+                    <Space>
+                      {field.title}
+                      {help && (
+                        <Popover
+                          content={help.split('\\n').map((line) => <div key={line}>{line}</div>)}
+                        >
+                          <QuestionCircleOutlined />
+                        </Popover>
+                      )}
+                    </Space>
+                  }
+                >
+                  {input}
+                </Form.Item>
+              );
+            })}
+
+            {panel.type === PanelTypes.CURVE && renderCurve(panel)}
+            {panel.type === PanelTypes.TABLE && renderTable(panel)}
+          </Col>
+        );
+      }),
+    [config, findConstantOnPage, panels, renderCurve, renderTable, tune?.constants],
+  );
 
   useEffect(() => {
     storageSet('lastDialog', url);
@@ -342,7 +339,6 @@ const Dialog = ({
     if (isDataReady) {
       setPanelsComponents(generatePanelsComponents());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDataReady, url, ui.sidebarCollapsed]);
 
   if (!isDataReady) {
@@ -374,25 +370,14 @@ const Dialog = ({
       );
     }
 
-    return (
-      <Result
-        status="warning"
-        title="Dialog not found"
-        style={{ marginTop: 50 }}
-      />
-    );
+    return <Result status="warning" title="Dialog not found" style={{ marginTop: 50 }} />;
   }
 
   return (
     <div ref={containerRef} className="large-container">
       {renderHelp(dialogConfig?.help)}
-      <Form
-        labelCol={{ span: 10 }}
-        wrapperCol={{ span: 10 }}
-      >
-        <Row gutter={20}>
-          {panelsComponents}
-        </Row>
+      <Form labelCol={{ span: 10 }} wrapperCol={{ span: 10 }}>
+        <Row gutter={20}>{panelsComponents}</Row>
       </Form>
     </div>
   );

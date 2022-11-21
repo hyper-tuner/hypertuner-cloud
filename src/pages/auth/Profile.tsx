@@ -1,22 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-import {
-  generatePath,
-  useNavigate,
-} from 'react-router-dom';
-import {
-  Form,
-  Input,
-  Button,
-  Divider,
-  Alert,
-  Space,
-  List,
-  Pagination,
-  Typography,
-} from 'antd';
+import { useEffect, useState } from 'react';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { Form, Input, Button, Divider, Alert, Space, List, Pagination, Typography } from 'antd';
 import {
   UserOutlined,
   MailOutlined,
@@ -39,10 +23,7 @@ import { usernameRules } from '../../utils/form';
 import { formatTime } from '../../utils/time';
 import useDb from '../../hooks/useDb';
 import { aspirationMapper } from '../../utils/tune/mappers';
-import {
-  TunesResponse,
-  TunesVisibilityOptions,
-} from '../../@types/pocketbase-types';
+import { TunesResponse, TunesVisibilityOptions } from '../../@types/pocketbase-types';
 import TuneTag from '../../components/TuneTag';
 
 const { Item } = Form;
@@ -51,12 +32,7 @@ const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
 const Profile = () => {
   const [formProfile] = Form.useForm();
-  const {
-    currentUser,
-    sendEmailVerification,
-    updateUsername,
-    refreshUser,
-  } = useAuth();
+  const { currentUser, sendEmailVerification, updateUsername, refreshUser } = useAuth();
   const navigate = useNavigate();
   const { getUserTunes } = useDb();
   const [isVerificationSent, setIsVerificationSent] = useState(false);
@@ -68,9 +44,12 @@ const Profile = () => {
   const [isTunesLoading, setIsTunesLoading] = useState(false);
   const [tunesDataSource, setTunesDataSource] = useState<TunesResponse[]>([]);
 
-  const goToEdit = (tuneId: string) => navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
-    tuneId,
-  }));
+  const goToEdit = (tuneId: string) =>
+    navigate(
+      generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+        tuneId,
+      }),
+    );
 
   const resendEmailVerification = async () => {
     setIsSendingVerification(true);
@@ -136,28 +115,29 @@ const Profile = () => {
     });
 
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   return (
     <>
       <div className="auth-container">
-        {!currentUser?.verified && (<>
-          <Divider>Email verification</Divider>
-          <Space direction="vertical" style={{ width: '100%' }} size="large">
-            <Alert message="Your email address is not verified!" type="error" showIcon />
-            <Button
-              type="primary"
-              style={{ width: '100%' }}
-              icon={<MailOutlined />}
-              disabled={isVerificationSent}
-              loading={isSendingVerification}
-              onClick={resendEmailVerification}
-            >
-              Resend verification
-            </Button>
-          </Space>
-        </>)}
+        {!currentUser?.verified && (
+          <>
+            <Divider>Email verification</Divider>
+            <Space direction="vertical" style={{ width: '100%' }} size="large">
+              <Alert message="Your email address is not verified!" type="error" showIcon={true} />
+              <Button
+                type="primary"
+                style={{ width: '100%' }}
+                icon={<MailOutlined />}
+                disabled={isVerificationSent}
+                loading={isSendingVerification}
+                onClick={resendEmailVerification}
+              >
+                Resend verification
+              </Button>
+            </Space>
+          </>
+        )}
         <Divider>Your Profile</Divider>
         <Space direction="vertical" style={{ width: '100%' }} size="large">
           <Form
@@ -175,19 +155,11 @@ const Profile = () => {
               },
             ]}
           >
-            <Item
-              name="username"
-              rules={usernameRules}
-              hasFeedback
-            >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Username"
-                autoComplete="name"
-              />
+            <Item name="username" rules={usernameRules} hasFeedback={true}>
+              <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="name" />
             </Item>
             <Item name="email">
-              <Input prefix={<MailOutlined />} placeholder="Email" disabled />
+              <Input prefix={<MailOutlined />} placeholder="Email" disabled={true} />
             </Item>
             <Item>
               <Button
@@ -211,9 +183,16 @@ const Profile = () => {
           renderItem={(tune) => (
             <List.Item
               actions={[
-                tune.visibility === TunesVisibilityOptions.public ? <GlobalOutlined /> : <EyeOutlined />,
+                tune.visibility === TunesVisibilityOptions.public ? (
+                  <GlobalOutlined />
+                ) : (
+                  <EyeOutlined />
+                ),
                 <Button icon={<EditOutlined />} onClick={() => goToEdit(tune.tuneId)} />,
-                <Button icon={<ArrowRightOutlined />} onClick={() => navigate(tunePath(tune.tuneId))} />,
+                <Button
+                  icon={<ArrowRightOutlined />}
+                  onClick={() => navigate(tunePath(tune.tuneId))}
+                />,
               ]}
             >
               <Space direction="vertical">
@@ -222,7 +201,7 @@ const Profile = () => {
                     <Space direction="vertical">
                       {tune.vehicleName}
                       <TuneTag tag={tune.tags} />
-                      <Typography.Text italic>{tune.signature}</Typography.Text>
+                      <Typography.Text italic={true}>{tune.signature}</Typography.Text>
                     </Space>
                   }
                   description={
@@ -232,7 +211,7 @@ const Profile = () => {
                   }
                 />
                 <div>
-                  <Typography.Text italic>{tune.updated}</Typography.Text>
+                  <Typography.Text italic={true}>{tune.updated}</Typography.Text>
                 </div>
               </Space>
             </List.Item>

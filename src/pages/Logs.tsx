@@ -1,15 +1,5 @@
-import {
-  Link,
-  generatePath,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Link, generatePath, useMatch, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Layout,
   Tabs,
@@ -23,40 +13,20 @@ import {
   Typography,
   Grid,
 } from 'antd';
-import {
-  FileTextOutlined,
-  EditOutlined,
-  GlobalOutlined,
-} from '@ant-design/icons';
+import { FileTextOutlined, EditOutlined, GlobalOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
 import { connect } from 'react-redux';
 import { Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import {
-  OutputChannel,
-  Logs as LogsType,
-  DatalogEntry,
-} from '@hyper-tuner/types';
-// eslint-disable-next-line import/no-unresolved
+import { OutputChannel, Logs as LogsType, DatalogEntry } from '@hyper-tuner/types';
+
 import LogParserWorker from '../workers/logParserWorker?worker';
 import LogCanvas from '../components/Logs/LogCanvas';
 import store from '../store';
-import {
-  formatBytes,
-  msToTime,
-} from '../utils/numbers';
+import { formatBytes, msToTime } from '../utils/numbers';
 import useConfig from '../hooks/useConfig';
-import {
-  isExpression,
-  stripExpression,
-} from '../utils/tune/expression';
-import {
-  AppState,
-  ConfigState,
-  LogsState,
-  TuneDataState,
-  UIState,
-} from '../types/state';
+import { isExpression, stripExpression } from '../utils/tune/expression';
+import { AppState, ConfigState, LogsState, TuneDataState, UIState } from '../types/state';
 import Loader from '../components/Loader';
 import { Colors } from '../utils/colors';
 import useServerStorage from '../hooks/useServerStorage';
@@ -64,10 +34,7 @@ import { Routes } from '../routes';
 import { removeFilenameSuffix } from '../pocketbase';
 import { isAbortedRequest } from '../utils/error';
 import { WorkerOutput } from '../workers/logParserWorker';
-import {
-  collapsedSidebarWidth,
-  sidebarWidth,
-} from '../components/Tune/SideBar';
+import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
 
 const { Content } = Layout;
 const edgeUnknown = 'Unknown';
@@ -146,30 +113,35 @@ const Logs = ({
     'dwell',
   ]);
   const { isConfigReady, findOutputChannel } = useConfig(config);
-  const prepareSelectedFields = useCallback((selectedFields: CheckboxValueType[]) => {
-    if (!isConfigReady) {
-      return [];
-    }
-
-    return Object.values(config.datalog).map((entry: DatalogEntry) => {
-      const { units, scale, transform } = findOutputChannel(entry.name) as OutputChannel;
-      const { name, label, format } = entry;
-
-      if (!selectedFields.includes(name)) {
-        return null as any;
+  const prepareSelectedFields = useCallback(
+    (selectedFields: CheckboxValueType[]) => {
+      if (!isConfigReady) {
+        return [];
       }
 
-      // TODO: evaluate condition
-      return {
-        name,
-        label,
-        units,
-        scale,
-        transform,
-        format,
-      };
-    }).filter((val) => !!val);
-  }, [config?.datalog, findOutputChannel, isConfigReady]);
+      return Object.values(config.datalog)
+        .map((entry: DatalogEntry) => {
+          const { units, scale, transform } = findOutputChannel(entry.name) as OutputChannel;
+          const { name, label, format } = entry;
+
+          if (!selectedFields.includes(name)) {
+            return null as any;
+          }
+
+          // TODO: evaluate condition
+          return {
+            name,
+            label,
+            units,
+            scale,
+            transform,
+            format,
+          };
+        })
+        .filter((val) => !!val);
+    },
+    [config?.datalog, findOutputChannel, isConfigReady],
+  );
 
   useEffect(() => {
     const worker = new LogParserWorker();
@@ -187,11 +159,16 @@ const Logs = ({
       }
 
       try {
-        const raw = await fetchLogFileWithProgress(tuneData!.id, logFileName, (percent, total, edge) => {
-          setProgress(percent);
-          setFileSize(formatBytes(total));
-          setEdgeLocation(edge || edgeUnknown);
-        }, signal);
+        const raw = await fetchLogFileWithProgress(
+          tuneData!.id,
+          logFileName,
+          (percent, total, edge) => {
+            setProgress(percent);
+            setFileSize(formatBytes(total));
+            setEdgeLocation(edge || edgeUnknown);
+          },
+          signal,
+        );
 
         setFileSize(formatBytes(raw.byteLength));
 
@@ -199,28 +176,33 @@ const Logs = ({
 
         worker.onmessage = ({ data }: { data: WorkerOutput }) => {
           switch (data.type) {
-            case 'progress':
+            case 'progress': {
               setStep(1);
               setProgress(data.progress!);
               setParseElapsed(msToTime(data.elapsed!));
               break;
-            case 'result':
+            }
+            case 'result': {
               setLogs(data.result);
               store.dispatch({
-                type: 'logs/load', payload: {
+                type: 'logs/load',
+                payload: {
                   fileName: logFileName,
                   logs: data.result!.records,
                 },
               });
               break;
-            case 'metrics':
+            }
+            case 'metrics': {
               setParseElapsed(msToTime(data.elapsed!));
               setSamplesCount(data.records!);
               setStep(2);
               break;
-            case 'error':
+            }
+            case 'error': {
               setParseError(data.error);
               break;
+            }
             default:
               break;
           }
@@ -238,10 +220,20 @@ const Logs = ({
     if (!routeMatch?.params.fileName && tuneData && tuneData.logFiles?.length) {
       // either redirect to the first log or to the latest selected
       if (loadedLogs.fileName) {
-        navigate(generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName: loadedLogs.fileName }));
+        navigate(
+          generatePath(Routes.TUNE_LOGS_FILE, {
+            tuneId: tuneData.tuneId,
+            fileName: loadedLogs.fileName,
+          }),
+        );
       } else {
         const firstLogFile = (tuneData.logFiles || [])[0];
-        navigate(generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName: firstLogFile }));
+        navigate(
+          generatePath(Routes.TUNE_LOGS_FILE, {
+            tuneId: tuneData.tuneId,
+            fileName: firstLogFile,
+          }),
+        );
       }
 
       return undefined;
@@ -272,97 +264,115 @@ const Logs = ({
       worker.terminate();
       window.removeEventListener('resize', calculateCanvasSize);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculateCanvasSize, config?.datalog, config?.outputChannels, ui.sidebarCollapsed, routeMatch?.params.fileName]);
+  }, [
+    calculateCanvasSize,
+    config?.datalog,
+    config?.outputChannels,
+    ui.sidebarCollapsed,
+    routeMatch?.params.fileName,
+  ]);
 
   return (
     <>
       <Sider {...(siderProps as any)} className="app-sidebar">
-        {!(loadedLogs?.logs || []).length ?
+        {(loadedLogs?.logs || []).length ? (
+          !ui.sidebarCollapsed && (
+            <Tabs
+              defaultActiveKey="fields"
+              style={{ marginLeft: 20 }}
+              items={[
+                {
+                  label: (
+                    <Badge size="small" style={badgeStyle} count={fields.length} offset={[10, -3]}>
+                      <EditOutlined />
+                      Fields
+                    </Badge>
+                  ),
+                  key: 'fields',
+                  children: (
+                    <>
+                      <div style={showSingleGraph ? {} : { height: '45%' }}>
+                        <PerfectScrollbar options={{ suppressScrollX: true }}>
+                          <Checkbox.Group onChange={setSelectedFields1} value={selectedFields1}>
+                            {fields.map((field) => (
+                              <Row key={field.name}>
+                                <Checkbox key={field.name} value={field.name}>
+                                  {isExpression(field.label)
+                                    ? stripExpression(field.label)
+                                    : field.label}
+                                </Checkbox>
+                              </Row>
+                            ))}
+                          </Checkbox.Group>
+                        </PerfectScrollbar>
+                      </div>
+                      {!showSingleGraph && (
+                        <>
+                          <Divider />
+                          <div style={{ height: '45%' }}>
+                            <PerfectScrollbar options={{ suppressScrollX: true }}>
+                              <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
+                                {fields.map((field) => (
+                                  <Row key={field.name}>
+                                    <Checkbox key={field.name} value={field.name}>
+                                      {isExpression(field.label)
+                                        ? stripExpression(field.label)
+                                        : field.label}
+                                    </Checkbox>
+                                  </Row>
+                                ))}
+                              </Checkbox.Group>
+                            </PerfectScrollbar>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  ),
+                },
+                {
+                  label: (
+                    <Badge
+                      size="small"
+                      style={badgeStyle}
+                      count={tuneData?.logFiles?.length}
+                      offset={[10, -3]}
+                    >
+                      <FileTextOutlined />
+                      Files
+                    </Badge>
+                  ),
+                  key: 'files',
+                  children: (
+                    <PerfectScrollbar options={{ suppressScrollX: true }}>
+                      {tuneData?.logFiles?.map((fileName) => (
+                        <Typography.Paragraph key={fileName} ellipsis={true}>
+                          <Link
+                            to={generatePath(Routes.TUNE_LOGS_FILE, {
+                              tuneId: tuneData.tuneId,
+                              fileName,
+                            })}
+                            style={
+                              routeMatch?.params.fileName === fileName ? {} : { color: 'inherit' }
+                            }
+                          >
+                            {removeFilenameSuffix(fileName)}
+                          </Link>
+                        </Typography.Paragraph>
+                      ))}
+                    </PerfectScrollbar>
+                  ),
+                },
+              ]}
+            />
+          )
+        ) : (
           <Loader />
-          :
-          !ui.sidebarCollapsed &&
-          <Tabs
-            defaultActiveKey="fields"
-            style={{ marginLeft: 20 }}
-            items={[
-              {
-                label: (
-                  <Badge size="small" style={badgeStyle} count={fields.length} offset={[10, -3]}>
-                    <EditOutlined />Fields
-                  </Badge>
-                ),
-                key: 'fields',
-                children: (
-                  <>
-                    <div style={showSingleGraph ? {} : { height: '45%' }}>
-                      <PerfectScrollbar options={{ suppressScrollX: true }}>
-                        <Checkbox.Group onChange={setSelectedFields1} value={selectedFields1}>
-                          {fields.map((field) => (
-                            <Row key={field.name}>
-                              <Checkbox key={field.name} value={field.name}>
-                                {isExpression(field.label) ? stripExpression(field.label) : field.label}
-                              </Checkbox>
-                            </Row>
-                          ))}
-                        </Checkbox.Group>
-                      </PerfectScrollbar>
-                    </div>
-                    {!showSingleGraph && (
-                      <>
-                        <Divider />
-                        <div style={{ height: '45%' }}>
-                          <PerfectScrollbar options={{ suppressScrollX: true }}>
-                            <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
-                              {fields.map((field) => (
-                                <Row key={field.name}>
-                                  <Checkbox key={field.name} value={field.name}>
-                                    {isExpression(field.label) ? stripExpression(field.label) : field.label}
-                                  </Checkbox>
-                                </Row>
-                              ))}
-                            </Checkbox.Group>
-                          </PerfectScrollbar>
-                        </div>
-                      </>
-                    )}
-                  </>
-                ),
-              },
-              {
-                label: (
-                  <Badge size="small" style={badgeStyle} count={tuneData?.logFiles?.length} offset={[10, -3]}>
-                    <FileTextOutlined />Files
-                  </Badge>
-                ),
-                key: 'files',
-                children: (
-                  <PerfectScrollbar options={{ suppressScrollX: true }}>
-                    {tuneData?.logFiles?.map((fileName) => (
-                      <Typography.Paragraph key={fileName} ellipsis>
-                        <Link
-                          to={generatePath(Routes.TUNE_LOGS_FILE, { tuneId: tuneData.tuneId, fileName })}
-                          style={
-                            routeMatch?.params.fileName === fileName ?
-                              {} : { color: 'inherit' }
-                          }
-                        >
-                          {removeFilenameSuffix(fileName)}
-                        </Link>
-                      </Typography.Paragraph>
-                    ))}
-                  </PerfectScrollbar>
-                ),
-              },
-            ]}
-          />
-        }
+        )}
       </Sider>
       <Layout className="logs-container">
         <Content>
           <div ref={contentRef}>
-            {logs || !!(loadedLogs.logs || []).length
-              ?
+            {logs || !!(loadedLogs.logs || []).length ? (
               <LogCanvas
                 data={loadedLogs.logs || (logs!.records as LogsType)}
                 width={canvasWidth}
@@ -371,11 +381,8 @@ const Logs = ({
                 selectedFields2={prepareSelectedFields(selectedFields2)}
                 showSingleGraph={showSingleGraph}
               />
-              :
-              <Space
-                direction="vertical"
-                size="large"
-              >
+            ) : (
+              <Space direction="vertical" size="large">
                 <Progress
                   type="circle"
                   percent={progress}
@@ -390,9 +397,12 @@ const Logs = ({
                     {
                       title: 'Downloading',
                       subTitle: fileSize,
-                      description: (
-                        fetchError ? fetchError!.message : <Space>
-                          <GlobalOutlined />{edgeLocation}
+                      description: fetchError ? (
+                        fetchError!.message
+                      ) : (
+                        <Space>
+                          <GlobalOutlined />
+                          {edgeLocation}
                         </Space>
                       ),
                       status: fetchError && 'error',
@@ -411,7 +421,7 @@ const Logs = ({
                   ]}
                 />
               </Space>
-            }
+            )}
           </div>
         </Content>
       </Layout>

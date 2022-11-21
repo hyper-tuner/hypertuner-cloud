@@ -4,7 +4,6 @@ import Pako from 'pako';
 import LogValidator from '../utils/logs/LogValidator';
 import MslLogParser from '../utils/logs/MslLogParser';
 
-// eslint-disable-next-line no-restricted-globals
 const ctx: Worker = self as any;
 
 export interface WorkerOutput {
@@ -16,26 +15,27 @@ export interface WorkerOutput {
   records?: number;
 }
 
-// eslint-disable-next-line no-bitwise
 const elapsed = (t0: number): number => ~~(performance.now() - t0);
 
-const parseMsl = (raw: ArrayBufferLike, t0: number): Result => new MslLogParser(raw)
-  .parse((progress) => {
+const parseMsl = (raw: ArrayBufferLike, t0: number): Result =>
+  new MslLogParser(raw)
+    .parse((progress) => {
+      ctx.postMessage({
+        type: 'progress',
+        progress,
+        elapsed: elapsed(t0),
+      } as WorkerOutput);
+    })
+    .getResult();
+
+const parseMlg = (raw: ArrayBufferLike, t0: number): Result =>
+  new Parser(raw).parse((progress) => {
     ctx.postMessage({
       type: 'progress',
       progress,
       elapsed: elapsed(t0),
     } as WorkerOutput);
-  })
-  .getResult();
-
-const parseMlg = (raw: ArrayBufferLike, t0: number): Result => new Parser(raw).parse((progress) => {
-  ctx.postMessage({
-    type: 'progress',
-    progress,
-    elapsed: elapsed(t0),
-  } as WorkerOutput);
-});
+  });
 
 ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
   try {

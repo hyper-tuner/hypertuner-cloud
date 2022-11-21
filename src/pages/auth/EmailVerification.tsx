@@ -1,15 +1,9 @@
 import { useEffect } from 'react';
-import {
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
-import {
-  emailVerificationFailed,
-  emailVerificationSuccess,
-} from './notifications';
+import { emailVerificationFailed, emailVerificationSuccess } from './notifications';
 
 const EmailVerification = () => {
   const { confirmEmailVerification } = useAuth();

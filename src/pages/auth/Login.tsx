@@ -1,16 +1,5 @@
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
-import {
-  Form,
-  Input,
-  Button,
-  Divider,
-  Space,
-} from 'antd';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { Form, Input, Button, Divider, Space } from 'antd';
 import {
   MailOutlined,
   LockOutlined,
@@ -21,14 +10,8 @@ import {
   UserAddOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import {
-  Link,
-  useNavigate,
-} from 'react-router-dom';
-import {
-  OAuthProviders,
-  useAuth,
-} from '../../contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { OAuthProviders, useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
 import validateMessages from './validateMessages';
 import {
@@ -38,11 +21,7 @@ import {
   signUpFailed,
   signUpSuccessful,
 } from './notifications';
-import {
-  emailRules,
-  requiredRules,
-  usernameRules,
-} from '../../utils/form';
+import { emailRules, requiredRules, usernameRules } from '../../utils/form';
 import { buildRedirectUrl } from '../../utils/url';
 
 const { Item } = Form;
@@ -61,7 +40,9 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   const [googleUrl, setGoogleUrl] = useState<string | null>(null);
   const [githubUrl, setGithubUrl] = useState<string | null>(null);
   const [facebookUrl, setFacebookUrl] = useState<string | null>(null);
-  const [providersStatuses, setProvidersStatuses] = useState<{ [key: string]: boolean }>({
+  const [providersStatuses, setProvidersStatuses] = useState<{
+    [key: string]: boolean;
+  }>({
     google: false,
     github: false,
     facebook: false,
@@ -73,7 +54,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
   const isOauthEnabled = Object.values(providersStatuses).includes(true);
 
-  const emailLogin = async ({ email, password }: { email: string, password: string }) => {
+  const emailLogin = async ({ email, password }: { email: string; password: string }) => {
     setIsEmailLoading(true);
     try {
       const user = await login(email, password);
@@ -91,7 +72,11 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     }
   };
 
-  const emailSignUp = async ({ email, password, username }: { email: string, password: string, username: string }) => {
+  const emailSignUp = async ({
+    email,
+    password,
+    username,
+  }: { email: string; password: string; username: string }) => {
     setIsEmailLoading(true);
     try {
       const user = await signUp(email, password, username);
@@ -109,7 +94,9 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     }
   };
 
-  const oauthMethods: { [provider: string]: { label: string, icon: ReactNode, onClick: () => void } } = {
+  const oauthMethods: {
+    [provider: string]: { label: string; icon: ReactNode; onClick: () => void };
+  } = {
     google: {
       label: 'Google',
       icon: <GoogleOutlined />,
@@ -147,18 +134,48 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
         }
 
         switch (provider.name) {
-          case OAuthProviders.GOOGLE:
-            setProvidersStatuses((prevState) => ({ ...prevState, [provider.name]: true }));
-            setGoogleUrl(`${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: provider.name }))}`);
+          case OAuthProviders.GOOGLE: {
+            setProvidersStatuses((prevState) => ({
+              ...prevState,
+              [provider.name]: true,
+            }));
+            setGoogleUrl(
+              `${provider.authUrl}${encodeURIComponent(
+                buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, {
+                  provider: provider.name,
+                }),
+              )}`,
+            );
             break;
-          case OAuthProviders.GITHUB:
-            setProvidersStatuses((prevState) => ({ ...prevState, [provider.name]: true }));
-            setGithubUrl(`${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: provider.name }))}`);
+          }
+          case OAuthProviders.GITHUB: {
+            setProvidersStatuses((prevState) => ({
+              ...prevState,
+              [provider.name]: true,
+            }));
+            setGithubUrl(
+              `${provider.authUrl}${encodeURIComponent(
+                buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, {
+                  provider: provider.name,
+                }),
+              )}`,
+            );
             break;
-          case OAuthProviders.FACEBOOK:
-            setProvidersStatuses((prevState) => ({ ...prevState, [provider.name]: true }));
-            setFacebookUrl(`${provider.authUrl}${encodeURIComponent(buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, { provider: provider.name }))}`);
+          }
+          case OAuthProviders.FACEBOOK: {
+            setProvidersStatuses((prevState) => ({
+              ...prevState,
+              [provider.name]: true,
+            }));
+            setFacebookUrl(
+              `${provider.authUrl}${encodeURIComponent(
+                buildRedirectUrl(Routes.REDIRECT_PAGE_OAUTH_CALLBACK, {
+                  provider: provider.name,
+                }),
+              )}`,
+            );
             break;
+          }
           default:
             throw new Error(`Unsupported provider: ${provider.name}`);
         }
@@ -166,19 +183,23 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     });
   }, [listAuthMethods]);
 
-  const oauthSection = (
-    isOauthEnabled && <>
+  const oauthSection = isOauthEnabled && (
+    <>
       <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
-        {providersReady && Object.keys(oauthMethods).map((provider) => (
-          providersStatuses[provider] && <Button
-            key={provider}
-            icon={oauthMethods[provider].icon}
-            onClick={oauthMethods[provider].onClick}
-            loading={isOAuthLoading}
-          >
-            {oauthMethods[provider].label}
-          </Button>
-        ))}
+        {providersReady &&
+          Object.keys(oauthMethods).map(
+            (provider) =>
+              providersStatuses[provider] && (
+                <Button
+                  key={provider}
+                  icon={oauthMethods[provider].icon}
+                  onClick={oauthMethods[provider].onClick}
+                  loading={isOAuthLoading}
+                >
+                  {oauthMethods[provider].label}
+                </Button>
+              ),
+          )}
       </Space>
       <Divider />
     </>
@@ -186,9 +207,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
 
   const bottomLinksLogin = (
     <>
-      <Link to={Routes.SIGN_UP}>
-        Sign Up
-      </Link>
+      <Link to={Routes.SIGN_UP}>Sign Up</Link>
       <Link to={Routes.RESET_PASSWORD} style={{ float: 'right' }}>
         Forgot password?
       </Link>
@@ -236,7 +255,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
         validateMessages={validateMessages}
         form={formEmail}
       >
-        <Item name="email" rules={emailRules} hasFeedback>
+        <Item name="email" rules={emailRules} hasFeedback={true}>
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
@@ -244,22 +263,12 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
             disabled={isAnythingLoading}
           />
         </Item>
-        {!isLogin && <Item
-          name="username"
-          rules={usernameRules}
-          hasFeedback
-        >
-          <Input
-            prefix={<UserOutlined />}
-            placeholder="Username"
-            autoComplete="name"
-          />
-        </Item>}
-        <Item
-          name="password"
-          rules={requiredRules}
-          hasFeedback
-        >
+        {!isLogin && (
+          <Item name="username" rules={usernameRules} hasFeedback={true}>
+            <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="name" />
+          </Item>
+        )}
+        <Item name="password" rules={requiredRules} hasFeedback={true}>
           <Input.Password
             placeholder="Password"
             autoComplete="current-password"
@@ -267,9 +276,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
             disabled={isAnythingLoading}
           />
         </Item>
-        <Item>
-          {isLogin ? submitLogin : submitSignUp}
-        </Item>
+        <Item>{isLogin ? submitLogin : submitSignUp}</Item>
         {isLogin ? bottomLinksLogin : bottomLinksSignUp}
       </Form>
     </div>

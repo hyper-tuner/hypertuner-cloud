@@ -30,6 +30,12 @@ npm start
 # lint code
 npm run lint
 
+# fix / format code
+npm run lint:fix
+
+# regenerate PocketBase types
+npm run typegen
+
 # production build
 npm run build
 ```

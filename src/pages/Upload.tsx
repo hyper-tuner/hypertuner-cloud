@@ -1,8 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   Col,
@@ -38,11 +34,7 @@ import debounce from 'lodash.debounce';
 import { INI } from '@hyper-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
-import {
-  generatePath,
-  useMatch,
-  useNavigate,
-} from 'react-router-dom';
+import { generatePath, useMatch, useNavigate } from 'react-router-dom';
 import Pako from 'pako';
 import ReactMarkdown from 'react-markdown';
 import { nanoid } from 'nanoid';
@@ -61,10 +53,7 @@ import useDb, { TunesRecordPartial } from '../hooks/useDb';
 import useServerStorage from '../hooks/useServerStorage';
 import { buildFullUrl } from '../utils/url';
 import Loader from '../components/Loader';
-import {
-  requiredTextRules,
-  requiredRules,
-} from '../utils/form';
+import { requiredTextRules, requiredRules } from '../utils/form';
 import { aspirationMapper } from '../utils/tune/mappers';
 import { copyToClipboard } from '../utils/clipboard';
 import {
@@ -101,7 +90,7 @@ const colProps = { span: 24, sm: 12 };
 
 const maxFileSizeMB = 50;
 const descriptionEditorHeight = 260;
-const thisYear = (new Date()).getFullYear();
+const thisYear = new Date().getFullYear();
 const generateTuneId = () => nanoid(10);
 const defaultReadme = '# My Tune\n\ndescription';
 
@@ -147,7 +136,9 @@ const UploadPage = () => {
   const { fetchTuneFile, fetchINIFile } = useServerStorage();
   const { createTune, updateTune, getTune, autocomplete } = useDb();
 
-  const [autocompleteOptions, setAutocompleteOptions] = useState<{ [attribute: string]: { value: string }[] }>({});
+  const [autocompleteOptions, setAutocompleteOptions] = useState<{
+    [attribute: string]: { value: string }[];
+  }>({});
 
   const searchAutocomplete = debounce(async (attribute: string, search: string) => {
     if (search.length === 0) {
@@ -155,8 +146,9 @@ const UploadPage = () => {
       return;
     }
 
-    const options = (await autocomplete(attribute, search))
-      .map((record) => (record as any)[attribute]);
+    const options = (await autocomplete(attribute, search)).map(
+      (record) => (record as any)[attribute],
+    );
 
     // TODO: order by occurrence (more common - higher in the list)
     const unique = [...new Set(options)].map((value) => ({ value }));
@@ -164,13 +156,17 @@ const UploadPage = () => {
     setAutocompleteOptions((prev) => ({ ...prev, [attribute]: unique }));
   }, 300);
 
-  const fetchFile = async (tuneId: string, fileName: string) => bufferToFile(await fetchTuneFile(tuneId, fileName), fileName);
+  const fetchFile = async (tuneId: string, fileName: string) =>
+    bufferToFile(await fetchTuneFile(tuneId, fileName), fileName);
 
-  const noop = () => { };
+  const noop = () => {};
 
-  const goToNewTune = () => navigate(generatePath(Routes.TUNE_ROOT, {
-    tuneId: newTuneId!,
-  }));
+  const goToNewTune = () =>
+    navigate(
+      generatePath(Routes.TUNE_ROOT, {
+        tuneId: newTuneId!,
+      }),
+    );
 
   const publishTune = async (values: any) => {
     setIsLoading(true);
@@ -198,20 +194,32 @@ const UploadPage = () => {
       (tuneFile as UploadedFile).uid ? tuneFile!.name : removeFilenameSuffix(tuneFile!.name),
     );
 
-    const compressedCustomIniFile = customIniFile ? bufferToFile(
-      Pako.deflate(await customIniFile!.arrayBuffer()),
-      (customIniFile as UploadedFile).uid ? customIniFile!.name : removeFilenameSuffix(customIniFile!.name),
-    ) : null;
+    const compressedCustomIniFile = customIniFile
+      ? bufferToFile(
+          Pako.deflate(await customIniFile!.arrayBuffer()),
+          (customIniFile as UploadedFile).uid
+            ? customIniFile!.name
+            : removeFilenameSuffix(customIniFile!.name),
+        )
+      : null;
 
-    const compressedLogFiles = await Promise.all(logFiles.map(async (file) => bufferToFile(
-      Pako.deflate(await file.arrayBuffer()),
-      (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
-    )));
+    const compressedLogFiles = await Promise.all(
+      logFiles.map(async (file) =>
+        bufferToFile(
+          Pako.deflate(await file.arrayBuffer()),
+          (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
+        ),
+      ),
+    );
 
-    const compressedToothLogFiles = await Promise.all(toothLogFiles.map(async (file) => bufferToFile(
-      Pako.deflate(await file.arrayBuffer()),
-      (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
-    )));
+    const compressedToothLogFiles = await Promise.all(
+      toothLogFiles.map(async (file) =>
+        bufferToFile(
+          Pako.deflate(await file.arrayBuffer()),
+          (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
+        ),
+      ),
+    );
 
     const { signature } = tuneParser.parse(await tuneFile!.arrayBuffer()).getTune().details;
 
@@ -250,7 +258,8 @@ const UploadPage = () => {
         ignition,
         year,
         tags,
-      ].filter((field) => field !== null && `${field}`.length > 1 && field !== 'null')
+      ]
+        .filter((field) => field !== null && `${field}`.length > 1 && field !== 'null')
         .join(' ')
         .replace(/[^\w.\-\d ]/g, ''),
     };
@@ -286,18 +295,26 @@ const UploadPage = () => {
     setIsPublished(true);
   };
 
-  const validateSize = (file: File) => Promise.resolve({
-    result: (file.size / 1024 / 1024) <= maxFileSizeMB,
-    message: `File should not be larger than ${maxFileSizeMB}MB!`,
-  });
+  const validateSize = (file: File) =>
+    Promise.resolve({
+      result: file.size / 1024 / 1024 <= maxFileSizeMB,
+      message: `File should not be larger than ${maxFileSizeMB}MB!`,
+    });
 
   const navigateToNewTuneId = useCallback(() => {
-    navigate(generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
-      tuneId: generateTuneId(),
-    }), { replace: true });
+    navigate(
+      generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+        tuneId: generateTuneId(),
+      }),
+      { replace: true },
+    );
   }, [navigate]);
 
-  const upload = async (options: UploadRequestOption, done: (file: File) => void, validate: ValidateFile) => {
+  const upload = async (
+    options: UploadRequestOption,
+    done: (file: File) => void,
+    validate: ValidateFile,
+  ) => {
     const { onError, onSuccess, file } = options;
 
     const validation = await validate(file as File);
@@ -317,124 +334,142 @@ const UploadPage = () => {
   };
 
   const uploadTune = async (options: UploadRequestOption) => {
-    upload(options, async (file) => {
-      setTuneFile(file);
-    }, async (file) => {
-      const { result, message } = await validateSize(file);
-      if (!result) {
-        return { result, message };
-      }
+    upload(
+      options,
+      async (file) => {
+        setTuneFile(file);
+      },
+      async (file) => {
+        const { result, message } = await validateSize(file);
+        if (!result) {
+          return { result, message };
+        }
 
-      const parsed = tuneParser.parse(await file.arrayBuffer());
-      const { signature } = parsed.getTune().details;
+        const parsed = tuneParser.parse(await file.arrayBuffer());
+        const { signature } = parsed.getTune().details;
 
-      if (!parsed.isValid()) {
-        return {
-          result: false,
-          message: 'Tune file is not valid or not supported!',
-        };
-      }
+        if (!parsed.isValid()) {
+          return {
+            result: false,
+            message: 'Tune file is not valid or not supported!',
+          };
+        }
 
-      try {
-        await fetchINIFile(signature);
-      } catch (e) {
-        setCustomIniRequired(true);
-        signatureNotSupportedWarning((e as Error).message);
+        try {
+          await fetchINIFile(signature);
+        } catch (e) {
+          setCustomIniRequired(true);
+          signatureNotSupportedWarning((e as Error).message);
+
+          return {
+            result: true,
+            message: '',
+          };
+        }
+
+        setCustomIniRequired(false);
 
         return {
           result: true,
           message: '',
         };
-      }
-
-      setCustomIniRequired(false);
-
-      return {
-        result: true,
-        message: '',
-      };
-    });
+      },
+    );
   };
 
   const uploadLogs = async (options: UploadRequestOption) => {
-    upload(options, async (file) => {
-      setLogFiles((prev) => [...prev, file]);
-    }, async (file) => {
-      const { result, message } = await validateSize(file);
-      if (!result) {
-        return { result, message };
-      }
+    upload(
+      options,
+      async (file) => {
+        setLogFiles((prev) => [...prev, file]);
+      },
+      async (file) => {
+        const { result, message } = await validateSize(file);
+        if (!result) {
+          return { result, message };
+        }
 
-      let valid = true;
-      const extension = file.name.split('.').pop();
-      const parser = new LogValidator(await file.arrayBuffer());
+        let valid = true;
+        const extension = file.name.split('.').pop();
+        const parser = new LogValidator(await file.arrayBuffer());
 
-      switch (extension) {
-        case 'mlg':
-          valid = parser.isMLG();
-          break;
-        case 'msl':
-        case 'csv':
-          valid = parser.isMSL();
-          break;
-        default:
-          valid = false;
-          break;
-      }
+        switch (extension) {
+          case 'mlg': {
+            valid = parser.isMLG();
+            break;
+          }
+          case 'msl':
+          case 'csv': {
+            valid = parser.isMSL();
+            break;
+          }
+          default:
+            valid = false;
+            break;
+        }
 
-      return {
-        result: valid,
-        message: 'Log file is empty or not valid!',
-      };
-    });
+        return {
+          result: valid,
+          message: 'Log file is empty or not valid!',
+        };
+      },
+    );
   };
 
   const uploadToothLogs = async (options: UploadRequestOption) => {
-    upload(options, async (file) => {
-      setToothLogFiles((prev) => [...prev, file]);
-    }, async (file) => {
-      const { result, message } = await validateSize(file);
-      if (!result) {
-        return { result, message };
-      }
+    upload(
+      options,
+      async (file) => {
+        setToothLogFiles((prev) => [...prev, file]);
+      },
+      async (file) => {
+        const { result, message } = await validateSize(file);
+        if (!result) {
+          return { result, message };
+        }
 
-      const parser = new TriggerLogsParser(await file.arrayBuffer());
+        const parser = new TriggerLogsParser(await file.arrayBuffer());
 
-      return {
-        result: parser.isComposite() || parser.isTooth(),
-        message: 'Tooth logs file is empty or not valid!',
-      };
-    });
+        return {
+          result: parser.isComposite() || parser.isTooth(),
+          message: 'Tooth logs file is empty or not valid!',
+        };
+      },
+    );
   };
 
   const uploadCustomIni = async (options: UploadRequestOption) => {
-    upload(options, async (file) => {
-      setCustomIniFile(file);
-    }, async (file) => {
-      const { result, message } = await validateSize(file);
-      if (!result) {
-        return { result, message };
-      }
+    upload(
+      options,
+      async (file) => {
+        setCustomIniFile(file);
+      },
+      async (file) => {
+        const { result, message } = await validateSize(file);
+        if (!result) {
+          return { result, message };
+        }
 
-      let validationMessage = 'INI file is empty or not valid!';
-      let valid = false;
-      try {
-        const parser = new INI(await file.arrayBuffer()).parse();
-        valid = parser.getResults().megaTune.signature.length > 0;
-      } catch (e) {
-        valid = false;
-        validationMessage = (e as Error).message;
-      }
+        let validationMessage = 'INI file is empty or not valid!';
+        let valid = false;
+        try {
+          const parser = new INI(await file.arrayBuffer()).parse();
+          valid = parser.getResults().megaTune.signature.length > 0;
+        } catch (e) {
+          valid = false;
+          validationMessage = (e as Error).message;
+        }
 
-      if (valid) {
-        setCustomIniRequired(false);
-      }
+        if (valid) {
+          setCustomIniRequired(false);
+        }
 
-      return {
-        result: valid,
-        message: validationMessage,
-      };
-    });
+        return {
+          result: valid,
+          message: validationMessage,
+        };
+      },
+    );
   };
 
   const removeTuneFile = async () => {
@@ -453,77 +488,88 @@ const UploadPage = () => {
     setCustomIniFile(undefined);
   };
 
-  const loadExistingTune = useCallback(async (currentTuneId: string) => {
-    setNewTuneId(currentTuneId);
-    const oldTune = await getTune(currentTuneId);
+  const loadExistingTune = useCallback(
+    async (currentTuneId: string) => {
+      setNewTuneId(currentTuneId);
+      const oldTune = await getTune(currentTuneId);
 
-    if (oldTune) {
-      // this is someone elses tune
-      if (oldTune.author !== currentUser?.id) {
-        navigateToNewTuneId();
-        return;
+      if (oldTune) {
+        // this is someone elses tune
+        if (oldTune.author !== currentUser?.id) {
+          navigateToNewTuneId();
+          return;
+        }
+
+        setExistingTune(oldTune);
+        form.setFieldsValue(oldTune);
+        setIsEditMode(true);
+        setReadme(oldTune.readme!);
+
+        if (oldTune.tuneFile) {
+          setTuneFile(await fetchFile(oldTune.id, oldTune.tuneFile));
+          setDefaultTuneFileList([
+            {
+              uid: oldTune.tuneFile,
+              name: removeFilenameSuffix(oldTune.tuneFile),
+              status: 'done',
+            },
+          ]);
+        }
+
+        if (oldTune.customIniFile) {
+          setCustomIniFile(await fetchFile(oldTune.id, oldTune.customIniFile));
+          setDefaultCustomIniFileList([
+            {
+              uid: oldTune.customIniFile,
+              name: removeFilenameSuffix(oldTune.customIniFile),
+              status: 'done',
+            },
+          ]);
+        }
+
+        const tempLogFiles: File[] = [];
+        oldTune.logFiles?.forEach(async (fileName: string) => {
+          tempLogFiles.push(await fetchFile(oldTune.id, fileName));
+          setDefaultLogFilesList((prev) => [
+            ...prev,
+            {
+              uid: fileName,
+              name: removeFilenameSuffix(fileName),
+              status: 'done',
+            },
+          ]);
+        });
+        setLogFiles(tempLogFiles);
+
+        const tempToothLogFiles: File[] = [];
+        oldTune.toothLogFiles?.forEach(async (fileName: string) => {
+          tempToothLogFiles.push(await fetchFile(oldTune.id, fileName));
+          setDefaultToothLogFilesList((prev) => [
+            ...prev,
+            {
+              uid: fileName,
+              name: removeFilenameSuffix(fileName),
+              status: 'done',
+            },
+          ]);
+        });
+        setToothLogFiles(tempToothLogFiles);
+      } else {
+        // reset state
+        form.resetFields();
+        setReadme(defaultReadme);
+        setTuneFile(undefined);
+        setCustomIniFile(undefined);
+        setDefaultTuneFileList([]);
+        setDefaultLogFilesList([]);
+        setDefaultToothLogFilesList([]);
+        setDefaultCustomIniFileList([]);
       }
 
-      setExistingTune(oldTune);
-      form.setFieldsValue(oldTune);
-      setIsEditMode(true);
-      setReadme(oldTune.readme!);
-
-      if (oldTune.tuneFile) {
-        setTuneFile(await fetchFile(oldTune.id, oldTune.tuneFile));
-        setDefaultTuneFileList([{
-          uid: oldTune.tuneFile,
-          name: removeFilenameSuffix(oldTune.tuneFile),
-          status: 'done',
-        }]);
-      }
-
-      if (oldTune.customIniFile) {
-        setCustomIniFile(await fetchFile(oldTune.id, oldTune.customIniFile));
-        setDefaultCustomIniFileList([{
-          uid: oldTune.customIniFile,
-          name: removeFilenameSuffix(oldTune.customIniFile),
-          status: 'done',
-        }]);
-      }
-
-      const tempLogFiles: File[] = [];
-      oldTune.logFiles?.forEach(async (fileName: string) => {
-        tempLogFiles.push(await fetchFile(oldTune.id, fileName));
-        setDefaultLogFilesList((prev) => [...prev, {
-          uid: fileName,
-          name: removeFilenameSuffix(fileName),
-          status: 'done',
-        }]);
-      });
-      setLogFiles(tempLogFiles);
-
-      const tempToothLogFiles: File[] = [];
-      oldTune.toothLogFiles?.forEach(async (fileName: string) => {
-        tempToothLogFiles.push(await fetchFile(oldTune.id, fileName));
-        setDefaultToothLogFilesList((prev) => [...prev, {
-          uid: fileName,
-          name: removeFilenameSuffix(fileName),
-          status: 'done',
-        }]);
-      });
-      setToothLogFiles(tempToothLogFiles);
-
-    } else {
-      // reset state
-      form.resetFields();
-      setReadme(defaultReadme);
-      setTuneFile(undefined);
-      setCustomIniFile(undefined);
-      setDefaultTuneFileList([]);
-      setDefaultLogFilesList([]);
-      setDefaultToothLogFilesList([]);
-      setDefaultCustomIniFileList([]);
-    }
-
-    setTuneIsLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, form, navigateToNewTuneId]);
+      setTuneIsLoading(false);
+    },
+    [currentUser, form, navigateToNewTuneId],
+  );
 
   const prepareData = useCallback(async () => {
     const currentTuneId = routeMatch?.params.tuneId;
@@ -561,12 +607,12 @@ const UploadPage = () => {
       setIsUserAuthorized(true);
       prepareData();
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeMatch?.params.tuneId]);
 
   const uploadButton = (
     <Space direction="vertical">
-      <PlusOutlined />Upload
+      <PlusOutlined />
+      Upload
     </Space>
   );
 
@@ -584,10 +630,16 @@ const UploadPage = () => {
         <Item name="visibility">
           <Select>
             <Select.Option value={TunesVisibilityOptions.public}>
-              <Space><GlobalOutlined />Public</Space>
+              <Space>
+                <GlobalOutlined />
+                Public
+              </Space>
             </Select.Option>
             <Select.Option value={TunesVisibilityOptions.unlisted}>
-              <Space><EyeOutlined />Unlisted</Space>
+              <Space>
+                <EyeOutlined />
+                Unlisted
+              </Space>
             </Select.Option>
           </Select>
         </Item>
@@ -596,7 +648,7 @@ const UploadPage = () => {
         <Item style={{ width: '100%' }}>
           <Button
             type="primary"
-            block
+            block={true}
             loading={isLoading}
             htmlType="submit"
             icon={isEditMode ? <EditOutlined /> : <CheckOutlined />}
@@ -612,10 +664,7 @@ const UploadPage = () => {
   const openButton = (
     <>
       <Row>
-        <Input
-          style={{ width: `calc(100% - ${shareSupported ? 65 : 35}px)` }}
-          value={shareUrl!}
-        />
+        <Input style={{ width: `calc(100% - ${shareSupported ? 65 : 35}px)` }} value={shareUrl!} />
         <Tooltip title="Copy URL">
           <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(shareUrl!)} />
         </Tooltip>
@@ -630,12 +679,7 @@ const UploadPage = () => {
       </Row>
       <Row style={{ marginTop: 10 }}>
         <Item style={{ width: '100%' }}>
-          <Button
-            type="primary"
-            block
-            onClick={goToNewTune}
-            icon={<SendOutlined />}
-          >
+          <Button type="primary" block={true} onClick={goToNewTune} icon={<SendOutlined />}>
             Open
           </Button>
         </Item>
@@ -659,7 +703,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.vehicleName}
               onSearch={(search) => searchAutocomplete('vehicleName', search)}
-              backfill
+              backfill={true}
             >
               <Input addonBefore="Name" />
             </AutoComplete>
@@ -669,12 +713,18 @@ const UploadPage = () => {
           <Item name="tags">
             <Select
               placeholder="Tags"
-              allowClear
+              allowClear={true}
               style={{ width: '100%' }}
               options={[
                 { label: null, value: null },
-                { label: <Tag color="green">base map</Tag>, value: TunesTagsOptions.BaseMap },
-                { label: <Tag color="red">help needed</Tag>, value: TunesTagsOptions.HelpNeeded },
+                {
+                  label: <Tag color="green">base map</Tag>,
+                  value: TunesTagsOptions['base map'],
+                },
+                {
+                  label: <Tag color="red">help needed</Tag>,
+                  value: TunesTagsOptions['help needed'],
+                },
               ]}
             />
           </Item>
@@ -686,7 +736,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.engineMake}
               onSearch={(search) => searchAutocomplete('engineMake', search)}
-              backfill
+              backfill={true}
             >
               <Input addonBefore="Engine make" />
             </AutoComplete>
@@ -697,7 +747,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.engineCode}
               onSearch={(search) => searchAutocomplete('engineCode', search)}
-              backfill
+              backfill={true}
             >
               <Input addonBefore="Engine code" />
             </AutoComplete>
@@ -721,14 +771,25 @@ const UploadPage = () => {
           <Item name="aspiration">
             <Select placeholder="Aspiration" style={{ width: '100%' }}>
               <Select.Option value={TunesAspirationOptions.na}>Naturally aspirated</Select.Option>
-              <Select.Option value={TunesAspirationOptions.turbocharged}>Turbocharged</Select.Option>
-              <Select.Option value={TunesAspirationOptions.supercharged}>Supercharged</Select.Option>
+              <Select.Option value={TunesAspirationOptions.turbocharged}>
+                Turbocharged
+              </Select.Option>
+              <Select.Option value={TunesAspirationOptions.supercharged}>
+                Supercharged
+              </Select.Option>
             </Select>
           </Item>
         </Col>
         <Col {...colProps}>
           <Item name="compression">
-            <InputNumber addonBefore="Compression" style={{ width: '100%' }} min={0} max={100} step={0.1} addonAfter=":1" />
+            <InputNumber
+              addonBefore="Compression"
+              style={{ width: '100%' }}
+              min={0}
+              max={100}
+              step={0.1}
+              addonAfter=":1"
+            />
           </Item>
         </Col>
       </Row>
@@ -738,7 +799,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.fuel}
               onSearch={(search) => searchAutocomplete('fuel', search)}
-              backfill
+              backfill={true}
             >
               <Input addonBefore="Fuel" />
             </AutoComplete>
@@ -749,7 +810,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.ignition}
               onSearch={(search) => searchAutocomplete('ignition', search)}
-              backfill
+              backfill={true}
             >
               <Input addonBefore="Ignition" />
             </AutoComplete>
@@ -797,7 +858,7 @@ const UploadPage = () => {
             children: (
               <Input.TextArea
                 rows={10}
-                showCount
+                showCount={true}
                 value={readme}
                 onChange={(e) => setReadme(e.target.value)}
                 maxLength={3_000}
@@ -810,9 +871,7 @@ const UploadPage = () => {
             style: { height: descriptionEditorHeight },
             children: (
               <div className="markdown-preview">
-                <ReactMarkdown>
-                  {readme}
-                </ReactMarkdown>
+                <ReactMarkdown>{readme}</ReactMarkdown>
               </div>
             ),
           },
@@ -835,7 +894,7 @@ const UploadPage = () => {
         customRequest={uploadLogs}
         onRemove={removeLogFile}
         iconRender={logIcon}
-        multiple
+        multiple={true}
         maxCount={MaxFiles.LOG_FILES}
         disabled={isPublished}
         onPreview={noop}
@@ -856,7 +915,7 @@ const UploadPage = () => {
         customRequest={uploadToothLogs}
         onRemove={removeToothLogFile}
         iconRender={toothLogIcon}
-        multiple
+        multiple={true}
         maxCount={MaxFiles.TOOTH_LOG_FILES}
         onPreview={noop}
         defaultFileList={defaultToothLogFilesList}
@@ -889,11 +948,7 @@ const UploadPage = () => {
   );
 
   if (isPublished) {
-    return (
-      <div className="small-container">
-        {shareSection}
-      </div>
-    );
+    return <div className="small-container">{shareSection}</div>;
   }
 
   if (!isUserAuthorized || isTuneLoading) {
@@ -907,14 +962,16 @@ const UploadPage = () => {
   return (
     <div className="small-container">
       <Form
-        initialValues={{
-          aspiration: 'na',
-          readme,
-          visibility: TunesVisibilityOptions.public,
-          cylindersCount: 4,
-          displacement: 1.6,
-          year: thisYear,
-        } as TunesRecordPartial}
+        initialValues={
+          {
+            aspiration: 'na',
+            readme,
+            visibility: TunesVisibilityOptions.public,
+            cylindersCount: 4,
+            displacement: 1.6,
+            year: thisYear,
+          } as TunesRecordPartial
+        }
         form={form}
         onFinish={publishTune}
       >

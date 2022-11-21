@@ -1,11 +1,5 @@
-import {
-  Button,
-  Result,
-} from 'antd';
-import {
-  HeartOutlined,
-  GithubOutlined,
-} from '@ant-design/icons';
+import { Button, Result } from 'antd';
+import { HeartOutlined, GithubOutlined } from '@ant-design/icons';
 import hyperIcon from '../assets/img/hypertuner-logo.png';
 
 const About = () => (
@@ -15,13 +9,27 @@ const About = () => (
       icon={<img src={hyperIcon} alt="HyperTuner" style={{ maxWidth: 100 }} />}
       title={
         <>
-          Powered by <a href="https://github.com/hyper-tuner" target="_blank" rel="noreferrer">HyperTuner</a>
+          Powered by{' '}
+          <a href="https://github.com/hyper-tuner" target="_blank" rel="noreferrer">
+            HyperTuner
+          </a>
         </>
       }
       subTitle={
         <>
-          Created with <HeartOutlined /> by <a href="https://github.com/karniv00l" target="_blank" rel="noreferrer">Piotr Rogowski</a>,
-          licensed under <a href="https://github.com/hyper-tuner/hypertuner-cloud/blob/master/LICENSE" target="_blank" rel="noreferrer">MIT</a>.
+          Created with <HeartOutlined /> by{' '}
+          <a href="https://github.com/karniv00l" target="_blank" rel="noreferrer">
+            Piotr Rogowski
+          </a>
+          , licensed under{' '}
+          <a
+            href="https://github.com/hyper-tuner/hypertuner-cloud/blob/master/LICENSE"
+            target="_blank"
+            rel="noreferrer"
+          >
+            MIT
+          </a>
+          .
         </>
       }
       extra={[

@@ -9,10 +9,9 @@ import {
 } from '@hyper-tuner/types';
 
 const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => {
-  const foundPage = config
-    .constants
-    .pages
-    .find((page: PageType) => fieldName in page.data) || { data: {} } as PageType;
+  const foundPage =
+    config.constants.pages.find((page: PageType) => fieldName in page.data) ||
+    ({ data: {} } as PageType);
 
   if (!foundPage) {
     throw new Error(`Constant [${fieldName}] not found`);
@@ -31,7 +30,9 @@ const findOutputChannel = (config: ConfigType, name: string): OutputChannel | Si
 };
 
 const findDatalogNameByLabel = (config: ConfigType, label: string): string => {
-  const found = Object.keys(config.datalog).find((name: string) => config.datalog[name].label === label);
+  const found = Object.keys(config.datalog).find(
+    (name: string) => config.datalog[name].label === label,
+  );
   if (!found) {
     throw new Error(`Datalog entry [${label}] not found`);
   }
@@ -48,12 +49,16 @@ const findDatalog = (config: ConfigType, name: string): DatalogEntry => {
   return result;
 };
 
-const useConfig = (config: ConfigType | null) => useMemo(() => ({
-  isConfigReady: !!config?.constants,
-  findOutputChannel: (name: string) => findOutputChannel(config!, name),
-  findConstantOnPage: (name: string) => findConstantOnPage(config!, name),
-  findDatalogNameByLabel: (label: string) => findDatalogNameByLabel(config!, label),
-  findDatalog: (name: string) => findDatalog(config!, name),
-}), [config]);
+const useConfig = (config: ConfigType | null) =>
+  useMemo(
+    () => ({
+      isConfigReady: !!config?.constants,
+      findOutputChannel: (name: string) => findOutputChannel(config!, name),
+      findConstantOnPage: (name: string) => findConstantOnPage(config!, name),
+      findDatalogNameByLabel: (label: string) => findDatalogNameByLabel(config!, label),
+      findDatalog: (name: string) => findDatalog(config!, name),
+    }),
+    [config],
+  );
 
 export default useConfig;

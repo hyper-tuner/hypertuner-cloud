@@ -1,6 +1,0 @@
-{
-  "extends": "@hyper-tuner",
-  "globals": {
-    "JSX": true
-  }
-}

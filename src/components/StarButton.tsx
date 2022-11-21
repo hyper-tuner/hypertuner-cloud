@@ -1,17 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-import {
-  Badge,
-  Button,
-  Space,
-  Tooltip,
-} from 'antd';
-import {
-  StarOutlined,
-  StarFilled,
-} from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { Badge, Button, Space, Tooltip } from 'antd';
+import { StarOutlined, StarFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { Colors } from '../utils/colors';
 import { TuneDataState } from '../types/state';
@@ -54,14 +43,15 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
     }
 
     setIsLoading(true);
-    isStarredByMe(currentUserToken, tuneData.id).then((isStarred) => {
-      setIsCurrentlyStarred(isStarred);
-      setIsLoading(false);
-    }).catch((error) => {
-      setIsLoading(false);
-      throw error;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    isStarredByMe(currentUserToken, tuneData.id)
+      .then((isStarred) => {
+        setIsCurrentlyStarred(isStarred);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        throw error;
+      });
   }, [currentUserToken, tuneData.id]);
 
   return (
@@ -72,7 +62,9 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
         trigger={currentUserToken ? 'none' : 'hover'}
       >
         <Button
-          icon={isCurrentlyStarred ? <StarFilled style={{ color: Colors.YELLOW }} /> : <StarOutlined />}
+          icon={
+            isCurrentlyStarred ? <StarFilled style={{ color: Colors.YELLOW }} /> : <StarOutlined />
+          }
           onClick={toggleStarClick}
           loading={isLoading}
         >
@@ -81,7 +73,7 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
             <Badge
               count={currentStars}
               style={{ backgroundColor: Colors.TEXT, marginTop: -4 }}
-              showZero
+              showZero={true}
             />
           </Space>
         </Button>
@@ -91,6 +83,3 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
 };
 
 export default StarButton;
-
-
-

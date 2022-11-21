@@ -1,8 +1,5 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
   "editor.formatOnSave": true,
   "cSpell.words": [
     "hypertuner",
@@ -21,6 +18,9 @@
     "editor.defaultFormatter": "vscode.css-language-features"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "rome.rome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "rome.rome"
   }
 }

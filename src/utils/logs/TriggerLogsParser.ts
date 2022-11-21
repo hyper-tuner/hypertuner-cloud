@@ -42,7 +42,7 @@ class TriggerLogsParser implements ParserInterface {
   private raw: string = '';
 
   public constructor(buffer: ArrayBuffer) {
-    this.raw = (new TextDecoder()).decode(buffer);
+    this.raw = new TextDecoder().decode(buffer);
   }
 
   public parse(): this {
@@ -142,7 +142,7 @@ class TriggerLogsParser implements ParserInterface {
         return;
       }
 
-      if (!isNumber(parts[0]) || !isNumber(parts[1])) {
+      if (!(isNumber(parts[0]) && isNumber(parts[1]))) {
         return;
       }
 
@@ -193,7 +193,7 @@ class TriggerLogsParser implements ParserInterface {
 
       const parts = trimmed.split(',');
 
-      if (!isNumber(parts[0]) || !isNumber(parts[1])) {
+      if (!(isNumber(parts[0]) && isNumber(parts[1]))) {
         return;
       }
 
