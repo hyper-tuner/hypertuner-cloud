@@ -26,7 +26,7 @@
     "@reduxjs/toolkit": "^1.9.0",
     "@sentry/react": "^7.20.1",
     "@sentry/tracing": "^7.20.1",
-    "antd": "^4.24.2",
+    "antd": "^5.0.1",
     "kbar": "^0.1.0-beta.38",
     "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.9.0",
