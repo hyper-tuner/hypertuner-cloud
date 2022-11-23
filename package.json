@@ -24,7 +24,7 @@
     "@hyper-tuner/ini": "git+https://github.com/hyper-tuner/ini.git",
     "@hyper-tuner/types": "git+https://github.com/hyper-tuner/types.git",
     "@reduxjs/toolkit": "^1.9.0",
-    "@sentry/react": "^7.20.1",
+    "@sentry/react": "^7.21.0",
     "@sentry/tracing": "^7.20.1",
     "antd": "^4.24.2",
     "kbar": "^0.1.0-beta.38",
