@@ -37,6 +37,7 @@ import { removeFilenameSuffix } from '../pocketbase';
 import useServerStorage from '../hooks/useServerStorage';
 import useDb from '../hooks/useDb';
 import { Collections } from '../@types/pocketbase-types';
+import { buildHyperTunerAppLink } from '../utils/url';
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
@@ -135,9 +136,8 @@ const TopBar = ({
           label: 'Open in app',
           icon: <DesktopOutlined />,
           key: 'open',
-          disabled: true,
-          onClick: () =>
-            window.open(`hypertuner://hypertuner.cloud/t/${tuneData!.tuneId}`, '_blank'),
+          disabled: false,
+          onClick: () => window.open(buildHyperTunerAppLink(tuneData!.tuneId), '_blank'),
         },
       ],
     },
