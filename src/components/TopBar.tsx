@@ -137,7 +137,7 @@ const TopBar = ({
           icon: <DesktopOutlined />,
           key: 'open',
           disabled: false,
-          onClick: () => window.open(buildHyperTunerAppLink(tuneData!.tuneId), '_blank'),
+          onClick: () => window.open(buildHyperTunerAppLink(tuneData!.tuneId)),
         },
       ],
     },

@@ -16,5 +16,5 @@ export const buildRedirectUrl = (redirectPage: string, params: { [param: string]
 export const buildHyperTunerAppLink = (tuneId: string) => {
   const apiHost = new URL(fetchEnv('VITE_POCKETBASE_API_URL')).host;
 
-  return `hypertuner://${apiHost}:${tuneId}`;
+  return `hypertuner:${apiHost}?t=${tuneId}`;
 };
