@@ -184,7 +184,7 @@ const Diagnose = ({
     };
   }, [calculateCanvasSize, routeMatch?.params.fileName, ui.sidebarCollapsed, tuneData?.tuneId]);
 
-  const graphSection = () => {
+  const Graph = () => {
     switch (loadedToothLogs.type) {
       case 'composite':
         return (
@@ -256,7 +256,7 @@ const Diagnose = ({
         <Content>
           <div ref={contentRef}>
             {loadedToothLogs.type ? (
-              graphSection()
+              <Graph />
             ) : (
               <Space direction="vertical" size="large">
                 <Progress type="circle" percent={progress} className="logs-progress" />

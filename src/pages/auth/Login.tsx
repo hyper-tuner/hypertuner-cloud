@@ -183,27 +183,28 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     });
   }, [listAuthMethods]);
 
-  const oauthSection = isOauthEnabled && (
-    <>
-      <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
-        {providersReady &&
-          Object.keys(oauthMethods).map(
-            (provider) =>
-              providersStatuses[provider] && (
-                <Button
-                  key={provider}
-                  icon={oauthMethods[provider].icon}
-                  onClick={oauthMethods[provider].onClick}
-                  loading={isOAuthLoading}
-                >
-                  {oauthMethods[provider].label}
-                </Button>
-              ),
-          )}
-      </Space>
-      <Divider />
-    </>
-  );
+  const OauthSection = () =>
+    isOauthEnabled ? (
+      <>
+        <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
+          {providersReady &&
+            Object.keys(oauthMethods).map(
+              (provider) =>
+                providersStatuses[provider] && (
+                  <Button
+                    key={provider}
+                    icon={oauthMethods[provider].icon}
+                    onClick={oauthMethods[provider].onClick}
+                    loading={isOAuthLoading}
+                  >
+                    {oauthMethods[provider].label}
+                  </Button>
+                ),
+            )}
+        </Space>
+        <Divider />
+      </>
+    ) : null;
 
   const bottomLinksLogin = (
     <>
@@ -249,7 +250,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   return (
     <div className="auth-container">
       <Divider>{formRole}</Divider>
-      {providersReady && oauthSection}
+      {providersReady && <OauthSection />}
       <Form
         onFinish={isLogin ? emailLogin : emailSignUp}
         validateMessages={validateMessages}

@@ -609,7 +609,7 @@ const UploadPage = () => {
     });
   }, [routeMatch?.params.tuneId]);
 
-  const uploadButton = (
+  const UploadButton = () => (
     <Space direction="vertical">
       <PlusOutlined />
       Upload
@@ -624,7 +624,7 @@ const UploadPage = () => {
     return isEditMode ? 'Update' : 'Publish';
   };
 
-  const publishButton = (
+  const PublishButton = () => (
     <Row style={{ marginTop: 10 }} {...rowProps}>
       <Col {...colProps}>
         <Item name="visibility">
@@ -661,7 +661,7 @@ const UploadPage = () => {
     </Row>
   );
 
-  const openButton = (
+  const OpenButton = () => (
     <>
       <Row>
         <Input style={{ width: `calc(100% - ${shareSupported ? 65 : 35}px)` }} value={shareUrl!} />
@@ -687,14 +687,14 @@ const UploadPage = () => {
     </>
   );
 
-  const shareSection = (
+  const ShareSection = () => (
     <>
       <Divider>Publish & Share</Divider>
-      {isPublished ? openButton : publishButton}
+      {isPublished ? <OpenButton /> : <PublishButton />}
     </>
   );
 
-  const detailsSection = (
+  const DetailsSection = () => (
     <>
       <Divider>Details</Divider>
       <Row {...rowProps}>
@@ -880,7 +880,7 @@ const UploadPage = () => {
     </>
   );
 
-  const optionalSection = (
+  const OptionalSection = () => (
     <>
       <Divider>
         <Space>
@@ -901,7 +901,7 @@ const UploadPage = () => {
         defaultFileList={defaultLogFilesList}
         accept=".mlg,.csv,.msl"
       >
-        {logFiles.length < MaxFiles.LOG_FILES && uploadButton}
+        {logFiles.length < MaxFiles.LOG_FILES && <UploadButton />}
       </Upload>
       <Divider>
         <Space>
@@ -921,7 +921,7 @@ const UploadPage = () => {
         defaultFileList={defaultToothLogFilesList}
         accept=".csv"
       >
-        {toothLogFiles.length < MaxFiles.TOOTH_LOG_FILES && uploadButton}
+        {toothLogFiles.length < MaxFiles.TOOTH_LOG_FILES && <UploadButton />}
       </Upload>
       <Divider>
         <Space>
@@ -940,15 +940,19 @@ const UploadPage = () => {
         defaultFileList={defaultCustomIniFileList}
         accept=".ini"
       >
-        {!customIniFile && uploadButton}
+        {!customIniFile && <UploadButton />}
       </Upload>
-      {detailsSection}
-      {shareUrl && tuneFile && shareSection}
+      <DetailsSection />
+      {shareUrl && tuneFile && <ShareSection />}
     </>
   );
 
   if (isPublished) {
-    return <div className="small-container">{shareSection}</div>;
+    return (
+      <div className="small-container">
+        <ShareSection />
+      </div>
+    );
   }
 
   if (!isUserAuthorized || isTuneLoading) {
@@ -992,9 +996,9 @@ const UploadPage = () => {
           defaultFileList={defaultTuneFileList}
           accept=".msq"
         >
-          {tuneFile === undefined && uploadButton}
+          {tuneFile === undefined && <UploadButton />}
         </Upload>
-        {(tuneFile || defaultTuneFileList.length > 0) && optionalSection}
+        {(tuneFile || defaultTuneFileList.length > 0) && <OptionalSection />}
       </Form>
     </div>
   );

@@ -32,7 +32,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
 
   const canManage = currentUser && tuneData && currentUser.id === tuneData.author;
 
-  const manageSection = (
+  const ManageSection = () => (
     <>
       <Divider>Manage</Divider>
       <Row style={{ marginTop: 10 }}>
@@ -181,7 +181,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       <div className="markdown-preview" style={{ height: '100%' }}>
         {tuneData.readme && <ReactMarkdown>{`${tuneData.readme}`}</ReactMarkdown>}
       </div>
-      {canManage && manageSection}
+      {canManage && <ManageSection />}
     </div>
   );
 };
