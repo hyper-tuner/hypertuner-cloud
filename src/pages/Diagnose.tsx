@@ -228,7 +228,7 @@ const Diagnose = ({
                   children: (
                     <PerfectScrollbar options={{ suppressScrollX: true }}>
                       {tuneData?.toothLogFiles?.map((fileName) => (
-                        <Typography.Paragraph key={fileName} ellipsis={true}>
+                        <Typography.Paragraph key={fileName} ellipsis>
                           <Link
                             to={generatePath(Routes.TUNE_DIAGNOSE_FILE, {
                               tuneId: tuneData.tuneId,

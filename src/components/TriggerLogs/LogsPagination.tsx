@@ -23,7 +23,7 @@ const LogsPagination = (props: LogsPaginationProps) => {
     <div style={{ position: 'relative' }}>
       <div style={{ position: 'absolute', bottom: 3, right: 5, zIndex: 1 }}>
         <Pagination
-          simple={true}
+          simple
           defaultPageSize={pageSize}
           current={page}
           total={total}

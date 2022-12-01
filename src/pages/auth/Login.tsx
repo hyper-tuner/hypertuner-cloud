@@ -256,7 +256,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
         validateMessages={validateMessages}
         form={formEmail}
       >
-        <Item name="email" rules={emailRules} hasFeedback={true}>
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
             placeholder="Email"
@@ -265,11 +265,11 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
           />
         </Item>
         {!isLogin && (
-          <Item name="username" rules={usernameRules} hasFeedback={true}>
+          <Item name="username" rules={usernameRules} hasFeedback>
             <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="name" />
           </Item>
         )}
-        <Item name="password" rules={requiredRules} hasFeedback={true}>
+        <Item name="password" rules={requiredRules} hasFeedback>
           <Input.Password
             placeholder="Password"
             autoComplete="current-password"

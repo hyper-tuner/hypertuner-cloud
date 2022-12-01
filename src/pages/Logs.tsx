@@ -345,7 +345,7 @@ const Logs = ({
                   children: (
                     <PerfectScrollbar options={{ suppressScrollX: true }}>
                       {tuneData?.logFiles?.map((fileName) => (
-                        <Typography.Paragraph key={fileName} ellipsis={true}>
+                        <Typography.Paragraph key={fileName} ellipsis>
                           <Link
                             to={generatePath(Routes.TUNE_LOGS_FILE, {
                               tuneId: tuneData.tuneId,

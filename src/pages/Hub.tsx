@@ -109,7 +109,7 @@ const Hub = () => {
               {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.cylindersCount}{' '}
               cylinders, {tune.aspiration}
             </Text>
-            <Text italic={true}>{tune.signature}</Text>
+            <Text italic>{tune.signature}</Text>
           </Space>
         </>
       ),
@@ -173,7 +173,7 @@ const Hub = () => {
       dataIndex: 'signature',
       key: 'author',
       responsive: ['sm'],
-      render: (signature: string) => <Text italic={true}>{signature}</Text>,
+      render: (signature: string) => <Text italic>{signature}</Text>,
     },
     {
       title: 'Published',
@@ -230,7 +230,7 @@ const Hub = () => {
         value={searchQuery}
         placeholder="Search by anything..."
         onChange={({ target }) => debounceLoadData(target.value)}
-        allowClear={true}
+        allowClear
       />
       <Table
         dataSource={dataSource}

@@ -13,7 +13,7 @@ const TextField = ({ title }: { title: string }) => {
         <Alert
           message={type ? title.substring(1) : title}
           type={type}
-          showIcon={true}
+          showIcon
           style={{ width: '100%', maxWidth: 700 }}
         />
       ) : (

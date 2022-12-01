@@ -335,8 +335,8 @@ const TopBar = ({
               <Tooltip
                 title={
                   <>
-                    <Typography.Text keyboard={true}>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
-                    <Typography.Text keyboard={true}>K</Typography.Text>
+                    <Typography.Text keyboard>{isMac ? '⌘' : 'CTRL'}</Typography.Text>
+                    <Typography.Text keyboard>K</Typography.Text>
                   </>
                 }
               >

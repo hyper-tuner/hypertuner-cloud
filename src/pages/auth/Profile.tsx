@@ -124,7 +124,7 @@ const Profile = () => {
           <>
             <Divider>Email verification</Divider>
             <Space direction="vertical" style={{ width: '100%' }} size="large">
-              <Alert message="Your email address is not verified!" type="error" showIcon={true} />
+              <Alert message="Your email address is not verified!" type="error" showIcon />
               <Button
                 type="primary"
                 style={{ width: '100%' }}
@@ -155,11 +155,11 @@ const Profile = () => {
               },
             ]}
           >
-            <Item name="username" rules={usernameRules} hasFeedback={true}>
+            <Item name="username" rules={usernameRules} hasFeedback>
               <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="name" />
             </Item>
             <Item name="email">
-              <Input prefix={<MailOutlined />} placeholder="Email" disabled={true} />
+              <Input prefix={<MailOutlined />} placeholder="Email" disabled />
             </Item>
             <Item>
               <Button
@@ -201,7 +201,7 @@ const Profile = () => {
                     <Space direction="vertical">
                       {tune.vehicleName}
                       <TuneTag tag={tune.tags} />
-                      <Typography.Text italic={true}>{tune.signature}</Typography.Text>
+                      <Typography.Text italic>{tune.signature}</Typography.Text>
                     </Space>
                   }
                   description={
@@ -211,7 +211,7 @@ const Profile = () => {
                   }
                 />
                 <div>
-                  <Typography.Text italic={true}>{tune.updated}</Typography.Text>
+                  <Typography.Text italic>{tune.updated}</Typography.Text>
                 </div>
               </Space>
             </List.Item>

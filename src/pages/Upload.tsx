@@ -648,7 +648,7 @@ const UploadPage = () => {
         <Item style={{ width: '100%' }}>
           <Button
             type="primary"
-            block={true}
+            block
             loading={isLoading}
             htmlType="submit"
             icon={isEditMode ? <EditOutlined /> : <CheckOutlined />}
@@ -679,7 +679,7 @@ const UploadPage = () => {
       </Row>
       <Row style={{ marginTop: 10 }}>
         <Item style={{ width: '100%' }}>
-          <Button type="primary" block={true} onClick={goToNewTune} icon={<SendOutlined />}>
+          <Button type="primary" block onClick={goToNewTune} icon={<SendOutlined />}>
             Open
           </Button>
         </Item>
@@ -703,7 +703,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.vehicleName}
               onSearch={(search) => searchAutocomplete('vehicleName', search)}
-              backfill={true}
+              backfill
             >
               <Input addonBefore="Name" />
             </AutoComplete>
@@ -713,7 +713,7 @@ const UploadPage = () => {
           <Item name="tags">
             <Select
               placeholder="Tags"
-              allowClear={true}
+              allowClear
               style={{ width: '100%' }}
               options={[
                 { label: null, value: null },
@@ -736,7 +736,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.engineMake}
               onSearch={(search) => searchAutocomplete('engineMake', search)}
-              backfill={true}
+              backfill
             >
               <Input addonBefore="Engine make" />
             </AutoComplete>
@@ -747,7 +747,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.engineCode}
               onSearch={(search) => searchAutocomplete('engineCode', search)}
-              backfill={true}
+              backfill
             >
               <Input addonBefore="Engine code" />
             </AutoComplete>
@@ -799,7 +799,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.fuel}
               onSearch={(search) => searchAutocomplete('fuel', search)}
-              backfill={true}
+              backfill
             >
               <Input addonBefore="Fuel" />
             </AutoComplete>
@@ -810,7 +810,7 @@ const UploadPage = () => {
             <AutoComplete
               options={autocompleteOptions.ignition}
               onSearch={(search) => searchAutocomplete('ignition', search)}
-              backfill={true}
+              backfill
             >
               <Input addonBefore="Ignition" />
             </AutoComplete>
@@ -858,7 +858,7 @@ const UploadPage = () => {
             children: (
               <Input.TextArea
                 rows={10}
-                showCount={true}
+                showCount
                 value={readme}
                 onChange={(e) => setReadme(e.target.value)}
                 maxLength={3_000}
@@ -894,7 +894,7 @@ const UploadPage = () => {
         customRequest={uploadLogs}
         onRemove={removeLogFile}
         iconRender={logIcon}
-        multiple={true}
+        multiple
         maxCount={MaxFiles.LOG_FILES}
         disabled={isPublished}
         onPreview={noop}
@@ -915,7 +915,7 @@ const UploadPage = () => {
         customRequest={uploadToothLogs}
         onRemove={removeToothLogFile}
         iconRender={toothLogIcon}
-        multiple={true}
+        multiple
         maxCount={MaxFiles.TOOTH_LOG_FILES}
         onPreview={noop}
         defaultFileList={defaultToothLogFilesList}

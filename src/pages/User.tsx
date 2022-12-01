@@ -80,7 +80,7 @@ const Profile = () => {
                   <Space direction="vertical">
                     {tune.vehicleName}
                     <TuneTag tag={tune.tags} />
-                    <Typography.Text italic={true}>{tune.signature}</Typography.Text>
+                    <Typography.Text italic>{tune.signature}</Typography.Text>
                   </Space>
                 }
                 description={
@@ -90,7 +90,7 @@ const Profile = () => {
                 }
               />
               <div>
-                <Typography.Text italic={true}>{tune.updated}</Typography.Text>
+                <Typography.Text italic>{tune.updated}</Typography.Text>
               </div>
             </Space>
           </List.Item>

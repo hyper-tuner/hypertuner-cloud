@@ -40,7 +40,7 @@ const ResetPasswordConfirmation = () => {
         autoComplete="off"
         form={form}
       >
-        <Item name="password" rules={passwordRules} hasFeedback={true}>
+        <Item name="password" rules={passwordRules} hasFeedback>
           <Input.Password
             placeholder="New password"
             autoComplete="new-password"

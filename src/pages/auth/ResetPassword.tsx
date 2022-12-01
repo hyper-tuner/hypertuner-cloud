@@ -38,7 +38,7 @@ const ResetPassword = () => {
         validateMessages={validateMessages}
         form={form}
       >
-        <Item name="email" rules={emailRules} hasFeedback={true}>
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input prefix={<MailOutlined />} placeholder="Email" autoComplete="email" />
         </Item>
         <Item>

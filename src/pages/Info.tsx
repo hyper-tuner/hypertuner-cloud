@@ -37,7 +37,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       <Divider>Manage</Divider>
       <Row style={{ marginTop: 10 }}>
         <Item style={{ width: '100%' }}>
-          <Button type="primary" block={true} onClick={goToEdit} icon={<EditOutlined />}>
+          <Button type="primary" block onClick={goToEdit} icon={<EditOutlined />}>
             Edit
           </Button>
         </Item>

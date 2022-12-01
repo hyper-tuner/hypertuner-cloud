@@ -28,7 +28,7 @@ const Firmware = ({ tune }: { tune: TuneState }) => {
   return (
     <Space>
       <InfoCircleOutlined />
-      <Typography.Text ellipsis={true} style={{ maxWidth: width }}>
+      <Typography.Text ellipsis style={{ maxWidth: width }}>
         {`${tune.details.signature} - ${tune.details.writeDate} - ${tune.details.author}`}
       </Typography.Text>
     </Space>

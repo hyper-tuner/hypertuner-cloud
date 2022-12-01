@@ -73,7 +73,7 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
             <Badge
               count={currentStars}
               style={{ backgroundColor: Colors.TEXT, marginTop: -4 }}
-              showZero={true}
+              showZero
             />
           </Space>
         </Button>
