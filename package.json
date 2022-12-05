@@ -27,7 +27,7 @@
     "@sentry/react": "^7.23.0",
     "@sentry/tracing": "^7.23.0",
     "antd": "^4.24.4",
-    "kbar": "^0.1.0-beta.38",
+    "kbar": "^0.1.0-beta.39",
     "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.9.0",
     "nanoid": "^4.0.0",
