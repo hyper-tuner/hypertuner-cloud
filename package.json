@@ -42,7 +42,7 @@
     "react-router-dom": "^6.4.4",
     "uplot": "^1.6.23",
     "uplot-react": "^1.1.4",
-    "vite": "^3.2.4"
+    "vite": "^3.2.5"
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.7",
