@@ -2,11 +2,13 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnSave": true,
   "cSpell.words": [
+    "baro",
     "hypertuner",
     "kbar",
     "pocketbase",
     "prefs",
     "rusefi",
+    "secl",
     "typegen",
     "vite",
     "vitejs"

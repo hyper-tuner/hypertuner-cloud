@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
-import { client, formatError, AuthMethodsList } from '../pocketbase';
+import { client, formatError, AuthMethodsList, ClientResponseError } from '../pocketbase';
 import { buildRedirectUrl } from '../utils/url';
 import { Collections, UsersResponse } from '../@types/pocketbase-types';
 import { Routes } from '../routes';
@@ -28,6 +28,7 @@ interface AuthValue {
 
 const AuthContext = createContext<AuthValue | null>(null);
 
+// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const users = client.collection(Collections.Users);
@@ -54,7 +55,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
 
           return Promise.resolve(user);
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
       login: async (email: string, password: string) => {
@@ -62,7 +63,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           const authResponse = await users.authWithPassword<UsersResponse>(email, password);
           return Promise.resolve(authResponse.record);
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
       refreshUser: async () => {
@@ -79,7 +80,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           await users.requestVerification(currentUser!.email);
           return Promise.resolve();
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
       confirmEmailVerification: async (token: string) => {
@@ -87,7 +88,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           await users.confirmVerification(token);
           return Promise.resolve();
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
       confirmResetPassword: async (token: string, password: string) => {
@@ -95,7 +96,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           await users.confirmPasswordReset(token, password, password);
           return Promise.resolve();
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
       logout: async () => {
@@ -106,7 +107,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           await users.requestPasswordReset(email);
           return Promise.resolve();
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
       listAuthMethods: async () => {
@@ -114,7 +115,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           const methods = await users.listAuthMethods();
           return Promise.resolve(methods);
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
       oAuth: async (provider: OAuthProviders, code: string, codeVerifier: string) => {
@@ -132,7 +133,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           });
           return Promise.resolve();
         } catch (error) {
-          return Promise.reject(new Error(formatError(error)));
+          return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
     }),

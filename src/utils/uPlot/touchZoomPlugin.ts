@@ -12,6 +12,7 @@ interface Point {
 }
 
 const touchZoomPlugin = () => {
+  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   const init = (u: uPlot, _opts: any, data: any) => {
     const { over } = u;
 

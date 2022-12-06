@@ -48,7 +48,7 @@ export const colorHsl = (min: number, max: number, value: number): HslType => {
 };
 
 export const round = (value: number, digits: number | string = 0) =>
-  +`${Math.round(`${value}e+${digits}` as any)}e-${digits}`;
+  +`${Math.round(`${value}e+${digits}` as unknown as number)}e-${digits}`;
 
 export const formatNumberMs = (value: number, format: string): string => {
   if (format === '%d') {

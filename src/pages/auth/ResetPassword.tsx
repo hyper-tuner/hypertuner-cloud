@@ -16,7 +16,7 @@ const ResetPassword = () => {
   const { initResetPassword } = useAuth();
   const navigate = useNavigate();
 
-  const onFinish = async ({ email }: { form: any; email: string }) => {
+  const onFinish = async ({ email }: { email: string }) => {
     setIsLoading(true);
     try {
       await initResetPassword(email);

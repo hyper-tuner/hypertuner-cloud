@@ -1,4 +1,12 @@
-import { CSSProperties, forwardRef, Fragment, Ref, useMemo, ReactNode, useCallback } from 'react';
+import React, {
+  CSSProperties,
+  forwardRef,
+  Fragment,
+  Ref,
+  useMemo,
+  ReactNode,
+  useCallback,
+} from 'react';
 import {
   ActionId,
   KBarAnimator,
@@ -66,7 +74,6 @@ interface CommandPaletteProps {
   config: ConfigType | null;
   tune: TuneType | null;
   navigation: NavigationState;
-
   children?: ReactNode;
 }
 
@@ -100,7 +107,11 @@ const groupNameStyle = {
 
 const ResultItem = forwardRef(
   (
-    { action, active, currentRootActionId }: {
+    {
+      action,
+      active,
+      currentRootActionId,
+    }: {
       action: ActionImpl;
       active: boolean;
       currentRootActionId: ActionId;
@@ -141,7 +152,7 @@ const ResultItem = forwardRef(
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div>
               {ancestors.length > 0 &&
-                ancestors.map((ancestor: any) => (
+                ancestors.map((ancestor) => (
                   <Fragment key={ancestor.id}>
                     <span
                       style={{
@@ -161,7 +172,7 @@ const ResultItem = forwardRef(
         </div>
         {action.shortcut?.length ? (
           <div aria-hidden style={{ display: 'grid', gridAutoFlow: 'column', gap: '4px' }}>
-            {action.shortcut.map((sc: any) => (
+            {action.shortcut.map((sc: React.Key) => (
               <kbd
                 key={sc}
                 style={{
@@ -184,7 +195,8 @@ const ResultItem = forwardRef(
 const RenderResults = () => {
   const { results, rootActionId } = useMatches();
 
-  const onResultsRender = ({ item, active }: { item: any; active: any }) =>
+  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const onResultsRender = ({ item, active }: { item: any; active: boolean }) =>
     typeof item === 'string' ? (
       <div style={groupNameStyle}>{item}</div>
     ) : (
@@ -370,7 +382,7 @@ const CommandPalette = (props: CommandPaletteProps) => {
   return (
     <KBarProvider actions={initialActions}>
       <KBarPortal>
-        <KBarPositioner>
+        <KBarPositioner style={{ zIndex: 1, backdropFilter: 'blur(3px)' }}>
           <KBarAnimator style={animatorStyle}>
             <KBarSearch style={searchStyle} />
             <RenderResults />

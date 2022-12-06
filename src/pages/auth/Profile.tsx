@@ -21,7 +21,7 @@ import {
 import { Routes } from '../../routes';
 import { usernameRules } from '../../utils/form';
 import { formatTime } from '../../utils/time';
-import useDb from '../../hooks/useDb';
+import useDb, { TunesRecordPartial } from '../../hooks/useDb';
 import { aspirationMapper } from '../../utils/tune/mappers';
 import { TunesResponse, TunesVisibilityOptions } from '../../@types/pocketbase-types';
 import TuneTag from '../../components/TuneTag';
@@ -83,15 +83,7 @@ const Profile = () => {
     try {
       const { items, totalItems } = await getUserTunes(currentUser!.id, page, pageSize);
       setTotal(totalItems);
-      const mapped = items.map((tune) => ({
-        ...tune,
-        key: tune.tuneId,
-        year: tune.year,
-        displacement: `${tune.displacement}l`,
-        aspiration: aspirationMapper[tune.aspiration],
-        updated: formatTime(tune.updated),
-      }));
-      setTunesDataSource(mapped as any);
+      setTunesDataSource(items);
     } catch (error) {
       // request cancelled
     } finally {
@@ -206,12 +198,13 @@ const Profile = () => {
                   }
                   description={
                     <>
-                      {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
+                      {tune.engineMake}, {tune.engineCode}, {tune.displacement}l,{' '}
+                      {aspirationMapper[tune.aspiration]}
                     </>
                   }
                 />
                 <div>
-                  <Typography.Text italic>{tune.updated}</Typography.Text>
+                  <Typography.Text italic>{formatTime(tune.updated)}</Typography.Text>
                 </div>
               </Space>
             </List.Item>

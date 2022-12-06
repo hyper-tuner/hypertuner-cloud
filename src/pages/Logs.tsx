@@ -21,7 +21,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { OutputChannel, Logs as LogsType, DatalogEntry } from '@hyper-tuner/types';
 
 import LogParserWorker from '../workers/logParserWorker?worker';
-import LogCanvas from '../components/Logs/LogCanvas';
+import LogCanvas, { SelectedField } from '../components/Logs/LogCanvas';
 import store from '../store';
 import { formatBytes, msToTime } from '../utils/numbers';
 import useConfig from '../hooks/useConfig';
@@ -94,7 +94,7 @@ const Logs = ({
     width: sidebarWidth,
     collapsedWidth: collapsedSidebarWidth,
     collapsible: true,
-    breakpoint: 'xl',
+    breakpoint: 'xl' as const,
     collapsed: ui.sidebarCollapsed,
     onCollapse: (collapsed: boolean) => {
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
@@ -125,7 +125,7 @@ const Logs = ({
           const { name, label, format } = entry;
 
           if (!selectedFields.includes(name)) {
-            return null as any;
+            return null;
           }
 
           // TODO: evaluate condition
@@ -138,7 +138,7 @@ const Logs = ({
             format,
           };
         })
-        .filter((val) => !!val);
+        .filter((val) => !!val) as SelectedField[];
     },
     [config?.datalog, findOutputChannel, isConfigReady],
   );
@@ -274,7 +274,7 @@ const Logs = ({
 
   return (
     <>
-      <Sider {...(siderProps as any)} className="app-sidebar">
+      <Sider {...siderProps} className="app-sidebar">
         {(loadedLogs?.logs || []).length ? (
           !ui.sidebarCollapsed && (
             <Tabs

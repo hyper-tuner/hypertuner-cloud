@@ -20,6 +20,7 @@ export type BaseSystemFields = {
   updated: IsoDateString;
   collectionId: string;
   collectionName: Collections;
+  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   expand?: { [key: string]: any };
 };
 

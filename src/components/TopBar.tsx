@@ -42,7 +42,7 @@ import { buildHyperTunerAppLink } from '../utils/url';
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
-const logsExtensionsIcons: { [key: string]: any } = {
+const logsExtensionsIcons: { [key: string]: JSX.Element } = {
   mlg: <FileZipOutlined />,
   msl: <FileTextOutlined />,
   csv: <FileExcelOutlined />,

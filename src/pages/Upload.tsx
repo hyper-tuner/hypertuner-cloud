@@ -105,7 +105,7 @@ const tuneParser = new TuneParser();
 const bufferToFile = (buffer: ArrayBuffer, name: string) => new File([buffer], name);
 
 const UploadPage = () => {
-  const [form] = useForm();
+  const [form] = useForm<TunesRecord>();
   const routeMatch = useMatch(Routes.UPLOAD_WITH_TUNE_ID);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -137,24 +137,25 @@ const UploadPage = () => {
   const { createTune, updateTune, getTune, autocomplete } = useDb();
 
   const [autocompleteOptions, setAutocompleteOptions] = useState<{
-    [attribute: string]: { value: string }[];
+    [attribute in keyof TunesRecordPartial]: { value: string }[];
   }>({});
 
-  const searchAutocomplete = debounce(async (attribute: string, search: string) => {
-    if (search.length === 0) {
-      setAutocompleteOptions((prev) => ({ ...prev, [attribute]: [] }));
-      return;
-    }
+  const searchAutocomplete = debounce(
+    async (attribute: keyof TunesRecordPartial, search: string) => {
+      if (search.length === 0) {
+        setAutocompleteOptions((prev) => ({ ...prev, [attribute]: [] }));
+        return;
+      }
 
-    const options = (await autocomplete(attribute, search)).map(
-      (record) => (record as any)[attribute],
-    );
+      const options = (await autocomplete(attribute, search)).map((record) => record[attribute]);
 
-    // TODO: order by occurrence (more common - higher in the list)
-    const unique = [...new Set(options)].map((value) => ({ value }));
+      // TODO: order by occurrence (more common - higher in the list)
+      const unique = [...new Set(options)].map((value) => ({ value }));
 
-    setAutocompleteOptions((prev) => ({ ...prev, [attribute]: unique }));
-  }, 300);
+      setAutocompleteOptions((prev) => ({ ...prev, [attribute]: unique }));
+    },
+    300,
+  );
 
   const fetchFile = async (tuneId: string, fileName: string) =>
     bufferToFile(await fetchTuneFile(tuneId, fileName), fileName);
@@ -168,7 +169,7 @@ const UploadPage = () => {
       }),
     );
 
-  const publishTune = async (values: any) => {
+  const publishTune = async (values: TunesRecord) => {
     setIsLoading(true);
 
     /* eslint-disable prefer-destructuring */
@@ -177,14 +178,14 @@ const UploadPage = () => {
     const engineCode = values.engineCode.trim();
     const displacement = values.displacement;
     const cylindersCount = values.cylindersCount;
-    const aspiration = values.aspiration.trim();
-    const compression = values.compression || null;
-    const fuel = values.fuel?.trim() || null;
-    const ignition = values.ignition?.trim() || null;
-    const injectorsSize = values.injectorsSize || null;
-    const year = values.year || null;
-    const hp = values.hp || null;
-    const stockHp = values.stockHp || null;
+    const aspiration = values.aspiration;
+    const compression = values.compression;
+    const fuel = values.fuel?.trim();
+    const ignition = values.ignition?.trim();
+    const injectorsSize = values.injectorsSize;
+    const year = values.year;
+    const hp = values.hp;
+    const stockHp = values.stockHp;
     const visibility = values.visibility;
     const tags = values.tags;
     /* eslint-enable prefer-destructuring */
@@ -267,14 +268,14 @@ const UploadPage = () => {
     const formData = new FormData();
 
     Object.keys(newData).forEach((key) => {
-      const value = (newData as any)[key];
+      const value = newData[key as keyof TunesRecord];
 
       if (Array.isArray(value)) {
-        value.forEach((file: File) => {
+        (value as unknown as File[]).forEach((file: File) => {
           formData.append(key, file);
         });
       } else {
-        formData.append(key, value);
+        formData.append(key, value as string);
       }
     });
 

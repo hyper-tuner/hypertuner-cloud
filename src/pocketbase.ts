@@ -4,7 +4,7 @@ import { fetchEnv } from './utils/env';
 const API_URL = fetchEnv('VITE_POCKETBASE_API_URL');
 const client = new PocketBase(API_URL);
 
-const formatError = (error: any) => {
+const formatError = (error: ClientResponseError) => {
   const { data, message } = error;
 
   if (data.data) {

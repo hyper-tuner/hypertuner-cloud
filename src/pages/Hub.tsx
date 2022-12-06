@@ -49,11 +49,11 @@ const Hub = () => {
       const mapped = items.map((tune) => ({
         ...tune,
         key: tune.tuneId,
-        year: tune.year,
         displacement: `${tune.displacement}l`,
         aspiration: aspirationMapper[tune.aspiration],
         updated: formatTime(tune.updated),
       }));
+      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
       setDataSource(mapped as any);
     } catch (error) {
       // request cancelled
@@ -87,6 +87,7 @@ const Hub = () => {
     return () => window.removeEventListener('keydown', handleGlobalKeyboard);
   }, [page]);
 
+  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   const columns: ColumnsType<any> = [
     {
       title: 'Tunes',

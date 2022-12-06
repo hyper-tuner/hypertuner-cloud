@@ -29,15 +29,7 @@ const Profile = () => {
       const { items, totalItems } = await getUserTunes(route?.params.userId!, page, pageSize);
       setTotal(totalItems);
       setAuthor(items[0]!.expand!.author);
-      const mapped = items.map((tune) => ({
-        ...tune,
-        key: tune.tuneId,
-        year: tune.year,
-        displacement: `${tune.displacement}l`,
-        aspiration: aspirationMapper[tune.aspiration],
-        updated: formatTime(tune.updated),
-      }));
-      setTunesDataSource(mapped as any);
+      setTunesDataSource(items);
     } catch (error) {
       // request cancelled
     } finally {
@@ -85,12 +77,13 @@ const Profile = () => {
                 }
                 description={
                   <>
-                    {tune.engineMake}, {tune.engineCode}, {tune.displacement}, {tune.aspiration}
+                    {tune.engineMake}, {tune.engineCode}, {tune.displacement}l,{' '}
+                    {aspirationMapper[tune.aspiration]}
                   </>
                 }
               />
               <div>
-                <Typography.Text italic>{tune.updated}</Typography.Text>
+                <Typography.Text italic>{formatTime(tune.updated)}</Typography.Text>
               </div>
             </Space>
           </List.Item>

@@ -81,7 +81,7 @@ const Dialog = ({
     tune && config && Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useBrowserStorage();
   const { findConstantOnPage } = useConfig(config);
-  const [panelsComponents, setPanelsComponents] = useState<any[]>([]);
+  const [panelsComponents, setPanelsComponents] = useState<(JSX.Element | null)[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const renderHelp = (link?: string) =>

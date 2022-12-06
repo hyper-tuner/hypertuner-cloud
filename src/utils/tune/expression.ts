@@ -7,11 +7,12 @@ import {
 } from '@hyper-tuner/types';
 import * as Sentry from '@sentry/browser';
 
-export const isExpression = (val: any) => `${val}`.startsWith('{') && `${val}`.endsWith('}');
+export const isExpression = (val: string | number) =>
+  `${val}`.startsWith('{') && `${val}`.endsWith('}');
 
 export const stripExpression = (val: string) => val.slice(1).slice(0, -1).trim();
 
-export const isNumber = (val: any) => !Number.isNaN(Number(val));
+export const isNumber = (val: string | number) => !Number.isNaN(Number(val));
 
 // export const isNumber
 // ochGetCommand

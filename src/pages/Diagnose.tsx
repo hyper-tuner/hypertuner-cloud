@@ -66,7 +66,7 @@ const Diagnose = ({
     width: sidebarWidth,
     collapsedWidth: collapsedSidebarWidth,
     collapsible: true,
-    breakpoint: 'xl',
+    breakpoint: 'xl' as const,
     collapsed: ui.sidebarCollapsed,
     onCollapse: (collapsed: boolean) => {
       store.dispatch({ type: 'ui/sidebarCollapsed', payload: collapsed });
@@ -205,7 +205,7 @@ const Diagnose = ({
 
   return (
     <>
-      <Sider {...(siderProps as any)} className="app-sidebar">
+      <Sider {...siderProps} className="app-sidebar">
         {loadedToothLogs.type ? (
           !ui.sidebarCollapsed && (
             <Tabs

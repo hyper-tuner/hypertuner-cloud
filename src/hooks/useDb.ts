@@ -35,7 +35,7 @@ const useDb = () => {
       return Promise.resolve();
     } catch (error) {
       Sentry.captureException(error);
-      databaseGenericError(new Error(formatError(error)));
+      databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
       return Promise.reject(error);
     }
@@ -48,7 +48,7 @@ const useDb = () => {
       return Promise.resolve(record);
     } catch (error) {
       Sentry.captureException(error);
-      databaseGenericError(new Error(formatError(error)));
+      databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
       return Promise.reject(error);
     }
@@ -116,7 +116,7 @@ const useDb = () => {
       }
 
       Sentry.captureException(error);
-      databaseGenericError(new Error(formatError(error)));
+      databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
       return Promise.reject(error);
     }
@@ -144,7 +144,7 @@ const useDb = () => {
       }
 
       Sentry.captureException(error);
-      databaseGenericError(new Error(formatError(error)));
+      databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
       return Promise.reject(error);
     }
@@ -163,7 +163,7 @@ const useDb = () => {
       }
 
       Sentry.captureException(error);
-      databaseGenericError(new Error(formatError(error)));
+      databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
       return Promise.reject(error);
     }
