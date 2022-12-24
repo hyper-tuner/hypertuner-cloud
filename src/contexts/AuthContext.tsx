@@ -38,7 +38,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<UsersResponse | null>(null);
   const [currentUserToken, setCurrentUserToken] = useState<string | null>(null);
 
-  const value = useMemo(
+  const value = useMemo<AuthValue>(
     () => ({
       currentUser,
       currentUserToken,
