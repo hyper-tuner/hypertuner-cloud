@@ -72,7 +72,7 @@ export default ({ mode }) => {
             {
               src: '/icons/icon.png',
               type: 'image/png',
-              sizes: '512x512',
+              sizes: '812x812',
             },
           ],
           screenshots: [
