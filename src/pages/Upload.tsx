@@ -186,7 +186,7 @@ const UploadPage = () => {
     const hp = values.hp;
     const stockHp = values.stockHp;
     const visibility = values.visibility;
-    const tags = values.tags;
+    const tags = values.tags || '';
 
     const compressedTuneFile = bufferToFile(
       Pako.deflate(await tuneFile!.arrayBuffer()),
@@ -693,7 +693,7 @@ const UploadPage = () => {
     </>
   );
 
-  const DetailsSection = () => (
+  const detailsSection = (
     <>
       <Divider>Details</Divider>
       <Row {...rowProps}>
@@ -878,7 +878,7 @@ const UploadPage = () => {
     </>
   );
 
-  const OptionalSection = () => (
+  const optionalSection = (
     <>
       <Divider>
         <Space>
@@ -940,7 +940,7 @@ const UploadPage = () => {
       >
         {!customIniFile && <UploadButton />}
       </Upload>
-      <DetailsSection />
+      {detailsSection}
       {shareUrl && tuneFile && <ShareSection />}
     </>
   );
@@ -996,7 +996,7 @@ const UploadPage = () => {
         >
           {tuneFile === undefined && <UploadButton />}
         </Upload>
-        {(tuneFile || defaultTuneFileList.length > 0) && <OptionalSection />}
+        {(tuneFile || defaultTuneFileList.length > 0) && optionalSection}
       </Form>
     </div>
   );
