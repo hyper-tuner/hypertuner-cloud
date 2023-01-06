@@ -715,7 +715,6 @@ const UploadPage = () => {
               allowClear
               style={{ width: '100%' }}
               options={[
-                { label: null, value: null },
                 {
                   label: <Tag color="green">base map</Tag>,
                   value: TunesTagsOptions['base map'],
