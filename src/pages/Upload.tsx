@@ -186,7 +186,7 @@ const UploadPage = () => {
     const hp = values.hp;
     const stockHp = values.stockHp;
     const visibility = values.visibility;
-    const tags = values.tags || '';
+    const tags = values.tags || ('' as TunesTagsOptions);
 
     const compressedTuneFile = bufferToFile(
       Pako.deflate(await tuneFile!.arrayBuffer()),
