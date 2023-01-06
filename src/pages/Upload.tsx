@@ -172,7 +172,6 @@ const UploadPage = () => {
   const publishTune = async (values: TunesRecord) => {
     setIsLoading(true);
 
-    /* eslint-disable prefer-destructuring */
     const vehicleName = values.vehicleName.trim();
     const engineMake = values.engineMake.trim();
     const engineCode = values.engineCode.trim();
@@ -188,7 +187,6 @@ const UploadPage = () => {
     const stockHp = values.stockHp;
     const visibility = values.visibility;
     const tags = values.tags;
-    /* eslint-enable prefer-destructuring */
 
     const compressedTuneFile = bufferToFile(
       Pako.deflate(await tuneFile!.arrayBuffer()),

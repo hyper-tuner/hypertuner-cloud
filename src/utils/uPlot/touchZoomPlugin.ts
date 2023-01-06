@@ -1,6 +1,3 @@
-/* eslint-disable no-multi-assign */
-/* eslint-disable no-param-reassign */
-
 import uPlot from 'uplot';
 
 interface Point {

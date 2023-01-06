@@ -1,6 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable jsx-a11y/anchor-has-content */
-
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate, Link, generatePath, useMatch } from 'react-router-dom';
 import { Layout, Space, Button, Row, Col, Tooltip, Grid, Dropdown, Typography, Radio } from 'antd';

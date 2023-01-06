@@ -1,5 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-
 import { useCallback } from 'react';
 import { colorHsl } from '../../../../utils/numbers';
 

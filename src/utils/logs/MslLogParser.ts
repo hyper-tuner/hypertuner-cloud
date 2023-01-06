@@ -1,4 +1,3 @@
-/* eslint-disable no-continue */
 import { Result } from 'mlg-converter/dist/types';
 import { ParserInterface } from '../ParserInterface';
 

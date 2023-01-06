@@ -1,5 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-
 import { Grid } from 'antd';
 import LandscapeNotice from './LandscapeNotice';
 import { colorHsl, formatNumber } from '../../../utils/numbers';
