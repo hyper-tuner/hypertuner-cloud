@@ -31,6 +31,14 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
+
+      // expired/bad token
+      if (error === 401) {
+        navigate(Routes.LOGIN);
+
+        return;
+      }
+
       throw error;
     }
   };

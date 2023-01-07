@@ -185,8 +185,13 @@ const useDb = () => {
       return Promise.resolve({ stars, isStarred });
     }
 
-    if (response.status === 404) {
-      return Promise.resolve({ stars: 0, isStarred: false });
+    switch (response.status) {
+      case 404:
+        return Promise.resolve({ stars: 0, isStarred: false });
+      case 401:
+        return Promise.reject(401);
+      default:
+        break;
     }
 
     Sentry.captureException(response);
@@ -206,8 +211,12 @@ const useDb = () => {
       return Promise.resolve(isStarred);
     }
 
-    if (response.status === 404) {
-      return Promise.resolve(false);
+    switch (response.status) {
+      case 404:
+      case 401:
+        return Promise.resolve(false);
+      default:
+        break;
     }
 
     Sentry.captureException(response);
