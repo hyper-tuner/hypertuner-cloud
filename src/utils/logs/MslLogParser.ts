@@ -2,8 +2,6 @@ import { Result } from 'mlg-converter/dist/types';
 import { ParserInterface } from '../ParserInterface';
 
 class MslLogParser implements ParserInterface {
-  private buffer: ArrayBuffer = new ArrayBuffer(0);
-
   private raw: string = '';
 
   private result: Result = {
@@ -17,7 +15,6 @@ class MslLogParser implements ParserInterface {
   };
 
   public constructor(buffer: ArrayBuffer) {
-    this.buffer = buffer;
     this.raw = new TextDecoder().decode(buffer);
   }
 

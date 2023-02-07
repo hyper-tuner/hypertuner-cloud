@@ -48,7 +48,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
           points: { show: false },
           stroke: Colors.ACCENT,
           fill: Colors.ACCENT,
-          value: (_self, rawValue) => `${rawValue.toLocaleString()}μs`,
+          value: (_self, rawValue) => (rawValue ? `${rawValue.toLocaleString()}μs` : '0μs'),
           paths: bars!({ size: [0.6, 100] }),
           scale: 'toothTime',
         },

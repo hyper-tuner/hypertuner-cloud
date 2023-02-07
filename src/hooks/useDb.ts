@@ -6,6 +6,7 @@ import {
   IniFilesResponse,
   TunesRecord,
   TunesResponse,
+  UsersResponse,
 } from '../@types/pocketbase-types';
 
 type Partial<T> = {
@@ -14,8 +15,12 @@ type Partial<T> = {
 
 export type TunesRecordPartial = Partial<TunesRecord>;
 
+export type TunesResponseExpand = {
+  author: UsersResponse;
+};
+
 type TunesResponseList = {
-  items: TunesResponse[];
+  items: TunesResponse<TunesResponseExpand>[];
   totalItems: number;
 };
 
@@ -100,11 +105,15 @@ const useDb = () => {
       .join(' && ');
 
     try {
-      const list = await tunesCollection.getList<TunesResponse>(page, perPage, {
-        sort: '-stars,-updated',
-        filter,
-        expand: 'author',
-      });
+      const list = await tunesCollection.getList<TunesResponse<TunesResponseExpand>>(
+        page,
+        perPage,
+        {
+          sort: '-stars,-updated',
+          filter,
+          expand: 'author',
+        },
+      );
 
       return Promise.resolve({
         items: list.items,
@@ -128,11 +137,15 @@ const useDb = () => {
     perPage: number,
   ): Promise<TunesResponseList> => {
     try {
-      const list = await tunesCollection.getList<TunesResponse>(page, perPage, {
-        sort: '-updated',
-        filter: `author = "${userId}"`,
-        expand: 'author',
-      });
+      const list = await tunesCollection.getList<TunesResponse<TunesResponseExpand>>(
+        page,
+        perPage,
+        {
+          sort: '-updated',
+          filter: `author = "${userId}"`,
+          expand: 'author',
+        },
+      );
 
       return Promise.resolve({
         items: list.items,

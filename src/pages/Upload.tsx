@@ -243,7 +243,9 @@ const UploadPage = () => {
       tags,
       visibility,
       tuneFile: compressedTuneFile as unknown as string,
-      customIniFile: compressedCustomIniFile as unknown as string,
+      customIniFile: compressedCustomIniFile
+        ? (compressedCustomIniFile as unknown as string)
+        : undefined,
       logFiles: compressedLogFiles as unknown as string[],
       toothLogFiles: compressedToothLogFiles as unknown as string[],
       textSearch: [
@@ -272,7 +274,7 @@ const UploadPage = () => {
         (value as unknown as File[]).forEach((file: File) => {
           formData.append(key, file);
         });
-      } else {
+      } else if (value !== undefined) {
         formData.append(key, value as string);
       }
     });

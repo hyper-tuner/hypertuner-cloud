@@ -1,12 +1,16 @@
 import { Config, Logs, TuneWithDetails } from '@hyper-tuner/types';
-import { TunesResponse } from '../@types/pocketbase-types';
+import { TunesResponse, UsersResponse } from '../@types/pocketbase-types';
 import { CompositeLogEntry, ToothLogEntry } from '../utils/logs/TriggerLogsParser';
+
+type TuneExpand = {
+  author: UsersResponse;
+};
 
 export interface ConfigState extends Config {}
 
 export interface TuneState extends TuneWithDetails {}
 
-export interface TuneDataState extends TunesResponse {}
+export interface TuneDataState extends TunesResponse<TuneExpand> {}
 
 export interface LogsState {
   fileName: string;

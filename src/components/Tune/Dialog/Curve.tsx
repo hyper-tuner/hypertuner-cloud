@@ -49,11 +49,11 @@ const Curve = ({
       series: [
         {
           label: xLabel,
-          value: (_self, val) => `${val.toLocaleString()}${xUnits}`,
+          value: (_self, val) => (val ? `${val.toLocaleString()}${xUnits}` : ''),
         },
         {
           label: yLabel,
-          value: (_self, val) => `${val.toLocaleString()}${yUnits}`,
+          value: (_self, val) => (val ? `${val.toLocaleString()}${yUnits}` : ''),
           points: { show: true },
           stroke: Colors.ACCENT,
           width: 3,
@@ -71,7 +71,7 @@ const Curve = ({
         },
       ],
       cursor: {
-        drag: { y: false },
+        drag: { y: false, x: false },
         points: { size: 9 },
       },
     });

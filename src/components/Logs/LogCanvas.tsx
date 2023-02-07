@@ -129,7 +129,7 @@ const LogCanvas = ({
           series: [
             {
               label: 'Time',
-              value: (_self: uPlot, val: number) => `${val.toLocaleString()}s`,
+              value: (_self: uPlot, val: number) => (val ? `${val.toLocaleString()}s` : '0s'),
             },
             ...dataSeries,
           ],

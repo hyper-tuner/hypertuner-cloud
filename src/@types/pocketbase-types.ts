@@ -14,22 +14,21 @@ export type IsoDateString = string;
 export type RecordIdString = string;
 
 // System fields
-export type BaseSystemFields = {
+export type BaseSystemFields<T = never> = {
   id: RecordIdString;
   created: IsoDateString;
   updated: IsoDateString;
   collectionId: string;
   collectionName: Collections;
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
-  expand?: { [key: string]: any };
+  expand?: T;
 };
 
-export type AuthSystemFields = {
+export type AuthSystemFields<T = never> = {
   email: string;
   emailVisibility: boolean;
   username: string;
   verified: boolean;
-} & BaseSystemFields;
+} & BaseSystemFields<T>;
 
 // Record types for each collection
 
@@ -98,8 +97,8 @@ export type UsersRecord = {
 
 // Response types include system fields and match responses from the PocketBase API
 export type IniFilesResponse = IniFilesRecord & BaseSystemFields;
-export type StargazersResponse = StargazersRecord & BaseSystemFields;
-export type TunesResponse = TunesRecord & BaseSystemFields;
+export type StargazersResponse<Texpand = unknown> = StargazersRecord & BaseSystemFields<Texpand>;
+export type TunesResponse<Texpand = unknown> = TunesRecord & BaseSystemFields<Texpand>;
 export type UsersResponse = UsersRecord & AuthSystemFields;
 
 export type CollectionRecords = {

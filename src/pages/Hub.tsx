@@ -5,7 +5,7 @@ import { CopyOutlined, StarFilled, ArrowRightOutlined, EditOutlined } from '@ant
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { generatePath, useNavigate } from 'react-router';
 import debounce from 'lodash.debounce';
-import useDb from '../hooks/useDb';
+import useDb, { TunesResponseExpand } from '../hooks/useDb';
 import { Routes } from '../routes';
 import { buildFullUrl } from '../utils/url';
 import { aspirationMapper } from '../utils/tune/mappers';
@@ -91,7 +91,7 @@ const Hub = () => {
   const columns: ColumnsType<any> = [
     {
       title: 'Tunes',
-      render: (tune: TunesResponse) => (
+      render: (tune: TunesResponse<TunesResponseExpand>) => (
         <>
           <Title level={5}>
             <Space>
@@ -102,7 +102,7 @@ const Hub = () => {
           <Space direction="vertical">
             <Text type="secondary">
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
-                <AuthorName author={tune.expand?.author} />
+                <AuthorName author={tune.expand!.author} />
               </Link>
               , {tune.updated}, {tune.stars} <StarFilled />
             </Text>
@@ -163,9 +163,9 @@ const Hub = () => {
       dataIndex: 'authorUsername',
       key: 'authorUsername',
       responsive: ['sm'],
-      render: (userName: string, record: TunesResponse) => (
+      render: (userName: string, record: TunesResponse<TunesResponseExpand>) => (
         <Link to={generatePath(Routes.USER_ROOT, { userId: record.author })}>
-          <AuthorName author={record.expand?.author} />
+          <AuthorName author={record.expand!.author} />
         </Link>
       ),
     },

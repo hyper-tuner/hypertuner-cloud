@@ -19,7 +19,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "incremental": false,
-    "noUncheckedIndexedAccess": false
+    "noUncheckedIndexedAccess": false,
+    "noUnusedLocals": true,
   },
   "include": [
     "src"

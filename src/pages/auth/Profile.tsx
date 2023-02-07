@@ -21,7 +21,7 @@ import {
 import { Routes } from '../../routes';
 import { usernameRules } from '../../utils/form';
 import { formatTime } from '../../utils/time';
-import useDb, { TunesRecordPartial } from '../../hooks/useDb';
+import useDb from '../../hooks/useDb';
 import { aspirationMapper } from '../../utils/tune/mappers';
 import { TunesResponse, TunesVisibilityOptions } from '../../@types/pocketbase-types';
 import TuneTag from '../../components/TuneTag';
