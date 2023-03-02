@@ -24,6 +24,11 @@ type TunesResponseList = {
   totalItems: number;
 };
 
+type ToggleStarResponse = {
+  stars: number;
+  isStarred: boolean;
+};
+
 const tunesCollection = client.collection(Collections.Tunes);
 
 const customEndpoint = `${API_URL}/api/custom`;
@@ -63,7 +68,7 @@ const useDb = () => {
     const response = await fetch(`${customEndpoint}/tunes/byTuneId/${tuneId}`);
 
     if (response.ok) {
-      return response.json();
+      return response.json() as Promise<TunesResponse>;
     }
 
     if (response.status === 404) {
@@ -80,7 +85,7 @@ const useDb = () => {
     const response = await fetch(`${customEndpoint}/iniFiles/bySignature/${signature}`);
 
     if (response.ok) {
-      return response.json();
+      return response.json() as Promise<IniFilesResponse>;
     }
 
     if (response.status === 404) {
@@ -185,7 +190,7 @@ const useDb = () => {
   const toggleStar = async (
     currentUserToken: string,
     tune: string,
-  ): Promise<{ stars: number; isStarred: boolean }> => {
+  ): Promise<ToggleStarResponse> => {
     const response = await fetch(`${customEndpoint}/stargazers/toggleStar`, {
       method: 'POST',
       headers: headers(currentUserToken),
@@ -193,7 +198,7 @@ const useDb = () => {
     });
 
     if (response.ok) {
-      const { stars, isStarred } = await response.json();
+      const { stars, isStarred } = (await response.json()) as ToggleStarResponse;
 
       return Promise.resolve({ stars, isStarred });
     }
@@ -219,7 +224,7 @@ const useDb = () => {
     });
 
     if (response.ok) {
-      const { isStarred } = await response.json();
+      const { isStarred } = (await response.json()) as ToggleStarResponse;
 
       return Promise.resolve(isStarred);
     }

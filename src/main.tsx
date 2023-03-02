@@ -10,6 +10,8 @@ import { environment, isProduction, sentryDsn } from './utils/env';
 import { AuthProvider } from './contexts/AuthContext';
 import CommandPalette from './components/CommandPalette';
 
+import '@total-typescript/ts-reset';
+
 if (isProduction) {
   Sentry.init({
     dsn: sentryDsn as string,
