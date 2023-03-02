@@ -76,7 +76,7 @@ class TuneParser {
       this.isTuneValid = true;
     }
 
-    if (this.isSignatureSupported()) {
+    if (!this.isSignatureSupported()) {
       this.isTuneValid = false;
     }
 
@@ -92,7 +92,7 @@ class TuneParser {
   }
 
   private isSignatureSupported(): boolean {
-    // return this.tune.details.signature.match(/^(speeduino|rusEFI) .+$/) === null;
+    // return this.tune.details.signature.match(/^(speeduino|rusEFI) .+$/) !== null;
     return true;
   }
 }
