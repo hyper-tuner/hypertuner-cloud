@@ -12,6 +12,7 @@ export enum Collections {
 // Alias types for improved usability
 export type IsoDateString = string;
 export type RecordIdString = string;
+export type HTMLString = string;
 
 // System fields
 export type BaseSystemFields<T = never> = {
@@ -101,9 +102,18 @@ export type StargazersResponse<Texpand = unknown> = StargazersRecord & BaseSyste
 export type TunesResponse<Texpand = unknown> = TunesRecord & BaseSystemFields<Texpand>;
 export type UsersResponse = UsersRecord & AuthSystemFields;
 
+// Types containing all Records and Responses, useful for creating typing helper functions
+
 export type CollectionRecords = {
   iniFiles: IniFilesRecord;
   stargazers: StargazersRecord;
   tunes: TunesRecord;
   users: UsersRecord;
+};
+
+export type CollectionResponses = {
+  iniFiles: IniFilesResponse;
+  stargazers: StargazersResponse;
+  tunes: TunesResponse;
+  users: UsersResponse;
 };
