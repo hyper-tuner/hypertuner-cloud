@@ -45,7 +45,7 @@
     "vite": "^4.1.4"
   },
   "devDependencies": {
-    "@total-typescript/ts-reset": "^0.3.7",
+    "@total-typescript/ts-reset": "^0.4.2",
     "@types/lodash.debounce": "^4.0.7",
     "@types/node": "^18.14.4",
     "@types/pako": "^2.0.0",
