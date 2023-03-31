@@ -58,7 +58,7 @@
     "pocketbase-typegen": "^1.1.7",
     "rollup-plugin-visualizer": "^5.9.0",
     "rome": "^11.0.0",
-    "typescript": "^5.0.2",
+    "typescript": "^5.0.3",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-pwa": "^0.14.4"
   }
