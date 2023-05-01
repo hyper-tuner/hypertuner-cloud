@@ -36,6 +36,7 @@ export type AuthSystemFields<T = never> = {
 export enum IniFilesEcosystemOptions {
   speeduino = 'speeduino',
   rusefi = 'rusefi',
+  fome = 'fome',
 }
 export type IniFilesRecord = {
   signature: string;
