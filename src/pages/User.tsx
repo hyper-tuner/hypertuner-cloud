@@ -30,7 +30,7 @@ const Profile = () => {
       setTotal(totalItems);
       setAuthor(items[0]!.expand!.author);
       setTunesDataSource(items);
-    } catch (error) {
+    } catch (_error) {
       // request cancelled
     } finally {
       setIsTunesLoading(false);

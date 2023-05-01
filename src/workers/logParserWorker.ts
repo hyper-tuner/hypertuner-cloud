@@ -4,7 +4,6 @@ import Pako from 'pako';
 import LogValidator from '../utils/logs/LogValidator';
 import MslLogParser from '../utils/logs/MslLogParser';
 
-// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 const ctx: Worker = self as any;
 
 export interface WorkerOutput {

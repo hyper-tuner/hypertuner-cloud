@@ -84,7 +84,7 @@ const Profile = () => {
       const { items, totalItems } = await getUserTunes(currentUser!.id, page, pageSize);
       setTotal(totalItems);
       setTunesDataSource(items);
-    } catch (error) {
+    } catch (_error) {
       // request cancelled
     } finally {
       setIsTunesLoading(false);

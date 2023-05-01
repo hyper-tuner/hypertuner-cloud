@@ -23,7 +23,7 @@ import {
 } from '@ant-design/icons';
 
 const Icon = ({ name }: { name: string }): JSX.Element => {
-  const map: { [name: string]: JSX.Element } = {
+  const map: { [index: string]: JSX.Element } = {
     settings: <ControlOutlined />,
     tuning: <CarOutlined />,
     spark: <FireOutlined />,

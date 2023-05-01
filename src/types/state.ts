@@ -6,11 +6,11 @@ type TuneExpand = {
   author: UsersResponse;
 };
 
-export interface ConfigState extends Config {}
+export type ConfigState = Config;
 
-export interface TuneState extends TuneWithDetails {}
+export type TuneState = TuneWithDetails;
 
-export interface TuneDataState extends TunesResponse<TuneExpand> {}
+export type TuneDataState = TunesResponse<TuneExpand>;
 
 export interface LogsState {
   fileName: string;

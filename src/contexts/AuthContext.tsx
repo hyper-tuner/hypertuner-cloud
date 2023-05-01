@@ -27,8 +27,6 @@ interface AuthValue {
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
-
-// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const users = client.collection(Collections.Users);
@@ -70,7 +68,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
         try {
           const authResponse = await users.authRefresh<UsersResponse>();
           return Promise.resolve(authResponse.record);
-        } catch (error) {
+        } catch (_error) {
           client.authStore.clear();
           return Promise.resolve(null);
         }

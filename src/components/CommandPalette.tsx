@@ -195,7 +195,6 @@ const ResultItem = forwardRef(
 const RenderResults = () => {
   const { results, rootActionId } = useMatches();
 
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   const onResultsRender = ({ item, active }: { item: any; active: boolean }) =>
     typeof item === 'string' ? (
       <div style={groupNameStyle}>{item}</div>

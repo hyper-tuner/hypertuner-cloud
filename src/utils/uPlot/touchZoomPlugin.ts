@@ -9,8 +9,7 @@ interface Point {
 }
 
 const touchZoomPlugin = () => {
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const init = (u: uPlot, _opts: any, data: any) => {
+  const init = (u: uPlot, _opts: any, _data: any) => {
     const { over } = u;
 
     let rect: DOMRect;
@@ -126,7 +125,7 @@ const touchZoomPlugin = () => {
       document.addEventListener('touchmove', touchmove, { passive: true });
     });
 
-    over.addEventListener('touchend', (e: TouchEvent) => {
+    over.addEventListener('touchend', (_e: TouchEvent) => {
       document.removeEventListener('touchmove', touchmove);
     });
   };

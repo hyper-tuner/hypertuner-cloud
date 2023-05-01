@@ -485,7 +485,7 @@ const UploadPage = () => {
     setToothLogFiles((prev) => prev.filter((f) => removeFilenameSuffix(f.name) !== file.name));
   };
 
-  const removeCustomIniFile = async (file: UploadFile) => {
+  const removeCustomIniFile = async (_file: UploadFile) => {
     setCustomIniFile(undefined);
   };
 

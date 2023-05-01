@@ -19,8 +19,16 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "correctness": {
+        "noUnusedVariables": "warn"
+      },
       "style": {
-        "noImplicitBoolean": "off"
+        "noImplicitBoolean": "off",
+        "useEnumInitializers": "off",
+        "noNonNullAssertion": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
       }
     }
   }

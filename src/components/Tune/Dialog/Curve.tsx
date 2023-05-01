@@ -13,7 +13,6 @@ const Curve = ({
   yLabel,
   xData,
   yData,
-  disabled,
   help,
   xUnits = '',
   yUnits = '',
@@ -22,7 +21,6 @@ const Curve = ({
   yLabel: string;
   xData: number[];
   yData: number[];
-  disabled: boolean;
   help: string;
   xUnits?: string;
   yUnits?: string;
@@ -98,7 +96,6 @@ const Curve = ({
           yLabel={yLabel}
           xData={xData}
           yData={yData}
-          disabled={disabled}
           xUnits={xUnits}
           yUnits={yUnits}
         />

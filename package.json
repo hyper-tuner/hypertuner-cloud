@@ -16,7 +16,7 @@
     "serve": "vite preview",
     "lint": "tsc && rome ci src",
     "lint:fix": "rome format --write src && rome check --apply src",
-    "lint:fix:suggested": "rome check --apply-suggested src",
+    "lint:fix:unsafe": "rome check --apply-unsafe src",
     "analyze": "npm run build && open stats.html",
     "typegen": "pocketbase-typegen --json ../cloud-backend/pb_schema.json --out src/@types/pocketbase-types.ts"
   },
@@ -26,7 +26,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@sentry/react": "^7.50.0",
     "@sentry/tracing": "^7.50.0",
-    "antd": "^18.2.1",
+    "antd": "^4.24.7",
     "kbar": "^0.1.0-beta.40",
     "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.9.0",

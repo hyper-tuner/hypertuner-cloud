@@ -10,7 +10,6 @@ const Table = ({
   yLabel,
   xData,
   yData,
-  disabled,
   xUnits,
   yUnits,
 }: {
@@ -18,7 +17,6 @@ const Table = ({
   yLabel: string;
   xData: number[];
   yData: number[];
-  disabled: boolean;
   xUnits: string;
   yUnits: string;
 }) => {

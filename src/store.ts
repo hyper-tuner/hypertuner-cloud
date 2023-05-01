@@ -29,16 +29,11 @@ const toggleSidebar = createAction('ui/toggleSidebar');
 const initialState: AppState = {
   tune: {
     constants: {},
-    // rome-ignore lint/suspicious/noExplicitAny: <explanation>
     details: {} as any,
   },
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   tuneData: {} as any,
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   logs: {} as any,
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   toothLogs: {} as any,
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   config: {} as any,
   ui: {
     sidebarCollapsed: false,

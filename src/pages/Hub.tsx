@@ -53,9 +53,8 @@ const Hub = () => {
         aspiration: aspirationMapper[tune.aspiration],
         updated: formatTime(tune.updated),
       }));
-      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
       setDataSource(mapped as any);
-    } catch (error) {
+    } catch (_error) {
       // request cancelled
     } finally {
       setIsLoading(false);
@@ -87,7 +86,6 @@ const Hub = () => {
     return () => window.removeEventListener('keydown', handleGlobalKeyboard);
   }, [page]);
 
-  // rome-ignore lint/suspicious/noExplicitAny: <explanation>
   const columns: ColumnsType<any> = [
     {
       title: 'Tunes',
@@ -163,7 +161,7 @@ const Hub = () => {
       dataIndex: 'authorUsername',
       key: 'authorUsername',
       responsive: ['sm'],
-      render: (userName: string, record: TunesResponse<TunesResponseExpand>) => (
+      render: (_userName: string, record: TunesResponse<TunesResponseExpand>) => (
         <Link to={generatePath(Routes.USER_ROOT, { userId: record.author })}>
           <AuthorName author={record.expand!.author} />
         </Link>

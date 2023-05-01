@@ -22,7 +22,7 @@ class BrowserStorage {
   }
 
   public delete(key: string): void {
-    return this.storage.removeItem(key);
+    this.storage.removeItem(key);
   }
 
   public async isAvailable(): Promise<boolean> {

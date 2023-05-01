@@ -58,7 +58,6 @@ class MslLogParser implements ParserInterface {
         };
 
         fields.forEach((value, fieldIndex) => {
-          // rome-ignore lint/suspicious/noExplicitAny: <explanation>
           (record as any)[this.result.fields[fieldIndex].name] = parseFloat(value);
         });
 

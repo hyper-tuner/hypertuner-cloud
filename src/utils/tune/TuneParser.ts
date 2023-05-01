@@ -20,9 +20,7 @@ class TuneParser {
     const raw = new TextDecoder().decode(buffer);
     const xml = new DOMParser().parseFromString(raw, 'text/xml');
     const xmlPages = xml.getElementsByTagName('page');
-    // rome-ignore lint/suspicious/noExplicitAny: <explanation>
     const bibliography = xml.getElementsByTagName('bibliography')[0]?.attributes as any;
-    // rome-ignore lint/suspicious/noExplicitAny: <explanation>
     const versionInfo = xml.getElementsByTagName('versionInfo')[0]?.attributes as any;
 
     if (!(xmlPages && versionInfo)) {
@@ -41,20 +39,16 @@ class TuneParser {
       signature: versionInfo.signature.value,
     };
 
-    // rome-ignore lint/suspicious/noExplicitAny: <explanation>
     Object.keys(xmlPages).forEach((key: any) => {
       const page = xmlPages[key];
       const pageElements = page.children;
 
-      // rome-ignore lint/suspicious/noExplicitAny: <explanation>
       Object.keys(pageElements).forEach((item: any) => {
         const element = pageElements[item];
 
         if (element.tagName === 'constant') {
-          // rome-ignore lint/suspicious/noExplicitAny: <explanation>
           const attributes: any = {};
 
-          // rome-ignore lint/suspicious/noExplicitAny: <explanation>
           Object.keys(element.attributes).forEach((attr: any) => {
             attributes[element.attributes[attr].name] = element.attributes[attr].value;
           });
