@@ -36,6 +36,11 @@
 
 ## Supported ECUs
 
+### FOME
+
+- Source code: [FOME-Tech/fome-fw](https://github.com/FOME-Tech/fome-fw)
+- Documentation: [wiki.fome.tech](https://wiki.fome.tech)
+
 ### Speeduino
 
 [https://tunes.speeduino.com](https://tunes.speeduino.com)

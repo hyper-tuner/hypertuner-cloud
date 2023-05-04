@@ -27,7 +27,7 @@ export const SKIP_MENUS = [
   'dataLogging',
   'tools',
 
-  // rusefi
+  // rusefi, FOME
   'view',
   'controller',
 ];

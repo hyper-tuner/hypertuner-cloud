@@ -103,14 +103,25 @@ const Logs = ({
   const [logs, setLogs] = useState<ParserResult>();
   const [fields, setFields] = useState<DatalogEntry[]>([]);
   const [selectedFields1, setSelectedFields1] = useState<CheckboxValueType[]>([
+    // Speeduino
     'rpm',
     'tps',
     'map',
+
+    // rusefi, FOME
+    'RPMValue',
+    'TPSValue',
+    'MAPValue',
   ]);
   const [selectedFields2, setSelectedFields2] = useState<CheckboxValueType[]>([
+    // Speeduino
     'afrTarget',
     'afr',
     'dwell',
+
+    // rusefi, FOME
+    'targetAFR',
+    'AFRValue',
   ]);
   const { isConfigReady, findOutputChannel } = useConfig(config);
   const prepareSelectedFields = useCallback(
