@@ -113,6 +113,13 @@ const TopBar = ({
 
   const downloadItems = [
     {
+      label: 'Open in app',
+      icon: <DesktopOutlined />,
+      key: 'open',
+      disabled: false,
+      onClick: () => window.open(buildHyperTunerAppLink(tuneData!.tuneId)),
+    },
+    {
       label: 'Tune',
       icon: <SlidersOutlined />,
       key: 'tune',
@@ -128,13 +135,6 @@ const TopBar = ({
               tuneData!.tuneFile,
               downloadAnchorRef.current!,
             ),
-        },
-        {
-          label: 'Open in app',
-          icon: <DesktopOutlined />,
-          key: 'open',
-          disabled: false,
-          onClick: () => window.open(buildHyperTunerAppLink(tuneData!.tuneId)),
         },
       ],
     },
