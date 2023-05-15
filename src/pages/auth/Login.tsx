@@ -186,7 +186,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   const OauthSection = () =>
     isOauthEnabled ? (
       <>
-        <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
+        <Space direction='horizontal' style={{ width: '100%', justifyContent: 'center' }}>
           {providersReady &&
             Object.keys(oauthMethods).map(
               (provider) =>
@@ -223,8 +223,8 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
 
   const submitLogin = (
     <Button
-      type="primary"
-      htmlType="submit"
+      type='primary'
+      htmlType='submit'
       style={{ width: '100%' }}
       loading={isEmailLoading}
       disabled={isAnythingLoading}
@@ -236,8 +236,8 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
 
   const submitSignUp = (
     <Button
-      type="primary"
-      htmlType="submit"
+      type='primary'
+      htmlType='submit'
       style={{ width: '100%' }}
       loading={isEmailLoading}
       disabled={isAnythingLoading}
@@ -248,7 +248,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   );
 
   return (
-    <div className="auth-container">
+    <div className='auth-container'>
       <Divider>{formRole}</Divider>
       {providersReady && <OauthSection />}
       <Form
@@ -256,23 +256,23 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
         validateMessages={validateMessages}
         form={formEmail}
       >
-        <Item name="email" rules={emailRules} hasFeedback>
+        <Item name='email' rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
-            placeholder="Email"
-            autoComplete="email"
+            placeholder='Email'
+            autoComplete='email'
             disabled={isAnythingLoading}
           />
         </Item>
         {!isLogin && (
-          <Item name="username" rules={usernameRules} hasFeedback>
-            <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="name" />
+          <Item name='username' rules={usernameRules} hasFeedback>
+            <Input prefix={<UserOutlined />} placeholder='Username' autoComplete='name' />
           </Item>
         )}
-        <Item name="password" rules={requiredRules} hasFeedback>
+        <Item name='password' rules={requiredRules} hasFeedback>
           <Input.Password
-            placeholder="Password"
-            autoComplete="current-password"
+            placeholder='Password'
+            autoComplete='current-password'
             prefix={<LockOutlined />}
             disabled={isAnythingLoading}
           />

@@ -65,8 +65,8 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
   return (
     <div style={{ textAlign: 'right' }}>
       <Tooltip
-        title="You must be signed in to star a tune"
-        placement="bottom"
+        title='You must be signed in to star a tune'
+        placement='bottom'
         trigger={currentUserToken ? 'none' : 'hover'}
       >
         <Button

@@ -179,8 +179,8 @@ const TopBar = ({
             tuneRootMatch?.pathname ||
             hubPathMatch?.pathname
           }
-          optionType="button"
-          buttonStyle="solid"
+          optionType='button'
+          buttonStyle='solid'
           onChange={(e) => navigate(e.target.value)}
         >
           <Radio.Button value={buildTuneUrl(Routes.HUB)}>
@@ -254,11 +254,11 @@ const TopBar = ({
     const list = [];
 
     if (lg) {
-      list.push(<span key="download-text">Download</span>);
+      list.push(<span key='download-text'>Download</span>);
     }
 
     if (sm) {
-      list.push(<DownOutlined key="download-icon" />);
+      list.push(<DownOutlined key='download-icon' />);
     }
 
     return list.length ? list : null;
@@ -313,7 +313,7 @@ const TopBar = ({
   ];
 
   return (
-    <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {}}>
+    <Header className='app-top-bar' style={xs ? { padding: '0 5px' } : {}}>
       <Row>
         {tuneData?.tuneId ? (
           tabs
@@ -346,15 +346,15 @@ const TopBar = ({
               </Button>
             </Link>
             {tuneData?.tuneId && (
-              <Dropdown menu={{ items: downloadItems }} placement="bottom" trigger={['click']}>
+              <Dropdown menu={{ items: downloadItems }} placement='bottom' trigger={['click']}>
                 <Button icon={<CloudDownloadOutlined />}>{downloadButton}</Button>
               </Dropdown>
             )}
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
+            <Dropdown menu={{ items: userMenuItems }} placement='bottomRight' trigger={['click']}>
               <Button icon={<UserOutlined />}>{sm && <DownOutlined />}</Button>
             </Dropdown>
             {/* dummy anchor for file download */}
-            <a href="" ref={downloadAnchorRef} style={{ display: 'none' }}>
+            <a href='#download' ref={downloadAnchorRef} style={{ display: 'none' }}>
               download
             </a>
           </Space>

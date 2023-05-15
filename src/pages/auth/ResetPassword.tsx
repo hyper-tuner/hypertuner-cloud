@@ -30,7 +30,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className='auth-container'>
       <Divider>Reset password</Divider>
       <Form
         initialValues={{ remember: true }}
@@ -38,11 +38,11 @@ const ResetPassword = () => {
         validateMessages={validateMessages}
         form={form}
       >
-        <Item name="email" rules={emailRules} hasFeedback>
-          <Input prefix={<MailOutlined />} placeholder="Email" autoComplete="email" />
+        <Item name='email' rules={emailRules} hasFeedback>
+          <Input prefix={<MailOutlined />} placeholder='Email' autoComplete='email' />
         </Item>
         <Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }} loading={isLoading}>
+          <Button type='primary' htmlType='submit' style={{ width: '100%' }} loading={isLoading}>
             Reset password
           </Button>
         </Item>

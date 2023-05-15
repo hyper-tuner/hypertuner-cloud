@@ -205,17 +205,17 @@ const Diagnose = ({
 
   return (
     <>
-      <Sider {...siderProps} className="app-sidebar">
+      <Sider {...siderProps} className='app-sidebar'>
         {loadedToothLogs.type ? (
           !ui.sidebarCollapsed && (
             <Tabs
-              defaultActiveKey="files"
+              defaultActiveKey='files'
               style={{ marginLeft: 20 }}
               items={[
                 {
                   label: (
                     <Badge
-                      size="small"
+                      size='small'
                       style={badgeStyle}
                       count={tuneData?.toothLogFiles?.length}
                       offset={[10, -3]}
@@ -252,14 +252,14 @@ const Diagnose = ({
           <Loader />
         )}
       </Sider>
-      <Layout className="logs-container">
+      <Layout className='logs-container'>
         <Content>
           <div ref={contentRef}>
             {loadedToothLogs.type ? (
               <Graph />
             ) : (
-              <Space direction="vertical" size="large">
-                <Progress type="circle" percent={progress} className="logs-progress" />
+              <Space direction='vertical' size='large'>
+                <Progress type='circle' percent={progress} className='logs-progress' />
                 <Divider />
                 <Steps
                   current={step}

@@ -29,17 +29,17 @@ class TriggerLogsParser implements ParserInterface {
 
   private MARKER_PREFIX = 'MARK';
 
-  private isToothLogs: boolean = false;
+  private isToothLogs = false;
 
-  private isCompositeLogs: boolean = false;
+  private isCompositeLogs = false;
 
   private resultComposite: CompositeLogEntry[] = [];
 
   private resultTooth: ToothLogEntry[] = [];
 
-  private alreadyParsed: boolean = false;
+  private alreadyParsed = false;
 
-  private raw: string = '';
+  private raw = '';
 
   public constructor(buffer: ArrayBuffer) {
     this.raw = new TextDecoder().decode(buffer);

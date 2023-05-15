@@ -97,8 +97,8 @@ const Hub = () => {
               <TuneTag tag={tune.tags} />
             </Space>
           </Title>
-          <Space direction="vertical">
-            <Text type="secondary">
+          <Space direction='vertical'>
+            <Text type='secondary'>
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
                 <AuthorName author={tune.expand!.author} />
               </Link>
@@ -120,7 +120,7 @@ const Hub = () => {
       key: 'vehicleName',
       responsive: ['sm'],
       render: (vehicleName: string, tune: TunesResponse) => (
-        <Space direction="vertical">
+        <Space direction='vertical'>
           {vehicleName}
           <TuneTag tag={tune.tags} />
         </Space>
@@ -208,7 +208,7 @@ const Hub = () => {
             )}
             <Button
               size={size}
-              type="primary"
+              type='primary'
               icon={<ArrowRightOutlined />}
               onClick={() => navigate(tunePath(tuneId))}
             />
@@ -220,14 +220,14 @@ const Hub = () => {
   ];
 
   return (
-    <div className="large-container">
+    <div className='large-container'>
       <Input
         // rome-ignore lint: make search input first in tab order
         tabIndex={1}
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
         value={searchQuery}
-        placeholder="Search by anything..."
+        placeholder='Search by anything...'
         onChange={({ target }) => debounceLoadData(target.value)}
         allowClear
       />

@@ -29,8 +29,8 @@ const SmartSelect = ({
     return (
       <Radio.Group
         value={values.indexOf(defaultValue)}
-        optionType="button"
-        buttonStyle="solid"
+        optionType='button'
+        buttonStyle='solid'
         disabled={disabled}
       >
         {values.map((val: string, index) => (
@@ -45,7 +45,7 @@ const SmartSelect = ({
   return (
     <Select
       value={values.indexOf(defaultValue)}
-      optionFilterProp="label"
+      optionFilterProp='label'
       disabled={disabled}
       style={{ maxWidth: 250 }}
     >

@@ -87,7 +87,7 @@ const Curve = ({
   return (
     <>
       <Typography.Paragraph>
-        <Typography.Text type="secondary">{help}</Typography.Text>
+        <Typography.Text type='secondary'>{help}</Typography.Text>
       </Typography.Paragraph>
       <UplotReact options={options!} data={plotData!} />
       <div ref={containerRef}>

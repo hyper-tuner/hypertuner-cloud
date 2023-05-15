@@ -19,7 +19,7 @@ const SmartNumber = ({
   const isSlider = (u: string) => ['%', 'C'].includes(`${u}`.toUpperCase());
   const sliderMarks: { [value: number]: string } = {};
   const step = digits ? 10 ** -digits : 1;
-  const value = formatNumber(defaultValue, digits);
+  const val = formatNumber(defaultValue, digits);
   sliderMarks[min] = `${min}${units}`;
 
   if (min <= 0) {
@@ -33,7 +33,7 @@ const SmartNumber = ({
   if (isSlider(units || '')) {
     return (
       <Slider
-        value={value as unknown as number}
+        value={val as unknown as number}
         min={min}
         max={max}
         step={step}
@@ -48,7 +48,7 @@ const SmartNumber = ({
 
   return (
     <InputNumber
-      value={value as unknown as number}
+      value={val as unknown as number}
       precision={digits}
       min={min}
       max={max}

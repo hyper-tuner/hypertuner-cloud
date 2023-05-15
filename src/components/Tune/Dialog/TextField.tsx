@@ -17,7 +17,7 @@ const TextField = ({ title }: { title: string }) => {
           style={{ width: '100%', maxWidth: 700 }}
         />
       ) : (
-        <Typography.Text type="secondary">{title}</Typography.Text>
+        <Typography.Text type='secondary'>{title}</Typography.Text>
       )}
     </Typography.Paragraph>
   );
