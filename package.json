@@ -47,7 +47,7 @@
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/node": "^20.1.2",
+    "@types/node": "^20.1.4",
     "@types/pako": "^2.0.0",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
