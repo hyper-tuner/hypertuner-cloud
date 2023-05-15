@@ -285,16 +285,16 @@ const Logs = ({
 
   return (
     <>
-      <Sider {...siderProps} className="app-sidebar">
+      <Sider {...siderProps} className='app-sidebar'>
         {(loadedLogs?.logs || []).length ? (
           !ui.sidebarCollapsed && (
             <Tabs
-              defaultActiveKey="fields"
+              defaultActiveKey='fields'
               style={{ marginLeft: 20 }}
               items={[
                 {
                   label: (
-                    <Badge size="small" style={badgeStyle} count={fields.length} offset={[10, -3]}>
+                    <Badge size='small' style={badgeStyle} count={fields.length} offset={[10, -3]}>
                       <EditOutlined />
                       Fields
                     </Badge>
@@ -343,7 +343,7 @@ const Logs = ({
                 {
                   label: (
                     <Badge
-                      size="small"
+                      size='small'
                       style={badgeStyle}
                       count={tuneData?.logFiles?.length}
                       offset={[10, -3]}
@@ -380,7 +380,7 @@ const Logs = ({
           <Loader />
         )}
       </Sider>
-      <Layout className="logs-container">
+      <Layout className='logs-container'>
         <Content>
           <div ref={contentRef}>
             {logs || !!(loadedLogs.logs || []).length ? (
@@ -393,12 +393,12 @@ const Logs = ({
                 showSingleGraph={showSingleGraph}
               />
             ) : (
-              <Space direction="vertical" size="large">
+              <Space direction='vertical' size='large'>
                 <Progress
-                  type="circle"
+                  type='circle'
                   percent={progress}
                   status={(fetchError || parseError) && 'exception'}
-                  className="logs-progress"
+                  className='logs-progress'
                 />
                 <Divider />
                 <Steps

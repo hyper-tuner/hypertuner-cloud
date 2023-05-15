@@ -42,7 +42,7 @@ const Profile = () => {
   }, [page]);
 
   return (
-    <div className="small-container">
+    <div className='small-container'>
       <Divider>
         {author ? (
           <>
@@ -66,10 +66,10 @@ const Profile = () => {
             ]}
             className={tune.visibility}
           >
-            <Space direction="vertical">
+            <Space direction='vertical'>
               <List.Item.Meta
                 title={
-                  <Space direction="vertical">
+                  <Space direction='vertical'>
                     {tune.vehicleName}
                     <TuneTag tag={tune.tags} />
                     <Typography.Text italic>{tune.signature}</Typography.Text>

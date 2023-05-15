@@ -31,26 +31,26 @@ const ResetPasswordConfirmation = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className='auth-container'>
       <Divider>Change password</Divider>
       <Form
         initialValues={{ remember: true }}
         onFinish={changePassword}
         validateMessages={validateMessages}
-        autoComplete="off"
+        autoComplete='off'
         form={form}
       >
-        <Item name="password" rules={passwordRules} hasFeedback>
+        <Item name='password' rules={passwordRules} hasFeedback>
           <Input.Password
-            placeholder="New password"
-            autoComplete="new-password"
+            placeholder='New password'
+            autoComplete='new-password'
             prefix={<LockOutlined />}
           />
         </Item>
         <Item>
           <Button
-            type="primary"
-            htmlType="submit"
+            type='primary'
+            htmlType='submit'
             style={{ width: '100%' }}
             icon={<LockOutlined />}
             loading={isLoading}

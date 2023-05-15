@@ -159,7 +159,7 @@ const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
 
     return (
       <Layout style={{ marginLeft }}>
-        <Layout className="app-content">
+        <Layout className='app-content'>
           <Content>
             <Suspense fallback={<Loader />}>{element}</Suspense>
           </Content>
@@ -231,11 +231,11 @@ const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
           />
 
           <Route
-            path="*"
+            path='*'
             element={
               <ContentFor
                 element={
-                  <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
+                  <Result status='warning' title='Page not found' style={{ marginTop: 50 }} />
                 }
               />
             }

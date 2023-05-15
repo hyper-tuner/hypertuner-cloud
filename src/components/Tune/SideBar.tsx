@@ -196,7 +196,7 @@ const SideBar = ({
   };
 
   return (
-    <Sider {...siderProps} className="app-sidebar">
+    <Sider {...siderProps} className='app-sidebar'>
       <PerfectScrollbar options={{ suppressScrollX: true }}>
         <Menu
           defaultSelectedKeys={[
@@ -205,7 +205,7 @@ const SideBar = ({
               : matchedPath!.pathname,
           ]}
           defaultOpenKeys={ui.sidebarCollapsed ? [] : defaultOpenSubmenus()}
-          mode="inline"
+          mode='inline'
           style={{ height: '100%' }}
           key={
             matchedGroupMenuDialogPath ? matchedGroupMenuDialogPath.pathname : matchedPath!.pathname

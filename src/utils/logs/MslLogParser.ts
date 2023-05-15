@@ -2,7 +2,7 @@ import { Result } from 'mlg-converter/dist/types';
 import { ParserInterface } from '../ParserInterface';
 
 class MslLogParser implements ParserInterface {
-  private raw: string = '';
+  private raw = '';
 
   private result: Result = {
     fileFormat: 'MSL',

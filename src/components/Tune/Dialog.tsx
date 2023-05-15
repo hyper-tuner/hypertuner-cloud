@@ -88,11 +88,11 @@ const Dialog = ({
     link && (
       <Popover
         content={
-          <a href={`${link}`} target="__blank" rel="noopener noreferrer">
+          <a href={`${link}`} target='__blank' rel='noopener noreferrer'>
             {link}
           </a>
         }
-        placement="right"
+        placement='right'
       >
         <QuestionCircleOutlined />
       </Popover>
@@ -353,7 +353,7 @@ const Dialog = ({
   if (!dialogConfig) {
     if (curveConfig) {
       return (
-        <div ref={containerRef} className="large-container">
+        <div ref={containerRef} className='large-container'>
           <Divider>{curveConfig.title}</Divider>
           {renderCurve(curveConfig)}
         </div>
@@ -362,7 +362,7 @@ const Dialog = ({
 
     if (tableConfig) {
       return (
-        <div ref={containerRef} className="large-container">
+        <div ref={containerRef} className='large-container'>
           {renderHelp(tableConfig.help)}
           <Divider>{tableConfig.title}</Divider>
           {renderTable(tableConfig)}
@@ -370,11 +370,11 @@ const Dialog = ({
       );
     }
 
-    return <Result status="warning" title="Dialog not found" style={{ marginTop: 50 }} />;
+    return <Result status='warning' title='Dialog not found' style={{ marginTop: 50 }} />;
   }
 
   return (
-    <div ref={containerRef} className="large-container">
+    <div ref={containerRef} className='large-container'>
       {renderHelp(dialogConfig?.help)}
       <Form labelCol={{ span: 10 }} wrapperCol={{ span: 10 }}>
         <Row gutter={20}>{panelsComponents}</Row>

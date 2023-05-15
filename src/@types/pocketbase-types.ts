@@ -49,6 +49,11 @@ export type StargazersRecord = {
   tune: RecordIdString;
 };
 
+export enum TunesSourceOptions {
+  web = 'web',
+  app = 'app',
+}
+
 export enum TunesAspirationOptions {
   na = 'na',
   turbocharged = 'turbocharged',
@@ -67,6 +72,7 @@ export enum TunesVisibilityOptions {
 export type TunesRecord = {
   author: RecordIdString;
   tuneId: string;
+  source: TunesSourceOptions;
   signature: string;
   stars?: number;
   vehicleName: string;
@@ -98,10 +104,11 @@ export type UsersRecord = {
 };
 
 // Response types include system fields and match responses from the PocketBase API
-export type IniFilesResponse = IniFilesRecord & BaseSystemFields;
-export type StargazersResponse<Texpand = unknown> = StargazersRecord & BaseSystemFields<Texpand>;
-export type TunesResponse<Texpand = unknown> = TunesRecord & BaseSystemFields<Texpand>;
-export type UsersResponse = UsersRecord & AuthSystemFields;
+export type IniFilesResponse = Required<IniFilesRecord> & BaseSystemFields;
+export type StargazersResponse<Texpand = unknown> = Required<StargazersRecord> &
+  BaseSystemFields<Texpand>;
+export type TunesResponse<Texpand = unknown> = Required<TunesRecord> & BaseSystemFields<Texpand>;
+export type UsersResponse = Required<UsersRecord> & AuthSystemFields;
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 

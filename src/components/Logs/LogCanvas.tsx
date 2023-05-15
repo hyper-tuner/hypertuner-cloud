@@ -173,7 +173,7 @@ const LogCanvas = ({
   }
 
   return (
-    <Space direction="vertical" size="large">
+    <Space direction='vertical' size='large'>
       <UplotReact key={`first-${selectedFields1.join('-')}`} options={options1} data={plotData1} />
       {!showSingleGraph && (
         <UplotReact

@@ -33,7 +33,7 @@ const Map3D = ({
 
       if (index === 0) {
         result.push(
-          <td {...titleProps} className="title-map" key={`y-${yValue}`}>
+          <td {...titleProps} className='title-map' key={`y-${yValue}`}>
             {`${yValue}`}
           </td>,
         );
@@ -41,7 +41,7 @@ const Map3D = ({
 
       result.push(
         <td
-          className="value"
+          className='value'
           key={`${rowIndex}-${index}-${value}-${hue}${sat}${light}`}
           style={{ backgroundColor: `hsl(${hue}, ${sat}%, ${light}%)` }}
         >
@@ -57,14 +57,14 @@ const Map3D = ({
   }
 
   return (
-    <div className="table">
+    <div className='table'>
       <table>
         <tbody>
           {zData.map((row, i) => (
             <tr key={`row-${i}`}>{renderRow(i, row)}</tr>
           ))}
           <tr>
-            <td {...titleProps} className="title-map">
+            <td {...titleProps} className='title-map'>
               {yUnits} / {xUnits}
             </td>
             {xData.map((xValue, l) => (

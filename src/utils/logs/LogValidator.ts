@@ -3,13 +3,13 @@ import { ParserInterface } from '../ParserInterface';
 class LogValidator implements ParserInterface {
   private MLG_FORMAT_LENGTH = 6;
 
-  private isMLGLogs: boolean = false;
+  private isMLGLogs = false;
 
-  private isMSLLogs: boolean = false;
+  private isMSLLogs = false;
 
   private buffer: ArrayBuffer = new ArrayBuffer(0);
 
-  private raw: string = '';
+  private raw = '';
 
   public constructor(buffer: ArrayBuffer) {
     this.buffer = buffer;
