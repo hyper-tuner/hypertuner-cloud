@@ -32,7 +32,7 @@
     "mlg-converter": "^0.9.0",
     "nanoid": "^4.0.2",
     "pako": "^2.1.0",
-    "pocketbase": "^0.14.4",
+    "pocketbase": "^0.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-ga4": "^2.1.0",
