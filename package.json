@@ -25,7 +25,7 @@
     "@hyper-tuner/types": "git+https://github.com/hyper-tuner/types.git",
     "@reduxjs/toolkit": "^1.9.5",
     "@sentry/react": "^7.54.0",
-    "@sentry/tracing": "^7.54.0",
+    "@sentry/tracing": "^7.55.0",
     "antd": "^4.24.10",
     "kbar": "^0.1.0-beta.40",
     "lodash.debounce": "^4.0.8",
