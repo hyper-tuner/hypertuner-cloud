@@ -42,7 +42,7 @@
     "react-router-dom": "^6.11.2",
     "uplot": "^1.6.24",
     "uplot-react": "^1.1.4",
-    "vite": "^4.3.9"
+    "vite": "^4.4.1"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.4.2",
