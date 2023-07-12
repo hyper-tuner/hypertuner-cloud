@@ -104,11 +104,12 @@ export type UsersRecord = {
 };
 
 // Response types include system fields and match responses from the PocketBase API
-export type IniFilesResponse = Required<IniFilesRecord> & BaseSystemFields;
+export type IniFilesResponse<Texpand = unknown> = Required<IniFilesRecord> &
+  BaseSystemFields<Texpand>;
 export type StargazersResponse<Texpand = unknown> = Required<StargazersRecord> &
   BaseSystemFields<Texpand>;
 export type TunesResponse<Texpand = unknown> = Required<TunesRecord> & BaseSystemFields<Texpand>;
-export type UsersResponse = Required<UsersRecord> & AuthSystemFields;
+export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>;
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
