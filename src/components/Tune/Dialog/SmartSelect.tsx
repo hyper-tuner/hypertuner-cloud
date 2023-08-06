@@ -50,13 +50,13 @@ const SmartSelect = ({
       style={{ maxWidth: 250 }}
     >
       {/* we need to preserve indexes here, skip INVALID option */}
-      {values.map((val: string, index) =>
-        val === 'INVALID' ? null : (
+      {values.map((val: string, index) => {
+        return val === 'INVALID' ? null : (
           <Select.Option key={val} value={index} label={val}>
             {val}
           </Select.Option>
-        ),
-      )}
+        );
+      })}
     </Select>
   );
 };

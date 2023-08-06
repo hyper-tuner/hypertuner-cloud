@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { Form, Divider, Col, Row, Popover, Space, Result } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -81,7 +81,7 @@ const Dialog = ({
     tune && config && Object.keys(tune.constants).length && Object.keys(config.constants).length;
   const { storageSet } = useBrowserStorage();
   const { findConstantOnPage } = useConfig(config);
-  const [panelsComponents, setPanelsComponents] = useState<(JSX.Element | null)[]>([]);
+  const [panelsComponents, setPanelsComponents] = useState<(React.JSX.Element | null)[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const renderHelp = (link?: string) =>

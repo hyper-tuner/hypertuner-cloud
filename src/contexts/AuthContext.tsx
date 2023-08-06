@@ -27,6 +27,7 @@ interface AuthValue {
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
+// rome-ignore lint/nursery/useHookAtTopLevel: <explanation>
 const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const users = client.collection(Collections.Users);

@@ -183,8 +183,8 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     });
   }, [listAuthMethods]);
 
-  const OauthSection = () =>
-    isOauthEnabled ? (
+  const OauthSection = () => {
+    return isOauthEnabled ? (
       <>
         <Space direction='horizontal' style={{ width: '100%', justifyContent: 'center' }}>
           {providersReady &&
@@ -205,6 +205,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
         <Divider />
       </>
     ) : null;
+  };
 
   const bottomLinksLogin = (
     <>

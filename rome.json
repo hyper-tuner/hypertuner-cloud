@@ -18,17 +18,25 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "all": true,
       "correctness": {
+        "all": true,
         "noUnusedVariables": "warn"
       },
       "style": {
+        "all": true,
         "noImplicitBoolean": "off",
         "useEnumInitializers": "off",
         "noNonNullAssertion": "off"
       },
       "suspicious": {
+        "all": true,
         "noExplicitAny": "off"
+      },
+      "nursery": {
+        "all": true,
+        "useExhaustiveDependencies": "off",
+        "noForEach": "off"
       }
     }
   }

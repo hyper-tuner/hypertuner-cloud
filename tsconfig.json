@@ -21,6 +21,7 @@
     "incremental": false,
     "noUncheckedIndexedAccess": false,
     "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
     "src"

@@ -50,6 +50,7 @@ const findDatalog = (config: ConfigType, name: string): DatalogEntry => {
 };
 
 const useConfig = (config: ConfigType | null) =>
+  // rome-ignore lint/nursery/useHookAtTopLevel: <explanation>
   useMemo(
     () => ({
       isConfigReady: !!config?.constants,

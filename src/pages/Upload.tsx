@@ -408,7 +408,6 @@ const UploadPage = () => {
           }
           default:
             valid = false;
-            break;
         }
 
         return {

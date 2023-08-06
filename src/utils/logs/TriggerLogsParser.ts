@@ -25,9 +25,9 @@ export interface ToothLogEntry {
 }
 
 class TriggerLogsParser implements ParserInterface {
-  private COMMENT_PREFIX = '#';
+  private commentPrefix = '#';
 
-  private MARKER_PREFIX = 'MARK';
+  private markerPrefix = 'MARK';
 
   private isToothLogs = false;
 
@@ -118,11 +118,11 @@ class TriggerLogsParser implements ParserInterface {
     raw.split('\n').forEach((line) => {
       const trimmed = line.trim();
 
-      if (trimmed.startsWith(this.COMMENT_PREFIX)) {
+      if (trimmed.startsWith(this.commentPrefix)) {
         return;
       }
 
-      if (trimmed.startsWith(this.MARKER_PREFIX)) {
+      if (trimmed.startsWith(this.markerPrefix)) {
         const previous = this.resultTooth[this.resultTooth.length - 1] || {
           toothTime: 0,
           time: 0,
@@ -160,11 +160,11 @@ class TriggerLogsParser implements ParserInterface {
     raw.split('\n').forEach((line) => {
       const trimmed = line.trim();
 
-      if (trimmed.startsWith(this.COMMENT_PREFIX)) {
+      if (trimmed.startsWith(this.commentPrefix)) {
         return;
       }
 
-      if (trimmed.startsWith(this.MARKER_PREFIX)) {
+      if (trimmed.startsWith(this.markerPrefix)) {
         const previous = this.resultComposite[this.resultComposite.length - 1] || {
           primaryLevel: 0,
           secondaryLevel: 0,

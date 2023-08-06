@@ -195,12 +195,13 @@ const ResultItem = forwardRef(
 const RenderResults = () => {
   const { results, rootActionId } = useMatches();
 
-  const onResultsRender = ({ item, active }: { item: any; active: boolean }) =>
-    typeof item === 'string' ? (
+  const onResultsRender = ({ item, active }: { item: any; active: boolean }) => {
+    return typeof item === 'string' ? (
       <div style={groupNameStyle}>{item}</div>
     ) : (
       <ResultItem action={item} active={active} currentRootActionId={rootActionId as string} />
     );
+  };
 
   return <KBarResults items={results} onRender={onResultsRender} />;
 };

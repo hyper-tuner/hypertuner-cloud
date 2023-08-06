@@ -1,7 +1,7 @@
 import { ParserInterface } from '../ParserInterface';
 
 class LogValidator implements ParserInterface {
-  private MLG_FORMAT_LENGTH = 6;
+  private mlgFormatLength = 6;
 
   private isMLGLogs = false;
 
@@ -32,7 +32,7 @@ class LogValidator implements ParserInterface {
   }
 
   private checkMLG() {
-    const fileFormat = new TextDecoder('utf8').decode(this.buffer.slice(0, this.MLG_FORMAT_LENGTH))
+    const fileFormat = new TextDecoder('utf8').decode(this.buffer.slice(0, this.mlgFormatLength))
 
     .replace(/\x00/gu, '');
 

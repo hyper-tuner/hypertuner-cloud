@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate, Link, generatePath, useMatch } from 'react-router-dom';
 import { Layout, Space, Button, Row, Col, Tooltip, Grid, Dropdown, Typography, Radio } from 'antd';
 import {
@@ -39,7 +39,7 @@ import { buildHyperTunerAppLink } from '../utils/url';
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
-const logsExtensionsIcons: { [key: string]: JSX.Element } = {
+const logsExtensionsIcons: { [key: string]: React.JSX.Element } = {
   mlg: <FileZipOutlined />,
   msl: <FileTextOutlined />,
   csv: <FileExcelOutlined />,
@@ -264,39 +264,37 @@ const TopBar = ({
     return list.length ? list : null;
   }, [lg, sm]);
 
-  const userAuthMenuItems = useMemo(
-    () =>
-      currentUser
-        ? [
-            {
-              key: 'profile',
-              icon: <UserOutlined />,
-              label: 'Profile',
-              onClick: () => navigate(Routes.PROFILE),
-            },
-            {
-              key: 'logout',
-              icon: <LogoutOutlined />,
-              label: 'Logout',
-              onClick: logoutClick,
-            },
-          ]
-        : [
-            {
-              key: 'login',
-              icon: <LoginOutlined />,
-              label: 'Login',
-              onClick: () => navigate(Routes.LOGIN),
-            },
-            {
-              key: 'sign-up',
-              icon: <UserAddOutlined />,
-              label: 'Sign Up',
-              onClick: () => navigate(Routes.SIGN_UP),
-            },
-          ],
-    [currentUser, logoutClick, navigate],
-  );
+  const userAuthMenuItems = useMemo(() => {
+    return currentUser
+      ? [
+          {
+            key: 'profile',
+            icon: <UserOutlined />,
+            label: 'Profile',
+            onClick: () => navigate(Routes.PROFILE),
+          },
+          {
+            key: 'logout',
+            icon: <LogoutOutlined />,
+            label: 'Logout',
+            onClick: logoutClick,
+          },
+        ]
+      : [
+          {
+            key: 'login',
+            icon: <LoginOutlined />,
+            label: 'Login',
+            onClick: () => navigate(Routes.LOGIN),
+          },
+          {
+            key: 'sign-up',
+            icon: <UserAddOutlined />,
+            label: 'Sign Up',
+            onClick: () => navigate(Routes.SIGN_UP),
+          },
+        ];
+  }, [currentUser, logoutClick, navigate]);
 
   const userMenuItems = [
     ...userAuthMenuItems,
