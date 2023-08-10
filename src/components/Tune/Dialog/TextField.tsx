@@ -10,24 +10,26 @@ const TextField = ({ title }: { title: string }) => {
   let messageTag = <span>{message}</span>;
 
   // check if message contains url and render it as a link
-  const linkMatch = message.match(/https?:\/\/[^:[\]@!$'(),; ]+/g);
+  const urlPattern = /(?<url>https?:\/\/[^:[\]@!$'(),; ]+)/;
+  const matches = message.split(urlPattern);
 
-  if (linkMatch) {
-    const link = linkMatch[0];
-    const linkIndex = message.indexOf(link);
-    const beforeLink = message.substring(0, linkIndex);
-    const afterLink = message.substring(linkIndex + link.length);
-
-    messageTag = (
-      <>
-        {beforeLink}
-        <a href={link} target='_blank' rel='noreferrer' style={{ color: 'inherit' }}>
-          {link}
-        </a>
-        {afterLink}
-      </>
-    );
+  if (!matches) {
+    return messageTag;
   }
+
+  const parts = matches.map((part) => {
+    if (urlPattern.test(part)) {
+      return (
+        <a href={part} target='_blank' rel='noreferrer' style={{ color: 'inherit' }}>
+          {part}
+        </a>
+      );
+    }
+
+    return part;
+  });
+
+  messageTag = <span>{parts}</span>;
 
   return (
     <Typography.Paragraph style={{ display: 'flex', justifyContent: 'center' }}>
