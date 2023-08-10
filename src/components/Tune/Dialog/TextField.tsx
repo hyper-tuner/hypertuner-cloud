@@ -9,9 +9,9 @@ const TextField = ({ title }: { title: string }) => {
   const message = type ? title.substring(1) : title;
   let messageTag = <span>{message}</span>;
 
-  // check if message contains a link and render it as a link
-  const linkRegex = /https?:\/\/[^\s]+/g;
-  const linkMatch = message.match(linkRegex);
+  // check if message contains url and render it as a link
+  const linkMatch = message.match(/https?:\/\/[^:[\]@!$'(),; ]+/g);
+
   if (linkMatch) {
     const link = linkMatch[0];
     const linkIndex = message.indexOf(link);
