@@ -56,7 +56,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.0.4",
     "less": "^4.2.0",
-    "pocketbase-typegen": "^1.1.11",
+    "pocketbase-typegen": "^1.1.12",
     "rollup-plugin-visualizer": "^5.9.2",
     "rome": "^12.1.3",
     "typescript": "^5.1.6",
