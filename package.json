@@ -42,7 +42,7 @@
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.14.2",
     "uplot": "^1.6.24",
-    "uplot-react": "^1.1.4",
+    "uplot-react": "^1.1.5",
     "vite": "^4.4.9"
   },
   "devDependencies": {
