@@ -65,6 +65,8 @@ import {
   TunesVisibilityOptions,
 } from '../@types/pocketbase-types';
 import { removeFilenameSuffix } from '../pocketbase';
+import { bufferToFile } from '../utils/files';
+import { compress } from '../utils/compression';
 
 const { Item, useForm } = Form;
 
@@ -102,8 +104,6 @@ const iniIcon = () => <FileTextOutlined />;
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_ROOT, { tuneId });
 const tuneParser = new TuneParser();
-
-const bufferToFile = (buffer: ArrayBuffer, name: string) => new File([buffer], name);
 
 const UploadPage = () => {
   const [form] = useForm<TunesRecord>();
@@ -190,13 +190,13 @@ const UploadPage = () => {
     const tags = values.tags || ('' as TunesTagsOptions);
 
     const compressedTuneFile = bufferToFile(
-      Pako.deflate(await tuneFile!.arrayBuffer()),
+      await compress(tuneFile!),
       (tuneFile as UploadedFile).uid ? tuneFile!.name : removeFilenameSuffix(tuneFile!.name),
     );
 
     const compressedCustomIniFile = customIniFile
       ? bufferToFile(
-          Pako.deflate(await customIniFile!.arrayBuffer()),
+          await compress(customIniFile!),
           (customIniFile as UploadedFile).uid
             ? customIniFile!.name
             : removeFilenameSuffix(customIniFile!.name),
@@ -206,7 +206,7 @@ const UploadPage = () => {
     const compressedLogFiles = await Promise.all(
       logFiles.map(async (file) =>
         bufferToFile(
-          Pako.deflate(await file.arrayBuffer()),
+          await compress(file),
           (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
         ),
       ),
@@ -215,7 +215,7 @@ const UploadPage = () => {
     const compressedToothLogFiles = await Promise.all(
       toothLogFiles.map(async (file) =>
         bufferToFile(
-          Pako.deflate(await file.arrayBuffer()),
+          await compress(file),
           (file as UploadedFile).uid ? file.name : removeFilenameSuffix(file.name),
         ),
       ),

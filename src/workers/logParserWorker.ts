@@ -3,6 +3,7 @@ import { Result } from 'mlg-converter/dist/types';
 import Pako from 'pako';
 import LogValidator from '../utils/logs/LogValidator';
 import MslLogParser from '../utils/logs/MslLogParser';
+import { decompress } from '../utils/compression';
 
 const ctx: Worker = self as any;
 
@@ -40,7 +41,7 @@ const parseMlg = (raw: ArrayBufferLike, t0: number): Result =>
 ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
   try {
     const t0 = performance.now();
-    const raw = Pako.inflate(new Uint8Array(data)).buffer;
+    const raw = decompress(data).buffer;
     const logParser = new LogValidator(raw);
 
     if (logParser.isMLG()) {

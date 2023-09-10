@@ -1,10 +1,10 @@
-import Pako from 'pako';
 import * as Sentry from '@sentry/browser';
 import { API_URL, removeFilenameSuffix } from '../pocketbase';
 import { Collections } from '../@types/pocketbase-types';
 import useDb from './useDb';
 import { fetchWithProgress, OnProgress } from '../utils/http';
 import { downloading } from '../pages/auth/notifications';
+import { decompress } from '../utils/compression';
 
 const useServerStorage = () => {
   const { getIni } = useDb();
@@ -15,7 +15,7 @@ const useServerStorage = () => {
   const fetchTuneFile = async (recordId: string, filename: string): Promise<ArrayBuffer> => {
     const response = await fetch(buildFileUrl(Collections.Tunes, recordId, filename));
 
-    return Pako.inflate(new Uint8Array(await response.arrayBuffer()));
+    return decompress(await response.arrayBuffer());
   };
 
   const fetchINIFile = async (signature: string): Promise<ArrayBuffer> => {
@@ -32,7 +32,7 @@ const useServerStorage = () => {
 
     const response = await fetch(buildFileUrl(Collections.IniFiles, ini.id, ini.file));
 
-    return Pako.inflate(new Uint8Array(await response.arrayBuffer()));
+    return decompress(await response.arrayBuffer());
   };
 
   const fetchLogFileWithProgress = (
@@ -54,7 +54,7 @@ const useServerStorage = () => {
     downloading();
 
     const response = await fetch(buildFileUrl(collection, recordId, filename));
-    const data = Pako.inflate(new Uint8Array(await response.arrayBuffer()));
+    const data = decompress(await response.arrayBuffer());
     const url = window.URL.createObjectURL(new Blob([data]));
 
     anchorRef.href = url;

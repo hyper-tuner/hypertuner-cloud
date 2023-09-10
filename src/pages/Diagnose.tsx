@@ -21,6 +21,7 @@ import { removeFilenameSuffix } from '../pocketbase';
 import useServerStorage from '../hooks/useServerStorage';
 import { isAbortedRequest } from '../utils/error';
 import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
+import { decompress } from '../utils/compression';
 
 const { Content } = Layout;
 
@@ -106,7 +107,7 @@ const Diagnose = ({
         setFileSize(formatBytes(raw.byteLength));
         setStep(1);
 
-        const parser = new TriggerLogsParser(Pako.inflate(new Uint8Array(raw))).parse();
+        const parser = new TriggerLogsParser(decompress(raw)).parse();
 
         let type = '';
         let result: CompositeLogEntry[] | ToothLogEntry[] = [];
