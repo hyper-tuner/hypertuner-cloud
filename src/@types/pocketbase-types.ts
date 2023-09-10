@@ -39,14 +39,14 @@ export enum IniFilesEcosystemOptions {
   fome = 'fome',
 }
 export type IniFilesRecord = {
-  signature: string;
-  file: string;
   ecosystem: IniFilesEcosystemOptions;
+  file: string;
+  signature: string;
 };
 
 export type StargazersRecord = {
-  user: RecordIdString;
   tune: RecordIdString;
+  user: RecordIdString;
 };
 
 export enum TunesSourceOptions {
@@ -70,32 +70,32 @@ export enum TunesVisibilityOptions {
   unlisted = 'unlisted',
 }
 export type TunesRecord = {
-  author: RecordIdString;
-  tuneId: string;
-  source: TunesSourceOptions;
-  signature: string;
-  stars?: number;
-  vehicleName: string;
-  engineMake: string;
-  engineCode: string;
-  displacement: number;
-  cylindersCount: number;
   aspiration: TunesAspirationOptions;
+  author: RecordIdString;
   compression?: number;
+  customIniFile?: string;
+  cylindersCount: number;
+  displacement: number;
+  engineCode: string;
+  engineMake: string;
   fuel?: string;
+  hp?: number;
   ignition?: string;
   injectorsSize?: number;
-  year?: number;
-  hp?: number;
-  stockHp?: number;
+  logFiles?: string[];
   readme: string;
+  signature: string;
+  source: TunesSourceOptions;
+  stars?: number;
+  stockHp?: number;
   tags?: TunesTagsOptions;
   textSearch: string;
-  visibility: TunesVisibilityOptions;
-  tuneFile: string;
-  customIniFile?: string;
-  logFiles?: string[];
   toothLogFiles?: string[];
+  tuneFile: string;
+  tuneId: string;
+  vehicleName: string;
+  visibility: TunesVisibilityOptions;
+  year?: number;
 };
 
 export type UsersRecord = {
