@@ -1,7 +1,9 @@
-import { Result } from 'mlg-converter/dist/types';
+import { Record, Result, BlockType } from 'mlg-converter/dist/types';
 import { ParserInterface } from '../ParserInterface';
 
 class MslLogParser implements ParserInterface {
+  private markerPrefix = 'MARK';
+
   private raw = '';
 
   private result: Result = {
@@ -32,6 +34,7 @@ class MslLogParser implements ParserInterface {
         continue;
       }
 
+      // header line eg. Time	SD: Present	SD: Logging	triggerScopeReady...
       if (line.startsWith('Time') || line.startsWith('RPM')) {
         unitsIndex = lineIndex + 1;
         const fields = line.split('\t');
@@ -50,15 +53,22 @@ class MslLogParser implements ParserInterface {
         continue;
       }
 
+      // markers: eg. MARK 000
+      if (line.startsWith(this.markerPrefix)) {
+        // TODO: parse markers
+        continue;
+      }
+
       if (lineIndex > unitsIndex) {
+        // data line eg. 215.389	0	0	0	0	0	1	0	1...
         const fields = line.split('\t');
-        const record = {
-          type: 'field' as const,
+        const record: Record = {
+          type: 'field' as BlockType, // TODO: use enum
           timestamp: 0,
         };
 
         fields.forEach((value, fieldIndex) => {
-          (record as any)[this.result.fields[fieldIndex].name] = parseFloat(value);
+          record[this.result.fields[fieldIndex].name] = parseFloat(value);
         });
 
         this.result.records.push(record);

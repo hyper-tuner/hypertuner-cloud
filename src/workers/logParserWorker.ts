@@ -58,6 +58,7 @@ ctx.addEventListener('message', ({ data }: { data: ArrayBuffer }) => {
 
     if (logParser.isMSL()) {
       const mslResult = parseMsl(raw, t0);
+
       ctx.postMessage({
         type: 'metrics',
         elapsed: elapsed(t0),

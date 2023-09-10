@@ -168,6 +168,7 @@ const LogCanvas = ({
       selectedFields2.length,
       plotSync.key,
     );
+
     options2 = result2.options;
     plotData2 = [result2.xData, ...result2.yData];
   }
