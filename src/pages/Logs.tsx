@@ -12,6 +12,7 @@ import {
   Badge,
   Typography,
   Grid,
+  Input,
 } from 'antd';
 import { FileTextOutlined, EditOutlined, GlobalOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
@@ -19,7 +20,6 @@ import { connect } from 'react-redux';
 import { Result as ParserResult } from 'mlg-converter/dist/types';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { OutputChannel, Logs as LogsType, DatalogEntry } from '@hyper-tuner/types';
-
 import LogParserWorker from '../workers/logParserWorker?worker';
 import LogCanvas, { SelectedField } from '../components/Logs/LogCanvas';
 import store from '../store';
@@ -35,11 +35,29 @@ import { removeFilenameSuffix } from '../pocketbase';
 import { isAbortedRequest } from '../utils/error';
 import { WorkerOutput } from '../workers/logParserWorker';
 import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
+import Fuse from 'fuse.js';
+import debounce from 'lodash.debounce';
 
 const { Content } = Layout;
 const edgeUnknown = 'Unknown';
 const minCanvasHeightInner = 500;
 const badgeStyle = { backgroundColor: Colors.TEXT };
+const fieldsSectionStyle = { height: 'calc(50vh - 175px)' };
+const searchInputStyle = {
+  width: 'auto',
+  position: 'sticky' as const,
+  top: 0,
+  marginBottom: 10,
+};
+const fuseOptions = {
+  shouldSort: true,
+  includeMatches: false,
+  includeScore: false,
+  ignoreLocation: false,
+  findAllMatches: false,
+  threshold: 0.4,
+  keys: ['label'], // TODO: handle expression
+};
 
 const mapStateToProps = (state: AppState) => ({
   ui: state.ui,
@@ -153,6 +171,18 @@ const Logs = ({
     },
     [config?.datalog, findOutputChannel, isConfigReady],
   );
+  const [foundFields1, setFoundFields1] = useState<DatalogEntry[]>([]);
+  const [foundFields2, setFoundFields2] = useState<DatalogEntry[]>([]);
+  const fuse = new Fuse<DatalogEntry>(fields, fuseOptions);
+
+  const debounceSearch1 = debounce(async (searchText: string) => {
+    const result = fuse.search(searchText);
+    setFoundFields1(result.length > 0 ? result.map((item) => item.item) : fields);
+  }, 300);
+  const debounceSearch2 = debounce(async (searchText: string) => {
+    const result = fuse.search(searchText);
+    setFoundFields2(result.length > 0 ? result.map((item) => item.item) : fields);
+  }, 300);
 
   useEffect(() => {
     const worker = new LogParserWorker();
@@ -263,7 +293,10 @@ const Logs = ({
     }
 
     if (config?.outputChannels) {
-      setFields(Object.values(config.datalog));
+      const fields = Object.values(config.datalog);
+      setFields(fields);
+      setFoundFields1(fields);
+      setFoundFields2(fields);
     }
 
     calculateCanvasSize();
@@ -302,11 +335,24 @@ const Logs = ({
                   key: 'fields',
                   children: (
                     <>
-                      <div style={showSingleGraph ? {} : { height: '45%' }}>
+                      <Input
+                        onChange={({ target }) => debounceSearch1(target.value)}
+                        style={searchInputStyle}
+                        placeholder='Search fields...'
+                        allowClear
+                      />
+                      <div
+                        style={
+                          showSingleGraph ? { height: 'calc(100vh - 250px)' } : fieldsSectionStyle
+                        }
+                      >
                         <PerfectScrollbar options={{ suppressScrollX: true }}>
                           <Checkbox.Group onChange={setSelectedFields1} value={selectedFields1}>
                             {fields.map((field) => (
-                              <Row key={field.name}>
+                              <Row
+                                key={field.name}
+                                hidden={!foundFields1.find((f) => f.name === field.name)}
+                              >
                                 <Checkbox key={field.name} value={field.name}>
                                   {isExpression(field.label)
                                     ? stripExpression(field.label)
@@ -320,11 +366,20 @@ const Logs = ({
                       {!showSingleGraph && (
                         <>
                           <Divider />
-                          <div style={{ height: '45%' }}>
+                          <Input
+                            onChange={({ target }) => debounceSearch2(target.value)}
+                            style={searchInputStyle}
+                            placeholder='Search fields...'
+                            allowClear
+                          />
+                          <div style={fieldsSectionStyle}>
                             <PerfectScrollbar options={{ suppressScrollX: true }}>
                               <Checkbox.Group onChange={setSelectedFields2} value={selectedFields2}>
                                 {fields.map((field) => (
-                                  <Row key={field.name}>
+                                  <Row
+                                    key={field.name}
+                                    hidden={!foundFields2.find((f) => f.name === field.name)}
+                                  >
                                     <Checkbox key={field.name} value={field.name}>
                                       {isExpression(field.label)
                                         ? stripExpression(field.label)
