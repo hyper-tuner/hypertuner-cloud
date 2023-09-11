@@ -22,8 +22,8 @@
     "typegen": "pocketbase-typegen --json ../cloud-backend/pb_schema.json --out src/@types/pocketbase-types.ts"
   },
   "dependencies": {
-    "@hyper-tuner/ini": "git+https://github.com/hyper-tuner/ini.git",
-    "@hyper-tuner/types": "git+https://github.com/hyper-tuner/types.git",
+    "@hyper-tuner/ini": "github:hyper-tuner/ini",
+    "@hyper-tuner/types": "github:hyper-tuner/types",
     "@reduxjs/toolkit": "^1.9.5",
     "@sentry/react": "^7.68.0",
     "@sentry/tracing": "^7.68.0",
