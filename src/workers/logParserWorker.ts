@@ -1,6 +1,5 @@
 import { Parser } from 'mlg-converter';
 import { Result } from 'mlg-converter/dist/types';
-import Pako from 'pako';
 import LogValidator from '../utils/logs/LogValidator';
 import MslLogParser from '../utils/logs/MslLogParser';
 import { decompress } from '../utils/compression';

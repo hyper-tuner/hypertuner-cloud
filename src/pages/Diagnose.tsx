@@ -4,7 +4,6 @@ import { Layout, Tabs, Progress, Steps, Space, Divider, Typography, Badge, Grid 
 import { FileTextOutlined, GlobalOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import Pako from 'pako';
 import { AppState, ToothLogsState, TuneDataState, UIState } from '../types/state';
 import store from '../store';
 import { formatBytes } from '../utils/numbers';

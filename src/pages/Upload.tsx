@@ -35,7 +35,6 @@ import { INI } from '@hyper-tuner/ini';
 import { UploadRequestOption } from 'rc-upload/lib/interface';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { generatePath, useMatch, useNavigate } from 'react-router-dom';
-import Pako from 'pako';
 import ReactMarkdown from 'react-markdown';
 import { nanoid } from 'nanoid';
 import {
