@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { Badge, Button, Space, Tooltip } from 'antd';
-import { StarOutlined, StarFilled } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Colors } from '../utils/colors';
-import { TuneDataState } from '../types/state';
-import useDb from '../hooks/useDb';
 import { useAuth } from '../contexts/AuthContext';
+import useDb from '../hooks/useDb';
 import { Routes } from '../routes';
+import { TuneDataState } from '../types/state';
+import { Colors } from '../utils/colors';
 
 const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
   const navigate = useNavigate();
@@ -65,8 +65,8 @@ const StarButton = ({ tuneData }: { tuneData: TuneDataState }) => {
   return (
     <div style={{ textAlign: 'right' }}>
       <Tooltip
-        title='You must be signed in to star a tune'
-        placement='bottom'
+        title="You must be signed in to star a tune"
+        placement="bottom"
         trigger={currentUserToken ? 'none' : 'hover'}
       >
         <Button

@@ -1,21 +1,21 @@
-import { Layout, Menu } from 'antd';
-import { ItemType } from 'antd/lib/menu/hooks/useItems';
-import { connect } from 'react-redux';
-import { generatePath, PathMatch, useNavigate } from 'react-router-dom';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useCallback, useEffect, useState } from 'react';
 import {
   Config as ConfigType,
-  Menus as MenusType,
-  Tune as TuneType,
-  SubMenu as SubMenuType,
-  GroupMenu as GroupMenuType,
   GroupChildMenu as GroupChildMenuType,
+  GroupMenu as GroupMenuType,
+  Menus as MenusType,
+  SubMenu as SubMenuType,
+  Tune as TuneType,
 } from '@hyper-tuner/types';
-import store from '../../store';
-import Icon from '../SideBar/Icon';
+import { Layout, Menu } from 'antd';
+import { ItemType } from 'antd/lib/menu/hooks/useItems';
+import { useCallback, useEffect, useState } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { connect } from 'react-redux';
+import { PathMatch, generatePath, useNavigate } from 'react-router-dom';
 import { Routes } from '../../routes';
+import store from '../../store';
 import { AppState, NavigationState, UIState } from '../../types/state';
+import Icon from '../SideBar/Icon';
 
 const { Sider } = Layout;
 
@@ -196,7 +196,7 @@ const SideBar = ({
   };
 
   return (
-    <Sider {...siderProps} className='app-sidebar'>
+    <Sider {...siderProps} className="app-sidebar">
       <PerfectScrollbar options={{ suppressScrollX: true }}>
         <Menu
           defaultSelectedKeys={[
@@ -205,7 +205,7 @@ const SideBar = ({
               : matchedPath!.pathname,
           ]}
           defaultOpenKeys={ui.sidebarCollapsed ? [] : defaultOpenSubmenus()}
-          mode='inline'
+          mode="inline"
           style={{ height: '100%' }}
           key={
             matchedGroupMenuDialogPath ? matchedGroupMenuDialogPath.pathname : matchedPath!.pathname

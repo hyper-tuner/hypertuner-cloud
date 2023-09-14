@@ -1,59 +1,59 @@
-import React, {
-  CSSProperties,
-  forwardRef,
-  Fragment,
-  Ref,
-  useMemo,
-  ReactNode,
-  useCallback,
-} from 'react';
 import {
-  ActionId,
-  KBarAnimator,
-  KBarProvider,
-  KBarPortal,
-  KBarPositioner,
-  KBarSearch,
-  KBarResults,
-  useMatches,
-  ActionImpl,
-  Action,
-  useRegisterActions,
-} from 'kbar';
-import { connect } from 'react-redux';
-import {
-  CloudUploadOutlined,
-  LoginOutlined,
-  UserAddOutlined,
-  LogoutOutlined,
-  InfoCircleOutlined,
-  FundOutlined,
-  SettingOutlined,
   CarOutlined,
+  CloudUploadOutlined,
+  FundOutlined,
+  InfoCircleOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  SettingOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
-import { useNavigate, generatePath } from 'react-router';
 import {
   Config as ConfigType,
-  Tune as TuneType,
-  Menus as MenusType,
-  Menu as MenuType,
-  SubMenu as SubMenuType,
-  GroupMenu as GroupMenuType,
   GroupChildMenu as GroupChildMenuType,
+  GroupMenu as GroupMenuType,
+  Menu as MenuType,
+  Menus as MenusType,
+  SubMenu as SubMenuType,
+  Tune as TuneType,
 } from '@hyper-tuner/types';
-import { Routes } from '../routes';
+import {
+  Action,
+  ActionId,
+  ActionImpl,
+  KBarAnimator,
+  KBarPortal,
+  KBarPositioner,
+  KBarProvider,
+  KBarResults,
+  KBarSearch,
+  useMatches,
+  useRegisterActions,
+} from 'kbar';
+import React, {
+  CSSProperties,
+  Fragment,
+  ReactNode,
+  Ref,
+  forwardRef,
+  useCallback,
+  useMemo,
+} from 'react';
+import { connect } from 'react-redux';
+import { generatePath, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
 import { logOutSuccessful } from '../pages/auth/notifications';
+import { Routes } from '../routes';
 import store from '../store';
-import { isMac } from '../utils/env';
 import { AppState, NavigationState } from '../types/state';
+import { isMac } from '../utils/env';
+import Icon from './SideBar/Icon';
 import {
-  buildDialogUrl,
-  buildGroupMenuDialogUrl,
   SKIP_MENUS,
   SKIP_SUB_MENUS,
+  buildDialogUrl,
+  buildGroupMenuDialogUrl,
 } from './Tune/SideBar';
-import Icon from './SideBar/Icon';
 
 enum Sections {
   NAVIGATION = 'Navigation',

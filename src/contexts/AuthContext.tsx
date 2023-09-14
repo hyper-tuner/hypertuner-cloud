@@ -1,8 +1,8 @@
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
-import { client, formatError, AuthMethodsList, ClientResponseError } from '../pocketbase';
-import { buildRedirectUrl } from '../utils/url';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Collections, UsersResponse } from '../@types/pocketbase-types';
+import { AuthMethodsList, ClientResponseError, client, formatError } from '../pocketbase';
 import { Routes } from '../routes';
+import { buildRedirectUrl } from '../utils/url';
 
 export enum OAuthProviders {
   GOOGLE = 'google',
@@ -27,7 +27,7 @@ interface AuthValue {
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
-// rome-ignore lint/nursery/useHookAtTopLevel: <explanation>
+// biome-ignore lint/nursery/useHookAtTopLevel: False positive
 const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const users = client.collection(Collections.Users);

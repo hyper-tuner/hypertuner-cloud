@@ -1,42 +1,42 @@
-import { Link, generatePath, useMatch, useNavigate } from 'react-router-dom';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { EditOutlined, FileTextOutlined, GlobalOutlined } from '@ant-design/icons';
+import { DatalogEntry, Logs as LogsType, OutputChannel } from '@hyper-tuner/types';
 import {
-  Layout,
-  Tabs,
-  Checkbox,
-  Row,
-  Progress,
-  Steps,
-  Space,
-  Divider,
   Badge,
-  Typography,
+  Checkbox,
+  Divider,
   Grid,
   Input,
+  Layout,
+  Progress,
+  Row,
+  Space,
+  Steps,
+  Tabs,
+  Typography,
 } from 'antd';
-import { FileTextOutlined, EditOutlined, GlobalOutlined } from '@ant-design/icons';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
-import { connect } from 'react-redux';
-import { Result as ParserResult } from 'mlg-converter/dist/types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { OutputChannel, Logs as LogsType, DatalogEntry } from '@hyper-tuner/types';
-import LogParserWorker from '../workers/logParserWorker?worker';
-import LogCanvas, { SelectedField } from '../components/Logs/LogCanvas';
-import store from '../store';
-import { formatBytes, msToTime } from '../utils/numbers';
-import useConfig from '../hooks/useConfig';
-import { isExpression, stripExpression } from '../utils/tune/expression';
-import { AppState, ConfigState, LogsState, TuneDataState, UIState } from '../types/state';
-import Loader from '../components/Loader';
-import { Colors } from '../utils/colors';
-import useServerStorage from '../hooks/useServerStorage';
-import { Routes } from '../routes';
-import { removeFilenameSuffix } from '../pocketbase';
-import { isAbortedRequest } from '../utils/error';
-import { WorkerOutput } from '../workers/logParserWorker';
-import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
 import Fuse from 'fuse.js';
 import debounce from 'lodash.debounce';
+import { Result as ParserResult } from 'mlg-converter/dist/types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { connect } from 'react-redux';
+import { Link, generatePath, useMatch, useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
+import LogCanvas, { SelectedField } from '../components/Logs/LogCanvas';
+import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
+import useConfig from '../hooks/useConfig';
+import useServerStorage from '../hooks/useServerStorage';
+import { removeFilenameSuffix } from '../pocketbase';
+import { Routes } from '../routes';
+import store from '../store';
+import { AppState, ConfigState, LogsState, TuneDataState, UIState } from '../types/state';
+import { Colors } from '../utils/colors';
+import { isAbortedRequest } from '../utils/error';
+import { formatBytes, msToTime } from '../utils/numbers';
+import { isExpression, stripExpression } from '../utils/tune/expression';
+import { WorkerOutput } from '../workers/logParserWorker';
+import LogParserWorker from '../workers/logParserWorker?worker';
 
 const { Content } = Layout;
 const edgeUnknown = 'Unknown';
@@ -318,16 +318,16 @@ const Logs = ({
 
   return (
     <>
-      <Sider {...siderProps} className='app-sidebar'>
+      <Sider {...siderProps} className="app-sidebar">
         {(loadedLogs?.logs || []).length ? (
           !ui.sidebarCollapsed && (
             <Tabs
-              defaultActiveKey='fields'
+              defaultActiveKey="fields"
               style={{ marginLeft: 20 }}
               items={[
                 {
                   label: (
-                    <Badge size='small' style={badgeStyle} count={fields.length} offset={[10, -3]}>
+                    <Badge size="small" style={badgeStyle} count={fields.length} offset={[10, -3]}>
                       <EditOutlined />
                       Fields
                     </Badge>
@@ -338,7 +338,7 @@ const Logs = ({
                       <Input
                         onChange={({ target }) => debounceSearch1(target.value)}
                         style={searchInputStyle}
-                        placeholder='Search fields...'
+                        placeholder="Search fields..."
                         allowClear
                       />
                       <div
@@ -369,7 +369,7 @@ const Logs = ({
                           <Input
                             onChange={({ target }) => debounceSearch2(target.value)}
                             style={searchInputStyle}
-                            placeholder='Search fields...'
+                            placeholder="Search fields..."
                             allowClear
                           />
                           <div style={fieldsSectionStyle}>
@@ -398,7 +398,7 @@ const Logs = ({
                 {
                   label: (
                     <Badge
-                      size='small'
+                      size="small"
                       style={badgeStyle}
                       count={tuneData?.logFiles?.length}
                       offset={[10, -3]}
@@ -435,7 +435,7 @@ const Logs = ({
           <Loader />
         )}
       </Sider>
-      <Layout className='logs-container'>
+      <Layout className="logs-container">
         <Content>
           <div ref={contentRef}>
             {logs || !!(loadedLogs.logs || []).length ? (
@@ -448,12 +448,12 @@ const Logs = ({
                 showSingleGraph={showSingleGraph}
               />
             ) : (
-              <Space direction='vertical' size='large'>
+              <Space direction="vertical" size="large">
                 <Progress
-                  type='circle'
+                  type="circle"
                   percent={progress}
                   status={(fetchError || parseError) && 'exception'}
-                  className='logs-progress'
+                  className="logs-progress"
                 />
                 <Divider />
                 <Steps

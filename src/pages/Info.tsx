@@ -1,15 +1,15 @@
-import { connect } from 'react-redux';
-import ReactMarkdown from 'react-markdown';
-import { Button, Col, Divider, Form, Input, Row, Select } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
+import { Button, Col, Divider, Form, Input, Row, Select } from 'antd';
+import ReactMarkdown from 'react-markdown';
+import { connect } from 'react-redux';
 import { generatePath, useNavigate } from 'react-router-dom';
-import { AppState, TuneDataState } from '../types/state';
-import Loader from '../components/Loader';
-import { Routes } from '../routes';
-import { useAuth } from '../contexts/AuthContext';
-import { formatTime } from '../utils/time';
 import { TunesAspirationOptions } from '../@types/pocketbase-types';
+import Loader from '../components/Loader';
 import StarButton from '../components/StarButton';
+import { useAuth } from '../contexts/AuthContext';
+import { Routes } from '../routes';
+import { AppState, TuneDataState } from '../types/state';
+import { formatTime } from '../utils/time';
 
 const { Item } = Form;
 const rowProps = { gutter: 10 };
@@ -37,7 +37,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
       <Divider>Manage</Divider>
       <Row style={{ marginTop: 10 }}>
         <Item style={{ width: '100%' }}>
-          <Button type='primary' block onClick={goToEdit} icon={<EditOutlined />}>
+          <Button type="primary" block onClick={goToEdit} icon={<EditOutlined />}>
             Edit
           </Button>
         </Item>
@@ -50,59 +50,59 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
   }
 
   return (
-    <div className='small-container'>
+    <div className="small-container">
       <StarButton tuneData={tuneData} />
       <Divider>Details</Divider>
       <Form>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.expand!.author.username} addonBefore='Author' />
+              <Input value={tuneData.expand!.author.username} addonBefore="Author" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.signature} addonBefore='Signature' />
+              <Input value={tuneData.signature} addonBefore="Signature" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col span={24} sm={24}>
             <Item>
-              <Input value={formatTime(tuneData.updated)} addonBefore='Published at' />
+              <Input value={formatTime(tuneData.updated)} addonBefore="Published at" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col span={24} sm={24}>
             <Item>
-              <Input value={tuneData.vehicleName!} addonBefore='Vehicle name' />
+              <Input value={tuneData.vehicleName!} addonBefore="Vehicle name" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.engineMake!} addonBefore='Engine make' />
+              <Input value={tuneData.engineMake!} addonBefore="Engine make" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.engineCode!} addonBefore='Engine code' />
+              <Input value={tuneData.engineCode!} addonBefore="Engine code" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.displacement!} addonBefore='Displacement' addonAfter='l' />
+              <Input value={tuneData.displacement!} addonBefore="Displacement" addonAfter="l" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
               <Input
                 value={tuneData.cylindersCount!}
-                addonBefore='Cylinders'
+                addonBefore="Cylinders"
                 style={{ width: '100%' }}
               />
             </Item>
@@ -112,7 +112,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
           <Col {...colProps}>
             <Item>
               <Select
-                placeholder='Aspiration'
+                placeholder="Aspiration"
                 style={{ width: '100%' }}
                 value={tuneData.aspiration}
               >
@@ -130,9 +130,9 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
             <Item>
               <Input
                 value={tuneData.compression!}
-                addonBefore='Compression'
+                addonBefore="Compression"
                 style={{ width: '100%' }}
-                addonAfter=':1'
+                addonAfter=":1"
               />
             </Item>
           </Col>
@@ -140,42 +140,42 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.fuel!} addonBefore='Fuel' />
+              <Input value={tuneData.fuel!} addonBefore="Fuel" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.ignition!} addonBefore='Ignition' />
-            </Item>
-          </Col>
-        </Row>
-        <Row {...rowProps}>
-          <Col {...colProps}>
-            <Item>
-              <Input value={tuneData.injectorsSize!} addonBefore='Injectors size' addonAfter='cc' />
-            </Item>
-          </Col>
-          <Col {...colProps}>
-            <Item>
-              <Input value={tuneData.year!} addonBefore='Year' />
+              <Input value={tuneData.ignition!} addonBefore="Ignition" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.hp!} addonBefore='HP' style={{ width: '100%' }} />
+              <Input value={tuneData.injectorsSize!} addonBefore="Injectors size" addonAfter="cc" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.stockHp!} addonBefore='Stock HP' style={{ width: '100%' }} />
+              <Input value={tuneData.year!} addonBefore="Year" />
+            </Item>
+          </Col>
+        </Row>
+        <Row {...rowProps}>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.hp!} addonBefore="HP" style={{ width: '100%' }} />
+            </Item>
+          </Col>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.stockHp!} addonBefore="Stock HP" style={{ width: '100%' }} />
             </Item>
           </Col>
         </Row>
       </Form>
       <Divider>README</Divider>
-      <div className='markdown-preview' style={{ height: '100%' }}>
+      <div className="markdown-preview" style={{ height: '100%' }}>
         {tuneData.readme && <ReactMarkdown>{`${tuneData.readme}`}</ReactMarkdown>}
       </div>
       {canManage && <ManageSection />}

@@ -1,14 +1,14 @@
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { Button, Divider, List, Pagination, Space, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { generatePath, useMatch, useNavigate } from 'react-router-dom';
-import { Button, Divider, List, Pagination, Space, Typography } from 'antd';
-import { ArrowRightOutlined } from '@ant-design/icons';
+import { TunesResponse, UsersResponse } from '../@types/pocketbase-types';
+import AuthorName from '../components/AuthorName';
+import TuneTag from '../components/TuneTag';
+import useDb from '../hooks/useDb';
 import { Routes } from '../routes';
 import { formatTime } from '../utils/time';
-import useDb from '../hooks/useDb';
 import { aspirationMapper } from '../utils/tune/mappers';
-import { TunesResponse, UsersResponse } from '../@types/pocketbase-types';
-import TuneTag from '../components/TuneTag';
-import AuthorName from '../components/AuthorName';
 
 const tunePath = (tuneId: string) => generatePath(Routes.TUNE_TUNE, { tuneId });
 
@@ -42,7 +42,7 @@ const Profile = () => {
   }, [page]);
 
   return (
-    <div className='small-container'>
+    <div className="small-container">
       <Divider>
         {author ? (
           <>
@@ -66,10 +66,10 @@ const Profile = () => {
             ]}
             className={tune.visibility}
           >
-            <Space direction='vertical'>
+            <Space direction="vertical">
               <List.Item.Meta
                 title={
-                  <Space direction='vertical'>
+                  <Space direction="vertical">
                     {tune.vehicleName}
                     <TuneTag tag={tune.tags} />
                     <Typography.Text italic>{tune.signature}</Typography.Text>

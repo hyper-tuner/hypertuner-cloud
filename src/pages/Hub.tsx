@@ -1,21 +1,21 @@
-import { Link } from 'react-router-dom';
+import { ArrowRightOutlined, CopyOutlined, EditOutlined, StarFilled } from '@ant-design/icons';
 import { Button, Grid, Input, InputRef, Pagination, Space, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import { CopyOutlined, StarFilled, ArrowRightOutlined, EditOutlined } from '@ant-design/icons';
+import debounce from 'lodash.debounce';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { generatePath, useNavigate } from 'react-router';
-import debounce from 'lodash.debounce';
+import { Link } from 'react-router-dom';
+import { TunesResponse } from '../@types/pocketbase-types';
+import AuthorName from '../components/AuthorName';
+import TuneTag from '../components/TuneTag';
+import { useAuth } from '../contexts/AuthContext';
 import useDb, { TunesResponseExpand } from '../hooks/useDb';
 import { Routes } from '../routes';
-import { buildFullUrl } from '../utils/url';
-import { aspirationMapper } from '../utils/tune/mappers';
 import { copyToClipboard, isClipboardSupported } from '../utils/clipboard';
 import { isEscape } from '../utils/keyboard/shortcuts';
 import { formatTime } from '../utils/time';
-import { useAuth } from '../contexts/AuthContext';
-import { TunesResponse } from '../@types/pocketbase-types';
-import TuneTag from '../components/TuneTag';
-import AuthorName from '../components/AuthorName';
+import { aspirationMapper } from '../utils/tune/mappers';
+import { buildFullUrl } from '../utils/url';
 
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
@@ -97,8 +97,8 @@ const Hub = () => {
               <TuneTag tag={tune.tags} />
             </Space>
           </Title>
-          <Space direction='vertical'>
-            <Text type='secondary'>
+          <Space direction="vertical">
+            <Text type="secondary">
               <Link to={generatePath(Routes.USER_ROOT, { userId: tune.author })}>
                 <AuthorName author={tune.expand!.author} />
               </Link>
@@ -120,7 +120,7 @@ const Hub = () => {
       key: 'vehicleName',
       responsive: ['sm'],
       render: (vehicleName: string, tune: TunesResponse) => (
-        <Space direction='vertical'>
+        <Space direction="vertical">
           {vehicleName}
           <TuneTag tag={tune.tags} />
         </Space>
@@ -208,7 +208,7 @@ const Hub = () => {
             )}
             <Button
               size={size}
-              type='primary'
+              type="primary"
               icon={<ArrowRightOutlined />}
               onClick={() => navigate(tunePath(tuneId))}
             />
@@ -220,14 +220,14 @@ const Hub = () => {
   ];
 
   return (
-    <div className='large-container'>
+    <div className="large-container">
       <Input
-        // rome-ignore lint: make search input first in tab order
+        // biome-ignore lint: make search input first in tab order
         tabIndex={1}
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
         value={searchQuery}
-        placeholder='Search by anything...'
+        placeholder="Search by anything..."
         onChange={({ target }) => debounceLoadData(target.value)}
         allowClear
       />

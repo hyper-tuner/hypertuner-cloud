@@ -1,4 +1,4 @@
-import { Typography, Alert } from 'antd';
+import { Alert, Typography } from 'antd';
 
 const TextField = ({ title }: { title: string }) => {
   const types: { [char: string]: 'info' | 'warning' } = {
@@ -20,7 +20,7 @@ const TextField = ({ title }: { title: string }) => {
   const parts = matches.map((part) => {
     if (urlPattern.test(part)) {
       return (
-        <a href={part} target='_blank' rel='noreferrer' style={{ color: 'inherit' }}>
+        <a href={part} target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>
           {part}
         </a>
       );
@@ -36,7 +36,7 @@ const TextField = ({ title }: { title: string }) => {
       {type ? (
         <Alert message={messageTag} type={type} showIcon style={{ width: '100%', maxWidth: 700 }} />
       ) : (
-        <Typography.Text type='secondary'>{title}</Typography.Text>
+        <Typography.Text type="secondary">{title}</Typography.Text>
       )}
     </Typography.Paragraph>
   );

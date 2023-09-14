@@ -1,11 +1,11 @@
-import { Button, Divider, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
+import { Button, Divider, Form, Input } from 'antd';
 import { useState } from 'react';
 import { Link, useMatch, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
-import { passwordUpdateFailed, passwordUpdateSuccess } from './notifications';
 import { passwordRules } from '../../utils/form';
+import { passwordUpdateFailed, passwordUpdateSuccess } from './notifications';
 import validateMessages from './validateMessages';
 
 const { Item } = Form;
@@ -31,26 +31,26 @@ const ResetPasswordConfirmation = () => {
   };
 
   return (
-    <div className='auth-container'>
+    <div className="auth-container">
       <Divider>Change password</Divider>
       <Form
         initialValues={{ remember: true }}
         onFinish={changePassword}
         validateMessages={validateMessages}
-        autoComplete='off'
+        autoComplete="off"
         form={form}
       >
-        <Item name='password' rules={passwordRules} hasFeedback>
+        <Item name="password" rules={passwordRules} hasFeedback>
           <Input.Password
-            placeholder='New password'
-            autoComplete='new-password'
+            placeholder="New password"
+            autoComplete="new-password"
             prefix={<LockOutlined />}
           />
         </Item>
         <Item>
           <Button
-            type='primary'
-            htmlType='submit'
+            type="primary"
+            htmlType="submit"
             style={{ width: '100%' }}
             icon={<LockOutlined />}
             loading={isLoading}

@@ -1,4 +1,4 @@
-import { Record, Result, BlockType } from 'mlg-converter/dist/types';
+import { BlockType, Record, Result } from 'mlg-converter/dist/types';
 import { ParserInterface } from '../ParserInterface';
 
 class MslLogParser implements ParserInterface {

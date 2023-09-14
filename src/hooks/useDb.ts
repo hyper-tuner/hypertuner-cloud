@@ -1,6 +1,4 @@
 import * as Sentry from '@sentry/browser';
-import { client, formatError, ClientResponseError, API_URL } from '../pocketbase';
-import { databaseGenericError } from '../pages/auth/notifications';
 import {
   Collections,
   IniFilesResponse,
@@ -8,6 +6,8 @@ import {
   TunesResponse,
   UsersResponse,
 } from '../@types/pocketbase-types';
+import { databaseGenericError } from '../pages/auth/notifications';
+import { API_URL, ClientResponseError, client, formatError } from '../pocketbase';
 
 type Partial<T> = {
   [A in keyof T]?: T[A];

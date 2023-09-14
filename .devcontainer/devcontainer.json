@@ -19,7 +19,7 @@
         "editorconfig.editorconfig",
         "davidanson.vscode-markdownlint",
         "streetsidesoftware.code-spell-checker",
-        "rome.rome"
+        "biomejs.biome"
       ]
     }
   },

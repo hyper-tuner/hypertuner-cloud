@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
-import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
-import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
+import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
+import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import LogsPagination from './LogsPagination';
 
 const scale = 2;

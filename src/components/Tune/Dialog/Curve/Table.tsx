@@ -27,7 +27,7 @@ const Table = ({
 
         return (
           <td
-            className='value'
+            className="value"
             key={`${axis}-${index}-${value}-${hue}${sat}${light}`}
             style={{ backgroundColor: `hsl(${hue}, ${sat}%, ${light}%)` }}
           >
@@ -39,15 +39,15 @@ const Table = ({
   );
 
   return (
-    <div className='table'>
+    <div className="table">
       <table>
         <tbody>
           <tr>
-            <td {...titleProps} className='title-curve' key={yLabel}>{`${yLabel} (${yUnits})`}</td>
+            <td {...titleProps} className="title-curve" key={yLabel}>{`${yLabel} (${yUnits})`}</td>
             {renderRow('y', yData)}
           </tr>
           <tr>
-            <td {...titleProps} className='title-curve' key={xLabel}>{`${xLabel} (${xUnits})`}</td>
+            <td {...titleProps} className="title-curve" key={xLabel}>{`${xLabel} (${xUnits})`}</td>
             {renderRow('x', xData)}
           </tr>
         </tbody>

@@ -1,6 +1,6 @@
-import { Radio, Select, Switch } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Switches } from '@hyper-tuner/types';
+import { Radio, Select, Switch } from 'antd';
 
 const SmartSelect = ({
   values,
@@ -29,8 +29,8 @@ const SmartSelect = ({
     return (
       <Radio.Group
         value={values.indexOf(defaultValue)}
-        optionType='button'
-        buttonStyle='solid'
+        optionType="button"
+        buttonStyle="solid"
         disabled={disabled}
       >
         {values.map((val: string, index) => (
@@ -45,7 +45,7 @@ const SmartSelect = ({
   return (
     <Select
       value={values.indexOf(defaultValue)}
-      optionFilterProp='label'
+      optionFilterProp="label"
       disabled={disabled}
       style={{ maxWidth: 250 }}
     >

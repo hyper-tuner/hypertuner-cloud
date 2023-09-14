@@ -1,8 +1,23 @@
 {
   "typescript.tsdk": "./node_modules/typescript/lib",
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "editor.formatOnSave": true,
   "cSpell.words": [
     "baro",
+    "biomejs",
+    "Codespaces",
+    "devcontainer",
     "devcontainers",
     "FOME",
     "hypertuner",
@@ -18,17 +33,5 @@
     "typegen",
     "vite",
     "vitejs"
-  ],
-  "[jsonc]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
-  "[less]": {
-    "editor.defaultFormatter": "vscode.css-language-features"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "rome.rome"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "rome.rome"
-  }
+  ]
 }

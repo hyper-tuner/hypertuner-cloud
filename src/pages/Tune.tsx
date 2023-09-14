@@ -1,13 +1,13 @@
-import { generatePath, useMatch, useNavigate } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { useEffect } from 'react';
 import { Config as ConfigType } from '@hyper-tuner/types';
+import { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { generatePath, useMatch, useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
 import Dialog from '../components/Tune/Dialog';
 import SideBar from '../components/Tune/SideBar';
-import { Routes } from '../routes';
 import useConfig from '../hooks/useConfig';
+import { Routes } from '../routes';
 import { AppState, TuneState } from '../types/state';
-import Loader from '../components/Loader';
 
 const mapStateToProps = (state: AppState) => ({
   navigation: state.navigation,

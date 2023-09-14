@@ -1,8 +1,8 @@
 import { Parser } from 'mlg-converter';
 import { Result } from 'mlg-converter/dist/types';
+import { decompress } from '../utils/compression';
 import LogValidator from '../utils/logs/LogValidator';
 import MslLogParser from '../utils/logs/MslLogParser';
-import { decompress } from '../utils/compression';
 
 const ctx: Worker = self as any;
 

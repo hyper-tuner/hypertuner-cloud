@@ -1,10 +1,10 @@
-import { Typography, Grid } from 'antd';
+import { Grid, Typography } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
+import UplotReact from 'uplot-react';
 import { Colors } from '../../../utils/colors';
-import LandscapeNotice from './LandscapeNotice';
 import Table from './Curve/Table';
+import LandscapeNotice from './LandscapeNotice';
 
 const { useBreakpoint } = Grid;
 
@@ -87,7 +87,7 @@ const Curve = ({
   return (
     <>
       <Typography.Paragraph>
-        <Typography.Text type='secondary'>{help}</Typography.Text>
+        <Typography.Text type="secondary">{help}</Typography.Text>
       </Typography.Paragraph>
       <UplotReact options={options!} data={plotData!} />
       <div ref={containerRef}>

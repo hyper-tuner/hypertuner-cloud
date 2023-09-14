@@ -1,4 +1,8 @@
 {
+  "$schema": "https://biomejs.dev/schemas/1.1.2/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -14,6 +18,13 @@
       "quoteStyle": "single",
       "trailingComma": "all"
     }
+  },
+  "files": {
+    "ignore": [
+      ".devcontainer",
+      ".vscode",
+      "node_modules"
+    ]
   },
   "linter": {
     "enabled": true,
@@ -36,6 +47,11 @@
       "nursery": {
         "all": true,
         "useExhaustiveDependencies": "off",
+        "useImportRestrictions": "off",
+        "useNamingConvention": "off",
+        "noExcessiveComplexity": "off"
+      },
+      "complexity": {
         "noForEach": "off"
       }
     }

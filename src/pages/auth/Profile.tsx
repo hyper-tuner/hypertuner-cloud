@@ -1,30 +1,30 @@
-import { useEffect, useState } from 'react';
-import { generatePath, useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Divider, Alert, Space, List, Pagination, Typography } from 'antd';
 import {
-  UserOutlined,
-  MailOutlined,
   ArrowRightOutlined,
   EditOutlined,
-  GlobalOutlined,
   EyeOutlined,
+  GlobalOutlined,
+  MailOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
-import validateMessages from './validateMessages';
+import { Alert, Button, Divider, Form, Input, List, Pagination, Space, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { generatePath, useNavigate } from 'react-router-dom';
+import { TunesResponse, TunesVisibilityOptions } from '../../@types/pocketbase-types';
+import TuneTag from '../../components/TuneTag';
 import { useAuth } from '../../contexts/AuthContext';
-import {
-  restrictedPage,
-  sendingEmailVerificationFailed,
-  emailVerificationSent,
-  profileUpdateSuccess,
-  profileUpdateFailed,
-} from './notifications';
+import useDb from '../../hooks/useDb';
 import { Routes } from '../../routes';
 import { usernameRules } from '../../utils/form';
 import { formatTime } from '../../utils/time';
-import useDb from '../../hooks/useDb';
 import { aspirationMapper } from '../../utils/tune/mappers';
-import { TunesResponse, TunesVisibilityOptions } from '../../@types/pocketbase-types';
-import TuneTag from '../../components/TuneTag';
+import {
+  emailVerificationSent,
+  profileUpdateFailed,
+  profileUpdateSuccess,
+  restrictedPage,
+  sendingEmailVerificationFailed,
+} from './notifications';
+import validateMessages from './validateMessages';
 
 const { Item } = Form;
 
@@ -111,14 +111,14 @@ const Profile = () => {
 
   return (
     <>
-      <div className='auth-container'>
+      <div className="auth-container">
         {!currentUser?.verified && (
           <>
             <Divider>Email verification</Divider>
-            <Space direction='vertical' style={{ width: '100%' }} size='large'>
-              <Alert message='Your email address is not verified!' type='error' showIcon />
+            <Space direction="vertical" style={{ width: '100%' }} size="large">
+              <Alert message="Your email address is not verified!" type="error" showIcon />
               <Button
-                type='primary'
+                type="primary"
                 style={{ width: '100%' }}
                 icon={<MailOutlined />}
                 disabled={isVerificationSent}
@@ -131,7 +131,7 @@ const Profile = () => {
           </>
         )}
         <Divider>Your Profile</Divider>
-        <Space direction='vertical' style={{ width: '100%' }} size='large'>
+        <Space direction="vertical" style={{ width: '100%' }} size="large">
           <Form
             validateMessages={validateMessages}
             form={formProfile}
@@ -147,16 +147,16 @@ const Profile = () => {
               },
             ]}
           >
-            <Item name='username' rules={usernameRules} hasFeedback>
-              <Input prefix={<UserOutlined />} placeholder='Username' autoComplete='name' />
+            <Item name="username" rules={usernameRules} hasFeedback>
+              <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="name" />
             </Item>
-            <Item name='email'>
-              <Input prefix={<MailOutlined />} placeholder='Email' disabled />
+            <Item name="email">
+              <Input prefix={<MailOutlined />} placeholder="Email" disabled />
             </Item>
             <Item>
               <Button
-                type='primary'
-                htmlType='submit'
+                type="primary"
+                htmlType="submit"
                 style={{ width: '100%' }}
                 icon={<UserOutlined />}
                 loading={isProfileLoading}
@@ -167,7 +167,7 @@ const Profile = () => {
           </Form>
         </Space>
       </div>
-      <div className='small-container'>
+      <div className="small-container">
         <Divider>Your tunes</Divider>
         <List
           dataSource={tunesDataSource}
@@ -187,10 +187,10 @@ const Profile = () => {
                 />,
               ]}
             >
-              <Space direction='vertical'>
+              <Space direction="vertical">
                 <List.Item.Meta
                   title={
-                    <Space direction='vertical'>
+                    <Space direction="vertical">
                       {tune.vehicleName}
                       <TuneTag tag={tune.tags} />
                       <Typography.Text italic>{tune.signature}</Typography.Text>

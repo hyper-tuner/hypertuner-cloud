@@ -1,12 +1,12 @@
-import { useCallback } from 'react';
 import { Logs } from '@hyper-tuner/types';
 import { Space } from 'antd';
-import UplotReact from 'uplot-react';
+import { useCallback } from 'react';
 import uPlot from 'uplot';
-import { colorHsl, formatNumberMs } from '../../utils/numbers';
+import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
-import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
+import { colorHsl, formatNumberMs } from '../../utils/numbers';
 import { isNumber } from '../../utils/tune/expression';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 
 export interface SelectedField {
   name: string;
@@ -174,7 +174,7 @@ const LogCanvas = ({
   }
 
   return (
-    <Space direction='vertical' size='large'>
+    <Space direction="vertical" size="large">
       <UplotReact key={`first-${selectedFields1.join('-')}`} options={options1} data={plotData1} />
       {!showSingleGraph && (
         <UplotReact

@@ -1,26 +1,26 @@
-import { generatePath, Link, useMatch, useNavigate } from 'react-router-dom';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Layout, Tabs, Progress, Steps, Space, Divider, Typography, Badge, Grid } from 'antd';
 import { FileTextOutlined, GlobalOutlined } from '@ant-design/icons';
-import { connect } from 'react-redux';
+import { Badge, Divider, Grid, Layout, Progress, Space, Steps, Tabs, Typography } from 'antd';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { AppState, ToothLogsState, TuneDataState, UIState } from '../types/state';
-import store from '../store';
-import { formatBytes } from '../utils/numbers';
+import { connect } from 'react-redux';
+import { Link, generatePath, useMatch, useNavigate } from 'react-router-dom';
+import Loader from '../components/Loader';
 import CompositeCanvas from '../components/TriggerLogs/CompositeCanvas';
+import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
+import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
+import useServerStorage from '../hooks/useServerStorage';
+import { removeFilenameSuffix } from '../pocketbase';
+import { Routes } from '../routes';
+import store from '../store';
+import { AppState, ToothLogsState, TuneDataState, UIState } from '../types/state';
+import { Colors } from '../utils/colors';
+import { decompress } from '../utils/compression';
+import { isAbortedRequest } from '../utils/error';
 import TriggerLogsParser, {
   CompositeLogEntry,
   ToothLogEntry,
 } from '../utils/logs/TriggerLogsParser';
-import ToothCanvas from '../components/TriggerLogs/ToothCanvas';
-import Loader from '../components/Loader';
-import { Colors } from '../utils/colors';
-import { Routes } from '../routes';
-import { removeFilenameSuffix } from '../pocketbase';
-import useServerStorage from '../hooks/useServerStorage';
-import { isAbortedRequest } from '../utils/error';
-import { collapsedSidebarWidth, sidebarWidth } from '../components/Tune/SideBar';
-import { decompress } from '../utils/compression';
+import { formatBytes } from '../utils/numbers';
 
 const { Content } = Layout;
 
@@ -205,17 +205,17 @@ const Diagnose = ({
 
   return (
     <>
-      <Sider {...siderProps} className='app-sidebar'>
+      <Sider {...siderProps} className="app-sidebar">
         {loadedToothLogs.type ? (
           !ui.sidebarCollapsed && (
             <Tabs
-              defaultActiveKey='files'
+              defaultActiveKey="files"
               style={{ marginLeft: 20 }}
               items={[
                 {
                   label: (
                     <Badge
-                      size='small'
+                      size="small"
                       style={badgeStyle}
                       count={tuneData?.toothLogFiles?.length}
                       offset={[10, -3]}
@@ -252,14 +252,14 @@ const Diagnose = ({
           <Loader />
         )}
       </Sider>
-      <Layout className='logs-container'>
+      <Layout className="logs-container">
         <Content>
           <div ref={contentRef}>
             {loadedToothLogs.type ? (
               <Graph />
             ) : (
-              <Space direction='vertical' size='large'>
-                <Progress type='circle' percent={progress} className='logs-progress' />
+              <Space direction="vertical" size="large">
+                <Progress type="circle" percent={progress} className="logs-progress" />
                 <Divider />
                 <Steps
                   current={step}

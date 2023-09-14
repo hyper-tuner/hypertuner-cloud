@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useMatch, useNavigate, useSearchParams } from 'react-router-dom';
-import { AuthProviderInfo } from '../../pocketbase';
 import Loader from '../../components/Loader';
 import { OAuthProviders, useAuth } from '../../contexts/AuthContext';
+import { AuthProviderInfo } from '../../pocketbase';
 import { Routes } from '../../routes';
 import { logInSuccessful } from './notifications';
 

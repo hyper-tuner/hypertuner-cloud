@@ -1,29 +1,29 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { connect } from 'react-redux';
-import { Form, Divider, Col, Row, Popover, Space, Result } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import {
-  Dialogs as DialogsType,
-  Dialog as DialogType,
   Config as ConfigType,
-  Field as FieldType,
-  Curve as CurveType,
-  Table as TableType,
-  ScalarConstant as ScalarConstantType,
   ConstantTypes,
+  Curve as CurveType,
+  Dialog as DialogType,
+  Dialogs as DialogsType,
+  Field as FieldType,
+  ScalarConstant as ScalarConstantType,
+  Table as TableType,
   Tune as TuneType,
 } from '@hyper-tuner/types';
-import { AppState, UIState } from '../../types/state';
-import SmartSelect from './Dialog/SmartSelect';
-import SmartNumber from './Dialog/SmartNumber';
-import TextField from './Dialog/TextField';
-import Curve from './Dialog/Curve';
-import { parseXy, parseZ } from '../../utils/tune/table';
-import Map3D from './Dialog/Map3D';
-import { evaluateExpression } from '../../utils/tune/expression';
+import { Col, Divider, Form, Popover, Result, Row, Space } from 'antd';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { connect } from 'react-redux';
 import useBrowserStorage from '../../hooks/useBrowserStorage';
 import useConfig from '../../hooks/useConfig';
+import { AppState, UIState } from '../../types/state';
+import { evaluateExpression } from '../../utils/tune/expression';
+import { parseXy, parseZ } from '../../utils/tune/table';
 import Loader from '../Loader';
+import Curve from './Dialog/Curve';
+import Map3D from './Dialog/Map3D';
+import SmartNumber from './Dialog/SmartNumber';
+import SmartSelect from './Dialog/SmartSelect';
+import TextField from './Dialog/TextField';
 
 interface DialogsAndCurves {
   [name: string]: DialogType | CurveType | TableType;
@@ -88,11 +88,11 @@ const Dialog = ({
     link && (
       <Popover
         content={
-          <a href={`${link}`} target='__blank' rel='noopener noreferrer'>
+          <a href={`${link}`} target="__blank" rel="noopener noreferrer">
             {link}
           </a>
         }
-        placement='right'
+        placement="right"
       >
         <QuestionCircleOutlined />
       </Popover>
@@ -353,7 +353,7 @@ const Dialog = ({
   if (!dialogConfig) {
     if (curveConfig) {
       return (
-        <div ref={containerRef} className='large-container'>
+        <div ref={containerRef} className="large-container">
           <Divider>{curveConfig.title}</Divider>
           {renderCurve(curveConfig)}
         </div>
@@ -362,7 +362,7 @@ const Dialog = ({
 
     if (tableConfig) {
       return (
-        <div ref={containerRef} className='large-container'>
+        <div ref={containerRef} className="large-container">
           {renderHelp(tableConfig.help)}
           <Divider>{tableConfig.title}</Divider>
           {renderTable(tableConfig)}
@@ -370,11 +370,11 @@ const Dialog = ({
       );
     }
 
-    return <Result status='warning' title='Dialog not found' style={{ marginTop: 50 }} />;
+    return <Result status="warning" title="Dialog not found" style={{ marginTop: 50 }} />;
   }
 
   return (
-    <div ref={containerRef} className='large-container'>
+    <div ref={containerRef} className="large-container">
       {renderHelp(dialogConfig?.help)}
       <Form labelCol={{ span: 10 }} wrapperCol={{ span: 10 }}>
         <Row gutter={20}>{panelsComponents}</Row>

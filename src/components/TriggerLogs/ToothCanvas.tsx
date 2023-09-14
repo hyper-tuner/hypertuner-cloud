@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import UplotReact from 'uplot-react';
 import uPlot from 'uplot';
-import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
-import { ToothLogEntry, EntryType } from '../../utils/logs/TriggerLogsParser';
+import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
+import { EntryType, ToothLogEntry } from '../../utils/logs/TriggerLogsParser';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import LogsPagination from './LogsPagination';
 
 const { bars } = uPlot.paths;

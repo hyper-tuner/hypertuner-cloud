@@ -1,39 +1,39 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useLocation, useNavigate, Link, generatePath, useMatch } from 'react-router-dom';
-import { Layout, Space, Button, Row, Col, Tooltip, Grid, Dropdown, Typography, Radio } from 'antd';
 import {
-  UserOutlined,
-  CloudUploadOutlined,
+  CarOutlined,
   CloudDownloadOutlined,
-  SettingOutlined,
-  LoginOutlined,
-  LineChartOutlined,
-  SlidersOutlined,
-  FileZipOutlined,
+  CloudUploadOutlined,
   DesktopOutlined,
   DownOutlined,
-  SearchOutlined,
-  ToolOutlined,
-  FundOutlined,
-  UserAddOutlined,
-  LogoutOutlined,
-  InfoCircleOutlined,
-  CarOutlined,
-  FileTextOutlined,
   FileExcelOutlined,
+  FileTextOutlined,
+  FileZipOutlined,
+  FundOutlined,
+  InfoCircleOutlined,
+  LineChartOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  SearchOutlined,
+  SettingOutlined,
+  SlidersOutlined,
+  ToolOutlined,
+  UserAddOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
+import { Button, Col, Dropdown, Grid, Layout, Radio, Row, Space, Tooltip, Typography } from 'antd';
 import { useKBar } from 'kbar';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Link, generatePath, useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { Collections } from '../@types/pocketbase-types';
+import { useAuth } from '../contexts/AuthContext';
+import useDb from '../hooks/useDb';
+import useServerStorage from '../hooks/useServerStorage';
+import { logOutSuccessful } from '../pages/auth/notifications';
+import { removeFilenameSuffix } from '../pocketbase';
+import { Routes } from '../routes';
 import store from '../store';
+import { TuneDataState } from '../types/state';
 import { isMac } from '../utils/env';
 import { isToggleSidebar } from '../utils/keyboard/shortcuts';
-import { Routes } from '../routes';
-import { useAuth } from '../contexts/AuthContext';
-import { logOutSuccessful } from '../pages/auth/notifications';
-import { TuneDataState } from '../types/state';
-import { removeFilenameSuffix } from '../pocketbase';
-import useServerStorage from '../hooks/useServerStorage';
-import useDb from '../hooks/useDb';
-import { Collections } from '../@types/pocketbase-types';
 import { buildHyperTunerAppLink } from '../utils/url';
 
 const { Header } = Layout;
@@ -179,8 +179,8 @@ const TopBar = ({
             tuneRootMatch?.pathname ||
             hubPathMatch?.pathname
           }
-          optionType='button'
-          buttonStyle='solid'
+          optionType="button"
+          buttonStyle="solid"
           onChange={(e) => navigate(e.target.value)}
         >
           <Radio.Button value={buildTuneUrl(Routes.HUB)}>
@@ -254,11 +254,11 @@ const TopBar = ({
     const list = [];
 
     if (lg) {
-      list.push(<span key='download-text'>Download</span>);
+      list.push(<span key="download-text">Download</span>);
     }
 
     if (sm) {
-      list.push(<DownOutlined key='download-icon' />);
+      list.push(<DownOutlined key="download-icon" />);
     }
 
     return list.length ? list : null;
@@ -311,7 +311,7 @@ const TopBar = ({
   ];
 
   return (
-    <Header className='app-top-bar' style={xs ? { padding: '0 5px' } : {}}>
+    <Header className="app-top-bar" style={xs ? { padding: '0 5px' } : {}}>
       <Row>
         {tuneData?.tuneId ? (
           tabs
@@ -344,15 +344,15 @@ const TopBar = ({
               </Button>
             </Link>
             {tuneData?.tuneId && (
-              <Dropdown menu={{ items: downloadItems }} placement='bottom' trigger={['click']}>
+              <Dropdown menu={{ items: downloadItems }} placement="bottom" trigger={['click']}>
                 <Button icon={<CloudDownloadOutlined />}>{downloadButton}</Button>
               </Dropdown>
             )}
-            <Dropdown menu={{ items: userMenuItems }} placement='bottomRight' trigger={['click']}>
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" trigger={['click']}>
               <Button icon={<UserOutlined />}>{sm && <DownOutlined />}</Button>
             </Dropdown>
             {/* dummy anchor for file download */}
-            <a href='#download' ref={downloadAnchorRef} style={{ display: 'none' }}>
+            <a href="#download" ref={downloadAnchorRef} style={{ display: 'none' }}>
               download
             </a>
           </Space>

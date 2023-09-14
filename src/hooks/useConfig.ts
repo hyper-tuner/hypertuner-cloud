@@ -1,12 +1,12 @@
-import { useMemo } from 'react';
 import {
   Config as ConfigType,
-  Page as PageType,
   Constant,
-  OutputChannel,
-  SimpleConstant,
   DatalogEntry,
+  OutputChannel,
+  Page as PageType,
+  SimpleConstant,
 } from '@hyper-tuner/types';
+import { useMemo } from 'react';
 
 const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => {
   const foundPage =
@@ -50,7 +50,7 @@ const findDatalog = (config: ConfigType, name: string): DatalogEntry => {
 };
 
 const useConfig = (config: ConfigType | null) =>
-  // rome-ignore lint/nursery/useHookAtTopLevel: <explanation>
+  // biome-ignore lint/nursery/useHookAtTopLevel: False positive
   useMemo(
     () => ({
       isConfigReady: !!config?.constants,

@@ -1,36 +1,36 @@
+import { INI } from '@hyper-tuner/ini';
+import { Layout, Result } from 'antd';
+import { ReactNode, Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import {
-  Routes as ReactRoutes,
   Route,
+  Routes as ReactRoutes,
+  generatePath,
   useMatch,
   useNavigate,
-  generatePath,
 } from 'react-router-dom';
-import { Layout, Result } from 'antd';
-import { connect } from 'react-redux';
-import { INI } from '@hyper-tuner/ini';
-import { lazy, ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
-import TopBar from './components/TopBar';
+import Loader from './components/Loader';
 import StatusBar from './components/StatusBar';
+import TopBar from './components/TopBar';
+import { collapsedSidebarWidth, sidebarWidth } from './components/Tune/SideBar';
+import { divider } from './data/constants';
+import help from './data/help';
+import standardDialogs from './data/standardDialogs';
+import useDb from './hooks/useDb';
+import useServerStorage from './hooks/useServerStorage';
+import Hub from './pages/Hub';
+import Info from './pages/Info';
+import { FormRoles } from './pages/auth/Login';
+import { iniLoadingError, tuneNotFound, tuneParsingError } from './pages/auth/notifications';
 import { Routes } from './routes';
 import store from './store';
-import Loader from './components/Loader';
 import { AppState, TuneDataState, UIState } from './types/state';
-import useDb from './hooks/useDb';
-import Info from './pages/Info';
-import Hub from './pages/Hub';
-import { FormRoles } from './pages/auth/Login';
-import useServerStorage from './hooks/useServerStorage';
 import TuneParser from './utils/tune/TuneParser';
-import standardDialogs from './data/standardDialogs';
-import help from './data/help';
-import { iniLoadingError, tuneNotFound, tuneParsingError } from './pages/auth/notifications';
-import { divider } from './data/constants';
-import { collapsedSidebarWidth, sidebarWidth } from './components/Tune/SideBar';
 
-import 'uplot/dist/uPlot.min.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
-import './css/App.less';
+import 'uplot/dist/uPlot.min.css';
 import { TunesResponse } from './@types/pocketbase-types';
+import './css/App.less';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Logs = lazy(() => import('./pages/Logs'));
@@ -159,7 +159,7 @@ const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
 
     return (
       <Layout style={{ marginLeft }}>
-        <Layout className='app-content'>
+        <Layout className="app-content">
           <Content>
             <Suspense fallback={<Loader />}>{element}</Suspense>
           </Content>
@@ -231,11 +231,11 @@ const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
           />
 
           <Route
-            path='*'
+            path="*"
             element={
               <ContentFor
                 element={
-                  <Result status='warning' title='Page not found' style={{ marginTop: 50 }} />
+                  <Result status="warning" title="Page not found" style={{ marginTop: 50 }} />
                 }
               />
             }

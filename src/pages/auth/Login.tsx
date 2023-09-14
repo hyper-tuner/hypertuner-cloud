@@ -1,19 +1,20 @@
-import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { Form, Input, Button, Divider, Space } from 'antd';
 import {
-  MailOutlined,
-  LockOutlined,
-  UnlockOutlined,
-  GoogleOutlined,
-  GithubOutlined,
   FacebookOutlined,
+  GithubOutlined,
+  GoogleOutlined,
+  LockOutlined,
+  MailOutlined,
+  UnlockOutlined,
   UserAddOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import { Button, Divider, Form, Input, Space } from 'antd';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { OAuthProviders, useAuth } from '../../contexts/AuthContext';
 import { Routes } from '../../routes';
-import validateMessages from './validateMessages';
+import { emailRules, requiredRules, usernameRules } from '../../utils/form';
+import { buildRedirectUrl } from '../../utils/url';
 import {
   emailNotVerified,
   logInFailed,
@@ -21,8 +22,7 @@ import {
   signUpFailed,
   signUpSuccessful,
 } from './notifications';
-import { emailRules, requiredRules, usernameRules } from '../../utils/form';
-import { buildRedirectUrl } from '../../utils/url';
+import validateMessages from './validateMessages';
 
 const { Item } = Form;
 
@@ -186,7 +186,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   const OauthSection = () => {
     return isOauthEnabled ? (
       <>
-        <Space direction='horizontal' style={{ width: '100%', justifyContent: 'center' }}>
+        <Space direction="horizontal" style={{ width: '100%', justifyContent: 'center' }}>
           {providersReady &&
             Object.keys(oauthMethods).map(
               (provider) =>
@@ -224,8 +224,8 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
 
   const submitLogin = (
     <Button
-      type='primary'
-      htmlType='submit'
+      type="primary"
+      htmlType="submit"
       style={{ width: '100%' }}
       loading={isEmailLoading}
       disabled={isAnythingLoading}
@@ -237,8 +237,8 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
 
   const submitSignUp = (
     <Button
-      type='primary'
-      htmlType='submit'
+      type="primary"
+      htmlType="submit"
       style={{ width: '100%' }}
       loading={isEmailLoading}
       disabled={isAnythingLoading}
@@ -249,7 +249,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   );
 
   return (
-    <div className='auth-container'>
+    <div className="auth-container">
       <Divider>{formRole}</Divider>
       {providersReady && <OauthSection />}
       <Form
@@ -257,23 +257,23 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
         validateMessages={validateMessages}
         form={formEmail}
       >
-        <Item name='email' rules={emailRules} hasFeedback>
+        <Item name="email" rules={emailRules} hasFeedback>
           <Input
             prefix={<MailOutlined />}
-            placeholder='Email'
-            autoComplete='email'
+            placeholder="Email"
+            autoComplete="email"
             disabled={isAnythingLoading}
           />
         </Item>
         {!isLogin && (
-          <Item name='username' rules={usernameRules} hasFeedback>
-            <Input prefix={<UserOutlined />} placeholder='Username' autoComplete='name' />
+          <Item name="username" rules={usernameRules} hasFeedback>
+            <Input prefix={<UserOutlined />} placeholder="Username" autoComplete="name" />
           </Item>
         )}
-        <Item name='password' rules={requiredRules} hasFeedback>
+        <Item name="password" rules={requiredRules} hasFeedback>
           <Input.Password
-            placeholder='Password'
-            autoComplete='current-password'
+            placeholder="Password"
+            autoComplete="current-password"
             prefix={<LockOutlined />}
             disabled={isAnythingLoading}
           />

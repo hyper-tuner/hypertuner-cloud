@@ -1,14 +1,14 @@
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { HashRouter } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
+import { createRoot } from 'react-dom/client';
 import ReactGA from 'react-ga4';
+import { Provider } from 'react-redux';
+import { HashRouter } from 'react-router-dom';
 import App from './App';
+import CommandPalette from './components/CommandPalette';
+import { AuthProvider } from './contexts/AuthContext';
 import store from './store';
 import { environment, isProduction, sentryDsn } from './utils/env';
-import { AuthProvider } from './contexts/AuthContext';
-import CommandPalette from './components/CommandPalette';
 
 import '@total-typescript/ts-reset';
 

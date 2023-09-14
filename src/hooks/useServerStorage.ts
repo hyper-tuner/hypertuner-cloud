@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/browser';
-import { API_URL, removeFilenameSuffix } from '../pocketbase';
 import { Collections } from '../@types/pocketbase-types';
-import useDb from './useDb';
-import { fetchWithProgress, OnProgress } from '../utils/http';
 import { downloading } from '../pages/auth/notifications';
+import { API_URL, removeFilenameSuffix } from '../pocketbase';
 import { decompress } from '../utils/compression';
+import { OnProgress, fetchWithProgress } from '../utils/http';
+import useDb from './useDb';
 
 const useServerStorage = () => {
   const { getIni } = useDb();
