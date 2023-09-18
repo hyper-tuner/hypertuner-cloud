@@ -32,7 +32,7 @@
     "kbar": "^0.1.0-beta.43",
     "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.9.0",
-    "nanoid": "^4.0.2",
+    "nanoid": "^5.0.1",
     "pako": "^2.1.0",
     "pocketbase": "^0.18.0",
     "react": "^18.2.0",
