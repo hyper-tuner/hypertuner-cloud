@@ -7,11 +7,7 @@
     "enabled": true,
     "indentStyle": "space",
     "lineWidth": 100,
-    "indentSize": 2,
-    "ignore": [
-      "node_modules",
-      "build"
-    ]
+    "indentSize": 2
   },
   "javascript": {
     "formatter": {
@@ -38,7 +34,8 @@
         "all": true,
         "noImplicitBoolean": "off",
         "useEnumInitializers": "off",
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "useNamingConvention": "off"
       },
       "suspicious": {
         "all": true,
@@ -48,8 +45,8 @@
         "all": true,
         "useExhaustiveDependencies": "off",
         "useImportRestrictions": "off",
-        "useNamingConvention": "off",
-        "noExcessiveComplexity": "off"
+        "noExcessiveComplexity": "off",
+        "noConfusingVoidType": "off"
       },
       "complexity": {
         "noForEach": "off"

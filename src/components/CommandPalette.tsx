@@ -30,15 +30,7 @@ import {
   useMatches,
   useRegisterActions,
 } from 'kbar';
-import React, {
-  CSSProperties,
-  Fragment,
-  ReactNode,
-  Ref,
-  forwardRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import { CSSProperties, Fragment, ReactNode, Ref, forwardRef, useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { generatePath, useNavigate } from 'react-router';
 import { useAuth } from '../contexts/AuthContext';
@@ -172,7 +164,7 @@ const ResultItem = forwardRef(
         </div>
         {action.shortcut?.length ? (
           <div aria-hidden style={{ display: 'grid', gridAutoFlow: 'column', gap: '4px' }}>
-            {action.shortcut.map((sc: React.Key) => (
+            {action.shortcut.map((sc) => (
               <kbd
                 key={sc}
                 style={{

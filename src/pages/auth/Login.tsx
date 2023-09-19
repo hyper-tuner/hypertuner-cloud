@@ -95,7 +95,11 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   };
 
   const oauthMethods: {
-    [provider: string]: { label: string; icon: ReactNode; onClick: () => void };
+    [provider: string]: {
+      label: string;
+      icon: ReactNode;
+      onClick: () => void;
+    };
   } = {
     google: {
       label: 'Google',

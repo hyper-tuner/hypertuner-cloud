@@ -190,6 +190,7 @@ const Hub = () => {
     {
       dataIndex: 'tuneId',
       fixed: 'right',
+      align: 'right',
       render: (tuneId: string, record: TunesResponse) => {
         const isOwner = currentUser?.id === record.author;
         const size = isOwner ? 'small' : 'middle';
