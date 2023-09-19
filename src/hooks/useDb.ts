@@ -170,7 +170,7 @@ const useDb = () => {
 
   const autocomplete = async (attribute: string, search: string): Promise<TunesResponse[]> => {
     try {
-      const items = await tunesCollection.getFullList<TunesResponse>(10, {
+      const items = await tunesCollection.getFullList<TunesResponse>({
         filter: `${attribute} ~ "${search}"`,
       });
 

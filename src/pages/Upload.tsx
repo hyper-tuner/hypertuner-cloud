@@ -148,8 +148,6 @@ const UploadPage = () => {
       }
 
       const options = (await autocomplete(attribute, search)).map((record) => record[attribute]);
-
-      // TODO: order by occurrence (more common - higher in the list)
       const unique = [...new Set(options)].map((value) => ({ value }));
 
       setAutocompleteOptions((prev) => ({ ...prev, [attribute]: unique }));
