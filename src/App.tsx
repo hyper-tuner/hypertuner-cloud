@@ -1,5 +1,6 @@
 import { INI } from '@hyper-tuner/ini';
-import { Layout, Result } from 'antd';
+import { Layout, Modal, Result } from 'antd';
+import { ReloadOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { ReactNode, Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
@@ -31,6 +32,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import 'uplot/dist/uPlot.min.css';
 import { TunesResponse } from './@types/pocketbase-types';
 import './css/App.less';
+import { useUpdateCheck } from 'react-update-notification';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Logs = lazy(() => import('./pages/Logs'));
@@ -52,6 +54,41 @@ const mapStateToProps = (state: AppState) => ({
   status: state.status,
   tuneData: state.tuneData,
 });
+
+const NewVersionPrompt = () => {
+  // fetch /version.json?v=timestamp every 10s
+  const { status, reloadPage } = useUpdateCheck({
+    type: 'interval',
+    interval: 10000,
+    ignoreServerCache: true,
+  });
+  const [open, setOpen] = useState(true);
+
+  if (status === 'checking' || status === 'current') {
+    return null;
+  }
+
+  return (
+    <Modal
+      title="New Version Available! 🚀"
+      open={open}
+      centered
+      maskClosable={false}
+      closable={false}
+      keyboard={false}
+      onOk={reloadPage}
+      okText="Reload the page"
+      okButtonProps={{ icon: <ReloadOutlined /> }}
+      onCancel={() => setOpen(false)}
+      cancelText="I'll do it later"
+      cancelButtonProps={{ icon: <ClockCircleOutlined /> }}
+      destroyOnClose
+    >
+      <p>To enjoy the new features, it's time to refresh the page!</p>
+      <p>You can refresh later at your convenience.</p>
+    </Modal>
+  );
+};
 
 const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
   const margin = ui.sidebarCollapsed ? collapsedSidebarWidth : sidebarWidth;
@@ -174,6 +211,7 @@ const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
 
   return (
     <>
+      <NewVersionPrompt />
       <Layout>
         <TopBar tuneData={tuneData} />
         <ReactRoutes>

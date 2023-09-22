@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && generate-version",
     "serve": "vite preview",
     "lint": "npm run lint:biome && tsc",
     "lint:biome": "biome check src",
@@ -42,6 +42,7 @@
     "react-perfect-scrollbar": "^1.5.8",
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.16.0",
+    "react-update-notification": "^1.2.0",
     "uplot": "^1.6.25",
     "uplot-react": "^1.1.5",
     "vite": "^4.4.9"
