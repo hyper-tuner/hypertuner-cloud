@@ -1,6 +1,6 @@
+import { ClockCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { INI } from '@hyper-tuner/ini';
 import { Layout, Modal, Result } from 'antd';
-import { ReloadOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { ReactNode, Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
@@ -10,6 +10,8 @@ import {
   useMatch,
   useNavigate,
 } from 'react-router-dom';
+import { useUpdateCheck } from 'react-update-notification';
+import { TunesResponse } from './@types/pocketbase-types';
 import Loader from './components/Loader';
 import StatusBar from './components/StatusBar';
 import TopBar from './components/TopBar';
@@ -30,9 +32,7 @@ import TuneParser from './utils/tune/TuneParser';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import 'uplot/dist/uPlot.min.css';
-import { TunesResponse } from './@types/pocketbase-types';
 import './css/App.less';
-import { useUpdateCheck } from 'react-update-notification';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Logs = lazy(() => import('./pages/Logs'));
