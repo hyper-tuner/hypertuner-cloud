@@ -31,8 +31,8 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
       nMin = fMax - nRange;
     }
 
-    return [nMin, nMax];
-  }
+          return [nMin, nMax];
+        }
 
   return {
     hooks: {
@@ -78,7 +78,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           }
         });
 
-        over.addEventListener('wheel', (e: MouseEvent) => {
+        over.addEventListener('wheel', (e: WheelEvent) => {
           e.preventDefault();
 
           if (!isCtrlPressed(e)) {
@@ -119,17 +119,19 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           });
         });
 
-        document.addEventListener('keydown', (e) => {
-          if (isCtrlPressed(e)) {
+        document.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.ctrlKey || e.metaKey) {
             ctrlPressed = true;
           }
         });
-
-        document.addEventListener('keyup', (e) => {
-          if (!isCtrlPressed(e)) {
+        
+        document.addEventListener('keyup', (e: KeyboardEvent) => {
+          if (!e.ctrlKey && !e.metaKey) {
             ctrlPressed = false;
           }
         });
+        
+        
       },
     },
   };
