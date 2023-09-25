@@ -5,6 +5,8 @@ import { Colors } from '../../utils/colors';
 import { EntryType, ToothLogEntry } from '../../utils/logs/TriggerLogsParser';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import mouseZoomPlugin from '../../utils/uPlot/mouseZoomPlugin';
+
+
 import LogsPagination from './LogsPagination';
 
 const { bars } = uPlot.paths;
