@@ -15,7 +15,6 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   let xMin: number, xMax: number, yMin: number, yMax: number, xRange: number, yRange: number;
   let over = null; // Możesz również zainicjować over jako null
   let rect: DOMRect;
-  let ctrlPressed = false;
 
   function isCtrlPressed(e: MouseEvent): boolean {
     return e.ctrlKey || e.metaKey;
@@ -69,13 +68,9 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               });
             }
 
-            function onup(e: MouseEvent) {
-              document.removeEventListener('mousemove', onmove);
-              document.removeEventListener('mouseup', onup);
-            }
+           
 
             document.addEventListener('mousemove', onmove);
-            document.addEventListener('mouseup', onup);
           }
         });
 
@@ -121,13 +116,11 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
 
         document.addEventListener('keydown', (e: KeyboardEvent) => {
           if (e.ctrlKey || e.metaKey) {
-            ctrlPressed = true;
           }
         });
 
         document.addEventListener('keyup', (e: KeyboardEvent) => {
           if (!e.ctrlKey && !e.metaKey) {
-            ctrlPressed = false;
           }
         });
 
