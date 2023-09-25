@@ -2,10 +2,12 @@ import { Plugin, PlotCursor, PlotScale, uPlot } from 'uplot';
 
 interface WheelZoomPluginOptions {
   factor?: number;
+  animationDuration?: number; // Add an animation duration option
 }
 
 function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   const factor = options.factor || 0.75;
+  const animationDuration = options.animationDuration || 200; // Default animation duration in milliseconds
 
   return {
     hooks: {
@@ -54,6 +56,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               u.setScale('x', {
                 min: scXMin0 - dx,
                 max: scXMax0 - dx,
+                duration: animationDuration, // Add animation duration to the setScale call
               });
             }
 
@@ -93,11 +96,13 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             u.setScale('x', {
               min: nxMin,
               max: nxMax,
+              duration: animationDuration, // Add animation duration to the setScale call
             });
 
             u.setScale('y', {
               min: nyMin,
               max: nyMax,
+              duration: animationDuration, // Add animation duration to the setScale call
             });
           });
         });
