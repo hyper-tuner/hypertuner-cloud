@@ -24,7 +24,7 @@
   "dependencies": {
     "@hyper-tuner/ini": "github:hyper-tuner/ini",
     "@hyper-tuner/types": "github:hyper-tuner/types",
-    "@reduxjs/toolkit": "^1.9.5",
+    "@reduxjs/toolkit": "^1.9.6",
     "@sentry/react": "^7.70.0",
     "@sentry/tracing": "^7.70.0",
     "antd": "^4.24.14",
