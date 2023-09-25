@@ -1,8 +1,6 @@
 import uPlot from 'uplot';
 import { Plugin } from 'uplot';
 
-
-
 interface WheelZoomPluginOptions {
   factor?: number;
   animationDuration?: number;
