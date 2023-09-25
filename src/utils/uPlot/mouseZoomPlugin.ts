@@ -45,7 +45,11 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
         over = u.over;
         rect = over.getBoundingClientRect();
 
+<<<<<<< HEAD
         over.addEventListener('mousedown', (e: MouseEvent) => {
+=======
+        over.addEventListener('mousedown', (e) => {
+>>>>>>> 29a4305 (wip)
           if (e.button === 1) {
             e.preventDefault();
 
