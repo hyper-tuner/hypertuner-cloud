@@ -66,8 +66,6 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               });
             }
 
-           
-
             document.addEventListener('mousemove', onmove);
           }
         });
@@ -121,7 +119,6 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           if (!e.ctrlKey && !e.metaKey) {
           }
         });
-
 
       },
     },
