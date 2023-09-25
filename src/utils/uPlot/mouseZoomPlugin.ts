@@ -1,5 +1,6 @@
 import { Plugin, uPlot } from 'uplot';
 
+
 interface WheelZoomPluginOptions {
   factor?: number;
   animationDuration?: number;
@@ -9,42 +10,43 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   const factor = options.factor || 0.90;
   const animationDuration = options.animationDuration || 0.01;
 
+  let xMin: number, xMax: number, yMin: number, yMax: number, xRange: number, yRange: number;
+  let over = null; // Możesz również zainicjować over jako null
+  let rect: DOMRect;
+  let ctrlPressed = false;
+
+  function isCtrlPressed(e: MouseEvent): boolean {
+    return e.ctrlKey || e.metaKey;
+  }
+
+  function clamp(nRange: number, nMin: number, nMax: number, fRange: number, fMin: number, fMax: number): [number, number] {
+    if (nRange > fRange) {
+      nMin = fMin;
+      nMax = fMax;
+    } else if (nMin < fMin) {
+      nMin = fMin;
+      nMax = fMin + nRange;
+    } else if (nMax > fMax) {
+      nMax = fMax;
+      nMin = fMax - nRange;
+    }
+
+    return [nMin, nMax];
+  }
+
   return {
     hooks: {
       ready(u: uPlot) {
-        let xMin: number, xMax: number, yMin: number, yMax: number, xRange: number, yRange: number;
-        let over = u.over;
-        let rect: DOMRect;
-        let ctrlPressed = false; // Flag to track whether the Ctrl key is pressed
+        xMin = u.scales.x.min;
+        xMax = u.scales.x.max;
+        yMin = u.scales.y.min;
+        yMax = u.scales.y.max;
+        xRange = xMax - xMin;
+        yRange = yMax - yMin;
+        over = u.over;
+        rect = over.getBoundingClientRect();
 
-        // Helper function to check if the Ctrl key is pressed
-        function isCtrlPressed(e: MouseEvent): boolean {
-          return e.ctrlKey || e.metaKey; // Use metaKey for macOS
-        }
-
-        function clamp(
-          nRange: number,
-          nMin: number,
-          nMax: number,
-          fRange: number,
-          fMin: number,
-          fMax: number
-        ): [number, number] {
-          if (nRange > fRange) {
-            nMin = fMin;
-            nMax = fMax;
-          } else if (nMin < fMin) {
-            nMin = fMin;
-            nMax = fMin + nRange;
-          } else if (nMax > fMax) {
-            nMax = fMax;
-            nMin = fMax - nRange;
-          }
-
-          return [nMin, nMax];
-        }
-
-        over.addEventListener('mousedown', (e) => {
+        over.addEventListener('mousedown', (e: MouseEvent) => {
           if (e.button === 1) {
             e.preventDefault();
 
@@ -53,7 +55,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             const scXMax0 = u.scales.x.max;
             const xUnitsPerPx = u.valToPos(1, 'x') - u.valToPos(0, 'x');
 
-            function onmove(e) {
+            function onmove(e: MouseEvent) {
               e.preventDefault();
 
               const left1 = e.clientX;
@@ -66,7 +68,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               });
             }
 
-            function onup(e) {
+            function onup(e: MouseEvent) {
               document.removeEventListener('mousemove', onmove);
               document.removeEventListener('mouseup', onup);
             }
@@ -76,11 +78,10 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           }
         });
 
-        over.addEventListener('wheel', (e) => {
+        over.addEventListener('wheel', (e: MouseEvent) => {
           e.preventDefault();
 
           if (!isCtrlPressed(e)) {
-            // Check if the Ctrl key is not pressed
             return;
           }
 
@@ -118,16 +119,6 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           });
         });
 
-        // Store the initial scales and rect
-        xMin = u.scales.x.min;
-        xMax = u.scales.x.max;
-        yMin = u.scales.y.min;
-        yMax = u.scales.y.max;
-        xRange = xMax - xMin;
-        yRange = yMax - yMin;
-        rect = over.getBoundingClientRect();
-
-        // Listen for the keydown and keyup events to track the Ctrl key
         document.addEventListener('keydown', (e) => {
           if (isCtrlPressed(e)) {
             ctrlPressed = true;
