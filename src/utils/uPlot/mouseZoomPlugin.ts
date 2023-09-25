@@ -1,4 +1,6 @@
-import { Plugin, uPlot } from 'uplot';
+import uPlot from 'uplot';
+import { Plugin } from 'uplot';
+
 
 
 interface WheelZoomPluginOptions {
@@ -8,7 +10,7 @@ interface WheelZoomPluginOptions {
 
 function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   const factor = options.factor || 0.90;
-  const animationDuration = options.animationDuration || 0.01;
+  //const animationDuration = options.animationDuration || 0.01;
 
   let xMin: number, xMax: number, yMin: number, yMax: number, xRange: number, yRange: number;
   let over = null; // Możesz również zainicjować over jako null
@@ -31,16 +33,16 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
       nMin = fMax - nRange;
     }
 
-          return [nMin, nMax];
-        }
+    return [nMin, nMax];
+  }
 
   return {
     hooks: {
       ready(u: uPlot) {
-        xMin = u.scales.x.min;
-        xMax = u.scales.x.max;
-        yMin = u.scales.y.min;
-        yMax = u.scales.y.max;
+        xMin = u.scales.x.min ?? 0;
+        xMax = u.scales.x.max ?? 0;
+        yMin = u.scales.y.min ?? 0;
+        yMax = u.scales.y.max ?? 0;
         xRange = xMax - xMin;
         yRange = yMax - yMin;
         over = u.over;
@@ -62,9 +64,8 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               const dx = xUnitsPerPx * (left1 - left0);
 
               u.setScale('x', {
-                min: scXMin0 - dx,
-                max: scXMax0 - dx,
-                duration: animationDuration,
+                min: (scXMin0 ?? 0) - dx,
+                max: (scXMax0 ?? 0) - dx,
               });
             }
 
@@ -86,13 +87,14 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           }
 
           const cursor = u.cursor;
+
           const { left, top } = cursor;
-          const leftPct = left / rect.width;
-          const btmPct = 1 - top / rect.height;
-          const xVal = u.posToVal(left, 'x');
-          const yVal = u.posToVal(top, 'y');
-          const oxRange = u.scales.x.max - u.scales.x.min;
-          const oyRange = u.scales.y.max - u.scales.y.min;
+          const leftPct = (left || 0) / rect.width;
+          const btmPct = 1 - (top || 0) / rect.height;
+          const xVal = u.posToVal((left || 0), 'x');
+          const yVal = u.posToVal((top || 0), 'y');
+          const oxRange = (u.scales.x.max || 0) - (u.scales.x.min || 0);
+          const oyRange = (u.scales.y.max || 0) - (u.scales.y.min || 0);
 
           const nxRange = e.deltaY < 0 ? oxRange * factor : oxRange / factor;
           let nxMin = xVal - leftPct * nxRange;
@@ -108,13 +110,11 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             u.setScale('x', {
               min: nxMin,
               max: nxMax,
-              duration: animationDuration,
             });
 
             u.setScale('y', {
               min: nyMin,
               max: nyMax,
-              duration: animationDuration,
             });
           });
         });
@@ -124,14 +124,14 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             ctrlPressed = true;
           }
         });
-        
+
         document.addEventListener('keyup', (e: KeyboardEvent) => {
           if (!e.ctrlKey && !e.metaKey) {
             ctrlPressed = false;
           }
         });
-        
-        
+
+
       },
     },
   };
