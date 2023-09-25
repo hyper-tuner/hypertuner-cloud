@@ -7,6 +7,7 @@ import { Colors } from '../../utils/colors';
 import { colorHsl, formatNumberMs } from '../../utils/numbers';
 import { isNumber } from '../../utils/tune/expression';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
+import desktopZoomPlugin from '../../utils/uPlot/mouseZoomPlugin';
 
 export interface SelectedField {
   name: string;
@@ -144,7 +145,7 @@ const LogCanvas = ({
             sync: { key: plotSyncKey },
             points: { size: 7 },
           },
-          plugins: [touchZoomPlugin()],
+          plugins: [touchZoomPlugin(), desktopZoomPlugin()],
         },
       };
     },
