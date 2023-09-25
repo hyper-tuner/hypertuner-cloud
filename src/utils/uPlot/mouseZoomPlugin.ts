@@ -31,8 +31,8 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
       nMin = fMax - nRange;
     }
 
-    return [nMin, nMax];
-  }
+          return [nMin, nMax];
+        }
 
   return {
     hooks: {
