@@ -1,4 +1,4 @@
-import { Plugin, PlotCursor, PlotScale, uPlot } from 'uplot';
+import { Plugin, uPlot } from 'uplot';
 
 interface WheelZoomPluginOptions {
   factor?: number;
@@ -51,7 +51,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             const left0 = e.clientX;
             const scXMin0 = u.scales.x.min;
             const scXMax0 = u.scales.x.max;
-            const xUnitsPerPx = u.posToVal(1, 'x') - u.posToVal(0, 'x');
+            const xUnitsPerPx = u.valToPos(1, 'x') - u.valToPos(0, 'x');
 
             function onmove(e) {
               e.preventDefault();
@@ -84,7 +84,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             return;
           }
 
-          const cursor: PlotCursor = u.cursor;
+          const cursor = u.cursor;
           const { left, top } = cursor;
           const leftPct = left / rect.width;
           const btmPct = 1 - top / rect.height;
