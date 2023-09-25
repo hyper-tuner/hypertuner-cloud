@@ -2,12 +2,12 @@ import { Plugin, PlotCursor, PlotScale, uPlot } from 'uplot';
 
 interface WheelZoomPluginOptions {
   factor?: number;
-  animationDuration?: number; // Add an animation duration option
+  animationDuration?: number;
 }
 
 function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
-  const factor = options.factor || 0.75;
-  const animationDuration = options.animationDuration || 200; // Default animation duration in milliseconds
+  const factor = options.factor || 0.90;
+  const animationDuration = options.animationDuration || 0.01;
 
   return {
     hooks: {
@@ -15,6 +15,12 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
         let xMin: number, xMax: number, yMin: number, yMax: number, xRange: number, yRange: number;
         let over = u.over;
         let rect: DOMRect;
+        let ctrlPressed = false; // Flag to track whether the Ctrl key is pressed
+
+        // Helper function to check if the Ctrl key is pressed
+        function isCtrlPressed(e: MouseEvent): boolean {
+          return e.ctrlKey || e.metaKey; // Use metaKey for macOS
+        }
 
         function clamp(
           nRange: number,
@@ -56,7 +62,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               u.setScale('x', {
                 min: scXMin0 - dx,
                 max: scXMax0 - dx,
-                duration: animationDuration, // Add animation duration to the setScale call
+                duration: animationDuration,
               });
             }
 
@@ -72,6 +78,11 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
 
         over.addEventListener('wheel', (e) => {
           e.preventDefault();
+
+          if (!isCtrlPressed(e)) {
+            // Check if the Ctrl key is not pressed
+            return;
+          }
 
           const cursor: PlotCursor = u.cursor;
           const { left, top } = cursor;
@@ -96,13 +107,13 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             u.setScale('x', {
               min: nxMin,
               max: nxMax,
-              duration: animationDuration, // Add animation duration to the setScale call
+              duration: animationDuration,
             });
 
             u.setScale('y', {
               min: nyMin,
               max: nyMax,
-              duration: animationDuration, // Add animation duration to the setScale call
+              duration: animationDuration,
             });
           });
         });
@@ -115,6 +126,19 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
         xRange = xMax - xMin;
         yRange = yMax - yMin;
         rect = over.getBoundingClientRect();
+
+        // Listen for the keydown and keyup events to track the Ctrl key
+        document.addEventListener('keydown', (e) => {
+          if (isCtrlPressed(e)) {
+            ctrlPressed = true;
+          }
+        });
+
+        document.addEventListener('keyup', (e) => {
+          if (!isCtrlPressed(e)) {
+            ctrlPressed = false;
+          }
+        });
       },
     },
   };
