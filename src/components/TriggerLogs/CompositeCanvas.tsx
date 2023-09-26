@@ -3,8 +3,8 @@ import uPlot from 'uplot';
 import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
 import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
-import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import mouseZoomPlugin from '../../utils/uPlot/mouseZoomPlugin';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 
 import LogsPagination from './LogsPagination';
 

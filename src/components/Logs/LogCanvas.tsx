@@ -6,8 +6,8 @@ import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
 import { colorHsl, formatNumberMs } from '../../utils/numbers';
 import { isNumber } from '../../utils/tune/expression';
-import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import mouseZoomPlugin from '../../utils/uPlot/mouseZoomPlugin';
+import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 
 export interface SelectedField {
   name: string;
