@@ -68,7 +68,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
             const scXMax0 = u.scales.x.max;
             const xUnitsPerPx = u.valToPos(1, 'x') - u.valToPos(0, 'x');
 
-            function onmove(e: MouseEvent) {
+            function onMove(e: MouseEvent) {
               e.preventDefault();
 
               const left1 = e.clientX;
@@ -80,7 +80,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               });
             }
 
-            document.addEventListener('mousemove', onmove);
+            document.addEventListener('mousemove', onMove);
           }
         });
 
@@ -122,16 +122,6 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
               max: nyMax,
             });
           });
-        });
-
-        document.addEventListener('keydown', (e: KeyboardEvent) => {
-          if (e.ctrlKey || e.metaKey) {
-          }
-        });
-
-        document.addEventListener('keyup', (e: KeyboardEvent) => {
-          if (!e.ctrlKey && !e.metaKey) {
-          }
         });
       },
     },
