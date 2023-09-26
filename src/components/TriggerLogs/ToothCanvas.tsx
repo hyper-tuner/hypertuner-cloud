@@ -3,6 +3,7 @@ import uPlot from 'uplot';
 import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
 import { EntryType, ToothLogEntry } from '../../utils/logs/TriggerLogsParser';
+import mouseZoomPlugin from '../../utils/uPlot/mouseZoomPlugin';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import LogsPagination from './LogsPagination';
 
@@ -69,7 +70,7 @@ const ToothCanvas = ({ data, width, height }: Props) => {
         drag: { y: false },
         points: { size: 7 },
       },
-      plugins: [touchZoomPlugin()],
+      plugins: [touchZoomPlugin(), mouseZoomPlugin()],
     });
   }, [data, width, height, indexFrom, indexTo]);
 
