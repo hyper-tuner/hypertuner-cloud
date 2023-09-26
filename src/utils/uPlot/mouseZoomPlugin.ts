@@ -7,30 +7,45 @@ interface WheelZoomPluginOptions {
 }
 
 function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
-  const factor = options.factor || 0.90;
+  const factor = options.factor || 0.9;
   //const animationDuration = options.animationDuration || 0.01;
 
-  let xMin: number, xMax: number, yMin: number, yMax: number, xRange: number, yRange: number;
-  let over = null; // Możesz również zainicjować over jako null
+  let xMin: number;
+  let xMax: number;
+  let yMin: number;
+  let yMax: number;
+  let xRange: number;
+  let yRange: number;
+  let over = null;
   let rect: DOMRect;
 
   function isCtrlPressed(e: MouseEvent): boolean {
     return e.ctrlKey || e.metaKey;
   }
 
-  function clamp(nRange: number, nMin: number, nMax: number, fRange: number, fMin: number, fMax: number): [number, number] {
+  function clamp(
+    nRange: number,
+    nMin: number,
+    nMax: number,
+    fRange: number,
+    fMin: number,
+    fMax: number,
+  ): [number, number] {
+    let newNMin = nMin;
+    let newNMax = nMax;
+
     if (nRange > fRange) {
-      nMin = fMin;
-      nMax = fMax;
+      newNMin = fMin;
+      newNMax = fMax;
     } else if (nMin < fMin) {
-      nMin = fMin;
-      nMax = fMin + nRange;
+      newNMin = fMin;
+      newNMax = fMin + nRange;
     } else if (nMax > fMax) {
-      nMax = fMax;
-      nMin = fMax - nRange;
+      newNMax = fMax;
+      newNMin = fMax - nRange;
     }
 
-    return [nMin, nMax];
+    return [newNMin, newNMax];
   }
 
   return {
@@ -82,8 +97,8 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           const { left, top } = cursor;
           const leftPct = (left || 0) / rect.width;
           const btmPct = 1 - (top || 0) / rect.height;
-          const xVal = u.posToVal((left || 0), 'x');
-          const yVal = u.posToVal((top || 0), 'y');
+          const xVal = u.posToVal(left || 0, 'x');
+          const yVal = u.posToVal(top || 0, 'y');
           const oxRange = (u.scales.x.max || 0) - (u.scales.x.min || 0);
           const oyRange = (u.scales.y.max || 0) - (u.scales.y.min || 0);
 
@@ -119,7 +134,6 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           if (!e.ctrlKey && !e.metaKey) {
           }
         });
-
       },
     },
   };
