@@ -8,7 +8,6 @@ interface WheelZoomPluginOptions {
 
 function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   const factor = options.factor || 0.9;
-  //const animationDuration = options.animationDuration || 0.01;
 
   let xMin: number;
   let xMax: number;
