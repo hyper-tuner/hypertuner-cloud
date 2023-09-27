@@ -6,6 +6,8 @@ import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
 import { colorHsl, formatNumberMs } from '../../utils/numbers';
 import { isNumber } from '../../utils/tune/expression';
+
+import keyboardZoomPanPlugin from '../../utils/uPlot/keyboardZoomPanPlugin';
 import mouseZoomPlugin from '../../utils/uPlot/mouseZoomPlugin';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 
@@ -145,7 +147,7 @@ const LogCanvas = ({
             sync: { key: plotSyncKey },
             points: { size: 7 },
           },
-          plugins: [touchZoomPlugin(), mouseZoomPlugin()],
+          plugins: [touchZoomPlugin(), mouseZoomPlugin(), keyboardZoomPanPlugin()],
         },
       };
     },
