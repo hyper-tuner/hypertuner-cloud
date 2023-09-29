@@ -8,6 +8,8 @@ interface Point {
   dy: number;
 }
 
+const chartInstances: uPlot[] = [];
+
 const touchZoomPlugin = () => {
   const init = (u: uPlot, _opts: any, _data: any) => {
     const { over } = u;
@@ -56,17 +58,12 @@ const touchZoomPlugin = () => {
 
     let rafPending = false;
 
-    const zoom = () => {
+    const zoomCharts = () => {
       rafPending = false;
 
       const left = to.x;
       const top = to.y;
 
-      // non-uniform scaling
-      //	let xFactor = fr.dx / to.dx;
-      //	let yFactor = fr.dy / to.dy;
-
-      // uniform x/y scaling
       const xFactor = fr.d! / to.d!;
       const yFactor = fr.d! / to.d!;
 
@@ -81,15 +78,18 @@ const touchZoomPlugin = () => {
       const nyMin = yVal - btmPct * nyRange;
       const nyMax = nyMin + nyRange;
 
-      u.batch(() => {
-        u.setScale('x', {
-          min: nxMin,
-          max: nxMax,
-        });
+      // Loop through all chart instances and apply the same zoom to each of them
+      chartInstances.forEach((chartInstance) => {
+        chartInstance.batch(() => {
+          chartInstance.setScale('x', {
+            min: nxMin,
+            max: nxMax,
+          });
 
-        u.setScale('y', {
-          min: nyMin,
-          max: nyMax,
+          chartInstance.setScale('y', {
+            min: nyMin,
+            max: nyMax,
+          });
         });
       });
     };
@@ -99,7 +99,7 @@ const touchZoomPlugin = () => {
 
       if (!rafPending) {
         rafPending = true;
-        requestAnimationFrame(zoom);
+        requestAnimationFrame(zoomCharts);
       }
     };
 
@@ -128,6 +128,8 @@ const touchZoomPlugin = () => {
     over.addEventListener('touchend', (_e: TouchEvent) => {
       document.removeEventListener('touchmove', touchmove);
     });
+
+    chartInstances.push(u); // Add the current chart instance to the list
   };
 
   return {
