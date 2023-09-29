@@ -6,6 +6,8 @@ interface WheelZoomPluginOptions {
   animationDuration?: number;
 }
 
+const chartInstances: uPlot[] = [];
+
 function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   const factor = options.factor || 0.9;
 
@@ -15,8 +17,8 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   let yMax: number;
   let xRange: number;
   let yRange: number;
-  let over = null;
-  let rect: DOMRect;
+  let over: HTMLElement | null = null;
+  let rect: DOMRect | null = null;
 
   function isCtrlPressed(e: MouseEvent): boolean {
     return e.ctrlKey || e.metaKey;
@@ -50,6 +52,8 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
   return {
     hooks: {
       ready(u: uPlot) {
+        chartInstances.push(u); // Add the current chart instance to the list
+
         xMin = u.scales.x.min ?? 0;
         xMax = u.scales.x.max ?? 0;
         yMin = u.scales.y.min ?? 0;
@@ -59,7 +63,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
         over = u.over;
         rect = over.getBoundingClientRect();
 
-        over.addEventListener('mousedown', (e: MouseEvent) => {
+        over?.addEventListener('mousedown', (e: MouseEvent) => {
           if (e.button === 1) {
             e.preventDefault();
 
@@ -84,7 +88,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           }
         });
 
-        over.addEventListener('wheel', (e: WheelEvent) => {
+        over?.addEventListener('wheel', (e: WheelEvent) => {
           e.preventDefault();
 
           if (!isCtrlPressed(e)) {
@@ -94,8 +98,8 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           const cursor = u.cursor;
 
           const { left, top } = cursor;
-          const leftPct = (left || 0) / rect.width;
-          const btmPct = 1 - (top || 0) / rect.height;
+          const leftPct = (left || 0) / (rect?.width || 1);
+          const btmPct = 1 - (top || 0) / (rect?.height || 1);
           const xVal = u.posToVal(left || 0, 'x');
           const yVal = u.posToVal(top || 0, 'y');
           const oxRange = (u.scales.x.max || 0) - (u.scales.x.min || 0);
@@ -111,15 +115,18 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           let nyMax = nyMin + nyRange;
           [nyMin, nyMax] = clamp(nyRange, nyMin, nyMax, yRange, yMin, yMax);
 
-          u.batch(() => {
-            u.setScale('x', {
-              min: nxMin,
-              max: nxMax,
-            });
+          // Loop through all chart instances and apply the same zoom to each of them
+          chartInstances.forEach((chartInstance) => {
+            chartInstance.batch(() => {
+              chartInstance.setScale('x', {
+                min: nxMin,
+                max: nxMax,
+              });
 
-            u.setScale('y', {
-              min: nyMin,
-              max: nyMax,
+              chartInstance.setScale('y', {
+                min: nyMin,
+                max: nyMax,
+              });
             });
           });
         });
