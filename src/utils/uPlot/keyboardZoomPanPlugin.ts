@@ -5,6 +5,11 @@ interface KeyboardZoomPluginOptions {
   scrollFactor?: number;
 }
 
+const ARROW_UP = 'ArrowUp';
+const ARROW_DOWN = 'ArrowDown';
+const ARROW_LEFT = 'ArrowLeft';
+const ARROW_RIGHT = 'ArrowRight';
+
 function keyboardZoomPlugin(options: KeyboardZoomPluginOptions = {}): Plugin {
   const { zoomFactor = 0.9 } = options;
 
@@ -23,8 +28,8 @@ function keyboardZoomPlugin(options: KeyboardZoomPluginOptions = {}): Plugin {
             const xRange = (u.scales.x.max ?? 0) - (u.scales.x.min ?? 0);
             const yRange = (u.scales.y.max ?? 0) - (u.scales.y.min ?? 0);
 
-            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-              const zoomOut = e.key === 'ArrowDown';
+            if (e.key === ARROW_UP || e.key === ARROW_DOWN) {
+              const zoomOut = e.key === ARROW_DOWN;
               const newZoomFactor = zoomOut ? 1 / zoomFactor : zoomFactor;
 
               const nxRange = xRange * newZoomFactor;
@@ -37,8 +42,8 @@ function keyboardZoomPlugin(options: KeyboardZoomPluginOptions = {}): Plugin {
                 u.setScale('x', { min: nxMin, max: nxMin + nxRange });
                 u.setScale('y', { min: nyMin, max: nyMin + nyRange });
               });
-            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-              const scrollDirection = e.key === 'ArrowLeft' ? -1 : 1;
+            } else if (e.key === ARROW_LEFT || e.key === ARROW_RIGHT) {
+              const scrollDirection = e.key === ARROW_LEFT ? -1 : 1;
               const scrollAmount = (xRange / 10) * scrollDirection;
               const nxMin = (u.scales.x.min ?? 0) + scrollAmount;
 
