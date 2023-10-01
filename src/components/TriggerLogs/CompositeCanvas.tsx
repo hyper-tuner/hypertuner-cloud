@@ -3,6 +3,7 @@ import uPlot from 'uplot';
 import UplotReact from 'uplot-react';
 import { Colors } from '../../utils/colors';
 import { CompositeLogEntry } from '../../utils/logs/TriggerLogsParser';
+import keyboardZoomPanPlugin from '../../utils/uPlot/keyboardZoomPanPlugin';
 import mouseZoomPlugin from '../../utils/uPlot/mouseZoomPlugin';
 import touchZoomPlugin from '../../utils/uPlot/touchZoomPlugin';
 import LogsPagination from './LogsPagination';
@@ -104,7 +105,7 @@ const CompositeCanvas = ({ data, width, height }: Props) => {
         drag: { y: false },
         points: { size: 7 },
       },
-      plugins: [touchZoomPlugin(), mouseZoomPlugin()],
+      plugins: [touchZoomPlugin(), mouseZoomPlugin(), keyboardZoomPanPlugin()],
     });
   }, [data, width, height, indexFrom, indexTo]);
 
