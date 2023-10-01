@@ -1,15 +1,10 @@
-import uPlot from 'uplot';
-import { Plugin } from 'uplot';
-
-interface WheelZoomPluginOptions {
-  factor?: number;
-  animationDuration?: number;
-}
+import uPlot, { Plugin as uPlotPlugin } from 'uplot';
+import { ZoomPluginOptions } from './zoomPluginOptions';
 
 const chartInstances: uPlot[] = [];
 
-function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
-  const factor = options.factor || 0.9;
+const mouseZoomPlugin = (options: ZoomPluginOptions = {}): uPlotPlugin => {
+  const { zoomFactor = 0.9 } = options;
 
   let xMin: number;
   let xMax: number;
@@ -51,7 +46,7 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
 
   return {
     hooks: {
-      ready(u: uPlot) {
+      ready(u) {
         chartInstances.push(u); // Add the current chart instance to the list
 
         xMin = u.scales.x.min ?? 0;
@@ -105,12 +100,12 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
           const oxRange = (u.scales.x.max || 0) - (u.scales.x.min || 0);
           const oyRange = (u.scales.y.max || 0) - (u.scales.y.min || 0);
 
-          const nxRange = e.deltaY < 0 ? oxRange * factor : oxRange / factor;
+          const nxRange = e.deltaY < 0 ? oxRange * zoomFactor : oxRange / zoomFactor;
           let nxMin = xVal - leftPct * nxRange;
           let nxMax = nxMin + nxRange;
           [nxMin, nxMax] = clamp(nxRange, nxMin, nxMax, xRange, xMin, xMax);
 
-          const nyRange = e.deltaY < 0 ? oyRange * factor : oyRange / factor;
+          const nyRange = e.deltaY < 0 ? oyRange * zoomFactor : oyRange / zoomFactor;
           let nyMin = yVal - btmPct * nyRange;
           let nyMax = nyMin + nyRange;
           [nyMin, nyMax] = clamp(nyRange, nyMin, nyMax, yRange, yMin, yMax);
@@ -133,6 +128,6 @@ function wheelZoomPlugin(options: WheelZoomPluginOptions = {}): Plugin {
       },
     },
   };
-}
+};
 
-export default wheelZoomPlugin;
+export default mouseZoomPlugin;
