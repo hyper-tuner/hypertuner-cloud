@@ -1,5 +1,6 @@
 import { ClockCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { INI } from '@hyper-tuner/ini';
+import * as Sentry from '@sentry/react';
 import { Layout, Modal, Result } from 'antd';
 import { ReactNode, Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -32,7 +33,9 @@ import TuneParser from './utils/tune/TuneParser';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import 'uplot/dist/uPlot.min.css';
+import { useAuth } from './contexts/AuthContext';
 import './css/App.less';
+import { isProduction } from './utils/env';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Logs = lazy(() => import('./pages/Logs'));
@@ -98,6 +101,23 @@ const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
   const tunePathMatch = useMatch(`${Routes.TUNE_ROOT}/*`);
   const tuneId = tunePathMatch?.params.tuneId;
   const { fetchINIFile, fetchTuneFile } = useServerStorage();
+  const { currentUser } = useAuth();
+
+  if (isProduction) {
+    if (currentUser) {
+      Sentry.setContext('user', {
+        id: currentUser.id,
+        email: currentUser.email,
+        username: currentUser.username,
+      });
+    }
+
+    if (tuneId) {
+      Sentry.setContext('tune', {
+        tuneId,
+      });
+    }
+  }
 
   const loadTune = async (data: TunesResponse | null) => {
     if (data === null) {

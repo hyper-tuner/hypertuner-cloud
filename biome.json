@@ -49,6 +49,7 @@
         "noConfusingVoidType": "off"
       },
       "complexity": {
+        "all": true,
         "noForEach": "off"
       }
     }
