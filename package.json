@@ -45,7 +45,7 @@
     "react-update-notification": "^1.2.0",
     "uplot": "^1.6.26",
     "uplot-react": "^1.1.5",
-    "vite": "^4.4.9"
+    "vite": "^4.4.11"
   },
   "devDependencies": {
     "@biomejs/biome": "1.2.2",
