@@ -2,6 +2,9 @@
  * This file was @generated using pocketbase-typegen
  */
 
+import type PocketBase from 'pocketbase';
+import type { RecordService } from 'pocketbase';
+
 export enum Collections {
   IniFiles = 'iniFiles',
   Stargazers = 'stargazers',
@@ -125,4 +128,14 @@ export type CollectionResponses = {
   stargazers: StargazersResponse;
   tunes: TunesResponse;
   users: UsersResponse;
+};
+
+// Type for usage with type asserted PocketBase instance
+// https://github.com/pocketbase/js-sdk#specify-typescript-definitions
+
+export type TypedPocketBase = PocketBase & {
+  collection(idOrName: 'iniFiles'): RecordService<IniFilesResponse>;
+  collection(idOrName: 'stargazers'): RecordService<StargazersResponse>;
+  collection(idOrName: 'tunes'): RecordService<TunesResponse>;
+  collection(idOrName: 'users'): RecordService<UsersResponse>;
 };

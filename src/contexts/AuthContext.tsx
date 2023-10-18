@@ -98,7 +98,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
-      logout: async () => {
+      logout: () => {
         client.authStore.clear();
       },
       initResetPassword: async (email: string) => {

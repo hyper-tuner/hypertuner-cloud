@@ -1,8 +1,9 @@
 import PocketBase, { AuthMethodsList, AuthProviderInfo, ClientResponseError } from 'pocketbase';
+import { TypedPocketBase } from './@types/pocketbase-types';
 import { fetchEnv } from './utils/env';
 
 const API_URL = fetchEnv('VITE_POCKETBASE_API_URL');
-const client = new PocketBase(API_URL);
+const client = new PocketBase(API_URL) as TypedPocketBase;
 
 const formatError = (error: ClientResponseError) => {
   const { data, message } = error;
