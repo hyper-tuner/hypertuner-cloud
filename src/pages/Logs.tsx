@@ -73,8 +73,8 @@ const Logs = ({
   tuneData,
 }: {
   ui: UIState;
-  config: ConfigState;
-  loadedLogs: LogsState;
+  config: ConfigState | null;
+  loadedLogs: LogsState | null;
   tuneData: TuneDataState | null;
 }) => {
   const { lg } = Grid.useBreakpoint();
@@ -148,7 +148,7 @@ const Logs = ({
         return [];
       }
 
-      return Object.values(config.datalog)
+      return Object.values(config?.datalog || {})
         .map((entry: DatalogEntry) => {
           const { units, scale, transform } = findOutputChannel(entry.name) as OutputChannel;
           const { name, label, format } = entry;
@@ -175,11 +175,11 @@ const Logs = ({
   const [foundFields2, setFoundFields2] = useState<DatalogEntry[]>([]);
   const fuse = new Fuse<DatalogEntry>(fields, fuseOptions);
 
-  const debounceSearch1 = debounce(async (searchText: string) => {
+  const debounceSearch1 = debounce((searchText: string) => {
     const result = fuse.search(searchText);
     setFoundFields1(result.length > 0 ? result.map((item) => item.item) : fields);
   }, 300);
-  const debounceSearch2 = debounce(async (searchText: string) => {
+  const debounceSearch2 = debounce((searchText: string) => {
     const result = fuse.search(searchText);
     setFoundFields2(result.length > 0 ? result.map((item) => item.item) : fields);
   }, 300);
@@ -190,10 +190,10 @@ const Logs = ({
     const { signal } = controller;
 
     const loadData = async () => {
-      const logFileName = routeMatch?.params.fileName!;
+      const logFileName = routeMatch?.params.fileName ?? '';
 
       // user didn't upload any logs
-      if (tuneData && (tuneData.logFiles || []).length === 0) {
+      if (tuneData && tuneData.logFiles.length === 0) {
         navigate(Routes.HUB);
 
         return;
@@ -236,7 +236,7 @@ const Logs = ({
             }
             case 'metrics': {
               setParseElapsed(msToTime(data.elapsed!));
-              setSamplesCount(data.records!);
+              setSamplesCount(data.records);
               setStep(2);
               break;
             }
@@ -258,9 +258,9 @@ const Logs = ({
     };
 
     // user navigated to logs root page
-    if (!routeMatch?.params.fileName && tuneData && tuneData.logFiles?.length) {
+    if (!routeMatch?.params.fileName && tuneData && tuneData.logFiles.length) {
       // either redirect to the first log or to the latest selected
-      if (loadedLogs.fileName) {
+      if (loadedLogs?.fileName) {
         navigate(
           generatePath(Routes.TUNE_LOGS_FILE, {
             tuneId: tuneData.tuneId,
@@ -268,7 +268,7 @@ const Logs = ({
           }),
         );
       } else {
-        const firstLogFile = (tuneData.logFiles || [])[0];
+        const firstLogFile = tuneData.logFiles[0];
         navigate(
           generatePath(Routes.TUNE_LOGS_FILE, {
             tuneId: tuneData.tuneId,
@@ -281,12 +281,12 @@ const Logs = ({
     }
 
     // first visit, logs are not loaded yet
-    if (!(loadedLogs.logs || []).length && tuneData?.tuneId) {
+    if (!(loadedLogs?.logs || []).length && tuneData?.tuneId) {
       loadData();
     }
 
     // file changed, reload
-    if ((loadedLogs.logs || []).length && loadedLogs.fileName !== routeMatch?.params.fileName) {
+    if ((loadedLogs?.logs || []).length && loadedLogs?.fileName !== routeMatch?.params.fileName) {
       setLogs(undefined);
       store.dispatch({ type: 'logs/load', payload: {} });
       loadData();
@@ -400,7 +400,7 @@ const Logs = ({
                     <Badge
                       size="small"
                       style={badgeStyle}
-                      count={tuneData?.logFiles?.length}
+                      count={tuneData?.logFiles.length}
                       offset={[10, -3]}
                     >
                       <FileTextOutlined />
@@ -410,7 +410,7 @@ const Logs = ({
                   key: 'files',
                   children: (
                     <PerfectScrollbar options={{ suppressScrollX: true }}>
-                      {tuneData?.logFiles?.map((fileName) => (
+                      {tuneData?.logFiles.map((fileName) => (
                         <Typography.Paragraph key={fileName} ellipsis>
                           <Link
                             to={generatePath(Routes.TUNE_LOGS_FILE, {
@@ -438,9 +438,9 @@ const Logs = ({
       <Layout className="logs-container">
         <Content>
           <div ref={contentRef}>
-            {logs || !!(loadedLogs.logs || []).length ? (
+            {logs || !!(loadedLogs?.logs || []).length ? (
               <LogCanvas
-                data={loadedLogs.logs || (logs!.records as LogsType)}
+                data={loadedLogs?.logs || (logs!.records as LogsType)}
                 width={canvasWidth}
                 height={canvasHeight}
                 selectedFields1={prepareSelectedFields(selectedFields1)}
@@ -464,7 +464,7 @@ const Logs = ({
                       title: 'Downloading',
                       subTitle: fileSize,
                       description: fetchError ? (
-                        fetchError!.message
+                        fetchError.message
                       ) : (
                         <Space>
                           <GlobalOutlined />
@@ -475,7 +475,7 @@ const Logs = ({
                     },
                     {
                       title: 'Decoding',
-                      description: parseError ? parseError!.message : 'Reading ones and zeros',
+                      description: parseError ? parseError.message : 'Reading ones and zeros',
                       subTitle: parseElapsed,
                       status: parseError && 'error',
                     },

@@ -3,6 +3,7 @@
     "editorconfig.editorconfig",
     "davidanson.vscode-markdownlint",
     "streetsidesoftware.code-spell-checker",
-    "biomejs.biome"
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
   ]
 }

@@ -4,6 +4,7 @@ import { decompress } from '../utils/compression';
 import LogValidator from '../utils/logs/LogValidator';
 import MslLogParser from '../utils/logs/MslLogParser';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
 const ctx: Worker = self as any;
 
 export interface WorkerOutput {

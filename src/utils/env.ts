@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 export const isMac = `${window.navigator.platform}`.includes('Mac');
 export const environment = import.meta.env.VITE_ENVIRONMENT || 'development';
 export const isProduction = environment === 'production';
@@ -10,5 +12,5 @@ export const fetchEnv = (envName: string): string => {
     throw new Error(`Missing ENV: ${envName}`);
   }
 
-  return envValue;
+  return envValue as string;
 };

@@ -86,8 +86,12 @@ class TriggerLogsParser implements ParserInterface {
   }
 
   private detectType(): void {
-    this.raw.split('\n').some((line, index) => {
+    this.raw.split('\n').forEach((line, index) => {
       const trimmed = line.trim();
+
+      if (trimmed.startsWith(this.commentPrefix)) {
+        return;
+      }
 
       // give up
       if (index > 10) {
@@ -102,7 +106,7 @@ class TriggerLogsParser implements ParserInterface {
         return true;
       }
 
-      if (parts.length >= 7) {
+      if (parts.length >= 6) {
         this.isCompositeLogs = true;
 
         return true;
@@ -225,6 +229,16 @@ class TriggerLogsParser implements ParserInterface {
           maxTime: 0,
           toothTime: Number(parts[5]),
           time: Number(parts[6]),
+        });
+      }
+
+      if (parts.length === 6) {
+        // PriLevel,SecLevel,Trigger,Sync,ToothTime,Time
+        this.resultComposite.push({
+          ...base,
+          maxTime: 0,
+          toothTime: Number(parts[4]),
+          time: Number(parts[5]),
         });
       }
     });

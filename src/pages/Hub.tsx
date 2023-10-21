@@ -34,12 +34,13 @@ const Hub = () => {
   const [total, setTotal] = useState(0);
   const searchRef = useRef<InputRef | null>(null);
   const { currentUser } = useAuth();
-  const goToEdit = (tuneId: string) =>
+  const goToEdit = (tuneId: string) => {
     navigate(
       generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
         tuneId,
       }),
     );
+  };
 
   const loadData = debounce(async (searchText: string) => {
     setIsLoading(true);
@@ -53,6 +54,7 @@ const Hub = () => {
         aspiration: aspirationMapper[tune.aspiration],
         updated: formatTime(tune.updated),
       }));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       setDataSource(mapped as any);
     } catch (_error) {
       // request cancelled
@@ -83,10 +85,12 @@ const Hub = () => {
 
     // searchRef.current?.focus(); // autofocus
 
-    return () => window.removeEventListener('keydown', handleGlobalKeyboard);
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyboard);
+    };
   }, [page]);
 
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<TunesResponse<TunesResponseExpand>> = [
     {
       title: 'Tunes',
       render: (tune: TunesResponse<TunesResponseExpand>) => (
@@ -119,7 +123,7 @@ const Hub = () => {
       dataIndex: 'vehicleName',
       key: 'vehicleName',
       responsive: ['sm'],
-      render: (vehicleName: string, tune: TunesResponse) => (
+      render: (vehicleName: string, tune) => (
         <Space direction="vertical">
           {vehicleName}
           <TuneTag tag={tune.tags} />
@@ -161,7 +165,7 @@ const Hub = () => {
       dataIndex: 'authorUsername',
       key: 'authorUsername',
       responsive: ['sm'],
-      render: (_userName: string, record: TunesResponse<TunesResponseExpand>) => (
+      render: (_userName: string, record) => (
         <Link to={generatePath(Routes.USER_ROOT, { userId: record.author })}>
           <AuthorName author={record.expand!.author} />
         </Link>
@@ -198,20 +202,30 @@ const Hub = () => {
         return (
           <Space>
             {isOwner && (
-              <Button size={size} icon={<EditOutlined />} onClick={() => goToEdit(tuneId)} />
+              <Button
+                size={size}
+                icon={<EditOutlined />}
+                onClick={() => {
+                  goToEdit(tuneId);
+                }}
+              />
             )}
             {isClipboardSupported && (
               <Button
                 size={size}
                 icon={<CopyOutlined />}
-                onClick={() => copyToClipboard(buildFullUrl([tunePath(tuneId)]))}
+                onClick={() => {
+                  copyToClipboard(buildFullUrl([tunePath(tuneId)]));
+                }}
               />
             )}
             <Button
               size={size}
               type="primary"
               icon={<ArrowRightOutlined />}
-              onClick={() => navigate(tunePath(tuneId))}
+              onClick={() => {
+                navigate(tunePath(tuneId));
+              }}
             />
           </Space>
         );
@@ -223,18 +237,20 @@ const Hub = () => {
   return (
     <div className="large-container">
       <Input
-        // biome-ignore lint: make search input first in tab order
         tabIndex={1}
         ref={searchRef}
         style={{ marginBottom: 10, height: 40 }}
         value={searchQuery}
         placeholder="Search by anything..."
-        onChange={({ target }) => debounceLoadData(target.value)}
+        onChange={({ target }) => {
+          debounceLoadData(target.value);
+        }}
         allowClear
       />
       <Table
         dataSource={dataSource}
-        columns={columns}
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+        columns={columns as any}
         loading={isLoading}
         scroll={xs ? undefined : { x: 1360 }}
         pagination={false}

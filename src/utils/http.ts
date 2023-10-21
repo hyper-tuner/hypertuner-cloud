@@ -1,6 +1,6 @@
 import locations from '../data/edge-locations.json';
 
-type LocationsType = { [index: string]: string };
+type LocationsType = Record<string, string>;
 
 export type OnProgress = (percent: number, total: number, edgeLocation: string | null) => void;
 
@@ -41,8 +41,8 @@ export const fetchWithProgress = async (
       break;
     }
 
-    array.set(value as Uint8Array, at);
-    at += (value as Uint8Array).length;
+    array.set(value, at);
+    at += value.length;
 
     if (onProgress) {
       onProgress(~~((at / length) * 100), length, edgeLocation);

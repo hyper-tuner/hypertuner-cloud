@@ -5,7 +5,7 @@ import { Colors } from '../utils/colors';
 
 const AuthorName = ({ author }: { author: UsersResponse }) => (
   <Space>
-    {author.verifiedAuthor === true && (
+    {author.verifiedAuthor && (
       <Tooltip title="Verified author">
         <CheckCircleFilled style={{ color: Colors.ACCENT }} />
       </Tooltip>

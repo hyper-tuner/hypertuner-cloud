@@ -69,12 +69,12 @@ import {
 
 const { Item, useForm } = Form;
 
-enum MaxFiles {
-  TUNE_FILES = 1,
-  LOG_FILES = 5,
-  TOOTH_LOG_FILES = 5,
-  CUSTOM_INI_FILES = 1,
-}
+const MaxFiles = {
+  TUNE_FILES: 1,
+  LOG_FILES: 5,
+  TOOTH_LOG_FILES: 5,
+  CUSTOM_INI_FILES: 1,
+} as const;
 
 interface ValidationResult {
   result: boolean;
@@ -160,12 +160,13 @@ const UploadPage = () => {
 
   const noop = () => {};
 
-  const goToNewTune = () =>
+  const goToNewTune = () => {
     navigate(
       generatePath(Routes.TUNE_ROOT, {
         tuneId: newTuneId!,
       }),
     );
+  };
 
   const publishTune = async (values: TunesRecord) => {
     setIsLoading(true);
@@ -193,10 +194,10 @@ const UploadPage = () => {
 
     const compressedCustomIniFile = customIniFile
       ? bufferToFile(
-          await compress(customIniFile!),
+          await compress(customIniFile),
           (customIniFile as UploadedFile).uid
-            ? customIniFile!.name
-            : removeFilenameSuffix(customIniFile!.name),
+            ? customIniFile.name
+            : removeFilenameSuffix(customIniFile.name),
         )
       : null;
 
@@ -238,7 +239,7 @@ const UploadPage = () => {
       year,
       hp,
       stockHp,
-      readme: readme?.trim(),
+      readme: readme.trim(),
       tags,
       visibility,
       tuneFile: compressedTuneFile as unknown as string,
@@ -333,10 +334,10 @@ const UploadPage = () => {
     return true;
   };
 
-  const uploadTune = async (options: UploadRequestOption) => {
+  const uploadTune = (options: UploadRequestOption) => {
     upload(
       options,
-      async (file) => {
+      (file) => {
         setTuneFile(file);
       },
       async (file) => {
@@ -377,10 +378,10 @@ const UploadPage = () => {
     );
   };
 
-  const uploadLogs = async (options: UploadRequestOption) => {
+  const uploadLogs = (options: UploadRequestOption) => {
     upload(
       options,
-      async (file) => {
+      (file) => {
         setLogFiles((prev) => [...prev, file]);
       },
       async (file) => {
@@ -415,10 +416,10 @@ const UploadPage = () => {
     );
   };
 
-  const uploadToothLogs = async (options: UploadRequestOption) => {
+  const uploadToothLogs = (options: UploadRequestOption) => {
     upload(
       options,
-      async (file) => {
+      (file) => {
         setToothLogFiles((prev) => [...prev, file]);
       },
       async (file) => {
@@ -437,10 +438,10 @@ const UploadPage = () => {
     );
   };
 
-  const uploadCustomIni = async (options: UploadRequestOption) => {
+  const uploadCustomIni = (options: UploadRequestOption) => {
     upload(
       options,
-      async (file) => {
+      (file) => {
         setCustomIniFile(file);
       },
       async (file) => {
@@ -471,19 +472,19 @@ const UploadPage = () => {
     );
   };
 
-  const removeTuneFile = async () => {
+  const removeTuneFile = () => {
     setTuneFile(undefined);
   };
 
-  const removeLogFile = async (file: UploadFile) => {
+  const removeLogFile = (file: UploadFile) => {
     setLogFiles((prev) => prev.filter((f) => removeFilenameSuffix(f.name) !== file.name));
   };
 
-  const removeToothLogFile = async (file: UploadFile) => {
+  const removeToothLogFile = (file: UploadFile) => {
     setToothLogFiles((prev) => prev.filter((f) => removeFilenameSuffix(f.name) !== file.name));
   };
 
-  const removeCustomIniFile = async (_file: UploadFile) => {
+  const removeCustomIniFile = (_file: UploadFile) => {
     setCustomIniFile(undefined);
   };
 
@@ -502,7 +503,7 @@ const UploadPage = () => {
         setExistingTune(oldTune);
         form.setFieldsValue(oldTune);
         setIsEditMode(true);
-        setReadme(oldTune.readme!);
+        setReadme(oldTune.readme);
 
         if (oldTune.tuneFile) {
           setTuneFile(await fetchFile(oldTune.id, oldTune.tuneFile));
@@ -527,7 +528,7 @@ const UploadPage = () => {
         }
 
         const tempLogFiles: File[] = [];
-        oldTune.logFiles?.forEach(async (fileName: string) => {
+        oldTune.logFiles.forEach(async (fileName: string) => {
           tempLogFiles.push(await fetchFile(oldTune.id, fileName));
           setDefaultLogFilesList((prev) => [
             ...prev,
@@ -541,7 +542,7 @@ const UploadPage = () => {
         setLogFiles(tempLogFiles);
 
         const tempToothLogFiles: File[] = [];
-        oldTune.toothLogFiles?.forEach(async (fileName: string) => {
+        oldTune.toothLogFiles.forEach(async (fileName: string) => {
           tempToothLogFiles.push(await fetchFile(oldTune.id, fileName));
           setDefaultToothLogFilesList((prev) => [
             ...prev,
@@ -570,7 +571,7 @@ const UploadPage = () => {
     [currentUser, form, navigateToNewTuneId],
   );
 
-  const prepareData = useCallback(async () => {
+  const prepareData = useCallback(() => {
     const currentTuneId = routeMatch?.params.tuneId;
     if (currentTuneId) {
       loadExistingTune(currentTuneId);
@@ -582,13 +583,6 @@ const UploadPage = () => {
 
   useEffect(() => {
     refreshUser().then((user) => {
-      if (user === null) {
-        restrictedPage();
-        navigate(Routes.LOGIN);
-
-        return;
-      }
-
       if (!user) {
         restrictedPage();
         navigate(Routes.LOGIN);
@@ -663,9 +657,14 @@ const UploadPage = () => {
   const OpenButton = () => (
     <>
       <Row>
-        <Input style={{ width: `calc(100% - ${shareSupported ? 65 : 35}px)` }} value={shareUrl!} />
+        <Input style={{ width: `calc(100% - ${shareSupported ? 65 : 35}px)` }} value={shareUrl} />
         <Tooltip title="Copy URL">
-          <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(shareUrl!)} />
+          <Button
+            icon={<CopyOutlined />}
+            onClick={() => {
+              copyToClipboard(shareUrl!);
+            }}
+          />
         </Tooltip>
         {shareSupported && (
           <Tooltip title="Share">
@@ -858,7 +857,9 @@ const UploadPage = () => {
                 rows={10}
                 showCount
                 value={readme}
-                onChange={(e) => setReadme(e.target.value)}
+                onChange={(e) => {
+                  setReadme(e.target.value);
+                }}
                 maxLength={3_000}
               />
             ),

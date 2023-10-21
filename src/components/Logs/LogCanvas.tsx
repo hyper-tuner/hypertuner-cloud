@@ -54,10 +54,11 @@ const LogCanvas = ({
 
   const generateFieldsToPlot = useCallback(
     (selectedFields: SelectedField[]) => {
-      const temp: { [index: string]: PlottableField } = {};
+      const temp: Record<string, PlottableField> = {};
 
       data.forEach((_entry) => {
         selectedFields.forEach(({ label, scale, transform, units, format }) => {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (!temp[label]) {
             temp[label] = {
               min: 0,
@@ -78,7 +79,7 @@ const LogCanvas = ({
 
   const generatePlotConfig = useCallback(
     (
-      fieldsToPlot: { [index: string]: PlottableField },
+      fieldsToPlot: Record<string, PlottableField>,
       selectedFieldsLength: number,
       plotSyncKey: string,
     ) => {
@@ -108,6 +109,7 @@ const LogCanvas = ({
             }
 
             let value = entry[label];
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (value !== undefined) {
               value = (value as number) * field.scale + field.transform;
             }

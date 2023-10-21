@@ -19,6 +19,7 @@ const ResetPasswordConfirmation = () => {
 
   const changePassword = async ({ password }: { password: string }) => {
     setIsLoading(true);
+
     try {
       await confirmResetPassword(routeMatch!.params.token!, password);
       passwordUpdateSuccess();

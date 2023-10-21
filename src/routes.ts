@@ -1,5 +1,4 @@
 export enum Routes {
-  ROOT = '/',
   HUB = '/',
 
   TUNE_ROOT = '/t/:tuneId',

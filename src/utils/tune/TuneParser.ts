@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { TuneWithDetails } from '@hyper-tuner/types';
 
 class TuneParser {
@@ -16,14 +20,14 @@ class TuneParser {
     },
   };
 
-  parse(buffer: ArrayBuffer): TuneParser {
+  parse(buffer: ArrayBuffer): this {
     const raw = new TextDecoder().decode(buffer);
     const xml = new DOMParser().parseFromString(raw, 'text/xml');
     const xmlPages = xml.getElementsByTagName('page');
-    const bibliography = xml.getElementsByTagName('bibliography')[0]?.attributes as any;
-    const versionInfo = xml.getElementsByTagName('versionInfo')[0]?.attributes as any;
+    const bibliography = (xml.getElementsByTagName('bibliography')[0] as any)?.attributes;
+    const versionInfo = (xml.getElementsByTagName('versionInfo')[0] as any)?.attributes;
 
-    if (!(xmlPages && versionInfo)) {
+    if (!versionInfo) {
       this.isTuneValid = false;
 
       return this;

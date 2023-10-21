@@ -1,4 +1,4 @@
-export const aspirationMapper: { [key: string]: string } = {
+export const aspirationMapper: Record<string, string> = {
   na: 'N/A',
   turbocharged: 'Turbocharged',
   supercharged: 'Supercharged',

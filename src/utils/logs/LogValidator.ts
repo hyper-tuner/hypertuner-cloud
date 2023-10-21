@@ -34,7 +34,6 @@ class LogValidator implements ParserInterface {
   private checkMLG() {
     const fileFormat = new TextDecoder('utf8')
       .decode(this.buffer.slice(0, this.mlgFormatLength))
-      // biome-ignore lint/suspicious/noControlCharactersInRegex: false positive
       .replace(/\x00/gu, '');
 
     if (fileFormat === 'MLVLG') {

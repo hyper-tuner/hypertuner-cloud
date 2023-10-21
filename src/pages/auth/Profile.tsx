@@ -44,12 +44,13 @@ const Profile = () => {
   const [isTunesLoading, setIsTunesLoading] = useState(false);
   const [tunesDataSource, setTunesDataSource] = useState<TunesResponse[]>([]);
 
-  const goToEdit = (tuneId: string) =>
+  const goToEdit = (tuneId: string) => {
     navigate(
       generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
         tuneId,
       }),
     );
+  };
 
   const resendEmailVerification = async () => {
     setIsSendingVerification(true);
@@ -100,7 +101,7 @@ const Profile = () => {
     }
 
     refreshUser().then((user) => {
-      if (currentUser === null || user === null) {
+      if (user === null) {
         restrictedPage();
         navigate(Routes.LOGIN);
       }
@@ -180,10 +181,19 @@ const Profile = () => {
                 ) : (
                   <EyeOutlined />
                 ),
-                <Button icon={<EditOutlined />} onClick={() => goToEdit(tune.tuneId)} />,
                 <Button
+                  key="edit"
+                  icon={<EditOutlined />}
+                  onClick={() => {
+                    goToEdit(tune.tuneId);
+                  }}
+                />,
+                <Button
+                  key="view"
                   icon={<ArrowRightOutlined />}
-                  onClick={() => navigate(tunePath(tune.tuneId))}
+                  onClick={() => {
+                    navigate(tunePath(tune.tuneId));
+                  }}
                 />,
               ]}
             >

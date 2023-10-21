@@ -21,7 +21,7 @@ const Curve = ({
   yLabel: string;
   xData: number[];
   yData: number[];
-  help: string;
+  help?: string;
   xUnits?: string;
   yUnits?: string;
 }) => {
@@ -31,10 +31,9 @@ const Curve = ({
   const [plotData, setPlotData] = useState<uPlot.AlignedData>();
   const [canvasWidth, setCanvasWidth] = useState(0);
 
-  const calculateWidth = useCallback(
-    () => setCanvasWidth(containerRef.current?.clientWidth || 0),
-    [],
-  );
+  const calculateWidth = useCallback(() => {
+    setCanvasWidth(containerRef.current?.clientWidth || 0);
+  }, []);
 
   useEffect(() => {
     setPlotData([xData, yData]);
@@ -77,7 +76,9 @@ const Curve = ({
     calculateWidth();
     window.addEventListener('resize', calculateWidth);
 
-    return () => window.removeEventListener('resize', calculateWidth);
+    return () => {
+      window.removeEventListener('resize', calculateWidth);
+    };
   }, [xData, xLabel, xUnits, yData, yLabel, yUnits, sm, canvasWidth, calculateWidth]);
 
   if (!sm) {
@@ -86,9 +87,11 @@ const Curve = ({
 
   return (
     <>
-      <Typography.Paragraph>
-        <Typography.Text type="secondary">{help}</Typography.Text>
-      </Typography.Paragraph>
+      {help && (
+        <Typography.Paragraph>
+          <Typography.Text type="secondary">{help}</Typography.Text>
+        </Typography.Paragraph>
+      )}
       <UplotReact options={options!} data={plotData!} />
       <div ref={containerRef}>
         <Table

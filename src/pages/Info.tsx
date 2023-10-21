@@ -19,16 +19,19 @@ const mapStateToProps = (state: AppState) => ({
   tuneData: state.tuneData,
 });
 
-const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
+const Info = ({ tuneData }: { tuneData: TuneDataState | null }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  const goToEdit = () =>
-    navigate(
-      generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
-        tuneId: tuneData.tuneId,
-      }),
-    );
+  const goToEdit = () => {
+    if (tuneData) {
+      navigate(
+        generatePath(Routes.UPLOAD_WITH_TUNE_ID, {
+          tuneId: tuneData.tuneId,
+        }),
+      );
+    }
+  };
 
   const canManage = currentUser && tuneData && currentUser.id === tuneData.author;
 
@@ -76,32 +79,32 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col span={24} sm={24}>
             <Item>
-              <Input value={tuneData.vehicleName!} addonBefore="Vehicle name" />
+              <Input value={tuneData.vehicleName} addonBefore="Vehicle name" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.engineMake!} addonBefore="Engine make" />
+              <Input value={tuneData.engineMake} addonBefore="Engine make" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.engineCode!} addonBefore="Engine code" />
+              <Input value={tuneData.engineCode} addonBefore="Engine code" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.displacement!} addonBefore="Displacement" addonAfter="l" />
+              <Input value={tuneData.displacement} addonBefore="Displacement" addonAfter="l" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
               <Input
-                value={tuneData.cylindersCount!}
+                value={tuneData.cylindersCount}
                 addonBefore="Cylinders"
                 style={{ width: '100%' }}
               />
@@ -129,7 +132,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
           <Col {...colProps}>
             <Item>
               <Input
-                value={tuneData.compression!}
+                value={tuneData.compression}
                 addonBefore="Compression"
                 style={{ width: '100%' }}
                 addonAfter=":1"
@@ -140,36 +143,36 @@ const Info = ({ tuneData }: { tuneData: TuneDataState }) => {
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.fuel!} addonBefore="Fuel" />
+              <Input value={tuneData.fuel} addonBefore="Fuel" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.ignition!} addonBefore="Ignition" />
-            </Item>
-          </Col>
-        </Row>
-        <Row {...rowProps}>
-          <Col {...colProps}>
-            <Item>
-              <Input value={tuneData.injectorsSize!} addonBefore="Injectors size" addonAfter="cc" />
-            </Item>
-          </Col>
-          <Col {...colProps}>
-            <Item>
-              <Input value={tuneData.year!} addonBefore="Year" />
+              <Input value={tuneData.ignition} addonBefore="Ignition" />
             </Item>
           </Col>
         </Row>
         <Row {...rowProps}>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.hp!} addonBefore="HP" style={{ width: '100%' }} />
+              <Input value={tuneData.injectorsSize} addonBefore="Injectors size" addonAfter="cc" />
             </Item>
           </Col>
           <Col {...colProps}>
             <Item>
-              <Input value={tuneData.stockHp!} addonBefore="Stock HP" style={{ width: '100%' }} />
+              <Input value={tuneData.year} addonBefore="Year" />
+            </Item>
+          </Col>
+        </Row>
+        <Row {...rowProps}>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.hp} addonBefore="HP" style={{ width: '100%' }} />
+            </Item>
+          </Col>
+          <Col {...colProps}>
+            <Item>
+              <Input value={tuneData.stockHp} addonBefore="Stock HP" style={{ width: '100%' }} />
             </Item>
           </Col>
         </Row>

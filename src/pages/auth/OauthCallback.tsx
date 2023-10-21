@@ -15,17 +15,16 @@ const OauthCallback = () => {
   useEffect(() => {
     const authProviders = JSON.parse(
       window.localStorage.getItem('authProviders') || '',
-    ) as unknown as AuthProviderInfo[];
+    ) as AuthProviderInfo[];
 
     oAuth(
       routeMatch?.params.provider as OAuthProviders,
       searchParams.get('code')!,
       authProviders.find((provider) => provider.name === routeMatch?.params.provider)
-        ?.codeVerifier!,
-    ).then(() => {
-      logInSuccessful();
-      navigate(Routes.HUB, { replace: true });
-    });
+        ?.codeVerifier ?? '',
+    );
+    logInSuccessful();
+    navigate(Routes.HUB, { replace: true });
   }, [navigate, oAuth, routeMatch, searchParams]);
 
   return <Loader />;

@@ -10,9 +10,10 @@ import { useMemo } from 'react';
 
 const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => {
   const foundPage =
-    config.constants.pages.find((page: PageType) => fieldName in page.data) ||
+    config.constants.pages.find((page: PageType) => fieldName in page.data) ??
     ({ data: {} } as PageType);
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!foundPage) {
     throw new Error(`Constant [${fieldName}] not found`);
   }
@@ -22,6 +23,8 @@ const findConstantOnPage = (config: ConfigType, fieldName: string): Constant => 
 
 const findOutputChannel = (config: ConfigType, name: string): OutputChannel | SimpleConstant => {
   const result = config.outputChannels[name];
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!result) {
     throw new Error(`Output channel [${name}] not found`);
   }
@@ -42,6 +45,8 @@ const findDatalogNameByLabel = (config: ConfigType, label: string): string => {
 
 const findDatalog = (config: ConfigType, name: string): DatalogEntry => {
   const result = config.datalog[name];
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!result) {
     throw new Error(`Datalog entry [${name}] not found`);
   }
@@ -50,7 +55,6 @@ const findDatalog = (config: ConfigType, name: string): DatalogEntry => {
 };
 
 const useConfig = (config: ConfigType | null) =>
-  // biome-ignore lint/nursery/useHookAtTopLevel: False positive
   useMemo(
     () => ({
       isConfigReady: !!config?.constants,

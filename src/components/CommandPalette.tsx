@@ -97,6 +97,7 @@ const groupNameStyle = {
   opacity: 0.5,
 };
 
+// eslint-disable-next-line react/display-name
 const ResultItem = forwardRef(
   (
     {
@@ -187,11 +188,13 @@ const ResultItem = forwardRef(
 const RenderResults = () => {
   const { results, rootActionId } = useMatches();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onResultsRender = ({ item, active }: { item: any; active: boolean }) => {
     return typeof item === 'string' ? (
       <div style={groupNameStyle}>{item}</div>
     ) : (
-      <ResultItem action={item} active={active} currentRootActionId={rootActionId as string} />
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      <ResultItem action={item} active={active} currentRootActionId={rootActionId!} />
     );
   };
 
@@ -213,7 +216,9 @@ const ActionsProvider = (props: CommandPaletteProps) => {
           name: 'Info',
           subtitle: 'Basic information about this tune.',
           icon: <InfoCircleOutlined />,
-          perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_ROOT)),
+          perform: () => {
+            navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_ROOT));
+          },
         },
         {
           id: 'LogsAction',
@@ -221,7 +226,9 @@ const ActionsProvider = (props: CommandPaletteProps) => {
           name: 'Logs',
           subtitle: 'Log viewer.',
           icon: <FundOutlined />,
-          perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_LOGS)),
+          perform: () => {
+            navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_LOGS));
+          },
         },
         {
           id: 'DiagnoseAction',
@@ -229,16 +236,16 @@ const ActionsProvider = (props: CommandPaletteProps) => {
           name: 'Diagnose',
           subtitle: 'Tooth and composite logs viewer.',
           icon: <SettingOutlined />,
-          perform: () => navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_DIAGNOSE)),
+          perform: () => {
+            navigate(buildTuneUrl(navigation.tuneId!, Routes.TUNE_DIAGNOSE));
+          },
         },
       ];
 
       const mapSubMenuItems = (
         rootMenuName: string,
         rootMenu: MenuType,
-        subMenus: {
-          [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType;
-        },
+        subMenus: Record<string, SubMenuType | GroupMenuType | GroupChildMenuType>,
         groupMenuName: string | null = null,
       ) => {
         Object.keys(subMenus).forEach((subMenuName: string) => {
@@ -252,6 +259,7 @@ const ActionsProvider = (props: CommandPaletteProps) => {
 
           const subMenu = subMenus[subMenuName];
 
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if ((subMenu as GroupMenuType).type === 'groupMenu') {
             // recurrence
             mapSubMenuItems(
@@ -273,7 +281,9 @@ const ActionsProvider = (props: CommandPaletteProps) => {
             section: rootMenu.title,
             name: subMenu.title,
             icon: <Icon name={subMenuName} />,
-            perform: () => navigate(url),
+            perform: () => {
+              navigate(url);
+            },
           });
         });
       };
@@ -322,7 +332,9 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Hub',
       subtitle: 'Public tunes and logs.',
       icon: <CarOutlined />,
-      perform: () => navigate(Routes.HUB),
+      perform: () => {
+        navigate(Routes.HUB);
+      },
     },
     {
       id: 'ToggleSidebar',
@@ -336,7 +348,9 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Upload',
       subtitle: 'Upload tune and logs.',
       icon: <CloudUploadOutlined />,
-      perform: () => navigate(Routes.UPLOAD),
+      perform: () => {
+        navigate(Routes.UPLOAD);
+      },
     },
     {
       id: 'LoginAction',
@@ -344,7 +358,9 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Login',
       subtitle: 'Login using email, Google or GitHub account.',
       icon: <LoginOutlined />,
-      perform: () => navigate(Routes.LOGIN),
+      perform: () => {
+        navigate(Routes.LOGIN);
+      },
     },
     {
       id: 'SignUpAction',
@@ -352,7 +368,9 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'Sign-up',
       subtitle: 'Create new account.',
       icon: <UserAddOutlined />,
-      perform: () => navigate(Routes.SIGN_UP),
+      perform: () => {
+        navigate(Routes.SIGN_UP);
+      },
     },
     {
       id: 'LogoutAction',
@@ -367,7 +385,9 @@ const CommandPalette = (props: CommandPaletteProps) => {
       name: 'About',
       subtitle: 'About this app / sponsor.',
       icon: <InfoCircleOutlined />,
-      perform: () => navigate(Routes.ABOUT),
+      perform: () => {
+        navigate(Routes.ABOUT);
+      },
     },
   ];
 

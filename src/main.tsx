@@ -21,7 +21,7 @@ if (isProduction) {
   });
 
   if (import.meta.env.VITE_GTM_ID) {
-    ReactGA.initialize(import.meta.env.VITE_GTM_ID);
+    ReactGA.initialize(import.meta.env.VITE_GTM_ID as string);
     ReactGA.send({ hitType: 'pageview', page: window.location.hash });
   }
 }

@@ -41,7 +41,7 @@ const Diagnose = ({
   tuneData,
 }: {
   ui: UIState;
-  loadedToothLogs: ToothLogsState;
+  loadedToothLogs: ToothLogsState | null;
   tuneData: TuneDataState | null;
 }) => {
   const { lg } = Grid.useBreakpoint();
@@ -85,7 +85,7 @@ const Diagnose = ({
       }
 
       // user didn't upload any logs
-      if (tuneData && (tuneData.toothLogFiles || []).length === 0) {
+      if ((tuneData?.toothLogFiles || []).length === 0) {
         navigate(Routes.HUB);
 
         return;
@@ -141,12 +141,12 @@ const Diagnose = ({
     };
 
     // first visit, logs are not loaded yet
-    if (!loadedToothLogs.type && tuneData?.tuneId) {
+    if (!loadedToothLogs?.type && tuneData?.tuneId) {
       loadData();
     }
 
     // file changed, reload
-    if (loadedToothLogs.type && loadedToothLogs.fileName !== routeMatch?.params.fileName) {
+    if (loadedToothLogs?.type && loadedToothLogs.fileName !== routeMatch?.params.fileName) {
       // setToothLogs(undefined);
       // setCompositeLogs(undefined);
       store.dispatch({ type: 'toothLogs/load', payload: {} });
@@ -154,9 +154,9 @@ const Diagnose = ({
     }
 
     // user navigated to logs root page
-    if (!routeMatch?.params.fileName && tuneData && tuneData.toothLogFiles?.length) {
+    if (!routeMatch?.params.fileName && tuneData && tuneData.toothLogFiles.length) {
       // either redirect to the first log or to the latest selected
-      if (loadedToothLogs.fileName) {
+      if (loadedToothLogs?.fileName) {
         navigate(
           generatePath(Routes.TUNE_DIAGNOSE_FILE, {
             tuneId: tuneData.tuneId,
@@ -164,7 +164,7 @@ const Diagnose = ({
           }),
         );
       } else {
-        const firstLogFile = (tuneData.toothLogFiles || [])[0];
+        const firstLogFile = tuneData.toothLogFiles[0];
         navigate(
           generatePath(Routes.TUNE_DIAGNOSE_FILE, {
             tuneId: tuneData.tuneId,
@@ -185,7 +185,7 @@ const Diagnose = ({
   }, [calculateCanvasSize, routeMatch?.params.fileName, ui.sidebarCollapsed, tuneData?.tuneId]);
 
   const Graph = () => {
-    switch (loadedToothLogs.type) {
+    switch (loadedToothLogs?.type) {
       case 'composite':
         return (
           <CompositeCanvas
@@ -206,7 +206,7 @@ const Diagnose = ({
   return (
     <>
       <Sider {...siderProps} className="app-sidebar">
-        {loadedToothLogs.type ? (
+        {loadedToothLogs?.type ? (
           !ui.sidebarCollapsed && (
             <Tabs
               defaultActiveKey="files"
@@ -217,7 +217,7 @@ const Diagnose = ({
                     <Badge
                       size="small"
                       style={badgeStyle}
-                      count={tuneData?.toothLogFiles?.length}
+                      count={tuneData?.toothLogFiles.length}
                       offset={[10, -3]}
                     >
                       <FileTextOutlined />
@@ -227,7 +227,7 @@ const Diagnose = ({
                   key: 'files',
                   children: (
                     <PerfectScrollbar options={{ suppressScrollX: true }}>
-                      {tuneData?.toothLogFiles?.map((fileName) => (
+                      {tuneData?.toothLogFiles.map((fileName) => (
                         <Typography.Paragraph key={fileName} ellipsis>
                           <Link
                             to={generatePath(Routes.TUNE_DIAGNOSE_FILE, {
@@ -255,7 +255,7 @@ const Diagnose = ({
       <Layout className="logs-container">
         <Content>
           <div ref={contentRef}>
-            {loadedToothLogs.type ? (
+            {loadedToothLogs?.type ? (
               <Graph />
             ) : (
               <Space direction="vertical" size="large">
@@ -269,7 +269,7 @@ const Diagnose = ({
                       title: 'Downloading',
                       subTitle: fileSize,
                       description: fetchError ? (
-                        fetchError!.message
+                        fetchError.message
                       ) : (
                         <Space>
                           <GlobalOutlined />
