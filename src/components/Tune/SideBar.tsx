@@ -100,9 +100,7 @@ const SideBar = ({
   const mapSubMenuItems = useCallback(
     (
       rootMenuName: string,
-      subMenus: {
-        [name: string]: SubMenuType | GroupMenuType | GroupChildMenuType;
-      },
+      subMenus: Record<string, SubMenuType | GroupMenuType | GroupChildMenuType>,
       groupMenuName: string | null = null,
     ): ItemType[] => {
       const items: ItemType[] = [];
@@ -122,6 +120,7 @@ const SideBar = ({
 
         const subMenu = subMenus[subMenuName];
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if ((subMenu as GroupMenuType).type === 'groupMenu') {
           // recurrence
           items.push({
@@ -146,7 +145,9 @@ const SideBar = ({
           key: url,
           icon: <Icon name={subMenuName} />,
           label: subMenu.title,
-          onClick: () => navigate(url),
+          onClick: () => {
+            navigate(url);
+          },
         });
       });
 

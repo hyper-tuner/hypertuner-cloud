@@ -26,7 +26,7 @@ const Profile = () => {
   const loadData = async () => {
     setIsTunesLoading(true);
     try {
-      const { items, totalItems } = await getUserTunes(route?.params.userId!, page, pageSize);
+      const { items, totalItems } = await getUserTunes(route?.params.userId ?? '', page, pageSize);
       setTotal(totalItems);
       setAuthor(items[0]!.expand!.author);
       setTunesDataSource(items);
@@ -60,8 +60,11 @@ const Profile = () => {
           <List.Item
             actions={[
               <Button
+                key="show"
                 icon={<ArrowRightOutlined />}
-                onClick={() => navigate(tunePath(tune.tuneId))}
+                onClick={() => {
+                  navigate(tunePath(tune.tuneId));
+                }}
               />,
             ]}
             className={tune.visibility}

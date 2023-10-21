@@ -25,9 +25,7 @@ import SmartNumber from './Dialog/SmartNumber';
 import SmartSelect from './Dialog/SmartSelect';
 import TextField from './Dialog/TextField';
 
-interface DialogsAndCurves {
-  [name: string]: DialogType | CurveType | TableType;
-}
+type DialogsAndCurves = Record<string, DialogType | CurveType | TableType>;
 
 interface RenderedPanel {
   type: string;
@@ -72,8 +70,8 @@ const Dialog = ({
   name,
 }: {
   ui: UIState;
-  config: ConfigType;
-  tune: TuneType;
+  config: ConfigType | null;
+  tune: TuneType | null;
   name: string;
   url: string;
 }) => {
@@ -100,8 +98,8 @@ const Dialog = ({
 
   const renderCurve = useCallback(
     (curve: CurveType) => {
-      const x = tune.constants[curve.xBins[0]];
-      const y = tune.constants[curve.yBins[0]];
+      const x = tune!.constants[curve.xBins[0]];
+      const y = tune!.constants[curve.yBins[0]];
       const xConstant = findConstantOnPage(curve.xBins[0]) as ScalarConstantType;
       const yConstant = findConstantOnPage(curve.yBins[0]) as ScalarConstantType;
 
@@ -109,7 +107,7 @@ const Dialog = ({
         <Curve
           key={curve.yBins[0]}
           // disabled={false} // TODO: evaluate condition
-          help={config.help[curve.yBins[0]]}
+          help={config!.help[curve.yBins[0]]}
           xLabel={curve.labels[0]}
           yLabel={curve.labels[1]}
           xUnits={xConstant.units}
@@ -124,9 +122,9 @@ const Dialog = ({
 
   const renderTable = useCallback(
     (table: TableType | RenderedPanel) => {
-      const x = tune.constants[table.xBins[0]];
-      const y = tune.constants[table.yBins[0]];
-      const z = tune.constants[table.zBins[0]];
+      const x = tune?.constants[table.xBins[0]];
+      const y = tune?.constants[table.yBins[0]];
+      const z = tune?.constants[table.zBins[0]];
 
       if (!(x && y)) {
         // TODO: handle this (rusEFI: fuel/lambdaTableTbl)
@@ -142,20 +140,21 @@ const Dialog = ({
             key={table.map}
             xData={parseXy(x.value as string)}
             yData={parseXy(y.value as string).reverse()}
-            zData={parseZ(z.value as string)}
-            xUnits={x.units as string}
-            yUnits={y.units as string}
+            zData={parseZ(z?.value as string)}
+            xUnits={x.units!}
+            yUnits={y.units!}
             zDigits={zConstant.digits}
           />
         </div>
       );
     },
-    [findConstantOnPage, tune.constants],
+    [findConstantOnPage, tune?.constants],
   );
 
   const resolvedDialogs: DialogsAndCurves = {};
 
   const resolveDialogs = (source: DialogsType, dialogName: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!source[dialogName]) {
       return;
     }
@@ -166,20 +165,23 @@ const Dialog = ({
     Object.keys(source[dialogName].panels).forEach((panelName: string) => {
       const currentDialog = source[panelName];
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!currentDialog) {
         // resolve 2D map / curve panel
-        if (config.curves[panelName]) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (config!.curves[panelName]) {
           resolvedDialogs[panelName] = {
-            ...config.curves[panelName],
+            ...config!.curves[panelName],
           };
 
           return;
         }
 
         // resolve 3D map / table panel
-        if (config.tables[panelName]) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (config!.tables[panelName]) {
           resolvedDialogs[panelName] = {
-            ...config.tables[panelName],
+            ...config!.tables[panelName],
           };
 
           return;
@@ -192,11 +194,11 @@ const Dialog = ({
 
       if (currentDialog.fields.length > 0) {
         // resolve in root scope
-        resolvedDialogs[panelName] = config.dialogs[panelName];
+        resolvedDialogs[panelName] = config!.dialogs[panelName];
       }
 
       // recursion
-      resolveDialogs(config.dialogs, panelName);
+      resolveDialogs(config!.dialogs, panelName);
     });
   };
 
@@ -212,7 +214,7 @@ const Dialog = ({
 
     if ('fields' in currentDialog) {
       type = PanelTypes.FIELDS;
-      fields = (currentDialog as DialogType).fields.filter((field) => field.title !== '');
+      fields = currentDialog.fields.filter((field) => field.title !== '');
     } else if ('zBins' in currentDialog) {
       type = PanelTypes.TABLE;
     }
@@ -243,6 +245,7 @@ const Dialog = ({
   const generatePanelsComponents = useCallback(
     () =>
       panels.map((panel: RenderedPanel) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (panel.type === PanelTypes.FIELDS && panel.fields.length === 0) {
           return null;
         }
@@ -252,21 +255,22 @@ const Dialog = ({
             <Divider>{panel.title}</Divider>
             {panel.fields.map((field: FieldType) => {
               const constant = findConstantOnPage(field.name);
-              const tuneField = tune.constants[field.name];
-              const help = config.help[field.name];
+              const tuneField = tune!.constants[field.name];
+              const help = config!.help[field.name];
               let input;
               let enabled = true;
               const fieldKey = `${panel.name}-${field.title}`;
 
               if (field.condition) {
                 // TODO: optimize it
-                enabled = evaluateExpression(field.condition, tune.constants, config);
+                enabled = evaluateExpression(field.condition, tune!.constants, config!) as boolean;
               }
 
               if (field.name === '_fieldText_' && enabled) {
                 return <TextField key={fieldKey} title={field.title} />;
               }
 
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
               if (!tuneField) {
                 // TODO: handle this?
                 // name: "rpmwarn", title: "Warning",
@@ -279,7 +283,7 @@ const Dialog = ({
                   input = (
                     <SmartSelect
                       defaultValue={`${tuneField.value}`}
-                      values={constant.values as string[]}
+                      values={constant.values}
                       disabled={!enabled}
                     />
                   );
@@ -312,7 +316,9 @@ const Dialog = ({
                       {field.title}
                       {help && (
                         <Popover
-                          content={help.split('\\n').map((line) => <div key={line}>{line}</div>)}
+                          content={help.split('\\n').map((line) => (
+                            <div key={line}>{line}</div>
+                          ))}
                         >
                           <QuestionCircleOutlined />
                         </Popover>
@@ -325,8 +331,8 @@ const Dialog = ({
               );
             })}
 
-            {panel.type === PanelTypes.CURVE && renderCurve(panel)}
-            {panel.type === PanelTypes.TABLE && renderTable(panel)}
+            {panel.type === (PanelTypes.CURVE as string) && renderCurve(panel)}
+            {panel.type === (PanelTypes.TABLE as string) && renderTable(panel)}
           </Col>
         );
       }),
@@ -350,7 +356,9 @@ const Dialog = ({
   const tableConfig = config.tables[name];
 
   // standalone dialog / page
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!dialogConfig) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (curveConfig) {
       return (
         <div ref={containerRef} className="large-container">
@@ -360,6 +368,7 @@ const Dialog = ({
       );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (tableConfig) {
       return (
         <div ref={containerRef} className="large-container">
@@ -375,7 +384,7 @@ const Dialog = ({
 
   return (
     <div ref={containerRef} className="large-container">
-      {renderHelp(dialogConfig?.help)}
+      {renderHelp(dialogConfig.help)}
       <Form labelCol={{ span: 10 }} wrapperCol={{ span: 10 }}>
         <Row gutter={20}>{panelsComponents}</Row>
       </Form>

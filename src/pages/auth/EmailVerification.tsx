@@ -12,9 +12,11 @@ const EmailVerification = () => {
 
   useEffect(() => {
     confirmEmailVerification(routeMatch!.params.token!)
-      .then(() => emailVerificationSuccess())
+      .then(() => {
+        emailVerificationSuccess();
+      })
       .catch((error) => {
-        emailVerificationFailed(error);
+        emailVerificationFailed(error as Error);
       });
 
     navigate(Routes.HUB);

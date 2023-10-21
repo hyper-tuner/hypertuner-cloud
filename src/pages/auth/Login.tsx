@@ -40,9 +40,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   const [googleUrl, setGoogleUrl] = useState<string | null>(null);
   const [githubUrl, setGithubUrl] = useState<string | null>(null);
   const [facebookUrl, setFacebookUrl] = useState<string | null>(null);
-  const [providersStatuses, setProvidersStatuses] = useState<{
-    [key: string]: boolean;
-  }>({
+  const [providersStatuses, setProvidersStatuses] = useState<Record<string, boolean>>({
     google: false,
     github: false,
     facebook: false,
@@ -51,7 +49,9 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
   const { login, signUp, listAuthMethods } = useAuth();
   const navigate = useNavigate();
   const isAnythingLoading = isEmailLoading || isOAuthLoading;
-  const redirectAfterLogin = useCallback(() => navigate(Routes.HUB), [navigate]);
+  const redirectAfterLogin = useCallback(() => {
+    navigate(Routes.HUB);
+  }, [navigate]);
   const isOauthEnabled = Object.values(providersStatuses).includes(true);
 
   const emailLogin = async ({ email, password }: { email: string; password: string }) => {
@@ -76,7 +76,11 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     email,
     password,
     username,
-  }: { email: string; password: string; username: string }) => {
+  }: {
+    email: string;
+    password: string;
+    username: string;
+  }) => {
     setIsEmailLoading(true);
     try {
       const user = await signUp(email, password, username);
@@ -94,13 +98,14 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
     }
   };
 
-  const oauthMethods: {
-    [provider: string]: {
+  const oauthMethods: Record<
+    string,
+    {
       label: string;
       icon: ReactNode;
       onClick: () => void;
-    };
-  } = {
+    }
+  > = {
     google: {
       label: 'Google',
       icon: <GoogleOutlined />,

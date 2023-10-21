@@ -1,7 +1,7 @@
 import { Alert, Typography } from 'antd';
 
 const TextField = ({ title }: { title: string }) => {
-  const types: { [char: string]: 'info' | 'warning' } = {
+  const types: Record<string, 'info' | 'warning' | undefined> = {
     '#': 'info',
     '!': 'warning',
   };
@@ -13,6 +13,7 @@ const TextField = ({ title }: { title: string }) => {
   const urlPattern = /(?<url>https?:\/\/[^:[\]@!$'(),; ]+)/;
   const matches = message.split(urlPattern);
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!matches) {
     return messageTag;
   }
@@ -20,7 +21,7 @@ const TextField = ({ title }: { title: string }) => {
   const parts = matches.map((part) => {
     if (urlPattern.test(part)) {
       return (
-        <a href={part} target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>
+        <a key={part} href={part} target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>
           {part}
         </a>
       );

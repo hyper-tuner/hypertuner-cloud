@@ -17,8 +17,6 @@ function keyboardZoomPlugin(options: ZoomPluginOptions = {}): uPlotPlugin {
             return;
           }
 
-          e.preventDefault();
-
           const cursor = u.cursor;
           const { left, top } = cursor;
           const xVal = u.posToVal(left || 0, 'x');

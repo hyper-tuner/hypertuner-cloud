@@ -29,11 +29,16 @@ const toggleSidebar = createAction('ui/toggleSidebar');
 const initialState: AppState = {
   tune: {
     constants: {},
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     details: {} as any,
   },
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   tuneData: {} as any,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   logs: {} as any,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   toothLogs: {} as any,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   config: {} as any,
   ui: {
     sidebarCollapsed: false,

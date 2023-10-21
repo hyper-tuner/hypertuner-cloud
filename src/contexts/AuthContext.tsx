@@ -22,12 +22,12 @@ interface AuthValue {
   logout: () => void;
   initResetPassword: (email: string) => Promise<void>;
   listAuthMethods: () => Promise<AuthMethodsList>;
-  oAuth: (provider: OAuthProviders, code: string, codeVerifier: string) => Promise<void>;
+  oAuth: (provider: OAuthProviders, code: string, codeVerifier: string) => void;
   updateUsername: (username: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
-// biome-ignore lint/nursery/useHookAtTopLevel: False positive
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
 const useAuth = () => useContext<AuthValue>(AuthContext as any);
 
 const users = client.collection(Collections.Users);
@@ -117,7 +117,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
           return Promise.reject(new Error(formatError(error as ClientResponseError)));
         }
       },
-      oAuth: async (provider: OAuthProviders, code: string, codeVerifier: string) => {
+      oAuth: (provider: OAuthProviders, code: string, codeVerifier: string) => {
         users.authWithOAuth2(
           provider,
           code,

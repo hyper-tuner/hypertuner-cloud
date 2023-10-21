@@ -25,7 +25,7 @@ class BrowserStorage {
     this.storage.removeItem(key);
   }
 
-  public async isAvailable(): Promise<boolean> {
+  public isAvailable() {
     return !!this.storage;
   }
 }
@@ -37,7 +37,9 @@ const useBrowserStorage = () => {
     storageGet: (key: string) => storage.get(key),
     storageGetSync: (key: string) => storage.getSync(key),
     storageSet: (key: string, value: string) => storage.set(key, value),
-    storageDelete: (key: string) => storage.delete(key),
+    storageDelete: (key: string) => {
+      storage.delete(key);
+    },
   };
 };
 

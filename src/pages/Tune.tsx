@@ -16,7 +16,7 @@ const mapStateToProps = (state: AppState) => ({
   tune: state.tune,
 });
 
-const Tune = ({ config, tune }: { config: ConfigType | null; tune: TuneState }) => {
+const Tune = ({ config, tune }: { config: ConfigType | null; tune: TuneState | null }) => {
   const dialogMatch = useMatch(Routes.TUNE_DIALOG);
   const tuneRootMatch = useMatch(Routes.TUNE_TUNE);
   const groupMenuDialogMatch = useMatch(Routes.TUNE_GROUP_MENU_DIALOG);
@@ -28,8 +28,8 @@ const Tune = ({ config, tune }: { config: ConfigType | null; tune: TuneState }) 
 
   useEffect(() => {
     if (tune && config && tuneRootMatch && tuneId) {
-      const firstCategory = Object.keys(config!.menus)[0];
-      const firstDialog = Object.keys(config!.menus[firstCategory].subMenus)[0];
+      const firstCategory = Object.keys(config.menus)[0];
+      const firstDialog = Object.keys(config.menus[firstCategory].subMenus)[0];
 
       const firstDialogPath = generatePath(Routes.TUNE_DIALOG, {
         tuneId,
@@ -51,16 +51,18 @@ const Tune = ({ config, tune }: { config: ConfigType | null; tune: TuneState }) 
     groupMenuDialogMatch,
   ]);
 
-  if (!(tune && config && (dialogMatch || groupMenuDialogMatch))) {
+  if (!(config && (dialogMatch || groupMenuDialogMatch))) {
     return <Loader />;
   }
 
   return (
     <>
-      <SideBar matchedPath={dialogMatch!} matchedGroupMenuDialogPath={groupMenuDialogMatch} />
+      <SideBar matchedPath={dialogMatch} matchedGroupMenuDialogPath={groupMenuDialogMatch} />
       <Dialog
         name={
-          groupMenuDialogMatch ? groupMenuDialogMatch.params.dialog! : dialogMatch?.params.dialog!
+          groupMenuDialogMatch
+            ? groupMenuDialogMatch.params.dialog!
+            : dialogMatch?.params.dialog ?? ''
         }
         url={groupMenuDialogMatch ? groupMenuDialogMatch.pathname : dialogMatch?.pathname || ''}
       />

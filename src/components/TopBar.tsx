@@ -39,17 +39,13 @@ import { buildHyperTunerAppLink } from '../utils/url';
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
-const logsExtensionsIcons: { [key: string]: React.JSX.Element } = {
+const logsExtensionsIcons: Record<string, React.JSX.Element> = {
   mlg: <FileZipOutlined />,
   msl: <FileTextOutlined />,
   csv: <FileExcelOutlined />,
 };
 
-const TopBar = ({
-  tuneData,
-}: {
-  tuneData: TuneDataState | null;
-}) => {
+const TopBar = ({ tuneData }: { tuneData: TuneDataState | null }) => {
   const { xs, sm, lg } = useBreakpoint();
   const { pathname } = useLocation();
   const { currentUser, logout } = useAuth();
@@ -76,7 +72,9 @@ const TopBar = ({
     navigate(0);
   }, [logout, navigate]);
 
-  const toggleCommandPalette = useCallback(() => query.toggle(), [query]);
+  const toggleCommandPalette = useCallback(() => {
+    query.toggle();
+  }, [query]);
 
   const handleGlobalKeyboard = useCallback((e: KeyboardEvent) => {
     if (isToggleSidebar(e)) {
@@ -146,8 +144,8 @@ const TopBar = ({
         if (tuneData?.customIniFile) {
           downloadFile(
             Collections.Tunes,
-            tuneData!.id,
-            tuneData!.customIniFile,
+            tuneData.id,
+            tuneData.customIniFile,
             downloadAnchorRef.current!,
           );
         } else {
@@ -163,7 +161,9 @@ const TopBar = ({
   useEffect(() => {
     document.addEventListener('keydown', handleGlobalKeyboard);
 
-    return () => document.removeEventListener('keydown', handleGlobalKeyboard);
+    return () => {
+      document.removeEventListener('keydown', handleGlobalKeyboard);
+    };
   }, [currentUser, handleGlobalKeyboard]);
 
   const tabs = useMemo(
@@ -181,7 +181,9 @@ const TopBar = ({
           }
           optionType="button"
           buttonStyle="solid"
-          onChange={(e) => navigate(e.target.value)}
+          onChange={(e) => {
+            navigate(e.target.value as string);
+          }}
         >
           <Radio.Button value={buildTuneUrl(Routes.HUB)}>
             <Space>
@@ -271,7 +273,9 @@ const TopBar = ({
             key: 'profile',
             icon: <UserOutlined />,
             label: 'Profile',
-            onClick: () => navigate(Routes.PROFILE),
+            onClick: () => {
+              navigate(Routes.PROFILE);
+            },
           },
           {
             key: 'logout',
@@ -285,13 +289,17 @@ const TopBar = ({
             key: 'login',
             icon: <LoginOutlined />,
             label: 'Login',
-            onClick: () => navigate(Routes.LOGIN),
+            onClick: () => {
+              navigate(Routes.LOGIN);
+            },
           },
           {
             key: 'sign-up',
             icon: <UserAddOutlined />,
             label: 'Sign Up',
-            onClick: () => navigate(Routes.SIGN_UP),
+            onClick: () => {
+              navigate(Routes.SIGN_UP);
+            },
           },
         ];
   }, [currentUser, logoutClick, navigate]);
@@ -306,7 +314,9 @@ const TopBar = ({
       key: 'about',
       icon: <InfoCircleOutlined />,
       label: 'About',
-      onClick: () => navigate(Routes.ABOUT),
+      onClick: () => {
+        navigate(Routes.ABOUT);
+      },
     },
   ];
 

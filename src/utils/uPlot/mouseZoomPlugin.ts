@@ -58,7 +58,7 @@ const mouseZoomPlugin = (options: ZoomPluginOptions = {}): uPlotPlugin => {
         over = u.over;
         rect = over.getBoundingClientRect();
 
-        over?.addEventListener('mousedown', (e: MouseEvent) => {
+        over.addEventListener('mousedown', (e: MouseEvent) => {
           if (e.button === 1) {
             e.preventDefault();
 
@@ -83,7 +83,7 @@ const mouseZoomPlugin = (options: ZoomPluginOptions = {}): uPlotPlugin => {
           }
         });
 
-        over?.addEventListener('wheel', (e: WheelEvent) => {
+        over.addEventListener('wheel', (e: WheelEvent) => {
           e.preventDefault();
 
           if (!isCtrlPressed(e)) {

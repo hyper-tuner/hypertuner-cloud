@@ -4,6 +4,7 @@ import {
   Page as ConfigPageType,
   SimpleConstant as SimpleConstantType,
   TuneConstants as TuneConstantsType,
+  ConstantTypes,
 } from '@hyper-tuner/types';
 import * as Sentry from '@sentry/browser';
 
@@ -35,8 +36,8 @@ export const prepareConstDeclarations = (
       ];
 
       // we need array index instead of a display value
-      if (constant?.type === 'bits') {
-        val = (constant.values as string[]).indexOf(`${val}`);
+      if (constant?.type === ConstantTypes.BITS) {
+        val = constant.values.indexOf(`${val}`);
       }
 
       // escape string values
@@ -82,6 +83,7 @@ export const evaluateExpression = (
   try {
     // TODO: strip eval from `command` etc
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return eval(`
       'use strict';
       const arrayValue = (number, layout) => number;

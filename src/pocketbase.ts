@@ -9,7 +9,9 @@ const formatError = (error: ClientResponseError) => {
   const { data, message } = error;
 
   if (data.data) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const errors = Object.keys(data.data).map(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (key) => `${key.toUpperCase()}: ${data.data[key].message}`,
     );
     if (errors.length > 0) {

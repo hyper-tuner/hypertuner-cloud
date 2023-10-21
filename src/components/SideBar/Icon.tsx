@@ -24,7 +24,7 @@ import {
 import React from 'react';
 
 const Icon = ({ name }: { name: string }): React.JSX.Element => {
-  const map: { [index: string]: React.JSX.Element } = {
+  const map: Record<string, React.JSX.Element> = {
     settings: <ControlOutlined />,
     tuning: <CarOutlined />,
     spark: <FireOutlined />,

@@ -36,6 +36,7 @@ import 'uplot/dist/uPlot.min.css';
 import { useAuth } from './contexts/AuthContext';
 import './css/App.less';
 import { isProduction } from './utils/env';
+import { UpdateStatus } from 'react-update-notification/lib/types';
 
 const Tune = lazy(() => import('./pages/Tune'));
 const Logs = lazy(() => import('./pages/Logs'));
@@ -67,7 +68,7 @@ const NewVersionPrompt = () => {
   });
   const [open, setOpen] = useState(true);
 
-  if (status === 'checking' || status === 'current') {
+  if (status === UpdateStatus.checking || status === UpdateStatus.current) {
     return null;
   }
 
@@ -82,18 +83,20 @@ const NewVersionPrompt = () => {
       onOk={reloadPage}
       okText="Reload the page"
       okButtonProps={{ icon: <ReloadOutlined /> }}
-      onCancel={() => setOpen(false)}
+      onCancel={() => {
+        setOpen(false);
+      }}
       cancelText="I'll do it later"
       cancelButtonProps={{ icon: <ClockCircleOutlined /> }}
       destroyOnClose
     >
-      <p>To enjoy the new features, it's time to refresh the page!</p>
+      <p>To enjoy the new features, it&apos;s time to refresh the page!</p>
       <p>You can refresh later at your convenience.</p>
     </Modal>
   );
 };
 
-const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
+const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState | null }) => {
   const margin = ui.sidebarCollapsed ? collapsedSidebarWidth : sidebarWidth;
   const { getTune } = useDb();
   const [isLoading, setIsLoading] = useState(false);
@@ -193,14 +196,14 @@ const App = ({ ui, tuneData }: { ui: UIState; tuneData: TuneDataState }) => {
         setIsLoading(false);
       }
 
-      getTune(tuneId).then(async (tune) => {
+      getTune(tuneId).then((tune) => {
         if (!tune) {
           tuneNotFound();
           navigate(Routes.HUB);
           return;
         }
 
-        loadTune(tune!);
+        loadTune(tune);
         store.dispatch({
           type: 'tuneData/load',
           payload: JSON.parse(JSON.stringify(tune)),

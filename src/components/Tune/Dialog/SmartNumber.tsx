@@ -17,7 +17,7 @@ const SmartNumber = ({
   disabled: boolean;
 }) => {
   const isSlider = (u: string) => ['%', 'C'].includes(`${u}`.toUpperCase());
-  const sliderMarks: { [value: number]: string } = {};
+  const sliderMarks: Record<number, string> = {};
   const step = digits ? 10 ** -digits : 1;
   const val = formatNumber(defaultValue, digits);
   sliderMarks[min] = `${min}${units}`;
