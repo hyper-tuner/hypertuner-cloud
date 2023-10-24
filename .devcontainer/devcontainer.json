@@ -16,12 +16,12 @@
     "vscode": {
       // NOTE: keep this in sync with: .vscode/extensions.json
       "extensions": [
-		"editorconfig.editorconfig",
-		"davidanson.vscode-markdownlint",
-		"streetsidesoftware.code-spell-checker",
-		"dbaeumer.vscode-eslint",
-		"esbenp.prettier-vscode"
-	]
+        "editorconfig.editorconfig",
+        "davidanson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
     }
   },
   // install dependencies
@@ -33,7 +33,7 @@
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "node": {
-      "version": "18"
+      "version": "20"
     },
     "github-cli": "latest"
   }
