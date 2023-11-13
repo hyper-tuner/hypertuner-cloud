@@ -50,7 +50,7 @@
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/lodash.debounce": "^4.0.8",
     "@types/node": "^20.8.8",
-    "@types/pako": "^2.0.2",
+    "@types/pako": "^2.0.3",
     "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
     "@types/react-redux": "^7.1.28",
