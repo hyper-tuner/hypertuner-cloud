@@ -65,7 +65,7 @@
     "less": "^4.2.0",
     "pocketbase-typegen": "^1.2.0",
     "prettier": "^3.0.3",
-    "rollup-plugin-visualizer": "^5.9.2",
+    "rollup-plugin-visualizer": "^5.10.0",
     "typescript": "^5.2.2",
     "vite-plugin-html": "^3.2.0",
     "vite-plugin-pwa": "^0.16.5"
