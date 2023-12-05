@@ -44,7 +44,7 @@
     "react-update-notification": "^1.2.0",
     "uplot": "^1.6.26",
     "uplot-react": "^1.1.5",
-    "vite": "^4.5.0"
+    "vite": "^4.5.1"
   },
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.5.1",
