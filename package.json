@@ -26,7 +26,7 @@
     "@reduxjs/toolkit": "^2.0.1",
     "@sentry/react": "^7.91.0",
     "@sentry/tracing": "^7.91.0",
-    "antd": "^4.24.14",
+    "antd": "^4.24.15",
     "fuse.js": "^7.0.0",
     "kbar": "^0.1.0-beta.44",
     "lodash.debounce": "^4.0.8",

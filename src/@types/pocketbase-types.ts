@@ -37,9 +37,9 @@ export type AuthSystemFields<T = never> = {
 // Record types for each collection
 
 export enum IniFilesEcosystemOptions {
-  speeduino = 'speeduino',
-  rusefi = 'rusefi',
-  fome = 'fome',
+  'speeduino' = 'speeduino',
+  'rusefi' = 'rusefi',
+  'fome' = 'fome',
 }
 export type IniFilesRecord = {
   ecosystem: IniFilesEcosystemOptions;
@@ -53,14 +53,14 @@ export type StargazersRecord = {
 };
 
 export enum TunesSourceOptions {
-  web = 'web',
-  app = 'app',
+  'web' = 'web',
+  'app' = 'app',
 }
 
 export enum TunesAspirationOptions {
-  na = 'na',
-  turbocharged = 'turbocharged',
-  supercharged = 'supercharged',
+  'na' = 'na',
+  'turbocharged' = 'turbocharged',
+  'supercharged' = 'supercharged',
 }
 
 export enum TunesTagsOptions {
@@ -69,8 +69,8 @@ export enum TunesTagsOptions {
 }
 
 export enum TunesVisibilityOptions {
-  public = 'public',
-  unlisted = 'unlisted',
+  'public' = 'public',
+  'unlisted' = 'unlisted',
 }
 export type TunesRecord = {
   aspiration: TunesAspirationOptions;
