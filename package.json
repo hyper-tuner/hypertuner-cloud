@@ -24,7 +24,7 @@
     "@hyper-tuner/ini": "github:hyper-tuner/ini",
     "@hyper-tuner/types": "github:hyper-tuner/types",
     "@reduxjs/toolkit": "^1.9.7",
-    "@sentry/react": "^7.75.0",
+    "@sentry/react": "^7.91.0",
     "@sentry/tracing": "^7.75.0",
     "antd": "^4.24.14",
     "fuse.js": "^6.6.2",
