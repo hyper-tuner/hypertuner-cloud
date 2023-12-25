@@ -143,7 +143,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
         }
 
         switch (provider.name) {
-          case OAuthProviders.GOOGLE: {
+          case OAuthProviders.GOOGLE.toString(): {
             setProvidersStatuses((prevState) => ({
               ...prevState,
               [provider.name]: true,
@@ -157,7 +157,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
             );
             break;
           }
-          case OAuthProviders.GITHUB: {
+          case OAuthProviders.GITHUB.toString(): {
             setProvidersStatuses((prevState) => ({
               ...prevState,
               [provider.name]: true,
@@ -171,7 +171,7 @@ const Login = ({ formRole }: { formRole: FormRoles }) => {
             );
             break;
           }
-          case OAuthProviders.FACEBOOK: {
+          case OAuthProviders.FACEBOOK.toString(): {
             setProvidersStatuses((prevState) => ({
               ...prevState,
               [provider.name]: true,

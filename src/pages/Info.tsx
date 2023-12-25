@@ -179,7 +179,7 @@ const Info = ({ tuneData }: { tuneData: TuneDataState | null }) => {
       </Form>
       <Divider>README</Divider>
       <div className="markdown-preview" style={{ height: '100%' }}>
-        {tuneData.readme && <ReactMarkdown>{`${tuneData.readme}`}</ReactMarkdown>}
+        {tuneData.readme && <ReactMarkdown>{tuneData.readme}</ReactMarkdown>}
       </div>
       {canManage && <ManageSection />}
     </div>

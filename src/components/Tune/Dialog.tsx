@@ -86,7 +86,7 @@ const Dialog = ({
     link && (
       <Popover
         content={
-          <a href={`${link}`} target="__blank" rel="noopener noreferrer">
+          <a href={link} target="__blank" rel="noopener noreferrer">
             {link}
           </a>
         }
