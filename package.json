@@ -28,7 +28,7 @@
     "@sentry/tracing": "^7.91.0",
     "antd": "^4.24.15",
     "fuse.js": "^7.0.0",
-    "kbar": "^0.1.0-beta.44",
+    "kbar": "^0.1.0-beta.45",
     "lodash.debounce": "^4.0.8",
     "mlg-converter": "^0.9.0",
     "nanoid": "^5.0.4",
