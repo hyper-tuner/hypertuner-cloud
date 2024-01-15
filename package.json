@@ -40,7 +40,7 @@
     "react-markdown": "^9.0.1",
     "react-perfect-scrollbar": "^1.5.8",
     "react-redux": "^9.0.4",
-    "react-router-dom": "^6.21.1",
+    "react-router-dom": "^6.21.2",
     "react-update-notification": "^1.2.0",
     "uplot": "^1.6.27",
     "uplot-react": "^1.1.5",
