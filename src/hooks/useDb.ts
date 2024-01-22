@@ -47,7 +47,7 @@ const useDb = () => {
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
-      return Promise.reject(error);
+      return Promise.reject(error as ClientResponseError);
     }
   };
 
@@ -60,7 +60,7 @@ const useDb = () => {
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
-      return Promise.reject(error);
+      return Promise.reject(error as ClientResponseError);
     }
   };
 
@@ -78,7 +78,7 @@ const useDb = () => {
     Sentry.captureException(response);
     databaseGenericError(new Error(response.statusText));
 
-    return Promise.reject(response.status);
+    return Promise.reject(new Error(response.status.toString()));
   };
 
   const getIni = async (signature: string): Promise<IniFilesResponse | null> => {
@@ -95,7 +95,7 @@ const useDb = () => {
     Sentry.captureException(response);
     databaseGenericError(new Error(response.statusText));
 
-    return Promise.reject(response.status);
+    return Promise.reject(new Error(response.status.toString()));
   };
 
   const searchTunes = async (
@@ -132,7 +132,7 @@ const useDb = () => {
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
-      return Promise.reject(error);
+      return Promise.reject(error as ClientResponseError);
     }
   };
 
@@ -164,7 +164,7 @@ const useDb = () => {
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
-      return Promise.reject(error);
+      return Promise.reject(error as ClientResponseError);
     }
   };
 
@@ -183,7 +183,7 @@ const useDb = () => {
       Sentry.captureException(error);
       databaseGenericError(new Error(formatError(error as ClientResponseError)));
 
-      return Promise.reject(error);
+      return Promise.reject(error as ClientResponseError);
     }
   };
 
@@ -207,7 +207,7 @@ const useDb = () => {
       case 404:
         return Promise.resolve({ stars: 0, isStarred: false });
       case 401:
-        return Promise.reject(401);
+        return Promise.reject(new Error('401'));
       default:
         break;
     }
@@ -215,7 +215,7 @@ const useDb = () => {
     Sentry.captureException(response);
     databaseGenericError(new Error(response.statusText));
 
-    return Promise.reject(response.status);
+    return Promise.reject(new Error(response.status.toString()));
   };
 
   const isStarredByMe = async (currentUserToken: string, tune: string): Promise<boolean> => {
@@ -240,7 +240,7 @@ const useDb = () => {
     Sentry.captureException(response);
     databaseGenericError(new Error(response.statusText));
 
-    return Promise.reject(response.status);
+    return Promise.reject(new Error(response.status.toString()));
   };
 
   return {

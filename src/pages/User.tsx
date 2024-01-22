@@ -28,7 +28,7 @@ const Profile = () => {
     try {
       const { items, totalItems } = await getUserTunes(route?.params.userId ?? '', page, pageSize);
       setTotal(totalItems);
-      setAuthor(items[0]!.expand!.author);
+      setAuthor(items[0].expand!.author);
       setTunesDataSource(items);
     } catch (_error) {
       // request cancelled
