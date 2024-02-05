@@ -42,7 +42,7 @@
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.21.3",
     "react-update-notification": "^1.2.0",
-    "uplot": "^1.6.28",
+    "uplot": "^1.6.30",
     "uplot-react": "^1.1.5",
     "vite": "^5.0.12"
   },
